@@ -1,0 +1,5 @@
+.env 
+node_modules
+garbage
+config/config.json
+config/config.js
