@@ -57072,6 +57072,185 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
     }
 
 
+    async getCalculationRoofPitchCalculator(body) {
+  try {
+    const submit = body.tech_submit;
+    let rise = parseFloat(body.tech_x);
+    let run = parseFloat(body.tech_y);
+    const unit = body.tech_unit;
+    const unit_r = body.tech_unit_r;
+    const unit_a = body.tech_unit_a;
+    const from = body.tech_from;
+
+    const result = {};
+
+    if (isNaN(rise) || isNaN(run)) {
+      result.error = "Please! Fill all the Input Fields";
+      return result;
+    }
+
+    const toMeters = (value, unitType) => {
+      if (unitType === "ft") return value / 3.281;
+      if (unitType === "in") return value / 39.37;
+      if (unitType === "yd") return value / 1.094;
+      return value; // default: meters
+    };
+
+    const toFeet = (value) => value * 3.281;
+
+    // --- Helper functions ---
+    const deg2rad = (deg) => (deg * Math.PI) / 180;
+    const rad2deg = (rad) => (rad * 180) / Math.PI;
+
+    let P, pitch, rafter, angle, x;
+
+    // ---------- CASES ----------
+    if (from == "1") {
+      rise = toMeters(rise, unit);
+      run = toMeters(run, unit_r);
+
+      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
+      pitch = Math.round((rise / run) * 100 * 100) / 100;
+      rafter = Math.round(Math.sqrt(rise ** 2 + run ** 2) * 100) / 100;
+      angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
+      x = Math.round(((pitch / 100) * 12) * 100) / 100;
+    }
+
+    else if (from == "2") {
+      let rafterInput = parseFloat(body.y);
+      rise = toMeters(rise, unit);
+      let rafterM = toMeters(rafterInput, unit_r);
+
+      run = Math.sqrt(rafterM ** 2 - rise ** 2);
+      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
+      pitch = Math.round((rise / run) * 100 * 100) / 100;
+      angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
+      x = Math.round(((pitch / 100) * 12) * 100) / 100;
+      rafter = Math.round(rafterM * 100) / 100;
+    }
+
+    else if (from == "3") {
+      run = parseFloat(body.x);
+      let rafterInput = parseFloat(body.y);
+      run = toMeters(run, unit);
+      let rafterM = toMeters(rafterInput, unit_r);
+
+      rise = Math.sqrt(rafterM ** 2 - run ** 2);
+      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
+      pitch = Math.round((rise / run) * 100 * 100) / 100;
+      angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
+      x = Math.round(((pitch / 100) * 12) * 100) / 100;
+      rafter = Math.round(rafterM * 100) / 100;
+    }
+
+    else if (from == "4") {
+      let pitchInput = parseFloat(body.y);
+      rise = toMeters(rise, unit);
+      run = (rise / pitchInput) * 100;
+
+      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
+      rafter = Math.sqrt(rise ** 2 + run ** 2);
+      angle = Math.atan(pitchInput / 100) * (180 / Math.PI);
+      x = (pitchInput / 100) * 12;
+
+      pitch = pitchInput;
+    }
+
+    else if (from == "5") {
+      let angleInput = parseFloat(body.y);
+      rise = toMeters(rise, unit);
+
+      if (unit_a === "deg") angleInput = deg2rad(angleInput);
+
+      pitch = Math.tan(angleInput) * 100;
+      run = (rise / pitch) * 100;
+      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
+      rafter = Math.sqrt(rise ** 2 + run ** 2);
+      x = (pitch / 100) * 12;
+      angle = rad2deg(angleInput);
+    }
+
+    else if (from == "6") {
+      let xInput = parseFloat(body.y);
+      rise = toMeters(rise, unit);
+      pitch = (xInput * 100) / 12;
+      run = (rise / pitch) * 100;
+      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
+      rafter = Math.sqrt(rise ** 2 + run ** 2);
+      angle = Math.atan(pitch / 100) * (180 / Math.PI);
+      x = xInput;
+    }
+
+    else if (from == "7") {
+      run = parseFloat(body.x);
+      let pitchInput = parseFloat(body.y);
+      run = toMeters(run, unit);
+      rise = (run * pitchInput) / 100;
+      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
+      rafter = Math.sqrt(rise ** 2 + run ** 2);
+      angle = Math.atan(pitchInput / 100) * (180 / Math.PI);
+      x = (pitchInput / 100) * 12;
+      pitch = pitchInput;
+    }
+
+    else if (from == "8") {
+      run = parseFloat(body.x);
+      let angleInput = parseFloat(body.y);
+      run = toMeters(run, unit);
+
+      if (unit_a === "deg") angleInput = deg2rad(angleInput);
+
+      pitch = Math.tan(angleInput) * 100;
+      rise = (run * pitch) / 100;
+      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
+      rafter = Math.sqrt(rise ** 2 + run ** 2);
+      x = (pitch / 100) * 12;
+      angle = rad2deg(angleInput);
+    }
+
+    else if (from == "9") {
+      run = parseFloat(body.x);
+      let xInput = parseFloat(body.y);
+      run = toMeters(run, unit);
+      pitch = (xInput * 100) / 12;
+      rise = (run * pitch) / 100;
+      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
+      rafter = Math.sqrt(rise ** 2 + run ** 2);
+      angle = Math.atan(pitch / 100) * (180 / Math.PI);
+      x = xInput;
+    }
+
+    else if (from == "10") {
+      let rafterInput = parseFloat(body.x);
+      let pitchInput = parseFloat(body.y);
+      let rafterM = toMeters(rafterInput, unit);
+      // Note: Laravel version had a bug using undefined `run` here
+      let rise = (rafterM * pitchInput) / 100;
+      run = Math.sqrt(rafterM ** 2 - rise ** 2);
+      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
+      rafter = rafterM;
+      angle = Math.atan(pitchInput / 100) * (180 / Math.PI);
+      x = (pitchInput / 100) * 12;
+      pitch = pitchInput;
+    }
+
+    result.tech_pitch = Number(pitch.toFixed(2));
+    result.tech_rise = Number(rise.toFixed(2));
+    result.tech_run = Number(run.toFixed(2));
+    result.tech_rafter = Number(rafter.toFixed(2));
+    result.tech_angle = Number(angle.toFixed(2));
+    result.tech_x = Number(x.toFixed(2));
+    result.tech_P = P;
+
+    return result;
+  } catch (error) {
+    console.error(error);
+    return { error: "An unexpected error occurred." };
+  }
+}
+
+
+
 
 
 
