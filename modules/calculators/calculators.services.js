@@ -57925,138 +57925,724 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
 
 
 
-  async getCalculationRebarCalculator(body) {
-  try {
-    // Extract all input values from body
-    let {
-      tech_first,
-      tech_units1,
-      tech_second,
-      tech_units2,
-      tech_third,
-      tech_units3,
-      tech_four,
-      tech_units4,
-      tech_five,
-      tech_units5,
-      tech_six,
-      tech_units6,
-      tech_currancy
-    } = body;
+    async getCalculationRebarCalculator(body) {
+    try {
+      // Extract all input values from body
+      let {
+        tech_first,
+        tech_units1,
+        tech_second,
+        tech_units2,
+        tech_third,
+        tech_units3,
+        tech_four,
+        tech_units4,
+        tech_five,
+        tech_units5,
+        tech_six,
+        tech_units6,
+        tech_currancy
+      } = body;
+
+      let param = {};
+      let convert,convert2,convert3;
+      // 🧩 Remove currency prefix if present
+      if (tech_units5 && tech_currancy) {
+        tech_units5 = tech_units5.replace(tech_currancy + " ", "");
+      }
+
+      // ✅ Helper Functions (Converted from PHP)
+
+      function cm_unit(a,b){
+        if(a == "cm"){
+          convert = b * 1;
+        }else if (a == "m") {
+          convert = b * 100;
+        }else if (a == "km") {
+          convert = b * 100000;
+        }else if (a == "in") {
+          convert = b *  2.54;
+        }else if (a == "ft") {
+          convert = b * 30.48;
+        }else if (a == "yd") {
+          convert = b * 91.44;
+        }else if (a == "mi") {
+          convert = b * 30.48;
+        }
+        return convert;
+      }
+      function cm_unit2(a,b){
+        if(a == "mm"){
+          convert2 = b / 10;
+        }else if (a == "cm") {
+          convert2 = b * 1;
+        }else if (a == "m") {
+          convert2 = b * 100;
+        }else if (a == "in") {
+          convert2 = b *  2.54;
+        }else if (a == "ft") {
+          convert2 = b * 30.48;
+        }else if (a == "yd") {
+          convert2 = b * 91.44;
+        }
+        return convert2;
+      }
+      function cm_unit3(a,b){
+        if(a == "cm"){
+          convert3 = b * 1;
+        }else if (a == "m") {
+          convert3 = b * 100;
+        }else if (a == "in") {
+          convert3 = b * 2.54;
+        }else if (a == "ft") {
+          convert3 = b *  30.48;
+        }else if (a == "yd") {
+          convert3 = b * 91.44;
+        }
+        return convert3;
+      }
+
+      
+
+      // ✅ Validate numeric inputs
+      if (
+        !isNaN(tech_first) &&
+        !isNaN(tech_second) &&
+        !isNaN(tech_third) &&
+        !isNaN(tech_four) &&
+        !isNaN(tech_five) &&
+        !isNaN(tech_six)
+      ) {
+        // Convert all to cm
+        let first = cm_unit(tech_units1, Number(tech_first));
+        let second = cm_unit(tech_units2, Number(tech_second));
+        let third = cm_unit2(tech_units3, Number(tech_third));
+        let four = cm_unit2(tech_units4, Number(tech_four));
+        let five = cm_unit3(tech_units5, Number(tech_five));
+        let six = cm_unit3(tech_units6, Number(tech_six));
+
+        // Main calculations
+        const mul1 = 2 * four;
+        const grid_len = first - mul1;
+        const grid_wid = second - mul1;
+
+        const rebar_col = grid_len / third;
+        const rebar_row = grid_wid / third;
+        const part1 = rebar_col * grid_wid;
+        const part2 = rebar_row * grid_len;
+        const trl = part1 + part2;
+
+        const price_s = five * six;
+        const rebar_pie = trl / six;
+        const cost = Math.round(rebar_pie) * price_s;
+
+        // ✅ Return structured result
+        param.tech_grid_len = grid_len;
+        param.tech_grid_wid = grid_wid;
+        param.tech_trl = trl;
+        param.tech_rebar_pie = rebar_pie;
+        param.tech_cost = cost;
+        param.tech_price_s = price_s;
+        return param;
+      } else {
+        return { error: "Please check your input" };
+      }
+    } catch (err) {
+      return { error: err.message || "Something went wrong!" };
+    }
+  }
+
+
+  async getCalculationPipeVolumeCalculator(body) {
+    try {
+      // Extract input values
+      let {
+        tech_inner_diameter,
+        tech_inner_diameter_unit,
+        tech_length,
+        tech_length_unit,
+        tech_density,
+        tech_density_unit
+      } = body;
+
+      let param = {};
+      let val1,val2;
+      function convert_inches2(unit, value)
+      {
+        if (unit == "cm") {
+          val1 = value * 0.393701;
+        } else if (unit == "m") {
+          val1 = value * 39.3701;
+        } else if (unit == "in") {
+          val1 = value * 1;
+        } else if (unit == "ft") {
+          val1 = value * 12;
+        } else if (unit == "yd") {
+          val1 = value * 36;
+        } else if (unit == "mm") {
+          val1 = value * 0.0393701;
+        }
+        return val1;
+      }
+      function convert_unit2(unit2, value2)
+      {
+        if (unit2 == "kg/m³") {
+          val2 = value2 * 0.000036127;
+        } else if (unit2 == "kg/dm³") {
+          val2 = value2 * 0.036127;
+        } else if (unit2 == "kg/L") {
+          val2 = value2 * 0.036127292;
+        } else if (unit2 == "g/mL") {
+          val2 = value2 * 0.036127292;
+        } else if (unit2 == "g/cm³") {
+          val2 = value2 * 0.036127292;
+        } else if (unit2 == "oz/cu in") {
+          val2 = value2 * 0.0625;
+        } else if (unit2 == "lb/cu in") {
+          val2 = value2 * 1;
+        } else if (unit2 == "lb/cu ft") {
+          val2 = value2 * 0.000578703704;
+        } else if (unit2 == "lb/US gal") {
+          val2 = value2 * 0.00432900433;
+        } else if (unit2 == "g/L") {
+          val2 = value2 * 0.00003612729;
+        } else if (unit2 == "g/dL") {
+          val2 = value2 * 0.00036127292;
+        } else if (unit2 == "mg/L") {
+          val2 = value2 * 3.6127292e-8;
+        }
+        return val2;
+      }
+
+      // ✅ Validation
+      if (
+        !isNaN(tech_inner_diameter) &&
+        !isNaN(tech_length) &&
+        !isNaN(tech_density)
+      ) {
+        if (tech_inner_diameter > 0 && tech_length > 0) {
+          // Convert to inches
+          const inv = convert_inches2(tech_inner_diameter_unit, Number(tech_inner_diameter));
+          const lnv = convert_inches2(tech_length_unit, Number(tech_length));
+
+          // Compute volume and weight
+          const k = inv / 2;
+          const volume = 3.14159265 * k * k * lnv; // cubic inches
+          const wv = convert_unit2(tech_density_unit, Number(tech_density));
+          const weight = volume * wv;
+
+          // ✅ Return structured response
+          param.tech_volume = volume;
+          param.tech_weight = weight;
+          return param;
+        } else {
+          return { error: "Please! Enter Positive Value" };
+        }
+      } else {
+        return { error: "Please! Check Your Input" };
+      }
+
+    } catch (err) {
+      return { error: err.message || "Something went wrong!" };
+    }
+  }
+
+
+    async getCalculationMsPlateWeightCalculator(body) {
+    try {
+            // Shape properties
+        let st_type = body.tech_st_type;
+        let st_shape = body.tech_st_shape;
+        let quantity = body.tech_quantity;
+
+        // Dimension properties
+        let length = body.tech_length;
+        let length_unit = body.tech_length_unit;
+        let width = body.tech_width;
+        let width_unit = body.tech_width_unit;
+        let thickness = body.tech_thickness;
+        let thickness_unit = body.tech_thickness_unit;
+        let side = body.tech_side;
+        let side_unit = body.tech_side_unit;
+        let diameter = body.tech_diameter;
+        let diameter_unit = body.tech_diameter_unit;
+
+        // Area properties
+        let area = body.tech_area;
+        let area_unit = body.tech_area_unit;
+
+      let param = {};
+      let val3,ans;
+      // ✅ Helper functions
+    function centi(unit3, value3)
+      {
+        if (unit3 == "mm²") {
+          val3 = value3 * 0.01;
+        } else if (unit3 == "cm²") {
+          val3 = value3 * 1;
+        } else if (unit3 == "m²") {
+          val3 = value3 * 10000;
+        } else if (unit3 == "km²") {
+          val3 = value3 * 10000000000;
+        } else if (unit3 == "in²") {
+          val3 = value3 * 6.452;
+        } else if (unit3 == "ft²") {
+          val3 = value3 * 929;
+        } else if (unit3 == "yd²") {
+          val3 = value3 * 8361;
+        } else if (unit3 == "mi²") {
+          val3 = value3 * 25899881103;
+        }
+        return val3;
+      }
+      function convert_to_cmeter(value, unit)
+      {
+        if (unit == "cm") {
+          ans = value * 1;
+        } else if (unit == "mm") {
+          ans = value * 0.1;
+        } else if (unit == "in") {
+          ans = value * 2.54;
+        } else if (unit == "ft") {
+          ans = value * 30.58;
+        } else if (unit == "yd") {
+          ans = value * 91.44;
+        } else if (unit == "m") {
+          ans = value * 100;
+        }
+        return ans;
+      }
+
+      // ✅ Convert numeric safely
+      const n = (v) => (isNaN(Number(v)) ? null : Number(v));
+
+      // Assign numeric values
+      const _st_type = n(st_type);
+      const _st_shape = String(st_shape);
+      const _length = n(length);
+      const _width = n(width);
+      const _thickness = n(thickness);
+      const _side = n(side);
+      const _diameter = n(diameter);
+      const _area = n(area);
+      const _quantity = n(quantity);
+
+      let areaResult = 0,
+        volume = 0,
+        weight = 0;
+
+      // ✅ Shape conditions
+      if (_st_shape == "1") {
+        if (
+          _length > 0 &&
+          _width > 0 &&
+          _thickness > 0 &&
+          _quantity > 0
+        ) {
+          const lv = convert_to_cmeter(_length, length_unit);
+          const wv = convert_to_cmeter(_width, width_unit);
+          const thv = convert_to_cmeter(_thickness, thickness_unit);
+          areaResult = lv * wv;
+          volume = thv * areaResult;
+          weight = _quantity * _st_type * volume;
+        } else {
+          return { error: "Please! Enter Positive Value" };
+        }
+      } else if (_st_shape == "2") {
+        if (_thickness > 0 && _side > 0 && _quantity > 0) {
+          const areaValue = convert_to_cmeter(_side, side_unit) ** 2;
+          const thv = convert_to_cmeter(_thickness, thickness_unit);
+          volume = thv * areaValue;
+          weight = _quantity * _st_type * volume;
+          areaResult = areaValue;
+        } else {
+          return { error: "Please! Enter Positive Value" };
+        }
+      } else if (_st_shape == "3") {
+        if (_thickness > 0 && _diameter > 0 && _quantity > 0) {
+          const dv = convert_to_cmeter(_diameter, diameter_unit);
+          const div = (dv / 2) ** 2;
+          areaResult = div * 3.141592653;
+          const thv = convert_to_cmeter(_thickness, thickness_unit);
+          volume = thv * areaResult;
+          weight = _quantity * _st_type * volume;
+        } else {
+          return { error: "Please! Enter Positive Value" };
+        }
+      } else if (_st_shape == "4") {
+        if (_area > 0 && _thickness > 0 && _quantity > 0) {
+          const areaValue = centi(area_unit, _area);
+          const thv = convert_to_cmeter(_thickness, thickness_unit);
+          volume = thv * areaValue;
+          weight = _quantity * _st_type * volume;
+          areaResult = areaValue;
+        } else {
+          return { error: "Please! Enter Positive Value" };
+        }
+      } else {
+        return { error: "Invalid st_shape option" };
+      }
+
+      param.tech_area = areaResult;
+      param.tech_volume = volume;
+      param.tech_weight = weight;
+
+      return { status: "success", payload: param };
+    } catch (err) {
+      return { status: "error", payload: { error: err.message } };
+    }
+  }
+
+  async getCalculationPricePerSquareFootCalculator(body) {
+    let calculate = body.tech_calculate;
+    let pp = Number(body.tech_pp);
+    let area_measure = Number(body.tech_area_measure);
+    let area_measure_unit = body.tech_area_measure_unit;
+    let pp1 = Number(body.tech_pp1);
+    let area_measure1 = Number(body.tech_area_measure1);
+    let area_measure_unit1 = body.tech_area_measure_unit1;
+    let pp2 = Number(body.tech_pp2);
+    let area_measure2 = Number(body.tech_area_measure2);
+    let area_measure_unit2 = body.tech_area_measure_unit2;
+    let compare = body.tech_compare;
+    let compare2 = body.tech_compare2;
+    let pp_unit = body.tech_pp_unit;
+    let pp1_unit = body.tech_pp1_unit;
+    let pp2_unit = body.tech_pp2_unit;
+
+    // helper function for area conversion
+    function unitconver(val1, val2) {
+      if (val2 === "ft²") return val1 * 1;
+      else if (val2 === "m²") return val1 * 10.764;
+      else if (val2 === "in²") return val1 * 0.006944;
+      else return val1 * 9; // default case
+    }
 
     let param = {};
-    let convert,convert2,convert3;
-    // 🧩 Remove currency prefix if present
-    if (tech_units5 && tech_currancy) {
-      tech_units5 = tech_units5.replace(tech_currancy + " ", "");
-    }
 
-    // ✅ Helper Functions (Converted from PHP)
+    try {
+      let res, res1, res2;
 
-    function cm_unit(a,b){
-			if(a == "cm"){
-				convert = b * 1;
-			}else if (a == "m") {
-				convert = b * 100;
-			}else if (a == "km") {
-				convert = b * 100000;
-			}else if (a == "in") {
-				convert = b *  2.54;
-			}else if (a == "ft") {
-				convert = b * 30.48;
-			}else if (a == "yd") {
-				convert = b * 91.44;
-			}else if (a == "mi") {
-				convert = b * 30.48;
-			}
-			return convert;
-		}
-		function cm_unit2(a,b){
-			if(a == "mm"){
-				convert2 = b / 10;
-			}else if (a == "cm") {
-				convert2 = b * 1;
-			}else if (a == "m") {
-				convert2 = b * 100;
-			}else if (a == "in") {
-				convert2 = b *  2.54;
-			}else if (a == "ft") {
-				convert2 = b * 30.48;
-			}else if (a == "yd") {
-				convert2 = b * 91.44;
-			}
-			return convert2;
-		}
-		function cm_unit3(a,b){
-			if(a == "cm"){
-				convert3 = b * 1;
-			}else if (a == "m") {
-				convert3 = b * 100;
-			}else if (a == "in") {
-				convert3 = b * 2.54;
-			}else if (a == "ft") {
-				convert3 = b *  30.48;
-			}else if (a == "yd") {
-				convert3 = b * 91.44;
-			}
-			return convert3;
-		}
+      // Base calculation
+      if (["1", "2", "3"].includes(calculate)) {
+        if (!isNaN(pp) && !isNaN(area_measure)) {
+          if (area_measure > 0) {
+            let am = unitconver(area_measure, area_measure_unit);
+            if (calculate === "1" || calculate === "2") res = pp / am;
+            else if (calculate === "3") res = pp * am;
 
-    
+            param.tech_pp_unit = pp_unit;
+          } else {
+            param.error = "Square Footage must be greater than zero";
+            return param;
+          }
+        } else {
+          param.error = "Please! Check Input";
+          return param;
+        }
+      }
 
-    // ✅ Validate numeric inputs
-    if (
-      !isNaN(tech_first) &&
-      !isNaN(tech_second) &&
-      !isNaN(tech_third) &&
-      !isNaN(tech_four) &&
-      !isNaN(tech_five) &&
-      !isNaN(tech_six)
-    ) {
-      // Convert all to cm
-      let first = cm_unit(tech_units1, Number(tech_first));
-      let second = cm_unit(tech_units2, Number(tech_second));
-      let third = cm_unit2(tech_units3, Number(tech_third));
-      let four = cm_unit2(tech_units4, Number(tech_four));
-      let five = cm_unit3(tech_units5, Number(tech_five));
-      let six = cm_unit3(tech_units6, Number(tech_six));
+      // Comparison 1
+      if (compare === "2") {
+        if (["1", "2", "3"].includes(calculate)) {
+          if (!isNaN(pp1) && !isNaN(area_measure1)) {
+            if (area_measure1 > 0) {
+              let am1 = unitconver(area_measure1, area_measure_unit1);
+              if (calculate === "1" || calculate === "2") res1 = pp1 / am1;
+              else if (calculate === "3") res1 = pp1 * am1;
 
-      // Main calculations
-      const mul1 = 2 * four;
-      const grid_len = first - mul1;
-      const grid_wid = second - mul1;
+              param.tech_pp1_unit = pp1_unit;
+              param.tech_res1 = res1;
+              param.tech_compare = compare;
+            } else {
+              param.error = "Square Footage must be greater than zero";
+              return param;
+            }
+          } else {
+            param.error = "Please! Check Input";
+            return param;
+          }
+        }
+      }
 
-      const rebar_col = grid_len / third;
-      const rebar_row = grid_wid / third;
-      const part1 = rebar_col * grid_wid;
-      const part2 = rebar_row * grid_len;
-      const trl = part1 + part2;
+      // Comparison 2
+      if (compare2 === "2") {
+        if (["1", "2", "3"].includes(calculate)) {
+          if (!isNaN(pp2) && !isNaN(area_measure2)) {
+            if (area_measure2 > 0) {
+              let am2 = unitconver(area_measure2, area_measure_unit2);
+              if (calculate === "1" || calculate === "2") res2 = pp2 / am2;
+              else if (calculate === "3") res2 = pp2 * am2;
 
-      const price_s = five * six;
-      const rebar_pie = trl / six;
-      const cost = Math.round(rebar_pie) * price_s;
+              param.tech_pp2_unit = pp2_unit;
+              param.tech_res2 = res2;
+              param.tech_compare2 = compare2;
+            } else {
+              param.error = "Square Footage must be greater than zero";
+              return param;
+            }
+          } else {
+            param.error = "Please! Check Input";
+            return param;
+          }
+        }
+      }
 
-      // ✅ Return structured result
-      param.grid_len = grid_len;
-      param.grid_wid = grid_wid;
-      param.trl = trl;
-      param.rebar_pie = rebar_pie;
-      param.cost = cost;
-      param.price_s = price_s;
-      param.RESULT = 1;
-
+      param.tech_res = res;
+      param.tech_calculate = calculate;
       return param;
-    } else {
-      return { error: "Please check your input" };
+
+    } catch (err) {
+      return { error: err.message || "Unexpected Error" };
     }
-  } catch (err) {
-    return { error: err.message || "Something went wrong!" };
+  }
+
+    async getCalculationMaterialCalculator(body) {
+      const operations = body.tech_operations;
+      const ex_drop = body.tech_ex_drop;
+      const first = body.tech_first;
+      const units1 = body.tech_units1;
+      const second = body.tech_second;
+      const units2 = body.tech_units2;
+      const third = body.tech_third;
+      const units3 = body.tech_units3;
+      const four = body.tech_four;
+      const units4 = body.tech_units4;
+      const five = body.tech_five;
+      const units5 = body.tech_units5;
+      const six = body.tech_six;
+      const units6 = body.tech_units6;
+      const seven = body.tech_seven;
+      const units7 = body.tech_units7;
+      const currancy = body.tech_currancy;
+
+    const param = {};
+    let convert1;
+   function feet(unit, value){
+			if (unit == "in") {
+				return value; // Already in inches
+			} else if (unit == "ft") {
+				return value * 12; // Convert feet to inches
+			} else if (unit == "cm") {
+				return value * 0.39370; // Convert centimeters to inches
+			} else if (unit == "m") {
+				return value * 39.3701; // Convert meters to inches
+			} else if (unit == "yd") {
+				return value * 36; // Convert yards to inches
+			} else {
+				return "Invalid unit";
+			}
+		}
+		function feet2(unit, value){
+			if (unit == "in³") {
+				return value; // Already in inches
+			} else if (unit == "ft³") {
+				return value * 12; // Convert feet to inches
+			} else if (unit == "cm³") {
+				return value * 0.39370; // Convert centimeters to inches
+			} else if (unit == "m³") {
+				return value * 39.3701; // Convert meters to inches
+			} else if (unit == "yd³") {
+				return value * 36; // Convert yards to inches
+			} else {
+				return "Invalid unit";
+			}
+		}
+		function lb(a,b){
+			if(a == "lb"){
+				// dd(a,b);
+				convert1 = b * 1;
+			}else if (a == "t"){
+				convert1 = b * 2000;
+			}else if (a == "long t"){
+				convert1 = b * 2240;
+			}else if (a == "kg"){
+				convert1 = b * 2.205;
+			}
+			return convert1;
+		}
+
+    // Clean currency symbols
+    const cleanUnit6 = units6?.replace(currancy + " ", "");
+    const cleanUnit7 = units7?.replace(currancy + " ", "");
+
+    let area, volume, weight;
+
+    // 🔹 Operation 1
+    if (operations === "1") {
+      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+        const f1 = feet(units1, Number(first));
+        const f2 = feet(units2, Number(second));
+        const f3 = feet(units3, Number(third));
+
+        area = f1 * f2;
+        volume = area * f3;
+        weight = ex_drop * (volume / 1728);
+
+        param.tech_area = area;
+        param.tech_volume = volume;
+      } else {
+        return { error: "Please! Check Your Input" };
+      }
+    }
+
+    // 🔹 Operation 2
+    else if (operations === "2") {
+      if (!isNaN(third) && !isNaN(four)) {
+        const f3 = feet(units3, Number(third));
+        const f4 = feet(units4, Number(four));
+
+        volume = f4 * f3;
+        weight = ex_drop * (volume / 1728);
+
+        param.tech_volume = volume;
+      } else {
+        return { error: "Please! Check Your Input" };
+      }
+    }
+
+    // 🔹 Operation 3
+    else if (operations === "3") {
+      if (!isNaN(five)) {
+        const f5 = feet2(units5, Number(five));
+        volume = f5;
+        weight = ex_drop * (volume / 1728);
+       
+      } else {
+        return { error: "Please! Check Your Input" };
+      }
+    }
+
+    // 🔹 Cost Mass Calculation
+    if (!isNaN(six)) {
+      const s6 = lb(cleanUnit6, Number(six));
+       console.log(s6);
+      param.tech_cost_mass = s6 * weight;
+    }
+
+    // 🔹 Cost Volume Calculation
+    if (!isNaN(seven)) {
+      const s7 = feet2(cleanUnit7, Number(seven));
+      param.tech_cost_volume = volume * s7;
+    }
+
+    param.tech_weight = weight;
+
+    return param;
+  }
+
+  async getCalculationRetainingWallCalculator(body) {
+  let wall_length = body.tech_wall_length;
+  let wall_length_unit = body.tech_wall_length_unit;
+  let wall_height = body.tech_wall_height;
+  let wall_height_unit = body.tech_wall_height_unit;
+  let block_height = body.tech_block_height;
+  let block_height_unit = body.tech_block_height_unit;
+  let block_length = body.tech_block_length;
+  let block_length_unit = body.tech_block_length_unit;
+  let wall_block_price = body.tech_wall_block_price;
+  let cap_height = body.tech_cap_height;
+  let cap_height_unit = body.tech_cap_height_unit;
+  let cap_length = body.tech_cap_length;
+  let cap_length_unit = body.tech_cap_length_unit;
+  let cap_block_price = body.tech_cap_block_price;
+  let backfill_thickness = body.tech_backfill_thickness;
+  let backfill_thickness_unit = body.tech_backfill_thickness_unit;
+  let backfill_length = body.tech_backfill_length;
+  let backfill_length_unit = body.tech_backfill_length_unit;
+  let backfill_height = body.tech_backfill_height;
+  let backfill_height_unit = body.tech_backfill_height_unit;
+  let backfill_price = body.tech_backfill_price;
+  let backfill_price_unit = body.tech_backfill_price_unit;
+  let currancy = body.tech_currancy;
+
+  const param = {};
+
+  // Remove currency symbol
+  const clean_backfill_price_unit = backfill_price_unit?.replace(currancy + " ", "");
+
+  // 🔹 Convert to meter
+  function convert_to_meter(unit, value) {
+    let ans = 0;
+    if (unit == "cm") ans = value / 100;
+    else if (unit == "m") ans = value;
+    else if (unit == "in") ans = value / 39.37;
+    else if (unit == "ft") ans = value / 3.281;
+    else if (unit == "yd") ans = value / 1.094;
+    else if (unit == "dm") ans = value / 10;
+    return ans;
+  }
+
+  // 🔹 Convert to price unit (same as Laravel)
+  function convert_to_price_unit(unit, value) {
+    let ans = 0;
+    if (unit == "dag") ans = value * 100;
+    else if (unit == "lb") ans = value * 2.205;
+    else if (unit == "kg") ans = value;
+    else if (unit == "t") ans = value / 1000;
+    else if (unit == "oz") ans = value * 35.274;
+    else if (unit == "stone") ans = value / 6.35;
+    else if (unit == "Us ton") ans = value / 907.2;
+    else if (unit == "Long ton") ans = value / 1016;
+    // ⚠️ Laravel returns nothing if unit doesn't match — we replicate that:
+    else ans = 0;
+    return ans;
+  }
+
+  if (
+    !isNaN(wall_height) &&
+    !isNaN(block_height) &&
+    !isNaN(cap_length) &&
+    !isNaN(backfill_thickness) &&
+    !isNaN(backfill_height) &&
+    !isNaN(backfill_length) &&
+    !isNaN(backfill_price) &&
+    !isNaN(block_length) &&
+    !isNaN(cap_block_price) &&
+    !isNaN(wall_block_price) &&
+    !isNaN(wall_length)
+  ) {
+    const wall_height_m = convert_to_meter(wall_height_unit, Number(wall_height));
+    const block_height_m = convert_to_meter(block_height_unit, Number(block_height));
+    const wall_length_m = convert_to_meter(wall_length_unit, Number(wall_length));
+    const block_length_m = convert_to_meter(block_length_unit, Number(block_length));
+    const cap_length_m = convert_to_meter(cap_length_unit, Number(cap_length));
+    const backfill_thickness_m = convert_to_meter(backfill_thickness_unit, Number(backfill_thickness));
+    const backfill_length_m = convert_to_meter(backfill_length_unit, Number(backfill_length));
+    const backfill_height_m = convert_to_meter(backfill_height_unit, Number(backfill_height));
+
+    const block_rows = Math.ceil(wall_height_m / block_height_m);
+    const block_columns = Math.ceil(wall_length_m / block_length_m);
+    const blocks = block_columns * (block_rows - 1);
+    const blocks_price = blocks * wall_block_price;
+
+    const caps = wall_length_m / cap_length_m;
+    const caps_price = caps * cap_block_price;
+
+    const backfill_volume = backfill_thickness_m * backfill_length_m * backfill_height_m;
+    const backfill_weight = 1346 * backfill_volume;
+
+    // ✅ Match Laravel: invalid unit should make price 0
+    const backfill_weight_unit = convert_to_price_unit(clean_backfill_price_unit, backfill_weight);
+    const backfill_total_price =
+      backfill_weight_unit > 0 ? backfill_weight_unit * backfill_price : 0;
+
+    const total_cost = backfill_total_price + blocks_price + caps_price;
+
+    param.tech_blocks = Math.ceil(blocks);
+    param.tech_blocks_price = Math.ceil(blocks_price);
+    param.tech_caps = Math.ceil(caps);
+    param.tech_caps_price = Math.ceil(caps_price);
+    param.tech_backfill_volume = Number(backfill_volume.toFixed(3));
+    param.tech_backfill_weight = Math.ceil(backfill_weight);
+    param.tech_backfill_total_price = Math.ceil(backfill_total_price);
+    param.tech_total_cost = Math.ceil(total_cost);
+
+    return param;
+  } else {
+    return { error: "Please! Check Your Input" };
   }
 }
-
-
-
-
 
 
 
