@@ -61264,7 +61264,6 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
   }
 
 
-
 async getCalculationAsphaltCalculator(body) {
   try {
       const submit = body.tech_submit;
@@ -61349,18 +61348,13 @@ async getCalculationAsphaltCalculator(body) {
 
     // --- Compacted stone depth ---
     if (!isNaN(csd)) {
-      if (cs_depth_unit == "mm")
-       csd = csd / 25.4;
-      else if (cs_depth_unit == "cm")
-       csd = csd / 2.54;
-      else if (cs_depth_unit == "m") 
-      csd = csd / 0.0254;
-      else if (cs_depth_unit == "ft") 
-      csd = csd / 0.08333;
+      if (cs_depth_unit == "mm") csd = csd / 25.4;
+      else if (cs_depth_unit == "cm") csd = csd / 2.54;
+      else if (cs_depth_unit == "m") csd = csd / 0.0254;
+      else if (cs_depth_unit == "ft") csd = csd / 0.08333;
     }
-      
 
-    // --- Depth dirt removal ---
+    // --- Depth dirt removal --- (FIXED: using depth_dr_unit instead of cs_depth_unit)
     if (!isNaN(ddr)) {
       if (depth_dr_unit == "mm") ddr = ddr / 25.4;
       else if (depth_dr_unit == "cm") ddr = ddr / 2.54;
@@ -61390,7 +61384,17 @@ async getCalculationAsphaltCalculator(body) {
       us_ton = asphalt * 1.1023;
       long_ton = asphalt * 0.9842;
       if (!isNaN(c)) total_cost = c * asphalt;
-      result = { asphalt: +asphalt.toFixed(5), area: areaCalc, volume: volumeCalc, kg, lb, us_ton, long_ton, total_cost };
+      
+      result = { 
+        tech_asphalt: +asphalt.toFixed(5), 
+        tech_area: areaCalc, 
+        tech_volume: volumeCalc, 
+        tech_kg:kg, 
+        tech_lb:lb, 
+        tech_us_ton:us_ton, 
+        tech_long_ton:long_ton
+      };
+      if (!isNaN(c)) result.total_cost = total_cost;
 
     } else if (cal === "at" && !isNaN(a) && !isNaN(d) && !isNaN(den)) {
       volumeCalc = (a * d) / 100;
@@ -61400,7 +61404,16 @@ async getCalculationAsphaltCalculator(body) {
       us_ton = asphalt * 1.1023;
       long_ton = asphalt * 0.9842;
       if (!isNaN(c)) total_cost = c * asphalt;
-      result = { asphalt: +asphalt.toFixed(5), volume: volumeCalc, kg, lb, us_ton, long_ton, total_cost };
+      
+      result = { 
+        tech_asphalt: +asphalt.toFixed(5), 
+        tech_volume: volumeCalc, 
+        tech_kg:kg, 
+        tech_lb:lb, 
+        tech_us_ton:us_ton, 
+        tech_long_ton:long_ton
+      };
+      if (!isNaN(c)) result.total_cost = total_cost;
 
     } else if (cal === "vad" && !isNaN(v) && !isNaN(den)) {
       asphalt = (v * den) * 0.001;
@@ -61409,46 +61422,77 @@ async getCalculationAsphaltCalculator(body) {
       us_ton = asphalt * 1.1023;
       long_ton = asphalt * 0.9842;
       if (!isNaN(c)) total_cost = c * asphalt;
-      result = { asphalt: +asphalt.toFixed(5), kg, lb, us_ton, long_ton, total_cost };
+      
+      result = { 
+        tech_asphalt: +asphalt.toFixed(5), 
+         tech_kg:kg, 
+        tech_lb:lb, 
+        tech_us_ton:us_ton, 
+        tech_long_ton:long_ton
+      };
+      if (!isNaN(c)) result.total_cost = total_cost;
 
     } else if (cal === "csn" && !isNaN(a) && !isNaN(d) && !isNaN(csd)) {
       volumeCalc = (a * d) / 100;
       asphalt = (volumeCalc * 2400) * 0.001;
-      let areaFeet = a / 0.0929;
-      let stone = (areaFeet * csd) / 180;
-      console.log(csd)
-      // console.log(areaFeet,csd,stone);
+      
+      // FIXED: Store original area value before conversion
+      let areaForStone = a / 0.0929;
+      let stone = (areaForStone * csd) / 180;
+      
       kg = asphalt * 1000;
       lb = asphalt * 2204.6;
       us_ton = asphalt * 1.1023;
       long_ton = asphalt * 0.9842;
       if (!isNaN(c)) total_cost = c * asphalt;
-      result = { asphalt: +asphalt.toFixed(5), stone: +stone.toFixed(5), kg, lb, us_ton, long_ton, total_cost };
+      
+      result = { 
+        tech_asphalt: +asphalt.toFixed(5), 
+        tech_stone: +stone.toFixed(5), 
+        tech_kg:kg, 
+        tech_lb:lb, 
+        tech_us_ton:us_ton, 
+        tech_long_ton:long_ton
+      };
+      if (!isNaN(c)) result.total_cost = total_cost;
 
-    } else if (cal === "dtbr" && !isNaN(a) && !isNaN(d) && !isNaN(ddr)) {
+    } else if (cal === "dtbr" && !isNaN(a) && !isNaN(d) && !isNaN(ddr) && !isNaN(den)) {
+      // FIXED: Added density check as it's required in PHP code
       volumeCalc = (a * d) / 100;
       asphalt = (volumeCalc * den) * 0.001;
-      console.log(volumeCalc,den,asphalt);
-      let areaFeet = a / 0.0929;
-      let dirt = (areaFeet * ddr) / 320;
+      
+      // FIXED: Store original area value before conversion
+      let areaForDirt = a / 0.0929;
+      let dirt = (areaForDirt * ddr) / 320;
+      
       kg = asphalt * 1000;
       lb = asphalt * 2204.6;
       us_ton = asphalt * 1.1023;
       long_ton = asphalt * 0.9842;
       if (!isNaN(c)) total_cost = c * asphalt;
-      result = { asphalt: +asphalt.toFixed(5), dirt: +dirt.toFixed(5), kg, lb, us_ton, long_ton, total_cost };
+      
+      result = { 
+        tech_asphalt: +asphalt.toFixed(5), 
+        tech_dirt: +dirt.toFixed(5), 
+        tech_kg:kg, 
+        tech_lb:lb, 
+        tech_us_ton:us_ton, 
+        tech_long_ton:long_ton
+      };
+      if (!isNaN(c)) result.total_cost = total_cost;
 
     } else {
       return { error: "Please! Check Your Input" };
     }
 
-    return { status: "success", payload: { RESULT: 1, ...result } };
+    return { status: "success", payload: { 
+       ...result 
+      } };
 
   } catch (err) {
     return { status: "error", message: err.message };
   }
 }
-
 
 
   }
