@@ -57071,183 +57071,991 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
       }
     }
 
+      async getCalculationRoofPitchCalculator(body) {
+      try {
+          let submit = body.tech_submit;
+          let x = body.tech_x;
+          let y = body.tech_y;
+          let unit = body.tech_unit;
+          let unit_r = body.tech_unit_r;
+          let unit_a = body.tech_unit_a;
+          let from = body.tech_from;
 
-    async getCalculationRoofPitchCalculator(body) {
-  try {
-    const submit = body.tech_submit;
-    let rise = parseFloat(body.tech_x);
-    let run = parseFloat(body.tech_y);
-    const unit = body.tech_unit;
-    const unit_r = body.tech_unit_r;
-    const unit_a = body.tech_unit_a;
-    const from = body.tech_from;
+          let rise = parseFloat(x);
+          let run = parseFloat(y);
+          
+          // Validate numeric inputs
+          if (isNaN(rise) || isNaN(run)) {
+              return {
+                  error: 'Please! Fill all the Input Fields',
+              };
+          }
 
-    const result = {};
+          let pitch, rafter, angle, xValue, P;
 
-    if (isNaN(rise) || isNaN(run)) {
-      result.error = "Please! Fill all the Input Fields";
-      return result;
+          // Helper function to convert to meters
+          const convertToMeters = (value, unitType) => {
+              switch (unitType) {
+                  case 'ft':
+                      return value / 3.281;
+                  case 'in':
+                      return value / 39.37;
+                  case 'yd':
+                      return value / 1.094;
+                  default:
+                      return value;
+              }
+          };
+
+          // Case 1: Rise and Run provided
+          if (from === '1') {
+              rise = convertToMeters(rise, unit);
+              run = convertToMeters(run, unit_r);
+              
+              P = `${Math.round(rise * 3.281)}/${Math.round(run * 3.281 * 2)}`;
+              pitch = Math.round((rise / run) * 100 * 100) / 100;
+              rafter = Math.round(Math.sqrt(rise * rise + run * run) * 100) / 100;
+              angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
+              xValue = Math.round((pitch / 100) * 12 * 100) / 100;
+          }
+          
+          // Case 2: Rise and Rafter provided
+          else if (from === '2') {
+              rafter = parseFloat(y);
+              rise = convertToMeters(rise, unit);
+              rafter = convertToMeters(rafter, unit_r);
+              
+              run = Math.round(Math.sqrt(rafter * rafter - rise * rise) * 100) / 100;
+              P = `${Math.round(rise * 3.281)}/${Math.round(run * 3.281 * 2)}`;
+              pitch = Math.round((rise / run) * 100 * 100) / 100;
+              angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
+              xValue = Math.round((pitch / 100) * 12 * 100) / 100;
+          }
+          
+          // Case 3: Run and Rafter provided
+          else if (from === '3') {
+              run = parseFloat(x);
+              rafter = parseFloat(y);
+              run = convertToMeters(run, unit);
+              rafter = convertToMeters(rafter, unit_r);
+              
+              rise = Math.round(Math.sqrt(rafter * rafter - run * run) * 100) / 100;
+              P = `${Math.round(rise * 3.281)}/${Math.round(run * 3.281 * 2)}`;
+              pitch = Math.round((rise / run) * 100 * 100) / 100;
+              angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
+              xValue = Math.round((pitch / 100) * 12 * 100) / 100;
+          }
+          
+          // Case 4: Rise and Pitch provided
+          else if (from === '4') {
+              pitch = parseFloat(y);
+              rise = convertToMeters(rise, unit);
+              
+              run = Math.round((rise / pitch) * 100 * 100) / 100;
+              P = `${Math.round(rise * 3.281)}/${Math.round(run * 3.281 * 2)}`;
+              rafter = Math.round(Math.sqrt(rise * rise + run * run) * 100) / 100;
+              angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
+              xValue = Math.round((pitch / 100) * 12 * 100) / 100;
+          }
+          
+          // Case 5: Rise and Angle provided
+          else if (from === '5') {
+              angle = parseFloat(y);
+              rise = convertToMeters(rise, unit);
+              
+              // Convert angle to radians if in degrees
+              if (unit_a === 'deg') {
+                  angle = (angle * Math.PI) / 180;
+              }
+              
+              pitch = Math.round(Math.tan(angle) * 100 * 100) / 100;
+              run = Math.round((rise / pitch) * 100 * 100) / 100;
+              P = `${Math.round(rise * 3.281)}/${Math.round(run * 3.281 * 2)}`;
+              rafter = Math.round(Math.sqrt(rise * rise + run * run) * 100) / 100;
+              xValue = Math.round((pitch / 100) * 12 * 100) / 100;
+              angle = (angle * 180) / Math.PI; // Convert back to degrees
+          }
+          
+          // Case 6: Rise and X (rise per foot) provided
+          else if (from === '6') {
+              xValue = parseFloat(y);
+              rise = convertToMeters(rise, unit);
+              
+              pitch = Math.round((xValue * 100) / 12 * 100) / 100;
+              run = Math.round((rise / pitch) * 100 * 100) / 100;
+              P = `${Math.round(rise * 3.281)}/${Math.round(run * 3.281 * 2)}`;
+              rafter = Math.round(Math.sqrt(rise * rise + run * run) * 100) / 100;
+              angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
+          }
+          
+          // Case 7: Run and Pitch provided
+          else if (from === '7') {
+              run = parseFloat(x);
+              pitch = parseFloat(y);
+              run = convertToMeters(run, unit);
+              
+              rise = Math.round((run * pitch) / 100 * 100) / 100;
+              P = `${Math.round(rise * 3.281)}/${Math.round(run * 3.281 * 2)}`;
+              rafter = Math.round(Math.sqrt(rise * rise + run * run) * 100) / 100;
+              angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
+              xValue = Math.round((pitch / 100) * 12 * 100) / 100;
+          }
+          
+          // Case 8: Run and Angle provided
+          else if (from === '8') {
+              run = parseFloat(x);
+              angle = parseFloat(y);
+              run = convertToMeters(run, unit);
+              
+              // Convert angle to radians if in degrees
+              if (unit_a === 'deg') {
+                  angle = (angle * Math.PI) / 180;
+              }
+              
+              pitch = Math.round(Math.tan(angle) * 100 * 100) / 100;
+              rise = Math.round((run * pitch) / 100 * 100) / 100;
+              P = `${Math.round(rise * 3.281)}/${Math.round(run * 3.281 * 2)}`;
+              rafter = Math.round(Math.sqrt(rise * rise + run * run) * 100) / 100;
+              xValue = Math.round((pitch / 100) * 12 * 100) / 100;
+              angle = (angle * 180) / Math.PI; // Convert back to degrees
+          }
+          
+          // Case 9: Run and X (rise per foot) provided
+          else if (from === '9') {
+              run = parseFloat(x);
+              xValue = parseFloat(y);
+              run = convertToMeters(run, unit);
+              
+              pitch = Math.round((xValue * 100) / 12 * 100) / 100;
+              rise = Math.round((run * pitch) / 100 * 100) / 100;
+              P = `${Math.round(rise * 3.281)}/${Math.round(run * 3.281 * 2)}`;
+              rafter = Math.round(Math.sqrt(rise * rise + run * run) * 100) / 100;
+              angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
+          }
+          
+          // Case 10: Rafter and Pitch provided
+          else if (from === '10') {
+              rafter = parseFloat(x);
+              pitch = parseFloat(y);
+              rafter = convertToMeters(rafter, unit);
+              
+              // Note: Original code had error - calculating rise from run which wasn't defined
+              // Correcting: rafter^2 = rise^2 + run^2 and pitch = rise/run
+              // So: rise = rafter * sin(atan(pitch/100))
+              const pitchAngle = Math.atan(pitch / 100);
+              rise = Math.round(rafter * Math.sin(pitchAngle) * 100) / 100;
+              run = Math.round(rafter * Math.cos(pitchAngle) * 100) / 100;
+              
+              P = `${Math.round(rise * 3.281)}/${Math.round(run * 3.281 * 2)}`;
+              angle = Math.round(pitchAngle * (180 / Math.PI) * 100) / 100;
+              xValue = Math.round((pitch / 100) * 12 * 100) / 100;
+          }
+          
+          // Return calculated values
+          return {
+              tech_pitch: pitch,
+              tech_rise: Math.round(rise * 100) / 100,
+              tech_run: Math.round(run * 100) / 100,
+              tech_rafter: rafter,
+              tech_angle: angle,
+              tech_x: xValue,
+              tech_P: P,
+          };
+          
+      } catch (error) {
+          console.error('Calculation Error:', error);
+          return {
+              error: 'An error occurred during calculation',
+          };
+      }
+  }
+
+
+
+  async  getCalculationCubicFeetCalculator(body) {
+    try {
+     let length = body.tech_length;
+      let width = body.tech_width;
+      let height = body.tech_height;
+
+      let length_unit = body.tech_length_unit;
+      let width_unit = body.tech_width_unit;
+      let height_unit = body.tech_height_unit;
+
+      let weight = body.tech_weight;
+      let weight_unit = body.tech_weight_unit;
+
+      let quantity = body.tech_quantity;
+      let price = body.tech_price;
+      let price_unit = body.tech_price_unit;
+
+      let room_unit = body.tech_room_unit;
+
+      let area = body.tech_area;
+      let area_unit = body.tech_area_unit;
+
+
+      const param = {};
+
+      // ========== ROOM UNIT 1 ========== //
+      if (room_unit === "1") {
+        if (isNumeric(length) && isNumeric(width) && isNumeric(height)) {
+          // Helper conversion functions
+          function calculate(a, b) {
+            switch (b) {
+              case "ft": return a * 1;
+              case "in": return a * 0.0833333;
+              case "yd": return a * 3;
+              case "cm": return a * 0.0328084;
+              case "m": return a * 3.28084;
+              case "mm": return a * 0.003281;
+              case "km": return a * 3281;
+              case "mi": return a * 5280;
+              case "nmi": return a * 6076;
+              default: return a;
+            }
+          }
+
+          function calculate2(a, b) {
+            return calculate(a, b);
+          }
+
+          function converting(a, b) {
+            switch (b) {
+              case "cm": return a * 1;
+              case "ft": return a * 30.48;
+              case "m": return a * 100;
+              case "in": return a * 2.54;
+              case "yd": return a * 91.44;
+              case "km": return a * 100000;
+              case "mm": return a * 0.1;
+              case "mi": return a * 160934;
+              case "nmi": return a * 185200;
+              default: return a;
+            }
+          }
+
+          const l = calculate(length, length_unit);
+          const w = calculate(width, width_unit);
+          const h = calculate(height, height_unit);
+          let volume = l * w * h;
+
+          const calculate_meter_cube = volume / 35.3147;
+          const calculate_cubic_yards = volume * 0.03704;
+          const calculate_cubic_inches = volume / 0.0005787;
+          const calculate_cubic_centimeters = volume * 28317;
+
+          const v1 = converting(length, length_unit);
+          const v2 = converting(width, width_unit);
+          const v3 = converting(height, height_unit);
+          const volumetric_weight = (v1 * v2 * v3) / 5000;
+          const volumetric_weight2 = volumetric_weight * 2.205;
+
+          const v4 = calculate2(length, length_unit);
+          const v5 = calculate2(width, width_unit);
+          const v6 = calculate2(height, height_unit);
+
+          const twenty_ft = 1165 / (v4 * v5 * v6);
+          const fourty_ft = 2350 / (v4 * v5 * v6);
+          const fourty_high_cube = 2694 / (v4 * v5 * v6);
+
+          // Quantity
+          if (quantity && quantity != 0) {
+            volume = volume * quantity;
+          }
+
+          // Weight
+          if (weight && weight != 0) {
+            if (weight_unit == "lbs") {
+              param.tech_weight_unit = weight_unit;
+              const weight_convert = weight * 0.454;
+              param.tech_weight = weight;
+              param.tech_weight_convert = weight_convert;
+            } else if (weight_unit == "kg") {
+              param.tech_weight_unit = weight_unit;
+              const weight_convert = weight * 2.205;
+              param.tech_weight = weight;
+              param.tech_weight_convert = weight_convert;
+            }
+          }
+
+          // Price
+          if (price && price != 0 && weight != "") {
+            switch (price_unit) {
+              case "ft³": price = price * 1; break;
+              case "yd³": price = price * 0.04; break;
+              case "m³": price = price * 0.03; break;
+              case "cm³": price = price * 28316.85; break;
+              case "in³": price = price * 1.728; break;
+            }
+            volume = volume * price;
+            param.tech_estimated_price = price;
+          }
+
+          param.tech_volume = volume;
+          param.tech_cubic_meter = calculate_meter_cube;
+          param.tech_cubic_yards = calculate_cubic_yards;
+          param.tech_cubic_inches = calculate_cubic_inches;
+          param.tech_cubic_centimeters = calculate_cubic_centimeters;
+          param.tech_weight = weight;
+          param.tech_volumetric_weight = volumetric_weight;
+          param.tech_volumetric_weight2 = volumetric_weight2;
+          param.tech_twenty_ft = twenty_ft;
+          param.tech_fourty_ft = fourty_ft;
+          param.tech_fourty_high_cube = fourty_high_cube;
+          param.tech_l = l;
+          param.tech_w = w;
+          param.tech_h = h;
+          return param;
+        } else {
+          return { error: "Please! Check Your Input" };
+        }
+      }
+
+      // ========== ROOM UNIT 2 ========== //
+      else if (room_unit === "2") {
+        if (isNumeric(area) && isNumeric(height)) {
+          let convert13;
+          switch (area_unit) {
+            case "ft": convert13 = area * 1; break;
+            case "in": convert13 = area * 0.00694444; break;
+            case "yd": convert13 = area * 9; break;
+            case "cm": convert13 = area * 0.00107639; break;
+            case "m": convert13 = area * 10.7639; break;
+            default: convert13 = area;
+          }
+
+          function calculate_three(a, b) {
+            switch (b) {
+              case "ft": return a * 1;
+              case "in": return a * 0.0833333;
+              case "yd": return a * 3;
+              case "cm": return a * 0.0328084;
+              case "m": return a * 3.28084;
+              case "mm": return a * 0.003281;
+              case "km": return a * 3281;
+              case "mi": return a * 5280;
+              case "nmi": return a * 6076.12;
+              default: return a;
+            }
+          }
+
+          const h1 = calculate_three(height, height_unit);
+          let volume = convert13 * h1;
+          let estimated_price = 0;
+
+          if (price && price != 0) {
+            switch (price_unit) {
+              case "ft³": price = price * 1; break;
+              case "yd³": price = price * 0.04; break;
+              case "m³": price = price * 0.03; break;
+              case "cm³": price = price * 28316.85; break;
+              case "in³": price = price * 1728; break;
+            }
+            estimated_price = volume * price;
+          }
+
+          if (quantity && quantity != 0) {
+            volume = volume * quantity;
+          }
+
+          param.tech_volume = volume;
+          const calculate_meter_cube = volume / 35.3147;
+          const calculate_cubic_yards = volume * 27;
+          const calculate_cubic_inches = volume / 0.0005787;
+          const calculate_cubic_centimeters = volume * 28317;
+
+          param.tech_cubic_meter = calculate_meter_cube;
+          param.tech_cubic_yards = calculate_cubic_yards;
+          param.tech_cubic_inches = calculate_cubic_inches;
+          param.tech_cubic_centimeters = calculate_cubic_centimeters;
+          param.tech_estimated_price = estimated_price;
+          param.tech_h1 = h1;
+          param.tech_convert13 = convert13;
+
+          return param;
+        } else {
+          return { error: "Please! Check Your Input" };
+        }
+      }
+
+      // Default case
+      return { error: "Invalid room_unit" };
+
+    } catch (error) {
+      console.error(error);
+      return { error: "Server error occurred" };
+    }
+    // Helper: check numeric
+    function isNumeric(n) {
+      return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+  }
+
+
+
+    async getCalculationFeetAndInchesCalculator(body) {
+    // Extract inputs (Laravel-style converted to JS)
+    let feet1 = body.tech_feet1;
+    let inches1 = body.tech_inches1;
+    let operations = body.tech_operations;
+    let feet2 = body.tech_feet2;
+    let inches2 = body.tech_inches2;
+
+    const ft_unit = "ft";
+    const in_unit = "in";
+    const baran = 12;
+
+    let result = {};
+
+    // Helper: convert "2 1/2" or "3/4" etc to decimal
+    function calculation(inches) {
+      let intPart = 0;
+      let fracPart = 0;
+      const parts = inches.toString().trim().split(" ");
+      if (parts.length >= 1) {
+        intPart = parseFloat(parts[0]);
+      }
+      if (parts.length >= 2) {
+        const [top, bottom] = parts[1].split("/");
+        fracPart = parseFloat(top) / parseFloat(bottom);
+      }
+      return intPart + fracPart;
     }
 
-    const toMeters = (value, unitType) => {
-      if (unitType === "ft") return value / 3.281;
-      if (unitType === "in") return value / 39.37;
-      if (unitType === "yd") return value / 1.094;
-      return value; // default: meters
-    };
-
-    const toFeet = (value) => value * 3.281;
-
-    // --- Helper functions ---
-    const deg2rad = (deg) => (deg * Math.PI) / 180;
-    const rad2deg = (rad) => (rad * 180) / Math.PI;
-
-    let P, pitch, rafter, angle, x;
-
-    // ---------- CASES ----------
-    if (from == "1") {
-      rise = toMeters(rise, unit);
-      run = toMeters(run, unit_r);
-
-      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
-      pitch = Math.round((rise / run) * 100 * 100) / 100;
-      rafter = Math.round(Math.sqrt(rise ** 2 + run ** 2) * 100) / 100;
-      angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
-      x = Math.round(((pitch / 100) * 12) * 100) / 100;
+    // Helper: convert "1/2" to decimal
+    function convertToDecimal(inches) {
+      const [num, den] = inches.split("/");
+      return Math.round((parseFloat(num) / parseFloat(den)) * 1e6) / 1e6;
     }
 
-    else if (from == "2") {
-      let rafterInput = parseFloat(body.y);
-      rise = toMeters(rise, unit);
-      let rafterM = toMeters(rafterInput, unit_r);
+    // Helper: convert float back to fraction string
+    function float2rat(n, tolerance = 1e-6) {
+      let h1 = 1, h2 = 0, k1 = 0, k2 = 1;
+      let b = 1 / n;
+      do {
+        b = 1 / b;
+        let a = Math.floor(b);
+        let aux = h1; h1 = a * h1 + h2; h2 = aux;
+        aux = k1; k1 = a * k1 + k2; k2 = aux;
+        b = b - a;
+      } while (Math.abs(n - h1 / k1) > n * tolerance);
 
-      run = Math.sqrt(rafterM ** 2 - rise ** 2);
-      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
-      pitch = Math.round((rise / run) * 100 * 100) / 100;
-      angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
-      x = Math.round(((pitch / 100) * 12) * 100) / 100;
-      rafter = Math.round(rafterM * 100) / 100;
+      if (k1 >= 2) {
+        const div = h1 / k1;
+        const intPart = Math.floor(div);
+        const mod = h1 % k1;
+        if (intPart >= 1) {
+          return `${intPart} ${mod}/${k1}`;
+        } else {
+          return `${h1}/${k1}`;
+        }
+      } else if (k1 <= 1) {
+        return `${h1}`;
+      }
     }
 
-    else if (from == "3") {
-      run = parseFloat(body.x);
-      let rafterInput = parseFloat(body.y);
-      run = toMeters(run, unit);
-      let rafterM = toMeters(rafterInput, unit_r);
+    // --- Validation check ---
+    if (
+      !isNaN(feet1) &&
+      !isNaN(feet2) &&
+      inches1 !== "" &&
+      inches2 !== ""
+    ) {
+      // Convert fractional or mixed inputs
+      const fractionPattern = /^(?:\d+\/\d+)$/;
+      const mixedPattern = /^(\d+(?: \d+\/\d+)?)$/;
 
-      rise = Math.sqrt(rafterM ** 2 - run ** 2);
-      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
-      pitch = Math.round((rise / run) * 100 * 100) / 100;
-      angle = Math.round(Math.atan(pitch / 100) * (180 / Math.PI) * 100) / 100;
-      x = Math.round(((pitch / 100) * 12) * 100) / 100;
-      rafter = Math.round(rafterM * 100) / 100;
+      if (fractionPattern.test(inches1) && fractionPattern.test(inches2)) {
+        inches1 = convertToDecimal(inches1);
+        inches2 = convertToDecimal(inches2);
+      } else if (mixedPattern.test(inches1) && mixedPattern.test(inches2)) {
+        inches1 = calculation(inches1);
+        inches2 = calculation(inches2);
+      } else if (mixedPattern.test(inches1) && fractionPattern.test(inches2)) {
+        inches1 = calculation(inches1);
+        inches2 = convertToDecimal(inches2);
+      } else if (fractionPattern.test(inches1) && mixedPattern.test(inches2)) {
+        inches1 = convertToDecimal(inches1);
+        inches2 = calculation(inches2);
+      }
+
+      let ft, in_, ft2, in2, ft_div;
+
+      // --- Operation 1: Addition ---
+      if (operations === "1") {
+        in_ = parseFloat(inches1) + parseFloat(inches2);
+        ft = parseFloat(feet1) + parseFloat(feet2);
+        in_ = in_ / baran;
+        if (!in_.toString().includes(".")) {
+          ft = ft + in_;
+        } else {
+          const [f, i] = in_.toString().split(".");
+          const b = parseFloat("0." + i);
+          ft = ft + parseFloat(f);
+          in_ = b * baran;
+          in_ = float2rat(in_);
+        }
+      }
+
+      // --- Operation 2: Subtraction ---
+      else if (operations === "2") {
+        if (feet1 >= feet2 && inches1 >= inches2) {
+          in_ = inches1 - inches2;
+          ft = feet1 - feet2;
+          in_ = in_ / baran;
+          if (!in_.toString().includes(".")) {
+            ft = ft + in_;
+          } else {
+            const [f, i] = in_.toString().split(".");
+            const b = parseFloat("0." + i);
+            ft = ft + parseFloat(f);
+            in_ = b * baran;
+            in_ = float2rat(in_);
+          }
+        } else if (feet1 <= feet2 && inches1 <= inches2) {
+          in_ = inches1 - inches2;
+          ft = feet1 - feet2;
+          in_ = in_ / baran;
+          if (!in_.toString().includes(".")) {
+            ft = ft + in_;
+          } else {
+            const [f, i] = in_.toString().split(".");
+            const b = parseFloat("0." + i);
+            ft = ft + parseFloat(f);
+            in_ = b * baran;
+            in_ = float2rat(in_);
+          }
+        } else if (feet1 >= feet2 && inches1 <= inches2) {
+          while (inches1 < inches2) {
+            inches2 -= baran;
+            feet2 += 1;
+          }
+          in_ = inches1 - inches2;
+          ft = feet1 - feet2;
+          in_ = in_ / baran;
+          if (!in_.toString().includes(".")) {
+            ft = ft + in_;
+          } else {
+            const [f, i] = in_.toString().split(".");
+            const b = parseFloat("0." + i);
+            ft = ft + parseFloat(f);
+            in_ = b * baran;
+            in_ = float2rat(in_);
+          }
+        } else if (feet1 <= feet2 && inches1 >= inches2) {
+          while (inches1 > inches2) {
+            inches1 -= baran;
+            feet1 += 1;
+          }
+          while (inches1 < inches2) {
+            inches2 -= baran;
+            feet2 += 1;
+          }
+          in_ = inches1 - inches2;
+          ft = feet1 - feet2;
+          in_ = in_ / baran;
+          if (!in_.toString().includes(".")) {
+            ft = ft + in_;
+          } else {
+            const [f, i] = in_.toString().split(".");
+            const b = parseFloat("0." + i);
+            ft = ft + parseFloat(f);
+            in_ = b * baran;
+            in_ = float2rat(in_);
+          }
+        }
+      }
+
+      // --- Operation 3: Multiplication ---
+      else if (operations === "3") {
+        const ft1 = feet1 * baran;
+        const ft2_ = feet2 * baran;
+        const fot1 = ft1 + inches1;
+        const fot2 = ft2_ + inches2;
+        ft2 = fot1 * fot2;
+        const in1 = inches1 / baran;
+        const in2_ = inches2 / baran;
+        const inc1 = in1 + Number(feet1);
+        const inc2 = in2_ + Number(feet2);
+        const c = inc1 * inc2;
+        in2 = Number(c).toFixed(4);
+      }
+
+      // --- Operation 4: Division ---
+      else if (operations === "4") {
+        const ft1 = feet1 * baran;
+        const ft21 = feet2 * baran;
+        const fot1 = ft1 + inches1;
+        const fot2 = ft21 + inches2;
+        const a = fot1 / fot2;
+        ft_div = Number(a).toFixed(4);
+      }
+
+      // Prepare result
+      result.tech_ft_unit = ft_unit;
+      result.tech_in_unit = in_unit;
+      if (ft !== undefined) result.tech_ft = ft;
+      if (in_ !== undefined) result.tech_in = in_;
+      if (ft2 !== undefined) result.tech_ft2 = ft2;
+      if (in2 !== undefined) result.tech_in2 = in2;
+      if (ft_div !== undefined) result.tech_ft_div = ft_div;
+    } else {
+      result.error = "Please! Check Your Inputs";
     }
-
-    else if (from == "4") {
-      let pitchInput = parseFloat(body.y);
-      rise = toMeters(rise, unit);
-      run = (rise / pitchInput) * 100;
-
-      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
-      rafter = Math.sqrt(rise ** 2 + run ** 2);
-      angle = Math.atan(pitchInput / 100) * (180 / Math.PI);
-      x = (pitchInput / 100) * 12;
-
-      pitch = pitchInput;
-    }
-
-    else if (from == "5") {
-      let angleInput = parseFloat(body.y);
-      rise = toMeters(rise, unit);
-
-      if (unit_a === "deg") angleInput = deg2rad(angleInput);
-
-      pitch = Math.tan(angleInput) * 100;
-      run = (rise / pitch) * 100;
-      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
-      rafter = Math.sqrt(rise ** 2 + run ** 2);
-      x = (pitch / 100) * 12;
-      angle = rad2deg(angleInput);
-    }
-
-    else if (from == "6") {
-      let xInput = parseFloat(body.y);
-      rise = toMeters(rise, unit);
-      pitch = (xInput * 100) / 12;
-      run = (rise / pitch) * 100;
-      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
-      rafter = Math.sqrt(rise ** 2 + run ** 2);
-      angle = Math.atan(pitch / 100) * (180 / Math.PI);
-      x = xInput;
-    }
-
-    else if (from == "7") {
-      run = parseFloat(body.x);
-      let pitchInput = parseFloat(body.y);
-      run = toMeters(run, unit);
-      rise = (run * pitchInput) / 100;
-      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
-      rafter = Math.sqrt(rise ** 2 + run ** 2);
-      angle = Math.atan(pitchInput / 100) * (180 / Math.PI);
-      x = (pitchInput / 100) * 12;
-      pitch = pitchInput;
-    }
-
-    else if (from == "8") {
-      run = parseFloat(body.x);
-      let angleInput = parseFloat(body.y);
-      run = toMeters(run, unit);
-
-      if (unit_a === "deg") angleInput = deg2rad(angleInput);
-
-      pitch = Math.tan(angleInput) * 100;
-      rise = (run * pitch) / 100;
-      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
-      rafter = Math.sqrt(rise ** 2 + run ** 2);
-      x = (pitch / 100) * 12;
-      angle = rad2deg(angleInput);
-    }
-
-    else if (from == "9") {
-      run = parseFloat(body.x);
-      let xInput = parseFloat(body.y);
-      run = toMeters(run, unit);
-      pitch = (xInput * 100) / 12;
-      rise = (run * pitch) / 100;
-      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
-      rafter = Math.sqrt(rise ** 2 + run ** 2);
-      angle = Math.atan(pitch / 100) * (180 / Math.PI);
-      x = xInput;
-    }
-
-    else if (from == "10") {
-      let rafterInput = parseFloat(body.x);
-      let pitchInput = parseFloat(body.y);
-      let rafterM = toMeters(rafterInput, unit);
-      // Note: Laravel version had a bug using undefined `run` here
-      let rise = (rafterM * pitchInput) / 100;
-      run = Math.sqrt(rafterM ** 2 - rise ** 2);
-      P = `${Math.round(toFeet(rise))}/${Math.round(toFeet(run) * 2)}`;
-      rafter = rafterM;
-      angle = Math.atan(pitchInput / 100) * (180 / Math.PI);
-      x = (pitchInput / 100) * 12;
-      pitch = pitchInput;
-    }
-
-    result.tech_pitch = Number(pitch.toFixed(2));
-    result.tech_rise = Number(rise.toFixed(2));
-    result.tech_run = Number(run.toFixed(2));
-    result.tech_rafter = Number(rafter.toFixed(2));
-    result.tech_angle = Number(angle.toFixed(2));
-    result.tech_x = Number(x.toFixed(2));
-    result.tech_P = P;
 
     return result;
-  } catch (error) {
-    console.error(error);
-    return { error: "An unexpected error occurred." };
+  }
+
+
+  async getCalculationAcreageCalculator(body) {
+    try {
+      let to_cal = Number(body.tech_to_cal);
+      let length = Number(body.tech_length);
+      let length_unit = body.tech_length_unit;
+      let width = Number(body.tech_width);
+      let width_unit = body.tech_width_unit;
+      let area = Number(body.tech_area);
+      let area_unit = body.tech_area_unit;
+      let price = Number(body.tech_price);
+      let price_unit = body.tech_price_unit;
+      let currancy = body.tech_currancy;
+
+      let result = {};
+
+      // Calculate Area (when length and width are given)
+      if (to_cal === 1) {
+        if (!isNaN(length) && !isNaN(width)) {
+          // Convert width to meters
+          if (width_unit === 'cm') {
+            width = width * 0.01;
+          } else if (width_unit === 'in') {
+            width = width * 0.0254;
+          } else if (width_unit === 'ft') {
+            width = width * 0.3048;
+          } else if (width_unit === 'yd') {
+            width = width * 0.9144;
+          } else if (width_unit === 'mm') {
+            width = width * 0.001;
+          }
+
+          area = Number(width) * Number(length);
+          let perimeter = Number((Number(width) * 2) + (Number(length) * 2));
+          console.log(area,width,length);
+          // Calculate price if provided
+          if (!isNaN(price) && price > 0) {
+            let ans = 0;
+            if (price_unit === '/mm²') {
+              ans = area * 1000000;
+            } else if (price_unit === '/cm²') {
+              ans = area * 10000;
+            } else if (price_unit === '/m²') {
+              ans = area * 1;
+            } else if (price_unit === '/in²') {
+              ans = area * 1550.003;
+            } else if (price_unit === '/ft²') {
+              ans = area * 10.7639;
+            } else if (price_unit === '/yd²') {
+              ans = area * 1.19599;
+            } else if (price_unit === '/ac') {
+              ans = area * 0.0002471054;
+            } else if (price_unit === '/ha') {
+              ans = area * 0.0001;
+            }
+            let final_price = Number(ans) * Number(price);
+            result.tech_final_price = final_price;
+          }
+
+          result.tech_area = area;
+          result.tech_perimeter = perimeter;
+          return result;
+        } else {
+          result.error = 'Please! Check Your Inputs';
+          return result;
+        }
+      }
+      
+      // Calculate Length (when width and area are given)
+      else if (to_cal === 2) {
+        if (!isNaN(width) && !isNaN(area)) {
+          // Convert width to meters
+          if (width_unit === 'cm') {
+            width = width * 0.01;
+          } else if (width_unit === 'in') {
+            width = width * 0.0254;
+          } else if (width_unit === 'ft') {
+            width = width * 0.3048;
+          } else if (width_unit === 'yd') {
+            width = width * 0.9144;
+          } else if (width_unit === 'mm') {
+            width = width * 0.001;
+          }
+
+          // Convert area to square meters
+          if (area_unit === 'mm²') {
+            area = area * 0.000001;
+          } else if (area_unit === 'cm²') {
+            area = area * 0.0001;
+          } else if (area_unit === 'm²') {
+            area = area * 1;
+          } else if (area_unit === 'in²') {
+            area = area * 0.00064516;
+          } else if (area_unit === 'ft²') {
+            area = area * 0.092903;
+          } else if (area_unit === 'yd²') {
+            area = area * 0.836127;
+          } else if (area_unit === 'ac') {
+            area = area * 4046.86;
+          } else if (area_unit === 'ha') {
+            area = area * 10000;
+          }
+
+          length = Number(area) / Number(width);
+          let perimeter = Number((Number(width) * 2) + (Number(length) * 2));
+
+          // Calculate price if provided
+          if (!isNaN(price) && price > 0) {
+            let ans = 0;
+            if (price_unit === '/mm²') {
+              ans = area * 1000000;
+            } else if (price_unit === '/cm²') {
+              ans = area * 10000;
+            } else if (price_unit === '/m²') {
+              ans = area * 1;
+            } else if (price_unit === '/in²') {
+              ans = area * 1550.003;
+            } else if (price_unit === '/ft²') {
+              ans = area * 10.7639;
+            } else if (price_unit === '/yd²') {
+              ans = area * 1.19599;
+            } else if (price_unit === '/ac') {
+              ans = area * 0.0002471054;
+            } else if (price_unit === '/ha') {
+              ans = area * 0.0001;
+            }
+            let final_price = Number(ans) * Number(price);
+            result.tech_final_price = final_price;
+          }
+
+          result.tech_length = length;
+          result.tech_perimeter = perimeter;
+          return result;
+        } else {
+          result.error = 'Please! Check Your Inputs';
+          return result;
+        }
+      }
+      
+      // Calculate Width (when length and area are given)
+      else if (to_cal === 3) {
+        if (!isNaN(length) && !isNaN(area)) {
+          // Convert length to meters
+          if (length_unit === 'cm') {
+            length = length * 0.01;
+          } else if (length_unit === 'in') {
+            length = length * 0.0254;
+          } else if (length_unit === 'ft') {
+            length = length * 0.3048;
+          } else if (length_unit === 'yd') {
+            length = length * 0.9144;
+          } else if (length_unit === 'mm') {
+            length = length * 0.001;
+          }
+
+          // Convert area to square meters
+          if (area_unit === 'mm²') {
+            area = area * 0.000001;
+          } else if (area_unit === 'cm²') {
+            area = area * 0.0001;
+          } else if (area_unit === 'm²') {
+            area = area * 1;
+          } else if (area_unit === 'in²') {
+            area = area * 0.00064516;
+          } else if (area_unit === 'ft²') {
+            area = area * 0.092903;
+          } else if (area_unit === 'yd²') {
+            area = area * 0.836127;
+          } else if (area_unit === 'ac') {
+            area = area * 4046.86;
+          } else if (area_unit === 'ha') {
+            area = area * 10000;
+          }
+
+          width = Number(area) / Number(length);
+          let perimeter = Number((Number(width) * 2) + (Number(length) * 2));
+
+          // Calculate price if provided
+          if (!isNaN(price) && price > 0) {
+            let ans = 0;
+            if (price_unit === '/mm²') {
+              ans = area * 1000000;
+            } else if (price_unit === '/cm²') {
+              ans = area * 10000;
+            } else if (price_unit === '/m²') {
+              ans = area * 1;
+            } else if (price_unit === '/in²') {
+              ans = area * 1550.003;
+            } else if (price_unit === '/ft²') {
+              ans = area * 10.7639;
+            } else if (price_unit === '/yd²') {
+              ans = area * 1.19599;
+            } else if (price_unit === '/ac') {
+              ans = area * 0.0002471054;
+            } else if (price_unit === '/ha') {
+              ans = area * 0.0001;
+            }
+            let final_price = Number(ans) * Number(price);
+            result.tech_final_price = final_price;
+          }
+
+          result.tech_width = width;
+          result.tech_perimeter = perimeter;
+          return result;
+        } else {
+          result.error = 'Please! Check Your Inputs';
+          return result;
+        }
+      }
+
+    } catch (error) {
+      console.error('Error in getCalculationAcreageCalculator:', error);
+      return { error: 'An error occurred during calculation' };
+    }
+  }
+
+
+
+  async getCalculationRebarCalculator(body) {
+  try {
+    // Extract all input values from body
+    let {
+      tech_first,
+      tech_units1,
+      tech_second,
+      tech_units2,
+      tech_third,
+      tech_units3,
+      tech_four,
+      tech_units4,
+      tech_five,
+      tech_units5,
+      tech_six,
+      tech_units6,
+      tech_currancy
+    } = body;
+
+    let param = {};
+    let convert,convert2,convert3;
+    // 🧩 Remove currency prefix if present
+    if (tech_units5 && tech_currancy) {
+      tech_units5 = tech_units5.replace(tech_currancy + " ", "");
+    }
+
+    // ✅ Helper Functions (Converted from PHP)
+
+    function cm_unit(a,b){
+			if(a == "cm"){
+				convert = b * 1;
+			}else if (a == "m") {
+				convert = b * 100;
+			}else if (a == "km") {
+				convert = b * 100000;
+			}else if (a == "in") {
+				convert = b *  2.54;
+			}else if (a == "ft") {
+				convert = b * 30.48;
+			}else if (a == "yd") {
+				convert = b * 91.44;
+			}else if (a == "mi") {
+				convert = b * 30.48;
+			}
+			return convert;
+		}
+		function cm_unit2(a,b){
+			if(a == "mm"){
+				convert2 = b / 10;
+			}else if (a == "cm") {
+				convert2 = b * 1;
+			}else if (a == "m") {
+				convert2 = b * 100;
+			}else if (a == "in") {
+				convert2 = b *  2.54;
+			}else if (a == "ft") {
+				convert2 = b * 30.48;
+			}else if (a == "yd") {
+				convert2 = b * 91.44;
+			}
+			return convert2;
+		}
+		function cm_unit3(a,b){
+			if(a == "cm"){
+				convert3 = b * 1;
+			}else if (a == "m") {
+				convert3 = b * 100;
+			}else if (a == "in") {
+				convert3 = b * 2.54;
+			}else if (a == "ft") {
+				convert3 = b *  30.48;
+			}else if (a == "yd") {
+				convert3 = b * 91.44;
+			}
+			return convert3;
+		}
+
+    
+
+    // ✅ Validate numeric inputs
+    if (
+      !isNaN(tech_first) &&
+      !isNaN(tech_second) &&
+      !isNaN(tech_third) &&
+      !isNaN(tech_four) &&
+      !isNaN(tech_five) &&
+      !isNaN(tech_six)
+    ) {
+      // Convert all to cm
+      let first = cm_unit(tech_units1, Number(tech_first));
+      let second = cm_unit(tech_units2, Number(tech_second));
+      let third = cm_unit2(tech_units3, Number(tech_third));
+      let four = cm_unit2(tech_units4, Number(tech_four));
+      let five = cm_unit3(tech_units5, Number(tech_five));
+      let six = cm_unit3(tech_units6, Number(tech_six));
+
+      // Main calculations
+      const mul1 = 2 * four;
+      const grid_len = first - mul1;
+      const grid_wid = second - mul1;
+
+      const rebar_col = grid_len / third;
+      const rebar_row = grid_wid / third;
+      const part1 = rebar_col * grid_wid;
+      const part2 = rebar_row * grid_len;
+      const trl = part1 + part2;
+
+      const price_s = five * six;
+      const rebar_pie = trl / six;
+      const cost = Math.round(rebar_pie) * price_s;
+
+      // ✅ Return structured result
+      param.grid_len = grid_len;
+      param.grid_wid = grid_wid;
+      param.trl = trl;
+      param.rebar_pie = rebar_pie;
+      param.cost = cost;
+      param.price_s = price_s;
+      param.RESULT = 1;
+
+      return param;
+    } else {
+      return { error: "Please check your input" };
+    }
+  } catch (err) {
+    return { error: err.message || "Something went wrong!" };
   }
 }
+
+
+
 
 
 
