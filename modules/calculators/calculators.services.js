@@ -2,7 +2,6 @@ const { Op, col } = require("sequelize");
 const db = require("../../models");
 const HttpCodes = require("http-codes");
 const { ApiError } = require("../../middlewares/ApiError");
-
 const dayjs = require("dayjs");
 const isoWeek = require("dayjs/plugin/isoWeek");
 const dayOfYear = require("dayjs/plugin/dayOfYear");
@@ -58724,9 +58723,2731 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
   }
 }
 
+    async getCalculationBrickCalculator(body) {
+    const param = {};
+
+    // Extract inputs
+    let wall_type = body.tech_wall_type?.trim();
+    let wall_length = Number(body.tech_wall_length);
+    let wall_length_unit = body.tech_wall_length_unit?.trim();
+    let wall_width = Number(body.tech_wall_width);
+    let wall_width_unit = body.tech_wall_width_unit?.trim();
+    let wall_height = Number(body.tech_wall_height);
+    let wall_height_unit = body.tech_wall_height_unit?.trim();
+
+    // Brick Fields
+    let brick_type = body.tech_brick_type?.trim();
+    let brick_wastage = Number(body.tech_brick_wastage);
+    let mortar_joint_thickness = Number(body.tech_mortar_joint_thickness);
+    let mortar_joint_thickness_unit = body.tech_mortar_joint_thickness_unit?.trim();
+    let brick_length = Number(body.tech_brick_length);
+    let brick_length_unit = body.tech_brick_length_unit?.trim();
+    let brick_width = Number(body.tech_brick_width);
+    let brick_width_unit = body.tech_brick_width_unit?.trim();
+    let brick_height = Number(body.tech_brick_height);
+    let brick_height_unit = body.tech_brick_height_unit?.trim();
+
+    // Mortar Fields
+    let with_motar = body.tech_with_motar?.trim();
+    let wet_volume = Number(body.tech_wet_volume);
+    let wet_volume_unit = body.tech_wet_volume_unit?.trim();
+    let mortar_wastage = Number(body.tech_mortar_wastage);
+    let mortar_ratio = body.tech_mortar_ratio?.trim();
+    let bag_size = Number(body.tech_bag_size);
+    let bag_size_unit = body.tech_bag_size_unit?.trim();
+
+    // Cost Fields
+    let price_per_brick = Number(body.tech_price_per_brick);
+    let price_of_cement = Number(body.tech_price_of_cement);
+    let price_sand_per_volume = Number(body.tech_price_sand_per_volume);
+    let price_sand_volume_unit = body.tech_price_sand_volume_unit?.trim();
+    let currancy = body.tech_currancy;
+
+    // Remove currency symbol
+    price_sand_volume_unit = price_sand_volume_unit?.replace(currancy + " ", "");
+    let ans;
+    // ---------------------- Conversion Functions ----------------------
+      function convert_to_meter(unit, value){
+            if (unit == 'cm') {
+              ans = value / 100;
+            }else if (unit == 'm') {
+              ans = value;
+            }else if (unit == 'in') {
+              ans = value / 39.37;
+            }else if (unit == 'ft') {
+              ans = value /  3.281;
+            }else if (unit == 'yd') {
+              ans = value /  1.094;
+            }else if (unit == 'dm') {
+              ans = value / 10;
+            }else if (unit == 'mm') {
+              ans = value / 1000;
+            }
+            return ans;
+          }
+          function convert_to_millimeter(unit,value){
+            if(unit == 'cm'){
+              ans = value * 10;
+            }else if(unit == 'm'){
+              ans = value * 1000;
+            }else if(unit == 'in'){
+              ans = value * 25.4;
+            }else if(unit == 'ft'){
+              ans = value * 304.8;
+            }else if (unit == 'yd') {
+              ans = value * 914.4;
+            }else if (unit == 'dm') {
+              ans = value * 100;
+            }else if (unit == 'mm') {
+              ans = value;
+            }
+            return ans;
+          }
+          function convert_to_kilo(unit,value){
+            if(unit == 'g'){
+              ans = value / 1000;
+            }else if(unit == 'lb'){
+              ans = value / 2.205;
+            }else if(unit == 't'){
+              ans = value * 1000;
+            }else if(unit == 'stone'){
+              ans = value * 6.35029;
+            }else if(unit == 'kg'){
+              ans = value;
+            }
+            return ans;
+          }
+          function convert_to_meter_cube(unit,value){
+            if(unit == 'cm³'){
+              ans = value / 1000000;
+            }else if(unit == 'cu_ft'){
+              ans = value / 35.315;
+            }else if(unit == 'cu_yd'){
+              ans = value / 1.308;
+            }else if(unit == 'm³'){
+              ans = value;
+            }
+            return ans;
+          }
+
+    // ---------------------- Validation ----------------------
+    if (
+      !isNaN(wall_width) &&
+      !isNaN(mortar_joint_thickness) &&
+      !isNaN(brick_width)
+    ) {
+      if (
+        wall_length >= 0 &&
+        wall_width >= 0 &&
+        wall_height >= 0 &&
+        mortar_joint_thickness >= 0 &&
+        brick_wastage >= 0 &&
+        brick_length >= 0 &&
+        brick_width >= 0 &&
+        brick_height >= 0 &&
+        price_per_brick >= 0
+      ) {
+        // Convert wall & brick dimensions
+        wall_length = convert_to_meter(wall_length_unit, wall_length);
+        wall_width = convert_to_meter(wall_width_unit, wall_width);
+        wall_height = convert_to_meter(wall_height_unit, wall_height);
+        mortar_joint_thickness = convert_to_meter(
+          mortar_joint_thickness_unit,
+          mortar_joint_thickness
+        );
+
+        // Wall area
+        const wall_area = wall_length * wall_height;
+
+        // Brick conversion
+        if (brick_type === "1" || brick_type === 1) {
+          brick_length = convert_to_meter(brick_length_unit, brick_length);
+          brick_height = convert_to_meter(brick_height_unit, brick_height);
+          brick_width = convert_to_meter(brick_width_unit, brick_width);
+        } else {
+          const brick_array = brick_type.split("x");
+          brick_length = convert_to_meter("in", Number(brick_array[0]));
+          brick_height = convert_to_meter("in", Number(brick_array[1]));
+        }
+
+        // Brick area
+        const brick_sum =
+          (brick_length + mortar_joint_thickness) *
+          (brick_height + mortar_joint_thickness);
+        let no_of_bricks = Math.ceil(wall_area / brick_sum);
+        const wastage = Math.ceil((brick_wastage * no_of_bricks) / 100);
+        let no_of_bricks_with_wastage = Math.round(no_of_bricks + wastage);
+
+        if (wall_type === "double") {
+          no_of_bricks *= 2;
+          no_of_bricks_with_wastage *= 2;
+        }
+
+        // Cost of bricks
+        const cost_of_bricks = price_per_brick * no_of_bricks_with_wastage;
+
+        // Without mortar
+        if (with_motar === "no") {
+          param.tech_wall_area = wall_area;
+          param.tech_no_of_bricks = no_of_bricks;
+          param.tech_no_of_bricks_with_wastage = no_of_bricks_with_wastage;
+          param.tech_cost_of_bricks = cost_of_bricks;
+          return param;
+        }
+
+        // With mortar
+        else if (with_motar === "yes") {
+          if (
+            !isNaN(wet_volume) &&
+            !isNaN(mortar_wastage) &&
+            !isNaN(bag_size) &&
+            !isNaN(price_of_cement) &&
+            !isNaN(price_sand_per_volume)
+          ) {
+            if (
+              wet_volume >= 0 &&
+              mortar_wastage >= 0 &&
+              bag_size >= 0 &&
+              price_of_cement >= 0 &&
+              price_sand_per_volume >= 0
+            ) {
+              // Mortar calculations
+              wet_volume = convert_to_meter_cube(wet_volume_unit, wet_volume);
+              const dry_volume = wet_volume + (52 * wet_volume) / 100;
+              const dry_volume_wastage = (mortar_wastage * dry_volume) / 100;
+              const dry_volume_with_wastage =
+                dry_volume + dry_volume_wastage;
+
+              // Mortar ratio
+              const ratio = mortar_ratio.split(":").map(Number);
+              const cement_ratio = ratio[0];
+              const sand_ratio = ratio[1];
+              const total_ratio = cement_ratio + sand_ratio;
+
+              const volume_of_cement = Number(
+                ((dry_volume_with_wastage * cement_ratio) / total_ratio).toFixed(4)
+              );
+              const weight_of_cement = volume_of_cement * 1440;
+              bag_size = convert_to_kilo(bag_size_unit, bag_size);
+              const number_of_bags = Math.ceil(weight_of_cement / bag_size);
+
+              const volume_of_sand = Number(
+                ((dry_volume_with_wastage * sand_ratio) / total_ratio).toFixed(4)
+              );
+
+              const sand_vol_converted = convert_to_meter_cube(
+                price_sand_volume_unit,
+                price_sand_per_volume
+              );
+              const price_of_sand = sand_vol_converted * volume_of_sand;
+              const price_for_cement = number_of_bags * price_of_cement;
+              const mortar_cost = price_for_cement + price_of_sand;
+
+              const total_cost = cost_of_bricks + mortar_cost;
+
+              // Results
+              param.tech_wall_area = wall_area;
+              param.tech_no_of_bricks = no_of_bricks;
+              param.tech_no_of_bricks_with_wastage = no_of_bricks_with_wastage;
+              param.tech_cost_of_bricks = cost_of_bricks;
+              param.tech_dry_volume = dry_volume;
+              param.tech_dry_volume_with_wastage = dry_volume_with_wastage;
+              param.tech_volume_of_cement = volume_of_cement;
+              param.tech_number_of_bags = number_of_bags;
+              param.tech_volume_of_sand = volume_of_sand;
+              param.tech_mortar_cost = mortar_cost;
+              param.tech_total_cost = total_cost;
+
+              return param;
+            } else {
+              return { error: "Please! Enter Positive Values" };
+            }
+          } else {
+            return { error: "Please! Check Your Input" };
+          }
+        }
+      } else {
+        return { error: "Please! Enter Positive Values" };
+      }
+    } else {
+      return { error: "Please! Check Your Input" };
+    }
+  }
+
+
+  async getCalculationMetalRoofCostCalculator(body) {
+    try {
+        let type = body.tech_type;
+        let r_length = body.tech_r_length;
+        let rl_units = body.tech_rl_units;
+        let r_width = body.tech_r_width;
+        let rw_units = body.tech_rw_units;
+        let roof_pitch = body.tech_roof_pitch;
+        let p_length = body.tech_p_length;
+        let pl_units = body.tech_pl_units;
+        let p_width = body.tech_p_width;
+        let pw_units = body.tech_pw_units;
+        let cost = body.tech_cost;
+
+      // Roof pitch conversion table
+      const roofPitch = {
+        "1:12": { value: 1.003 }, "2:12": { value: 1.014 }, "3:12": { value: 1.031 },
+        "4:12": { value: 1.054 }, "5:12": { value: 1.083 }, "6:12": { value: 1.118 },
+        "7:12": { value: 1.158 }, "8:12": { value: 1.202 }, "9:12": { value: 1.25 },
+        "10:12": { value: 1.302 }, "11:12": { value: 1.357 }, "12:12": { value: 1.414 },
+        "13:12": { value: 1.474 }, "14:12": { value: 1.537 }, "15:12": { value: 1.601 },
+        "16:12": { value: 1.667 }, "17:12": { value: 1.734 }, "18:12": { value: 1.803 },
+        "19:12": { value: 1.873 }, "20:12": { value: 1.944 }, "21:12": { value: 2.016 },
+        "22:12": { value: 2.088 }, "23:12": { value: 2.162 }, "24:12": { value: 2.236 },
+        "25:12": { value: 2.311 }, "26:12": { value: 2.386 }, "27:12": { value: 2.462 },
+        "28:12": { value: 2.539 }, "29:12": { value: 2.615 }, "30:12": { value: 2.693 },
+      };
+
+      // Convert to feet based on unit
+      const roofUnit = (input, unit) => {
+        if (unit == "cm") return input * 0.03281;
+        if (unit == "dm") return input * 0.3281;
+        if (unit == "m") return input * 3.281;
+        if (unit == "in") return input * 0.08333;
+        if (unit == "yd") return input * 3;
+        return input; // default case (already feet)
+      };
+
+      // Ensure numeric input
+      if (
+        !isNaN(r_length) && !isNaN(r_width) &&
+        !isNaN(p_length) && !isNaN(p_width) &&
+        !isNaN(cost)
+      ) {
+        // Convert all lengths/widths to feet
+        if (rl_units) r_length = roofUnit(Number(r_length), rl_units);
+        if (rw_units) r_width = roofUnit(Number(r_width), rw_units);
+        if (pl_units) p_length = roofUnit(Number(p_length), pl_units);
+        if (pw_units) p_width = roofUnit(Number(p_width), pw_units);
+
+        let r_area, p_area, panel, expense, value;
+
+        if (type == "yes") {
+          // Without roof pitch
+          r_area = r_length * r_width;
+          p_area = p_length * p_width;
+          panel = Math.round(r_area / p_area);
+          expense = cost * panel;
+        } else if (type === "no") {
+          // With roof pitch
+          const Detail = roofPitch[roof_pitch];
+          if (!Detail) {
+            return { error: "Invalid roof pitch option" };
+          }
+          value = Detail.value;
+          r_area = r_length * r_width * value;
+          p_area = p_length * p_width;
+          panel = Math.round(r_area / p_area);
+          expense = cost * panel;
+        } else {
+          return { error: "Invalid type value" };
+        }
+
+        // ✅ Final structured response
+        const result = {
+          tech_type:type,
+          tech_r_length:r_length,
+          tech_r_width:r_width,
+          tech_p_length:p_length,
+          tech_p_width:p_width,
+          tech_cost:cost,
+          tech_r_area:r_area,
+          tech_p_area:p_area,
+          tech_panel:panel,
+          tech_expense:expense,
+        };
+
+        if (type == "no") {
+          result.tech_roof_pitch = roof_pitch;
+          result.tech_value = value;
+        }
+
+        return result;
+      } else {
+        return { error: "Please! Check Your Input" };
+      }
+    } catch (err) {
+      return { error: "An unexpected error occurred", details: err.message };
+    }
+  }
+
+  async getCalculationRoofReplacementCostCalculator(body) {
+    try {
+        const size1 = body.tech_size1;
+        const size2 = body.tech_size2;
+        const slop = body.tech_slop;
+        const difficulty = body.tech_difficulty;
+        const existing = body.tech_existing;
+        const floor = body.tech_floor;
+        const material = body.tech_material;
+        const region = body.tech_region;
+
+      // ✅ Validate numeric input
+      if (isNaN(size1) || isNaN(size2)) {
+        return { error: "Please! Check Your Inputs" };
+      }
+
+      // ✅ Prepare form data
+      const formData = new URLSearchParams();
+      formData.append("size1", size1);
+      formData.append("device", "desk");
+      formData.append("size2", size2);
+      formData.append("material", material);
+      formData.append("slop", slop);
+      formData.append("difficulty", difficulty);
+      formData.append("sky", "");
+      formData.append("ridge", "");
+      formData.append("floor", floor);
+      formData.append("existing", existing);
+      formData.append("region", region);
+
+      // ✅ Make POST request with axios
+      const response = await axios.post(
+        "https://www.roofcalc.org/scripts/calc-widget-test.php",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Cookie: "PHPSESSID=9886c1db5ddcc7f383052a97e803ef26",
+          },
+          httpsAgent: new (await import("https")).Agent({
+            rejectUnauthorized: false, // ⚠️ Disable SSL verification like in PHP
+          }),
+          timeout: 10000, // 10 seconds timeout
+        }
+      );
+
+      const data = response.data;
+
+      // ✅ Extract all $ amounts using regex (like preg_match_all)
+      const matches = data.match(/\$[0-9,]+/g);
+      const result = matches || [];
+
+      // ✅ Return structured output
+      return {
+        tech_result:result,
+      };
+
+    } catch (error) {
+      // ✅ Error handling
+      return {
+        error: error.response
+          ? `API Error: ${error.response.statusText}`
+          : `Request Error: ${error.message}`,
+      };
+    }
+  }
+
+    async getCalculationSquareInchesCalculator(body) {
+          let length = body.tech_length;
+          let l_units = body.tech_l_units;
+          let width = body.tech_width;
+          let w_units = body.tech_w_units;
+          let price = body.tech_price;
+
+      // Convert to numbers where needed
+      length = Number(length);
+      width = Number(width);
+      price = Number(price);
+
+      // Helper function to convert to inches
+      function squareToInches(value, unit) {
+        if (unit == "ft") return value * 12;
+        if (unit == "in") return value * 1;
+        if (unit == "yd") return value * 36;
+        if (unit == "cm") return value / 2.54;
+        if (unit == "m") return value * 39.37;
+        if (unit == "mi") return value / 1000;
+        if (unit == "km") return value * 39370;
+        if (unit == "mm") return value / 25.4; // Added mm conversion
+        return NaN;
+    }
+
+
+      const param = {};
+
+      if (!isNaN(length) && !isNaN(width)) {
+        const lengthInches = squareToInches(length, l_units);
+        const widthInches = squareToInches(width, w_units);
+
+        if (isNaN(lengthInches) || isNaN(widthInches)) {
+          param.error = "Invalid unit type";
+          return param;
+        }
+
+        const square_inches = lengthInches * widthInches;
+        param.tech_square_inches = square_inches;
+
+        if (!isNaN(price)) {
+          param.tech_cost = square_inches * price;
+        }
+
+        return param;
+      } else {
+        param.error = "Please! Check Your Inputs";
+        return param;
+      }
+    }
+
+
+      async  getCalculationSodCalculator(body) {
+          const method = body.tech_method;
+        const length = body.tech_length;
+        const length_unit = body.tech_length_unit;
+        const width = body.tech_width;
+        const width_unit = body.tech_width_unit;
+        const area = body.tech_area;
+        const area_unit = body.tech_area_unit;
+        const price = body.tech_price;
+
+    let param = {};
+
+    // Helper function to round to significant figures
+    function sigFig3(value, digits) {
+      if (value === 0) return 0;
+      const decimalPlaces = digits - Math.floor(Math.log10(Math.abs(value))) - 1;
+      return Number(value.toFixed(decimalPlaces));
+    }
+
+    let total_area, rolls, pallets, acres;
+
+    if (method === "lw" && !isNaN(length) && !isNaN(width)) {
+      let l = Number(length);
+      let w = Number(width);
+
+      // ✅ Convert length units to feet
+      if (length_unit == "cm") l = l / 30.48;
+      else if (length_unit == "m") l = l / 0.3048;
+      else if (length_unit == "km") l = l / 0.0003048;
+      else if (length_unit == "in") l = l / 12;
+      else if (length_unit == "yd") l = l / 0.33333;
+      else if (length_unit == "mi") l = l / 0.0001894;
+
+      // ✅ Convert width units to feet
+      if (width_unit == "cm") w = w / 30.48;
+      else if (width_unit == "m") w = w / 0.3048;
+      else if (width_unit == "km") w = w / 0.0003048;
+      else if (width_unit == "in") w = w / 12;
+      else if (width_unit == "yd") w = w / 0.33333;
+      else if (width_unit == "mi") w = w / 0.0001894;
+
+      if (length_unit === "m" && width_unit === "m") {
+        l = l * 0.3048;
+        w = w * 0.3048;
+
+        total_area = l * w;
+        rolls = total_area + 1;
+        pallets = total_area / 40;
+        acres = total_area * 0.0001;
+        param["tech_meter"] = "meter";
+      } else {
+        total_area = l * w;
+        rolls = total_area / 10;
+        pallets = total_area / 450;
+        acres = total_area * 0.000022957;
+      }
+
+    } else if (method === "area" && !isNaN(area)) {
+      let a = Number(area);
+
+      // ✅ Area conversion to square feet
+      if (area_unit == "km²") a = a / 0.0000000929;
+      else if (area_unit == "yd²") a = a / 0.1111;
+      else if (area_unit == "mi²") a = a / 0.00000003587;
+      else if (area_unit == "a") a = a / 0.000929;
+      else if (area_unit == "da") a = a / 0.0000929;
+      else if (area_unit == "ha") a = a / 0.0001;
+      else if (area_unit == "ac") a = a / 0.000022957;
+      else if (area_unit == "soccer fields") a = a / 0.000013012;
+
+      if (area_unit === "m²" || area_unit === "ha") {
+        total_area = a;
+        rolls = total_area;
+        pallets = total_area / 40;
+        acres = total_area * 0.0001;
+        param["tech_meter"] = "meter";
+      } else {
+        total_area = a;
+        rolls = total_area / 10;
+        pallets = total_area / 450;
+        acres = total_area * 0.000022957;
+      }
+
+    } else {
+      param["error"] = "Please! Check Your Input";
+      return param;
+    }
+
+    // ✅ Cost calculation
+    if (!isNaN(price)) {
+      const cost = price * rolls;
+      const cost_ft2 = cost / total_area;
+      param["tech_cost"] = cost.toFixed(2);
+      param["tech_cost_ft2"] = cost_ft2.toFixed(2);
+    }
+
+    // ✅ Final results
+    param["tech_total_area"] = Number(total_area).toLocaleString();
+    param["tech_rolls"] = Number(rolls).toLocaleString();
+    param["tech_pallets"] = pallets.toFixed(2);
+    param["tech_acres"] = acres.toFixed(3);
+
+    return param;
+  }
+
+
+  async  getCalculationConcreteBlockCalculator(body) {
+    const width = body.tech_width;
+    const height = body.tech_height;
+    const width_unit = body.tech_width_unit;
+    const height_unit = body.tech_height_unit;
+    const block_size = body.tech_block_size;
+    const block_price = body.tech_block_price;
+
+    let param = {};
+
+    let w = Number(width);
+    let h = Number(height);
+    let price = Number(block_price);
+
+    // ✅ Unit conversion for height
+    if (height_unit) {
+      if (height_unit == "cm") {
+        h = h * 0.3937;
+      } else if (height_unit == "mm") {
+        h = h * 0.03937;
+      } else if (height_unit == "m") {
+        h = h * 39.37;
+      } else if (height_unit == "in") {
+        // Already inches
+      } else if (height_unit == "ft") {
+        h = h * 12;
+      }
+    }
+
+    // ✅ Unit conversion for width
+    if (width_unit) {
+      if (width_unit == "cm") {
+        w = w * 0.3937;
+      } else if (width_unit == "mm") {
+        w = w * 0.03937;
+      } else if (width_unit == "m") {
+        w = w * 39.37;
+      } else if (width_unit == "in") {
+        // Already inches
+      } else if (width_unit == "ft") {
+        w = w * 12;
+      }
+    }
+
+    // ✅ Validation
+    if (!isNaN(w) && !isNaN(h) && !isNaN(price)) {
+      const wall_area = w * h;
+      let block_area = 0;
+
+      // ✅ Block size mapping
+      if (block_size == "16x8") {
+        block_area = 16 * 8;
+      } else if (block_size == "8x8") {
+        block_area = 8 * 8;
+      } else if (block_size == "12x8") {
+        block_area = 12 * 8;
+      } else if (block_size == "8x4") {
+        block_area = 8 * 4;
+      } else if (block_size == "12x4") {
+        block_area = 12 * 4;
+      } else if (block_size == "16x4") {
+        block_area = 16 * 4;
+      } else {
+        param["error"] = "Invalid block size.";
+        return param;
+      }
+
+      // ✅ Calculations
+      const blocks_needed = Math.round(wall_area / block_area);
+      const total_block_cost = blocks_needed * price;
+      const mortar_estimation = Math.ceil(blocks_needed / 100) * 3;
+
+      // ✅ Assign results
+      param["tech_wall_area"] = wall_area;
+      param["tech_blocks_needed"] = blocks_needed;
+      param["tech_total_block_cost"] = total_block_cost;
+      param["tech_mortar_estimation"] = mortar_estimation;
+    } else {
+      param["error"] = "Please check input.";
+      return param;
+    }
+
+    return param;
+  }
+
+      async  getCalculationCarpetCalculator(body) {
+          const shape = body.tech_shape;
+        const length = body.tech_length;
+        const length_unit = body.tech_length_unit;
+        const width = body.tech_width;
+        const width_unit = body.tech_width_unit;
+        const radius = body.tech_radius;
+        const radius_unit = body.tech_radius_unit;
+        const axis_a = body.tech_axis_a;
+        const axis_a_unit = body.tech_axis_a_unit;
+        const axis_b = body.tech_axis_b;
+        const axis_b_unit = body.tech_axis_b_unit;
+        const side = body.tech_side;
+        const side_unit = body.tech_side_unit;
+        const sides = body.tech_sides;
+        const sides_unit = body.tech_sides_unit;
+        const carpet = body.tech_carpet;
+        const carpet_unit = body.tech_carpet_unit;
+        const price = body.tech_price;
+        const price_unit = body.tech_price_unit;
+        const currancy = body.tech_currancy;
+
+      let param = {};
+
+      // 🔹 Clean values
+      let l = Number(length);
+      let w = Number(width);
+      let r = Number(radius);
+      let a = Number(axis_a);
+      let b = Number(axis_b);
+      let s = Number(side);
+      let ss = Number(sides);
+      let c = Number(carpet);
+      let p = Number(price);
+
+      // 🔹 Remove currency symbol from price_unit
+      let cleanPriceUnit = price_unit ? price_unit.replace(currancy + " ", "") : "";
+
+      // 🔹 Unit conversion for carpet dimensions
+      function carpetUnits(value, unit) {
+        if (unit === "cm") {
+          return value / 100;
+        } else if (unit === "dm") {
+          return value / 10;
+        } else if (unit === "in") {
+          return value * 0.0254;
+        } else if (unit === "ft") {
+          return value * 0.3048;
+        } else if (unit === "yd") {
+          return value * 0.9144;
+        } else {
+          return value; // assume meters
+        }
+      }
+
+      // 🔹 Unit conversion for price
+      function priceUnits(value, unit) {
+        if (unit === "cm²") {
+          return value / 10000;
+        } else if (unit === "dm²") {
+          return value / 100;
+        } else if (unit === "in²") {
+          return value / 1550.0031;
+        } else if (unit === "ft²") {
+          return value / 10.7639;
+        } else if (unit === "yd²") {
+          return value / 1.19599;
+        } else {
+          return value; // assume m²
+        }
+      }
+
+      let answer = null;
+      let sub_answer = null;
+
+      // 🔹 Shape-based logic
+      if (shape === "Rectangle") {
+        if (isFinite(l) && isFinite(w) && isFinite(p)) {
+          l = carpetUnits(l, length_unit);
+          w = carpetUnits(w, width_unit);
+          answer = l * w;
+          sub_answer = answer * p;
+        } else {
+          param["error"] = "Please! Check Your Input";
+          return param;
+        }
+      } else if (shape === "Circle") {
+        if (isFinite(r) && isFinite(p)) {
+          r = carpetUnits(r, radius_unit);
+          answer = Math.PI * Math.pow(r, 2);
+          sub_answer = answer * p;
+        } else {
+          param["error"] = "Please! Check Your Input";
+          return param;
+        }
+      } else if (shape === "Ellipse") {
+        if (isFinite(a) && isFinite(b) && isFinite(p)) {
+          a = carpetUnits(a, axis_a_unit);
+          b = carpetUnits(b, axis_b_unit);
+          answer = a * b * Math.PI;
+          sub_answer = answer * p;
+        } else {
+          param["error"] = "Please! Check Your Input";
+          return param;
+        }
+      } else if (shape === "Pentagon") {
+        if (isFinite(s) && isFinite(p)) {
+          s = carpetUnits(s, side_unit);
+          answer = (s * s * Math.sqrt(25 + 10 * Math.sqrt(5))) / 4;
+          sub_answer = answer * p;
+        } else {
+          param["error"] = "Please! Check Your Input";
+          return param;
+        }
+      } else if (shape === "Hexagon") {
+        if (isFinite(ss) && isFinite(p)) {
+          ss = carpetUnits(ss, sides_unit);
+          answer = (3 / 2) * Math.sqrt(3) * Math.pow(ss, 2);
+          sub_answer = answer * p;
+        } else {
+          param["error"] = "Please! Check Your Input";
+          return param;
+        }
+      } else {
+        if (isFinite(c) && isFinite(p)) {
+          answer = priceUnits(c, carpet_unit);
+          sub_answer = answer * p;
+        } else {
+          param["error"] = "Please! Check Your Input";
+          return param;
+        }
+      }
+
+      // ✅ Final response
+      param["tech_answer"] = answer;
+      param["tech_sub_answer"] = sub_answer;
+
+      return param;
+    }
+
+    async getCalculationCylinderVolumeCalculator(body) {
+      try {
+      let f_height = body.tech_f_height;
+      let f_height_units = body.tech_f_height_units;
+      let f_radius = body.tech_f_radius;
+      let f_radius_units = body.tech_f_radius_units;
+      let s_height = body.tech_s_height;
+      let s_height_units = body.tech_s_height_units;
+      let external = body.tech_external;
+      let external_units = body.tech_external_units;
+      let internal = body.tech_internal;
+      let internal_units = body.tech_internal_units;
+
+        // Helper function: convert all to centimeters
+        function convert_unit(unit, value) {
+          if (!unit) return value;
+          value = Number(value);
+
+          switch (unit) {
+            case "cm":
+              return value;
+            case "mm":
+              return value / 0.1;
+            case "m":
+              return value * 100;
+            case "km":
+              return value * 100000;
+            case "in":
+              return value * 2.54;
+            case "ft":
+              return value * 30.48;
+            case "yd":
+              return value * 91.44;
+            case "mi":
+              return value * 160934.4;
+            default:
+              return value;
+          }
+        }
+
+        // Validate all numeric inputs
+        if (
+          isNaN(f_height) ||
+          isNaN(f_radius) ||
+          isNaN(s_height) ||
+          isNaN(external) ||
+          isNaN(internal)
+        ) {
+          return { error: "Please! Check Your Input" };
+        }
+
+        // Convert units
+        f_height = convert_unit(f_height_units, f_height);
+        f_radius = convert_unit(f_radius_units, f_radius);
+        s_height = convert_unit(s_height_units, s_height);
+        external = convert_unit(external_units, external);
+        internal = convert_unit(internal_units, internal);
+
+        // Calculate volumes
+        const vol1 = Math.PI * Math.pow(f_radius, 2) * f_height;
+        const vol2 = (Math.PI * s_height * (Math.pow(external, 2) - Math.pow(internal, 2))) / 4;
+
+        return {
+          tech_vol1:vol1,
+          tech_vol2:vol2
+        };
+      } catch (err) {
+        return { error: "Server error occurred" };
+      }
+    }
+
+
+  async getCalculationFramingCalculator(body) {
+    try {
+     let wall = body.tech_wall;
+    let wall_unit = body.tech_wall_unit;
+    let spacing = body.tech_spacing;
+    let spacing_unit = body.tech_spacing_unit;
+    let price = body.tech_price;
+    let estimated = body.tech_estimated;
+
+      // Helper function to convert to meters
+      function framing_units(value, unit) {
+        value = Number(value);
+        switch (unit) {
+          case "cm":
+            return value / 100;
+          case "dm":
+            return value / 10;
+          case "in":
+            return value * 0.0254;
+          case "ft":
+            return value * 0.3048;
+          case "yd":
+            return value * 0.9144;
+          case "m":
+          default:
+            return value;
+        }
+      }
+
+      // Validate numeric inputs
+      if (
+        isNaN(wall) ||
+        isNaN(spacing) ||
+        isNaN(price) ||
+        isNaN(estimated)
+      ) {
+        return { error: "Please! Check Your Input" };
+      }
+
+      // Convert units
+      wall = framing_units(wall, wall_unit);
+      spacing = framing_units(spacing, spacing_unit);
+
+      // Prevent divide-by-zero
+      if (spacing == 0) {
+        return { error: "oc spacing cannot be equal to zero" };
+      }
+
+      // Calculations
+      const answer = wall / spacing + 1; // number of studs
+      const wastages = answer * (estimated / 100);
+      const wastage = wastages * price;
+      const studs = price * answer;
+      const sub_answer = studs + wastage; // total cost including wastage
+
+      return {
+        tech_answer:answer,
+        tech_sub_answer:sub_answer
+      };
+    } catch (err) {
+      return { error: "Server error occurred" };
+    }
+  }
+
+    async getCalculationRoofingCalculator(body) {
+    try {
+      let length = body.tech_length;
+      let length_units = body.tech_length_units;
+      let width = body.tech_width;
+      let width_units = body.tech_width_units;
+      let pitch = body.tech_pitch;
+      let price = body.tech_price;
+      let price_units = body.tech_price_units;
+
+      // Convert value to meters
+      function conversion(unit, value) {
+        value = Number(value);
+        switch (unit) {
+          case "cm":
+            return value / 100;
+          case "m":
+            return value;
+          case "in":
+            return value * 0.0254;
+          case "ft":
+            return value * 0.3048;
+          case "yd":
+            return value * 0.9144;
+          default:
+            return value;
+        }
+      }
+
+      // Convert price per area to price per m²
+      if (price_units) {
+        price = Number(price);
+        switch (price_units) {
+          case "m²":
+            price = price;
+            break;
+          case "mm²":
+            price /= 0.000001;
+            break;
+          case "cm²":
+            price /= 0.0001;
+            break;
+          case "in²":
+            price /= 0.00064516;
+            break;
+          case "ft²":
+            price /= 0.09290304;
+            break;
+          case "yd²":
+            price /= 0.83612736;
+            break;
+        }
+      }
+
+      // Validate inputs
+      if (
+        isNaN(length) ||
+        isNaN(width) ||
+        isNaN(pitch) ||
+        isNaN(price)
+      ) {
+        return { error: "Please check input." };
+      }
+
+      // Convert units to meters
+      length = conversion(length_units, length);
+      width = conversion(width_units, width);
+
+      // Core calculations
+      const house_area = length * width;
+      const slop = (pitch * 12) / 100;
+      const pitch_rad = Math.atan(pitch / 100);
+      const pitch_deg = (pitch_rad * 180) / Math.PI;
+      const roof_area = house_area / Math.cos((pitch_deg * Math.PI) / 180);
+      const cost = roof_area * price;
+
+      // Return results
+      return {
+        tech_house_area:house_area,
+        tech_slop:slop,
+        tech_pitch_deg:pitch_deg,
+        tech_roof_area:roof_area,
+        tech_cost:cost
+      };
+    } catch (err) {
+      return { error: "Server error occurred" };
+    }
+  }
+
+  async getCalculationDeckingCalculator(body) {
+      let deck_length = body.tech_deck_length;
+      let deck_length_unit = body.tech_deck_length_unit;
+      let deck_width = body.tech_deck_width;
+      let deck_width_unit = body.tech_deck_width_unit;
+      let board_length = body.tech_board_length;
+      let board_length_unit = body.tech_board_length_unit;
+      let board_width = body.tech_board_width;
+      let board_width_unit = body.tech_board_width_unit;
+      let material = body.tech_material;
+      let price = body.tech_price;
+      let Cost = body.tech_Cost;
+
+      // Trim all string inputs
+      deck_length = deck_length?.toString().trim();
+      deck_length_unit = deck_length_unit?.toString().trim();
+      deck_width = deck_width?.toString().trim();
+      deck_width_unit = deck_width_unit?.toString().trim();
+      board_length = board_length?.toString().trim();
+      board_length_unit = board_length_unit?.toString().trim();
+      board_width = board_width?.toString().trim();
+      board_width_unit = board_width_unit?.toString().trim();
+      material = material?.toString().trim();
+      price = price?.toString().trim();
+      Cost = Cost?.toString().trim();
+
+      // Convert to numbers
+      deck_length = Number(deck_length);
+      deck_width = Number(deck_width);
+      board_length = Number(board_length);
+      board_width = Number(board_width);
+      price = Number(price);
+      Cost = Number(Cost);
+
+      // Helper function for unit conversion
+      function unit_change(value, unit) {
+        if (unit == "cm") {
+          return value * 30.48;
+        } else if (unit == "m") {
+          return value / 3.28084;
+        } else if (unit == "in") {
+          return value * 12;
+        } else if (unit == "ft") {
+          return value;
+        }
+        return value;
+      }
+
+      const result = {};
+
+      // Validate numeric inputs
+      if (
+        !isFinite(deck_length) ||
+        !isFinite(deck_width) ||
+        !isFinite(board_length) ||
+        !isFinite(board_width) ||
+        !isFinite(price) ||
+        !isFinite(Cost)
+      ) {
+        result.error = "Please check your input";
+        return result;
+      }
+
+      // Zero-value validations
+      if (deck_length == 0) {
+        result.error = "length value cannot be equal to zero";
+        return result;
+      }
+      if (deck_width == 0) {
+        result.error = "width value cannot be equal to zero";
+        return result;
+      }
+      if (board_length == 0) {
+        result.error = "length value cannot be equal to zero";
+        return result;
+      }
+      if (board_width == 0) {
+        result.error = "width value cannot be equal to zero";
+        return result;
+      }
+      if (price == 0) {
+        result.error = "price per board value cannot be equal to zero";
+        return result;
+      }
+      if (Cost == 0) {
+        result.error = "cost of fasteners value cannot be equal to zero";
+        return result;
+      }
+
+      // Unit conversions
+      deck_length = unit_change(deck_length, deck_length_unit);
+      deck_width = unit_change(deck_width, deck_width_unit);
+      board_length = unit_change(board_length, board_length_unit);
+      board_width = unit_change(board_width, board_width_unit);
+
+      // Calculations
+      const size_deck = deck_length * deck_width; // ans 1
+      const size_board = board_length * board_width; // ans 2
+      const numbers = Math.round((size_deck / size_board) * 1.1); // ans 3
+      const materialValue = size_deck / 100;
+      const nails = materialValue * 350; // ans 4
+      const clips = nails / 2; // ans 5
+      const price_boards = numbers * price; // ans 6
+      const Cost_boards = price_boards + Cost; // ans 7
+
+      // Build response
+      result.tech_size_deck = size_deck;
+      result.tech_size_board = size_board;
+      result.tech_numbers = numbers;
+      result.tech_nails = nails;
+      result.tech_clips = clips;
+      result.tech_price_boards = price_boards;
+      result.tech_Cost_boards = Cost_boards;
+
+      return result;
+    }
+
+  async getCalculationSonotubeCalculator(body) {
+      let size_unit = body.tech_size_unit;
+      let height = body.tech_height;
+      let height_unit = body.tech_height_unit;
+      let quantity = body.tech_quantity;
+      let concerete_mix_unit = body.tech_concerete_mix_unit;
+      let density = body.tech_density;
+      let density_unit = body.tech_density_unit;
+      let concrete_ratio_unit = body.tech_concrete_ratio_unit;
+      let bag_size = body.tech_bag_size;
+      let bag_size_unit = body.tech_bag_size_unit;
+      let waste = body.tech_waste;
+      let Cost_bag_mix = body.tech_Cost_bag_mix;
+      let Cost_of_cement = body.tech_Cost_of_cement;
+      let Cost_of_cement_unit = body.tech_Cost_of_cement_unit;
+      let Cost_of_sand = body.tech_Cost_of_sand;
+      let Cost_of_sand_unit = body.tech_Cost_of_sand_unit;
+      let Cost_of_gravel = body.tech_Cost_of_gravel;
+      let Cost_of_gravel_unit = body.tech_Cost_of_gravel_unit;
+
+    // Trim all inputs
+    const trimVal = (v) => (typeof v === "string" ? v.trim() : v);
+    size_unit = trimVal(size_unit);
+    height = Number(trimVal(height));
+    height_unit = trimVal(height_unit);
+    quantity = Number(trimVal(quantity));
+    concerete_mix_unit = trimVal(concerete_mix_unit);
+    density = Number(trimVal(density));
+    density_unit = trimVal(density_unit);
+    concrete_ratio_unit = trimVal(concrete_ratio_unit);
+    bag_size = Number(trimVal(bag_size));
+    bag_size_unit = trimVal(bag_size_unit);
+    waste = Number(trimVal(waste));
+    Cost_bag_mix = Number(trimVal(Cost_bag_mix));
+    Cost_of_cement = Number(trimVal(Cost_of_cement));
+    Cost_of_cement_unit = trimVal(Cost_of_cement_unit);
+    Cost_of_sand = Number(trimVal(Cost_of_sand));
+    Cost_of_sand_unit = trimVal(Cost_of_sand_unit);
+    Cost_of_gravel = Number(trimVal(Cost_of_gravel));
+    Cost_of_gravel_unit = trimVal(Cost_of_gravel_unit);
+
+    const result = {};
+
+    // Size mapping
+    const sizeMap = {
+      "6 (15.24 cm)": 6 / 2,
+      "8 (20.32 cm)": 8 / 2,
+      "10 (25.40 cm)": 10 / 2,
+      "12 (30.48 cm)": 12 / 2,
+      "14 (35.56 cm)": 14 / 2,
+      "16 (40.64 cm)": 16 / 2,
+      "18 (45.72 cm)": 18 / 2,
+      "20 (50.80 cm)": 20 / 2,
+      "22 (55.88 cm)": 22 / 2,
+      "24 (60.96 cm)": 24 / 2,
+      "26 (66.04 cm)": 26 / 2,
+      "28 (71.12 cm)": 28 / 2,
+      "30 (76.20 cm)": 30 / 2,
+      "32 (81.28 cm)": 32 / 2,
+      "34 (86.36 cm)": 34 / 2,
+      "36 (91.44 cm)": 36 / 2,
+      "40 (101.60 cm)": 40 / 2,
+      "42 (106.68 cm)": 42 / 2,
+      "48 (121.91 cm)": 48 / 2,
+      "54 (137.16 cm)": 54 / 2,
+      "60 (152.40 cm)": 60 / 2,
+    };
+    const size = sizeMap[size_unit] ?? 0;
+
+    // Helper conversions
+    const section_height = (val, unit) => {
+      if (unit === "cm") return val * 2.54;
+      if (unit === "m") return val / 39.37;
+      if (unit === "in") return val;
+      if (unit === "ft") return val / 12;
+      if (unit === "yd") return val / 36;
+      return val;
+    };
+
+    const section_density = (val, unit) => {
+      if (unit === "kg/m³") return val * 16.01846;
+      if (unit === "lb/cu ft") return val;
+      if (unit === "lb/cu yd") return val * 27;
+      if (unit === "g/cm³") return val * 0.01601846;
+      return val;
+    };
+
+    const section_bag_size = (val, unit) => {
+      if (unit === "kg") return val;
+      if (unit === "lb") return val * 2.205;
+      return val;
+    };
+
+    const section_two = (val, unit) => {
+      if (unit === "cm³") return val * 28320;
+      if (unit === "m³") return val / 35.315;
+      if (unit === "cu ft") return val;
+      if (unit === "cu yd") return val / 27;
+      return val;
+    };
+
+    // Input validation
+    if (!isFinite(height) || !isFinite(quantity)) {
+      return { error: "Please! Check Your Input" };
+    }
+
+    if (height === 0) return { error: "height value cannot be equal to zero" };
+    if (quantity === 0) return { error: "quantity value cannot be equal to zero" };
+
+    // Volume calculation
+    const heightIn = section_height(height, height_unit);
+    const radius = size * size;
+    const volume = (Math.round(3.1415 * radius * heightIn) / 1728) * quantity;
+
+    // CASE 1: Pre-mixed concrete bags
+    if (concerete_mix_unit === "I'll get pre-mixed concrete bags") {
+      if (!isFinite(density) || !isFinite(bag_size) || !isFinite(waste) || !isFinite(Cost_bag_mix)) {
+        return { error: "Please! Check Your Input" };
+      }
+      if (density === 0) return { error: "concrete density value cannot be equal to zero" };
+      if (bag_size === 0) return { error: "bag size value cannot be equal to zero" };
+      if (waste === 0) return { error: "waste value cannot be equal to zero" };
+      if (Cost_bag_mix === 0)
+        return { error: "Cost of each bag of pre-mix concrete value cannot be equal to zero" };
+
+      const densityz = section_density(density, density_unit);
+      const weight = volume * densityz;
+      const bagSize = section_bag_size(bag_size, bag_size_unit);
+      const bagEffective = bagSize * (1 - waste / 100);
+      const bags = Math.round((weight / 2.205) / bagEffective);
+      const costTotal = Cost_bag_mix * bags;
+      const perUnit = Number((costTotal / volume).toFixed(2));
+      const costPerColumn = perUnit * volume;
+
+      result.tech_weghits = weight;
+      result.tech_bagsz = bags;
+      result.tech_per_units = perUnit;
+      result.tech_cost_per_colums = costPerColumn;
+      result.tech_total_costz = costPerColumn;
+    }
+
+    // CASE 2: Manual concrete mix
+    else {
+      if (
+        !isFinite(waste) ||
+        !isFinite(Cost_of_cement) ||
+        !isFinite(Cost_of_sand) ||
+        !isFinite(Cost_of_gravel)
+      ) {
+        return { error: "Please! Check Your Input" };
+      }
+
+      if (waste === 0) return { error: "waste value cannot be equal to zero" };
+      if (Cost_of_cement === 0)
+        return { error: "cost of cement per volume value cannot be equal to zero" };
+      if (Cost_of_sand === 0)
+        return { error: "cost of sand per volume value cannot be equal to zero" };
+      if (Cost_of_gravel === 0)
+        return { error: "cost of gravel per volume value cannot be equal to zero" };
+
+      const total_volume = volume * (1 + waste / 100);
+      const value_cement = total_volume * 1 / (size * 2);
+
+      let ratio_of_sand = 0;
+      let ratio_of_gravel = 0;
+
+      if (concrete_ratio_unit === "1:5:10 (5.0 MPa or 725 psi)") {
+        ratio_of_sand = 5; ratio_of_gravel = 10;
+      } else if (concrete_ratio_unit === "1:4:8 (7.5 MPa or 1085 psi)") {
+        ratio_of_sand = 4; ratio_of_gravel = 8;
+      } else if (concrete_ratio_unit === "1:3:6 (10.0 MPa or 1450 psi)") {
+        ratio_of_sand = 3; ratio_of_gravel = 6;
+      } else if (concrete_ratio_unit === "1:2:4 (15.0 MPa or 2175 psi)") {
+        ratio_of_sand = 2; ratio_of_gravel = 4;
+      } else if (concrete_ratio_unit === "1:1.5:3 (20.0 MPa or 2900 psi)") {
+        ratio_of_sand = 1.5; ratio_of_gravel = 3;
+      }
+
+      const value_sand = total_volume * ratio_of_sand / (size * 2);
+      const value_gravel = total_volume * ratio_of_gravel / (size * 2);
+
+      const cementCost = section_two(Cost_of_cement, Cost_of_cement_unit) * value_cement;
+      const sandCost = section_two(Cost_of_sand, Cost_of_sand_unit) * value_sand;
+      const gravelCost = section_two(Cost_of_gravel, Cost_of_gravel_unit) * value_gravel;
+      const total_cost = cementCost + sandCost + gravelCost;
+
+      result.tech_total_volume = total_volume;
+      result.tech_value_cement = value_cement;
+      result.tech_value_sand = value_sand;
+      result.tech_value_gravel = value_gravel;
+      result.tech_total_costszz = total_cost;
+    }
+
+    // Final output
+    result.tech_volume = volume;
+    return result;
+  }
+
+    async getCalculationGravelCalculator(body) {
+      try {
+      let from = body.tech_from;
+      let to_calculate = body.tech_to_calculate;
+      let length = body.tech_length;
+      let l_unit = body.tech_l_unit;
+      let volume = body.tech_volume;
+      let v_unit = body.tech_v_unit;
+      let width = body.tech_width;
+      let w_unit = body.tech_w_unit;
+      let area = body.tech_area;
+      let a_unit = body.tech_a_unit;
+      let depth = body.tech_depth;
+      let d_unit = body.tech_d_unit;
+      let density = body.tech_density;
+      let dn_unit = body.tech_dn_unit;
+      let price = body.tech_price;
+      let p_unit = body.tech_p_unit;
+      let currancy = body.tech_currancy;
+      let diameter = body.tech_diameter;
+      let dia_unit = body.tech_dia_unit;
+
+        const param = {};
+
+        // Clean price unit
+        if (p_unit) p_unit = p_unit.replace(`${currancy} `, "");
+
+        // ✅ Helper function for unit conversions
+        const convertToFeet = (value, unit) => {
+          if (unit === "in") return value / 12;
+          if (unit === "yd") return value * 3;
+          if (unit === "cm") return value / 30.48;
+          if (unit === "m") return value * 3.28084;
+          return value;
+        };
+
+        const convertDensity = (value, unit) => {
+          if (unit === "lb/yd³") return value / 27;
+          if (unit === "t/yd³") return value / 74.074;
+          if (unit === "kg/m³") return value / 16.018;
+          return value;
+        };
+
+        const convertPriceWeight = (weight, priceUnit) => {
+          if (priceUnit === "kg") return weight / 2.205;
+          if (priceUnit === "g") return weight * 453.59;
+          if (priceUnit === "t") return weight / 2205;
+          return weight;
+        };
+
+        // ===============================
+        // 🟢 RECTANGULAR SECTION
+        // ===============================
+        if (from == "rec") {
+          // ---- CASE 1: Length, Width, Depth ----
+          if (to_calculate == "1") {
+            if (
+              isNaN(length) ||
+              isNaN(width) ||
+              isNaN(depth) ||
+              isNaN(density)
+            ) {
+              param.error = "Please! Check Your Input";
+              return param;
+            }
+
+            length = convertToFeet(length, l_unit);
+            width = convertToFeet(width, w_unit);
+            depth = convertToFeet(depth, d_unit);
+            density = convertDensity(density, dn_unit);
+
+            const area = +(length * width).toFixed(3);
+            const volume = +(depth * area).toFixed(3);
+            const weight = +(density * volume).toFixed(3);
+
+            if (price) {
+              let p_weight = convertPriceWeight(weight, p_unit);
+              param.tech_price = +(p_weight * price).toFixed(3);
+            }
+
+            Object.assign(param, {
+             tech_area:area, 
+             tech_weight:weight, 
+             tech_volume:volume, 
+             });
+            return param;
+          }
+
+          // ---- CASE 2: Area, Depth ----
+          if (to_calculate == "2") {
+            if (isNaN(area) || isNaN(depth) || isNaN(density)) {
+              param.error = "Please! Check Your Input";
+              return param;
+            }
+
+            if (a_unit === "m²") area = area * 10.764;
+            else if (a_unit === "yd²") area = area * 9;
+
+            depth = convertToFeet(depth, d_unit);
+            density = convertDensity(density, dn_unit);
+
+            const volume = +(depth * area).toFixed(3);
+            const weight = +(density * volume).toFixed(3);
+
+            if (price) {
+              let p_weight = convertPriceWeight(weight, p_unit);
+              param.tech_price = +(p_weight * price).toFixed(3);
+            }
+
+            Object.assign(param, { 
+              tech_area:area, 
+              tech_weight:weight,
+              tech_volume:volume,
+              });
+            return param;
+          }
+
+          // ---- CASE 3: Volume ----
+          if (to_calculate == "3") {
+            if (isNaN(volume) || isNaN(density)) {
+              param.error = "Please! Check Your Input";
+              return param;
+            }
+
+            if (v_unit === "m³") volume = volume * 35.315;
+            else if (v_unit === "yd³") volume = volume * 27;
+
+            density = convertDensity(density, dn_unit);
+            const weight = +(density * volume).toFixed(3);
+
+            if (price) {
+              let p_weight = convertPriceWeight(weight, p_unit);
+              param.tech_price = +(p_weight * price).toFixed(3);
+            }
+
+            Object.assign(param, { 
+              tech_weight:weight,
+              tech_volume:volume,
+               });
+            return param;
+          }
+        }
+
+        // ===============================
+        // 🟢 CIRCULAR SECTION
+        // ===============================
+        else {
+          if (isNaN(diameter) || isNaN(density)) {
+            param.error = "Please! Check Your Input";
+            return param;
+          }
+
+          diameter = convertToFeet(diameter, dia_unit);
+          depth = convertToFeet(depth, d_unit);
+          density = convertDensity(density, dn_unit);
+
+          const area = Math.PI * Math.pow(diameter / 2, 2);
+          const volume = +(depth * area).toFixed(3);
+          const weight = +(density * volume).toFixed(3);
+
+          if (price) {
+            let p_weight = convertPriceWeight(weight, p_unit);
+            param.tech_price = +(p_weight * price).toFixed(3);
+          }
+
+          Object.assign(param, { 
+          tech_area:area,
+          tech_weight:weight,
+          tech_volume:volume,
+             });
+          return param;
+        }
+      } catch (error) {
+        return { error: "An unexpected error occurred", message: error.message };
+      }
+    }
+
+    async  getCalculationMulchCalculator(body) {
+      try {
+        const param = {};
+        
+        // Extract all values from body
+        const m_shape = body["tech_m-shape"];
+        const length = parseFloat(body.tech_length);
+        const length_unit = body.tech_length1;
+        const width = parseFloat(body.tech_width);
+        const width_unit = body.tech_width1;
+        const area = parseFloat(body["tech_sqr-ft"]);
+        const area_unit = body["tech_sqr-ft1"];
+        const depth = parseFloat(body.tech_depth);
+        const depth_unit = body.tech_depth1;
+        const bag_size = parseFloat(body.tech_bag_size);
+        const bag_size1 = body.tech_bag_size1;
+        const price_bag = parseFloat(body.tech_price_bag);
+        const m_type = body["tech_m-type"];
+        const check = body.tech_check;
+        const g = body.tech_g;
+        const diameter = parseFloat(body.tech_diameter);
+        const diameter_unit = body.tech_diameter1;
+        const side1 = parseFloat(body.tech_side1);
+        const side1_unit = body.tech_side11;
+        const side2 = parseFloat(body.tech_side2);
+        const side2_unit = body.tech_side21;
+          // Helper functions
+          function isNumeric(value) {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+          }
+
+          function round(value, decimals) {
+            return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+          }
+
+          function convertToFeet(value, unit) {
+            switch (unit) {
+              case 'in':
+                return value / 12;
+              case 'yd':
+                return value * 3;
+              case 'cm':
+                return value / 30.48;
+              case 'm':
+                return value * 3.281;
+              case 'ft':
+              default:
+                return value;
+            }
+          }
+
+          function convertToInches(value, unit) {
+            switch (unit) {
+              case 'ft':
+                return value * 12;
+              case 'yd':
+                return value * 36;
+              case 'cm':
+                return value / 2.54;
+              case 'm':
+                return value * 39.37;
+              case 'in':
+              default:
+                return value;
+            }
+          }
+
+          function convertBagSize(bagSize, unit) {
+            switch (unit) {
+              case 'm³':
+                return bagSize * 35.315;
+              case 'cu yd':
+                return bagSize * 27;
+              case 'liters':
+                return bagSize / 28.317;
+              case 'cu ft':
+              default:
+                return bagSize;
+            }
+          }
+
+        // Rectangle/Square shape
+        if (m_shape === '0') {
+          // Using length and width
+          if (check === 'g1_value' || g === 'g1') {
+            if (isNumeric(length) && isNumeric(width) && isNumeric(depth)) {
+              let convertedLength = convertToFeet(length, length_unit);
+              let convertedWidth = convertToFeet(width, width_unit);
+              let convertedDepth = convertToInches(depth, depth_unit);
+
+              const garden_size = convertedLength * convertedWidth;
+              const cubic_yards = (convertedLength * convertedWidth * convertedDepth) / 324;
+              const cubic_ft = cubic_yards * 27;
+              const cubic_meters = cubic_yards / 1.308;
+              const liters = cubic_meters * 1000;
+
+              // Calculate bags needed
+              if (isNumeric(bag_size)) {
+                let convertedBagSize = convertBagSize(bag_size, bag_size1);
+                const size = cubic_ft / convertedBagSize;
+                param.tech_size = round(size, 2);
+
+                if (isNumeric(price_bag)) {
+                  const total_cost = price_bag * size;
+                  param.tech_total_cost = round(total_cost, 2);
+                }
+              }
+
+              // Calculate based on mulch type
+              if (m_type === '6') {
+                const size1 = garden_size / 235 * convertedDepth * 2;
+                param.tech_size1 = round(size1, 2);
+                if (isNumeric(price_bag)) {
+                  const total_cost1 = price_bag * size1;
+                  param.tech_total_cost1 = round(total_cost1, 2);
+                }
+              }
+
+              if (m_type === '10') {
+                const size1 = garden_size / 235 * convertedDepth;
+                param.tech_size1 = round(size1, 2);
+                if (isNumeric(price_bag)) {
+                  const total_cost1 = price_bag * size1;
+                  param.tech_total_cost1 = round(total_cost1, 2);
+                }
+              }
+
+              param.tech_garden_size = round(garden_size, 2);
+              param.tech_cubic_yards = round(cubic_yards, 2);
+              param.tech_cubic_ft = round(cubic_ft, 2);
+              param.tech_cubic_meters = round(cubic_meters, 2);
+              param.tech_liters = round(liters, 2);
+
+              return param;
+            } else {
+              param.error = 'Please! Check Your Input';
+              return param;
+            }
+          } 
+          // Using area directly
+          else {
+            if (isNumeric(area) && isNumeric(depth)) {
+              let convertedArea = area;
+
+              if (area_unit === 'acres') {
+                area = area * 43560;
+              }
+
+              let convertedDepth = depth;
+
+              const cubic_yards = (convertedArea * convertedDepth) / 324;
+              const cubic_ft = cubic_yards * 27;
+              const cubic_meters = cubic_yards / 1.308;
+              const liters = cubic_meters * 1000;
+
+              // Calculate bags needed
+              if (isNumeric(bag_size)) {
+                let convertedBagSize = convertBagSize(bag_size, bag_size1);
+                const size = cubic_ft / convertedBagSize;
+                param.tech_size = round(size, 2);
+
+                if (isNumeric(price_bag)) {
+                  const total_cost = price_bag * size;
+                  param.tech_total_cost = round(total_cost, 2);
+                }
+              }
+
+              // Calculate based on mulch type
+              if (m_type === '6') {
+                const size1 = convertedArea / 235 * convertedDepth * 2;
+                param.tech_size1 = round(size1, 2);
+                if (isNumeric(price_bag)) {
+                  const total_cost1 = price_bag * size1;
+                  param.tech_total_cost1 = round(total_cost1, 2);
+                }
+              }
+
+              if (m_type === '10') {
+                const size1 = convertedArea / 235 * convertedDepth;
+                param.tech_size1 = round(size1, 2);
+                if (isNumeric(price_bag)) {
+                  const total_cost1 = price_bag * size1;
+                  param.tech_total_cost1 = round(total_cost1, 2);
+                }
+              }
+
+              param.tech_garden_size = round(convertedArea, 2);
+              param.tech_cubic_yards = round(cubic_yards, 2);
+              param.tech_cubic_ft = round(cubic_ft, 2);
+              param.tech_cubic_meters = round(cubic_meters, 2);
+              param.tech_liters = round(liters, 2);
+              return param;
+            } else {
+              param.error = 'Please! Check Your Input';
+              return param;
+            }
+          }
+        } 
+        // Circle shape
+        else if (m_shape === '1') {
+          if (isNumeric(diameter) && isNumeric(depth)) {
+            let convertedDiameter = convertToFeet(diameter, diameter_unit);
+            let convertedDepth = convertToInches(depth, depth_unit);
+
+            const radius = convertedDiameter * 0.5;
+            const garden_size = (radius * radius) * 3.1452;
+            const cubic_yards = ((convertedDepth / 12) * garden_size) / 27;
+            const cubic_ft = cubic_yards * 27;
+            const cubic_meters = cubic_yards / 1.308;
+            const liters = cubic_meters * 1000;
+
+            // Calculate bags needed
+            if (isNumeric(bag_size)) {
+              let convertedBagSize = convertBagSize(bag_size, bag_size1);
+              const size = cubic_ft / convertedBagSize;
+              param.tech_size = round(size, 2);
+
+              if (isNumeric(price_bag)) {
+                const total_cost = price_bag * size;
+                param.tech_total_cost = round(total_cost, 2);
+              }
+            }
+
+            // Calculate based on mulch type
+            if (m_type === '6') {
+              const size1 = garden_size / 235 * convertedDepth * 2;
+              param.size1 = round(size1, 2);
+              if (isNumeric(price_bag)) {
+                const total_cost1 = price_bag * size1;
+                param.tech_total_cost1 = round(total_cost1, 2);
+              }
+            }
+
+            if (m_type === '10') {
+              const size1 = garden_size / 235 * convertedDepth;
+              param.tech_size1 = round(size1, 2);
+              if (isNumeric(price_bag)) {
+                const total_cost1 = price_bag * size1;
+                param.tech_total_cost1 = round(total_cost1, 2);
+              }
+            }
+
+            param.tech_garden_size = round(garden_size, 0);
+            param.tech_cubic_yards = round(cubic_yards, 2);
+            param.tech_cubic_ft = round(cubic_ft, 2);
+            param.tech_cubic_meters = round(cubic_meters, 2);
+            param.tech_liters = round(liters, 2);
+            return param;
+          } else {
+            param.error = 'Please! Check Your Input';
+            return param;
+          }
+        } 
+        // Triangle shape
+        else if (m_shape === '2') {
+          if (isNumeric(side1) && isNumeric(side2) && isNumeric(depth)) {
+            let convertedSide1 = convertToFeet(side1, side1_unit);
+            let convertedSide2 = convertToFeet(side2, side2_unit);
+            let convertedDepth = convertToInches(depth, depth_unit);
+
+            const garden_size = convertedSide1 * convertedSide2 * 0.5;
+            const cubic_yards = ((convertedDepth / 12) * garden_size) / 27;
+            const cubic_ft = cubic_yards * 27;
+            const cubic_meters = cubic_yards / 1.308;
+            const liters = cubic_meters * 1000;
+
+            // Calculate bags needed
+            if (isNumeric(bag_size)) {
+              let convertedBagSize = convertBagSize(bag_size, bag_size1);
+              const size = cubic_ft / convertedBagSize;
+              param.tech_size = round(size, 2);
+
+              if (isNumeric(price_bag)) {
+                const total_cost = price_bag * size;
+                param.tech_total_cost = round(total_cost, 2);
+              }
+            }
+
+            // Calculate based on mulch type
+            if (m_type === '6') {
+              const size1 = garden_size / 235 * convertedDepth * 2;
+              param.tech_size1 = round(size1, 2);
+              if (isNumeric(price_bag)) {
+                const total_cost1 = price_bag * size1;
+                param.tech_total_cost1 = round(total_cost1, 2);
+              }
+            }
+
+            if (m_type === '10') {
+              const size1 = garden_size / 235 * convertedDepth;
+              param.tech_size1 = round(size1, 2);
+              if (isNumeric(price_bag)) {
+                const total_cost1 = price_bag * size1;
+                param.tech_total_cost1 = round(total_cost1, 2);
+              }
+            }
+
+            param.tech_garden_size = round(garden_size, 2);
+            param.tech_cubic_yards = round(cubic_yards, 2);
+            param.tech_cubic_ft = round(cubic_ft, 2);
+            param.tech_cubic_meters = round(cubic_meters, 2);
+            param.tech_liters = round(liters, 2);
+
+            return param;   
+          } else {
+            param.error = 'Please! Check Your Input';
+            return param;
+          }
+        }
+
+        param.error = 'Invalid shape selected';
+        return param;
+
+      } catch (error) {
+        console.error('Error in mulch calculation:', error);
+        return { error: 'An error occurred during calculation' };
+      }
+    }
+
+
+  async getCalculationSandCalculator(body) {
+      let length = parseFloat(body.tech_length);
+      let length_unit = body.tech_length_unit;
+      let width = parseFloat(body.tech_width);
+      let width_unit = body.tech_width_unit;
+      let area = parseFloat(body.tech_area);
+      let area_unit = body.tech_area_unit;
+      let depth = parseFloat(body.tech_depth);
+      let depth_unit = body.tech_depth_unit;
+      let volume = parseFloat(body.tech_volume);
+      let volume_unit = body.tech_volume_unit;
+      let density = parseFloat(body.tech_density);
+      let density_unit = body.tech_density_unit;
+      let mass_price = parseFloat(body.tech_mass_price);
+      let mass_price_unit = body.tech_mass_price_unit;
+      let volume_price = parseFloat(body.tech_volume_price);
+      let volume_price_unit = body.tech_volume_price_unit;
+      const shape = body.tech_shape;
+      let g = body.tech_g;
+      let diameter = parseFloat(body.tech_diameter);
+      let diameter_unit = body.tech_diameter_unit;
+      let c_price = parseFloat(body.tech_c_price);
+      const hiddencurrancy = body.tech_hiddencurrancy || '';
+
+      let param = {};
+
+      // Area unit conversions
+      if (area_unit === 'mm²') {
+          area_unit = 'mm2';
+      } else if (area_unit === 'cm²') {
+          area_unit = 'cm2';
+      } else if (area_unit === 'm²') {
+          area_unit = 'm2';
+      } else if (area_unit === 'in²') {
+          area_unit = 'in2';
+      } else if (area_unit === 'ft²') {
+          area_unit = 'ft2';
+      } else if (area_unit === 'yd²') {
+          area_unit = 'yd2';
+      } else if (area_unit === 'hectares') {
+          area_unit = 'ha';
+      } else if (area_unit === 'acres') {
+          area_unit = 'ac';
+      } else if (area_unit === 'soccer fields') {
+          area_unit = 'sf';
+      }
+
+      // Volume unit conversions
+      if (volume_unit === 'mm³') {
+          volume_unit = 'mm3';
+      } else if (volume_unit === 'cm³') {
+          volume_unit = 'cm3';
+      } else if (volume_unit === 'm³') {
+          volume_unit = 'm3';
+      } else if (volume_unit === 'in³') {
+          volume_unit = 'in3';
+      } else if (volume_unit === 'ft³') {
+          volume_unit = 'ft3';
+      } else if (volume_unit === 'yd³') {
+          volume_unit = 'yd3';
+      }
+
+      // Density unit conversions
+      if (density_unit === 'kg/m³') {
+          density_unit = 'kg_m3';
+      } else if (density_unit === 't/m³') {
+          density_unit = 't_m3';
+      } else if (density_unit === 'g/cm³') {
+          density_unit = 'g_cm3';
+      } else if (density_unit === 'oz/in³') {
+          density_unit = 'oz_in3';
+      } else if (density_unit === 'lb/in³') {
+          density_unit = 'lb_in3';
+      } else if (density_unit === 'lb/ft³') {
+          density_unit = 'lb_ft3';
+      } else if (density_unit === 'lb/yd³') {
+          density_unit = 'lb_yd3';
+      }
+
+      // Mass price unit conversions
+      if (mass_price_unit === hiddencurrancy + 'µg') {
+          mass_price_unit = 'ug';
+      } else if (mass_price_unit === hiddencurrancy + 'mg') {
+          mass_price_unit = 'mg';
+      } else if (mass_price_unit === hiddencurrancy + 'g') {
+          mass_price_unit = 'g';
+      } else if (mass_price_unit === hiddencurrancy + 'kg') {
+          mass_price_unit = 'kg';
+      } else if (mass_price_unit === hiddencurrancy + 't') {
+          mass_price_unit = 't';
+      } else if (mass_price_unit === hiddencurrancy + 'lb') {
+          mass_price_unit = 'lb';
+      } else if (mass_price_unit === hiddencurrancy + 'stone') {
+          mass_price_unit = 'stone';
+      } else if (mass_price_unit === hiddencurrancy + 'US ton') {
+          mass_price_unit = 'us_ton';
+      } else if (mass_price_unit === hiddencurrancy + 'Long ton') {
+          mass_price_unit = 'long_ton';
+      }
+
+      // Volume price unit conversions
+      if (volume_price_unit === hiddencurrancy + 'mm³') {
+          volume_price_unit = 'mm3';
+      } else if (volume_price_unit === hiddencurrancy + 'cm³') {
+          volume_price_unit = 'cm3';
+      } else if (volume_price_unit === hiddencurrancy + 'm³') {
+          volume_price_unit = 'm3';
+      } else if (volume_price_unit === hiddencurrancy + 'in³') {
+          volume_price_unit = 'in3';
+      } else if (volume_price_unit === hiddencurrancy + 'ft³') {
+          volume_price_unit = 'ft3';
+      } else if (volume_price_unit === hiddencurrancy + 'yd³') {
+          volume_price_unit = 'yd3';
+      }
+
+      // Rectangle Shape
+      if (shape === '0') {
+          // Method 1
+          if (g === 'g1') {
+              if (!isNaN(length) && !isNaN(width) && !isNaN(depth) && !isNaN(density)) {
+                  // Conversion of length units in feet
+                  if (length_unit === 'mm') {
+                      length = length / 305;
+                  }
+                  if (length_unit === 'cm') {
+                      length = length / 30.48;
+                  }
+                  if (length_unit === 'm') {
+                      length = length * 3.281;
+                  }
+                  if (length_unit === 'in') {
+                      length = length / 12;
+                  }
+                  if (length_unit === 'yd') {
+                      length = length * 3;
+                  }
+
+                  // Conversion of width units in feet
+                  if (width_unit === 'mm') {
+                      width = width / 305;
+                  }
+                  if (width_unit === 'cm') {
+                      width = width / 30.48;
+                  }
+                  if (width_unit === 'm') {
+                      width = width * 3.281;
+                  }
+                  if (width_unit === 'in') {
+                      width = width / 12;
+                  }
+                  if (width_unit === 'yd') {
+                      width = width * 3;
+                  }
+
+                  // Conversion of depth units in feet
+                  if (depth_unit === 'in') {
+                      depth = depth / 12;
+                  }
+                  if (depth_unit === 'yd') {
+                      depth = depth * 3;
+                  }
+                  if (depth_unit === 'cm') {
+                      depth = depth / 30.48;
+                  }
+                  if (depth_unit === 'm') {
+                      depth = depth * 3.281;
+                  }
+
+                  // Conversion of density units in pound/cubic feet
+                  if (density_unit === 'kg_m3') {
+                      density = density * 0.062428;
+                  }
+                  if (density_unit === 't_m3' || density_unit === 'g_cm3') {
+                      density = density * 62.428;
+                  }
+                  if (density_unit === 'oz_in3') {
+                      density = density * 108;
+                  }
+                  if (density_unit === 'lb_in3') {
+                      density = density * 1728;
+                  }
+                  if (density_unit === 'lb_yd3') {
+                      density = density * 0.037037;
+                  }
+
+                  // Calculation
+                  area = length * width;
+                  volume = area * depth;
+                  let weight = volume * density;
+                  weight = weight * 0.000453592;
+
+                  // Conversion of volume units for display
+                  const mm3 = volume * 28316847;
+                  const cm3 = volume * 28316.85;
+                  const m3 = volume * 0.02831685;
+                  const in3 = volume * 1728;
+                  const yd3 = volume * 0.037037;
+
+                  // Conversion of weight units for display
+                  const grams = weight * 1000000;
+                  const kg = weight * 1000;
+                  const oz = weight * 35273.96;
+                  const lb = weight * 2204.623;
+                  const stone = weight * 157.473;
+                  const us_ton = weight * 1.102311;
+                  const long_ton = weight * 0.984207;
+
+                  param = {
+                      tech_mm3: Math.round(mm3 * 100) / 100,
+                      tech_cm3: Math.round(cm3 * 100) / 100,
+                      tech_m3: Math.round(m3 * 100) / 100,
+                      tech_in3: Math.round(in3 * 100) / 100,
+                      tech_yd3: Math.round(yd3 * 100) / 100,
+                      tech_g: Math.round(grams * 100) / 100,
+                      tech_kg: Math.round(kg * 100) / 100,
+                      tech_oz: Math.round(oz * 100) / 100,
+                      tech_lb: Math.round(lb * 100) / 100,
+                      tech_stone: Math.round(stone * 100) / 100,
+                      tech_us_ton: Math.round(us_ton * 100) / 100,
+                      tech_long_ton: Math.round(long_ton * 100) / 100,
+                      tech_volume: Math.round(volume * 10000) / 10000,
+                      tech_weight: Math.round(weight * 10000) / 10000,
+                  };
+
+                  if (!isNaN(mass_price) && mass_price > 0) {
+                      let adjusted_mass_price = mass_price;
+                      
+                      if (mass_price_unit === 'ug') {
+                          adjusted_mass_price = mass_price * 1000000000000;
+                      }
+                      if (mass_price_unit === 'mg') {
+                          adjusted_mass_price = mass_price * 1000000000;
+                      }
+                      if (mass_price_unit === 'g') {
+                          adjusted_mass_price = mass_price * 1000000;
+                      }
+                      if (mass_price_unit === 'dag') {
+                          adjusted_mass_price = mass_price * 100000;
+                      }
+                      if (mass_price_unit === 'kg') {
+                          adjusted_mass_price = mass_price * 1000;
+                      }
+                      if (mass_price_unit === 'gr') {
+                          adjusted_mass_price = mass_price * 15432358.35;
+                      }
+                      if (mass_price_unit === 'dr') {
+                          adjusted_mass_price = mass_price * 564383.39;
+                      }
+                      if (mass_price_unit === 'oz') {
+                          adjusted_mass_price = mass_price * 35273.96;
+                      }
+                      if (mass_price_unit === 'lb') {
+                          adjusted_mass_price = mass_price * 2204.62;
+                      }
+                      if (mass_price_unit === 'stone') {
+                          adjusted_mass_price = mass_price * 157.47;
+                      }
+                      if (mass_price_unit === 'us_ton') {
+                          adjusted_mass_price = mass_price * 1.10;
+                      }
+                      if (mass_price_unit === 'long_ton') {
+                          adjusted_mass_price = mass_price / 0.98;
+                      }
+
+                      const cost = adjusted_mass_price * weight;
+                      param.tech_cost = Math.round(cost * 100) / 100;
+                  }
+
+                  // Conversion of volume price units in feet
+                  if (!isNaN(volume_price) && volume_price > 0) {
+                      let adjusted_volume_price = volume_price;
+                      
+                      if (volume_price_unit === 'mm3') {
+                          adjusted_volume_price = volume_price * 764554857.98;
+                      }
+                      if (volume_price_unit === 'cm3') {
+                          adjusted_volume_price = volume_price * 764554.86;
+                      }
+                      if (volume_price_unit === 'm3') {
+                          adjusted_volume_price = volume_price * 0.76;
+                      }
+                      if (volume_price_unit === 'in3') {
+                          adjusted_volume_price = volume_price * 46656;
+                      }
+                      if (volume_price_unit === 'yd3') {
+                          adjusted_volume_price = volume_price * 27;
+                      }
+
+                      const adjusted_weight = weight / 1.22;
+                      const cost = adjusted_volume_price * adjusted_weight;
+                      param.tech_cost = Math.round(cost * 100) / 100;
+                  }
+
+                  console.log(param);
+                  return param;
+              } else {
+                  param.error = 'please check your inputs...';
+                  return param;
+              }
+          }
+          // Method 2
+          else if (g === 'g2') {
+              if (!isNaN(area) && !isNaN(depth) && !isNaN(density)) {
+                  // Conversion of area units in square feet
+                  if (area_unit === 'mm2') {
+                      area = area * 0.0000107639;
+                  }
+                  if (area_unit === 'cm2') {
+                      area = area * 0.00107639;
+                  }
+                  if (area_unit === 'm2') {
+                      area = area * 10.7639;
+                  }
+                  if (area_unit === 'in2') {
+                      area = area * 0.00694444;
+                  }
+                  if (area_unit === 'yd2') {
+                      area = area * 9;
+                  }
+                  if (area_unit === 'ha') {
+                      area = area * 107639;
+                  }
+                  if (area_unit === 'ac') {
+                      area = area * 43560;
+                  }
+                  if (area_unit === 'sf') {
+                      area = area * 76854.3;
+                  }
+
+                  // Conversion of depth units in feet
+                  if (depth_unit === 'in') {
+                      depth = depth / 12;
+                  }
+                  if (depth_unit === 'yd') {
+                      depth = depth * 3;
+                  }
+                  if (depth_unit === 'cm') {
+                      depth = depth / 30.48;
+                  }
+                  if (depth_unit === 'm') {
+                      depth = depth * 3.281;
+                  }
+
+                  // Conversion of density units in pound/cubic feet
+                  if (density_unit === 'kg_m3') {
+                      density = density * 0.062428;
+                  }
+                  if (density_unit === 't_m3' || density_unit === 'g_cm3') {
+                      density = density * 62.428;
+                  }
+                  if (density_unit === 'oz_in3') {
+                      density = density * 108;
+                  }
+                  if (density_unit === 'lb_in3') {
+                      density = density * 1728;
+                  }
+                  if (density_unit === 'lb_yd3') {
+                      density = density * 0.037037;
+                  }
+
+                  // Calculation
+                  volume = area * depth;
+                  let weight = volume * density;
+                  weight = weight * 0.000453592;
+
+                  // Conversion of volume units for display
+                  const mm3 = volume * 28316847;
+                  const cm3 = volume * 28316.85;
+                  const m3 = volume * 0.02831685;
+                  const in3 = volume * 1728;
+                  const yd3 = volume * 0.037037;
+
+                  // Conversion of weight units for display
+                  const grams = weight * 1000000;
+                  const kg = weight * 1000;
+                  const oz = weight * 35273.96;
+                  const lb = weight * 2204.623;
+                  const stone = weight * 157.473;
+                  const us_ton = weight * 1.102311;
+                  const long_ton = weight * 0.984207;
+
+                  param = {
+                      tech_mm3: Math.round(mm3 * 100) / 100,
+                      tech_cm3: Math.round(cm3 * 100) / 100,
+                      tech_m3: Math.round(m3 * 100) / 100,
+                      tech_in3: Math.round(in3 * 100) / 100,
+                      tech_yd3: Math.round(yd3 * 100) / 100,
+                      tech_g: Math.round(grams * 100) / 100,
+                      tech_kg: Math.round(kg * 100) / 100,
+                      tech_oz: Math.round(oz * 100) / 100,
+                      tech_lb: Math.round(lb * 100) / 100,
+                      tech_stone: Math.round(stone * 100) / 100,
+                      tech_us_ton: Math.round(us_ton * 100) / 100,
+                      tech_long_ton: Math.round(long_ton * 100) / 100,
+                      tech_volume: Math.round(volume * 10000) / 10000,
+                      tech_weight: Math.round(weight * 10000) / 10000,
+                  };
+
+                  if (!isNaN(mass_price) && mass_price > 0) {
+                      let adjusted_mass_price = mass_price;
+                      
+                      if (mass_price_unit === 'ug') {
+                          adjusted_mass_price = mass_price * 1000000000000;
+                      }
+                      if (mass_price_unit === 'mg') {
+                          adjusted_mass_price = mass_price * 1000000000;
+                      }
+                      if (mass_price_unit === 'g') {
+                          adjusted_mass_price = mass_price * 1000000;
+                      }
+                      if (mass_price_unit === 'dag') {
+                          adjusted_mass_price = mass_price * 100000;
+                      }
+                      if (mass_price_unit === 'kg') {
+                          adjusted_mass_price = mass_price * 1000;
+                      }
+                      if (mass_price_unit === 'gr') {
+                          adjusted_mass_price = mass_price * 15432358.35;
+                      }
+                      if (mass_price_unit === 'dr') {
+                          adjusted_mass_price = mass_price * 564383.39;
+                      }
+                      if (mass_price_unit === 'oz') {
+                          adjusted_mass_price = mass_price * 35273.96;
+                      }
+                      if (mass_price_unit === 'lb') {
+                          adjusted_mass_price = mass_price * 2204.62;
+                      }
+                      if (mass_price_unit === 'stone') {
+                          adjusted_mass_price = mass_price * 157.47;
+                      }
+                      if (mass_price_unit === 'us_ton') {
+                          adjusted_mass_price = mass_price * 1.10;
+                      }
+                      if (mass_price_unit === 'long_ton') {
+                          adjusted_mass_price = mass_price / 0.98;
+                      }
+
+                      const cost = adjusted_mass_price * weight;
+                      param.tech_cost = Math.round(cost * 100) / 100;
+                  }
+
+                  // Conversion of volume price units in feet
+                  if (!isNaN(volume_price) && volume_price > 0) {
+                      let adjusted_volume_price = volume_price;
+                      
+                      if (volume_price_unit === 'mm3') {
+                          adjusted_volume_price = volume_price * 764554857.98;
+                      }
+                      if (volume_price_unit === 'cm3') {
+                          adjusted_volume_price = volume_price * 764554.86;
+                      }
+                      if (volume_price_unit === 'm3') {
+                          adjusted_volume_price = volume_price * 0.76;
+                      }
+                      if (volume_price_unit === 'in3') {
+                          adjusted_volume_price = volume_price * 46656;
+                      }
+                      if (volume_price_unit === 'yd3') {
+                          adjusted_volume_price = volume_price * 27;
+                      }
+
+                      const adjusted_weight = weight / 1.22;
+                      const cost = adjusted_volume_price * adjusted_weight;
+                      param.tech_cost = Math.round(cost * 100) / 100;
+                  }
+
+                  console.log(param);
+                  return param;
+              } else {
+                  param.error = 'please check your inputs...';
+                  return param;
+              }
+          }
+          // Method 3
+          else {
+              if (!isNaN(volume) && !isNaN(density)) {
+                  // Conversion of volume units in cubic feet
+                  if (volume_unit === 'mm3') {
+                      volume = volume * 0.0000000353147;
+                  }
+                  if (volume_unit === 'cm3') {
+                      volume = volume * 0.0000353147;
+                  }
+                  if (volume_unit === 'm3') {
+                      volume = volume * 35.3147;
+                  }
+                  if (volume_unit === 'in3') {
+                      volume = volume * 0.000578704;
+                  }
+                  if (volume_unit === 'yd3') {
+                      volume = volume * 27;
+                  }
+
+                  // Conversion of density units in pound/cubic feet
+                  if (density_unit === 'kg_m3') {
+                      density = density * 0.062428;
+                  }
+                  if (density_unit === 't_m3' || density_unit === 'g_cm3') {
+                      density = density * 62.428;
+                  }
+                  if (density_unit === 'oz_in3') {
+                      density = density * 108;
+                  }
+                  if (density_unit === 'lb_in3') {
+                      density = density * 1728;
+                  }
+                  if (density_unit === 'lb_yd3') {
+                      density = density * 0.037037;
+                  }
+
+                  // Calculation
+                  let weight = volume * density;
+                  weight = weight * 0.000453592;
+
+                  // Conversion of weight units for display
+                  const grams = weight * 1000000;
+                  const kg = weight * 1000;
+                  const oz = weight * 35273.96;
+                  const lb = weight * 2204.623;
+                  const stone = weight * 157.473;
+                  const us_ton = weight * 1.102311;
+                  const long_ton = weight * 0.984207;
+
+                  param = {
+                      tech_: Math.round(grams * 100) / 100,
+                      tech_kg: Math.round(kg * 100) / 100,
+                      tech_oz: Math.round(oz * 100) / 100,
+                      tech_lb: Math.round(lb * 100) / 100,
+                      tech_stone: Math.round(stone * 100) / 100,
+                      tech_us_ton: Math.round(us_ton * 100) / 100,
+                      tech_long_ton: Math.round(long_ton * 100) / 100,
+                      tech_weight: Math.round(weight * 10000) / 10000,
+                  };
+
+                  if (!isNaN(mass_price) && mass_price > 0) {
+                      let adjusted_mass_price = mass_price;
+                      
+                      if (mass_price_unit === 'ug') {
+                          adjusted_mass_price = mass_price * 1000000000000;
+                      }
+                      if (mass_price_unit === 'mg') {
+                          adjusted_mass_price = mass_price * 1000000000;
+                      }
+                      if (mass_price_unit === 'g') {
+                          adjusted_mass_price = mass_price * 1000000;
+                      }
+                      if (mass_price_unit === 'dag') {
+                          adjusted_mass_price = mass_price * 100000;
+                      }
+                      if (mass_price_unit === 'kg') {
+                          adjusted_mass_price = mass_price * 1000;
+                      }
+                      if (mass_price_unit === 'gr') {
+                          adjusted_mass_price = mass_price * 15432358.35;
+                      }
+                      if (mass_price_unit === 'dr') {
+                          adjusted_mass_price = mass_price * 564383.39;
+                      }
+                      if (mass_price_unit === 'oz') {
+                          adjusted_mass_price = mass_price * 35273.96;
+                      }
+                      if (mass_price_unit === 'lb') {
+                          adjusted_mass_price = mass_price * 2204.62;
+                      }
+                      if (mass_price_unit === 'stone') {
+                          adjusted_mass_price = mass_price * 157.47;
+                      }
+                      if (mass_price_unit === 'us_ton') {
+                          adjusted_mass_price = mass_price * 1.10;
+                      }
+                      if (mass_price_unit === 'long_ton') {
+                          adjusted_mass_price = mass_price / 0.98;
+                      }
+
+                      const cost = adjusted_mass_price * weight;
+                      param.tech_cost = Math.round(cost * 100) / 100;
+                  }
+
+                  // Conversion of volume in required units
+                  if (!isNaN(volume_price) && volume_price > 0) {
+                      let converted_volume = volume;
+                      
+                      if (volume_price_unit === 'mm3') {
+                          converted_volume = volume * 28316847;
+                      }
+                      if (volume_price_unit === 'cm3') {
+                          converted_volume = volume * 28316.85;
+                      }
+                      if (volume_price_unit === 'm3') {
+                          converted_volume = volume * 0.02831685;
+                      }
+                      if (volume_price_unit === 'in3') {
+                          converted_volume = volume * 1728;
+                      }
+                      if (volume_price_unit === 'yd3') {
+                          converted_volume = volume * 0.037037;
+                      }
+
+                      const cost = volume_price * converted_volume;
+                      param.tech_cost = Math.round(cost * 100) / 100;
+                  }
+
+                  console.log(param);
+                  return param;
+              } else {
+                  param.error = 'please check your inputs...';
+                  return param;
+              }
+          }
+      }
+
+      // Circle Shape
+      if (shape === '1') {
+          if (!isNaN(diameter) && !isNaN(depth)) {
+              // Conversion of diameter units in feet
+              if (diameter_unit === 'in') {
+                  diameter = diameter / 12;
+              }
+              if (diameter_unit === 'yd') {
+                  diameter = diameter * 3;
+              }
+              if (diameter_unit === 'cm') {
+                  diameter = diameter / 30.48;
+              }
+              if (diameter_unit === 'm') {
+                  diameter = diameter * 3.281;
+              }
+
+              // Conversion of depth units in feet
+              if (depth_unit === 'in') {
+                  depth = depth * 0.0833333;
+              }
+              if (depth_unit === 'yd') {
+                  depth = depth * 3;
+              }
+              if (depth_unit === 'cm') {
+                  depth = depth * 0.0328084;
+              }
+              if (depth_unit === 'm') {
+                  depth = depth * 3.28084;
+              }
+
+              // Calculation
+              const radius = diameter / 2;
+              const circle_area = Math.PI * Math.pow(radius, 2);
+              volume = circle_area * depth;
+              let weight = volume * 100;
+              weight = weight * 0.000453592;
+
+              // Conversion of volume units for display
+              const mm3 = volume * 28316847;
+              const cm3 = volume * 28316.85;
+              const m3 = volume * 0.02831685;
+              const in3 = volume * 1728;
+              const yd3 = volume * 0.037037;
+
+              // Conversion of weight units for display
+              const grams = weight * 1000000;
+              const kg = weight * 1000;
+              const oz = weight * 35274;
+              const lb = weight * 2204.62;
+              const stone = weight * 157.473;
+              const us_ton = weight * 1.10231;
+              const long_ton = weight * 0.984207;
+
+              param = {
+                  tech_mm3: Math.round(mm3 * 10000) / 10000,
+                  tech_cm3: Math.round(cm3 * 10000) / 10000,
+                  tech_m3: Math.round(m3 * 10000) / 10000,
+                  tech_in3: Math.round(in3 * 10000) / 10000,
+                  tech_yd3: Math.round(yd3 * 10000) / 10000,
+                  tech_g: Math.round(grams * 100) / 100,
+                  tech_kg: Math.round(kg * 100) / 100,
+                  tech_oz: Math.round(oz * 100) / 100,
+                  tech_lb: Math.round(lb * 100) / 100,
+                  tech_stone: Math.round(stone * 100) / 100,
+                  tech_us_ton: Math.round(us_ton * 100) / 100,
+                  tech_long_ton: Math.round(long_ton * 100) / 100,
+                  tech_volume: Math.round(volume * 10000) / 10000,
+                  tech_weight: Math.round(weight * 10000) / 10000,
+              };
+
+              // Calculation of price unit
+              if (!isNaN(c_price) && c_price > 0) {
+                  const cost = c_price * weight;
+                  param.tech_cost = Math.round(cost * 100) / 100;
+              }
+              return param;
+          } else {
+              param.error = 'please check your inputs...';
+              return param;
+          }
+      }
+
+      // If no valid shape
+      param.error = 'Invalid shape value';
+      return param;
+  }
 
 
 
+async getCalculationAsphaltCalculator(body) {
+  try {
+      const submit = body.tech_submit;
+      const cal = body.tech_cal;
+      const length = body.tech_length;
+      const length_unit = body.tech_length_unit;
+      const width = body.tech_width;
+      const width_unit = body.tech_width_unit;
+      const area = body.tech_area;
+      const area_unit = body.tech_area_unit;
+      const depth = body.tech_depth;
+      const depth_unit = body.tech_depth_unit;
+      const volume = body.tech_volume;
+      const volume_unit = body.tech_volume_unit;
+      const density = body.tech_density;
+      const density_unit = body.tech_density_unit;
+      const cs_depth = body.tech_cs_depth;
+      const cs_depth_unit = body.tech_cs_depth_unit;
+      const depth_dr = body.tech_depth_dr;
+      const depth_dr_unit = body.tech_depth_dr_unit;
+      const cost = body.tech_cost;
+      const cost_unit = body.tech_cost_unit;
+
+    let result = {};
+
+    if (!submit) {
+      return { error: "Please! Check Your Input" };
+    }
+
+    let l = parseFloat(length);
+    let w = parseFloat(width);
+    let a = parseFloat(area);
+    let d = parseFloat(depth);
+    let v = parseFloat(volume);
+    let den = parseFloat(density);
+    let csd = parseFloat(cs_depth);
+    let ddr = parseFloat(depth_dr);
+    let c = parseFloat(cost);
+
+    // --- Length ---
+    if (!isNaN(l)) {
+      if (length_unit == "km") l = l / 0.001;
+      else if (length_unit == "ft") l = l / 3.281;
+      else if (length_unit == "yd") l = l / 1.0936;
+      else if (length_unit == "mi") l = l / 0.0006214;
+    }
+
+    // --- Width ---
+    if (!isNaN(w)) {
+      if (width_unit == "km") w = w / 0.001;
+      else if (width_unit == "ft") w = w / 3.281;
+      else if (width_unit == "yd") w = w / 1.0936;
+      else if (width_unit == "mi") w = w / 0.0006214;
+    }
+
+    // --- Area ---
+    if (!isNaN(a)) {
+      if (area_unit == "km2") a = a / 0.000001;
+      else if (area_unit == "in2") a = a / 1550;
+      else if (area_unit == "ft2") a = a / 10.764;
+    }
+
+    // --- Depth ---
+    if (!isNaN(d)) {
+      if (depth_unit == "mm") d = d / 10;
+      else if (depth_unit == "m") d = d / 0.01;
+      else if (depth_unit == "in") d = d / 0.3937;
+      else if (depth_unit == "ft") d = d / 0.03281;
+    }
+
+    // --- Volume ---
+    if (!isNaN(v)) {
+      if (volume_unit == "cu_ft") v = v / 35.315;
+      else if (volume_unit == "us_gal") v = v / 264.17;
+      else if (volume_unit == "uk_gal") v = v / 219.97;
+    }
+
+    // --- Density ---
+    if (!isNaN(den)) {
+      if (density_unit == "lb_cu_ft") den = den / 0.06243;
+    }
+
+    // --- Compacted stone depth ---
+    if (!isNaN(csd)) {
+      if (cs_depth_unit == "mm")
+       csd = csd / 25.4;
+      else if (cs_depth_unit == "cm")
+       csd = csd / 2.54;
+      else if (cs_depth_unit == "m") 
+      csd = csd / 0.0254;
+      else if (cs_depth_unit == "ft") 
+      csd = csd / 0.08333;
+    }
+      
+
+    // --- Depth dirt removal ---
+    if (!isNaN(ddr)) {
+      if (depth_dr_unit == "mm") ddr = ddr / 25.4;
+      else if (depth_dr_unit == "cm") ddr = ddr / 2.54;
+      else if (depth_dr_unit == "m") ddr = ddr / 0.0254;
+      else if (depth_dr_unit == "ft") ddr = ddr / 0.08333;
+    }
+
+    // --- Cost ---
+    if (!isNaN(c)) {
+      if (cost_unit == "kg") c = c * 1000;
+      else if (cost_unit == "lb") c = c * 2204.62;
+      else if (cost_unit == "us_ton") c = c * 1.10;
+      else if (cost_unit == "long_ton") c = c * 0.98;
+    }
+
+    let asphalt, volumeCalc, kg, lb, us_ton, long_ton, total_cost;
+
+    // -----------------------------
+    // 🧮 Main Calculations
+    // -----------------------------
+    if (cal === "lwt" && !isNaN(l) && !isNaN(w) && !isNaN(d) && !isNaN(den)) {
+      let areaCalc = l * w;
+      volumeCalc = (areaCalc * d) / 100;
+      asphalt = (volumeCalc * den) * 0.001;
+      kg = asphalt * 1000;
+      lb = asphalt * 2204.6;
+      us_ton = asphalt * 1.1023;
+      long_ton = asphalt * 0.9842;
+      if (!isNaN(c)) total_cost = c * asphalt;
+      result = { asphalt: +asphalt.toFixed(5), area: areaCalc, volume: volumeCalc, kg, lb, us_ton, long_ton, total_cost };
+
+    } else if (cal === "at" && !isNaN(a) && !isNaN(d) && !isNaN(den)) {
+      volumeCalc = (a * d) / 100;
+      asphalt = (volumeCalc * den) * 0.001;
+      kg = asphalt * 1000;
+      lb = asphalt * 2204.6;
+      us_ton = asphalt * 1.1023;
+      long_ton = asphalt * 0.9842;
+      if (!isNaN(c)) total_cost = c * asphalt;
+      result = { asphalt: +asphalt.toFixed(5), volume: volumeCalc, kg, lb, us_ton, long_ton, total_cost };
+
+    } else if (cal === "vad" && !isNaN(v) && !isNaN(den)) {
+      asphalt = (v * den) * 0.001;
+      kg = asphalt * 1000;
+      lb = asphalt * 2204.6;
+      us_ton = asphalt * 1.1023;
+      long_ton = asphalt * 0.9842;
+      if (!isNaN(c)) total_cost = c * asphalt;
+      result = { asphalt: +asphalt.toFixed(5), kg, lb, us_ton, long_ton, total_cost };
+
+    } else if (cal === "csn" && !isNaN(a) && !isNaN(d) && !isNaN(csd)) {
+      volumeCalc = (a * d) / 100;
+      asphalt = (volumeCalc * 2400) * 0.001;
+      let areaFeet = a / 0.0929;
+      let stone = (areaFeet * csd) / 180;
+      console.log(csd)
+      // console.log(areaFeet,csd,stone);
+      kg = asphalt * 1000;
+      lb = asphalt * 2204.6;
+      us_ton = asphalt * 1.1023;
+      long_ton = asphalt * 0.9842;
+      if (!isNaN(c)) total_cost = c * asphalt;
+      result = { asphalt: +asphalt.toFixed(5), stone: +stone.toFixed(5), kg, lb, us_ton, long_ton, total_cost };
+
+    } else if (cal === "dtbr" && !isNaN(a) && !isNaN(d) && !isNaN(ddr)) {
+      volumeCalc = (a * d) / 100;
+      asphalt = (volumeCalc * den) * 0.001;
+      console.log(volumeCalc,den,asphalt);
+      let areaFeet = a / 0.0929;
+      let dirt = (areaFeet * ddr) / 320;
+      kg = asphalt * 1000;
+      lb = asphalt * 2204.6;
+      us_ton = asphalt * 1.1023;
+      long_ton = asphalt * 0.9842;
+      if (!isNaN(c)) total_cost = c * asphalt;
+      result = { asphalt: +asphalt.toFixed(5), dirt: +dirt.toFixed(5), kg, lb, us_ton, long_ton, total_cost };
+
+    } else {
+      return { error: "Please! Check Your Input" };
+    }
+
+    return { status: "success", payload: { RESULT: 1, ...result } };
+
+  } catch (err) {
+    return { status: "error", message: err.message };
+  }
+}
 
 
 
