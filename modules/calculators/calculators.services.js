@@ -58531,118 +58531,200 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
     return param;
   }
 
-  async getCalculationRetainingWallCalculator(body) {
-  let wall_length = body.tech_wall_length;
-  let wall_length_unit = body.tech_wall_length_unit;
-  let wall_height = body.tech_wall_height;
-  let wall_height_unit = body.tech_wall_height_unit;
-  let block_height = body.tech_block_height;
-  let block_height_unit = body.tech_block_height_unit;
-  let block_length = body.tech_block_length;
-  let block_length_unit = body.tech_block_length_unit;
-  let wall_block_price = body.tech_wall_block_price;
-  let cap_height = body.tech_cap_height;
-  let cap_height_unit = body.tech_cap_height_unit;
-  let cap_length = body.tech_cap_length;
-  let cap_length_unit = body.tech_cap_length_unit;
-  let cap_block_price = body.tech_cap_block_price;
-  let backfill_thickness = body.tech_backfill_thickness;
-  let backfill_thickness_unit = body.tech_backfill_thickness_unit;
-  let backfill_length = body.tech_backfill_length;
-  let backfill_length_unit = body.tech_backfill_length_unit;
-  let backfill_height = body.tech_backfill_height;
-  let backfill_height_unit = body.tech_backfill_height_unit;
-  let backfill_price = body.tech_backfill_price;
-  let backfill_price_unit = body.tech_backfill_price_unit;
-  let currancy = body.tech_currancy;
+    async getCalculationRetainingWallCalculator(body) {
+    let wall_length = body.tech_wall_length;
+    let wall_length_unit = body.tech_wall_length_unit;
+    let wall_height = body.tech_wall_height;
+    let wall_height_unit = body.tech_wall_height_unit;
+    let block_height = body.tech_block_height;
+    let block_height_unit = body.tech_block_height_unit;
+    let block_length = body.tech_block_length;
+    let block_length_unit = body.tech_block_length_unit;
+    let wall_block_price = body.tech_wall_block_price;
+    let cap_height = body.tech_cap_height;
+    let cap_height_unit = body.tech_cap_height_unit;
+    let cap_length = body.tech_cap_length;
+    let cap_length_unit = body.tech_cap_length_unit;
+    let cap_block_price = body.tech_cap_block_price;
+    let backfill_thickness = body.tech_backfill_thickness;
+    let backfill_thickness_unit = body.tech_backfill_thickness_unit;
+    let backfill_length = body.tech_backfill_length;
+    let backfill_length_unit = body.tech_backfill_length_unit;
+    let backfill_height = body.tech_backfill_height;
+    let backfill_height_unit = body.tech_backfill_height_unit;
+    let backfill_price = body.tech_backfill_price;
+    let backfill_price_unit = body.tech_backfill_price_unit;
+    let currancy = body.tech_currancy;
 
-  const param = {};
+    const param = {};
 
-  // Remove currency symbol
-  const clean_backfill_price_unit = backfill_price_unit?.replace(currancy + " ", "");
+    // Remove currency symbol
+    const clean_backfill_price_unit = backfill_price_unit?.replace(currancy + " ", "");
 
-  // 🔹 Convert to meter
-  function convert_to_meter(unit, value) {
-    let ans = 0;
-    if (unit == "cm") ans = value / 100;
-    else if (unit == "m") ans = value;
-    else if (unit == "in") ans = value / 39.37;
-    else if (unit == "ft") ans = value / 3.281;
-    else if (unit == "yd") ans = value / 1.094;
-    else if (unit == "dm") ans = value / 10;
-    return ans;
+    // 🔹 Convert to meter
+    function convert_to_meter(unit, value) {
+      let ans = 0;
+      if (unit == "cm") ans = value / 100;
+      else if (unit == "m") ans = value;
+      else if (unit == "in") ans = value / 39.37;
+      else if (unit == "ft") ans = value / 3.281;
+      else if (unit == "yd") ans = value / 1.094;
+      else if (unit == "dm") ans = value / 10;
+      return ans;
+    }
+
+    // 🔹 Convert to price unit (same as Laravel)
+    function convert_to_price_unit(unit, value) {
+      let ans = 0;
+      if (unit == "dag") ans = value * 100;
+      else if (unit == "lb") ans = value * 2.205;
+      else if (unit == "kg") ans = value;
+      else if (unit == "t") ans = value / 1000;
+      else if (unit == "oz") ans = value * 35.274;
+      else if (unit == "stone") ans = value / 6.35;
+      else if (unit == "Us ton") ans = value / 907.2;
+      else if (unit == "Long ton") ans = value / 1016;
+      // ⚠️ Laravel returns nothing if unit doesn't match — we replicate that:
+      else ans = 0;
+      return ans;
+    }
+
+    if (
+      !isNaN(wall_height) &&
+      !isNaN(block_height) &&
+      !isNaN(cap_length) &&
+      !isNaN(backfill_thickness) &&
+      !isNaN(backfill_height) &&
+      !isNaN(backfill_length) &&
+      !isNaN(backfill_price) &&
+      !isNaN(block_length) &&
+      !isNaN(cap_block_price) &&
+      !isNaN(wall_block_price) &&
+      !isNaN(wall_length)
+    ) {
+      const wall_height_m = convert_to_meter(wall_height_unit, Number(wall_height));
+      const block_height_m = convert_to_meter(block_height_unit, Number(block_height));
+      const wall_length_m = convert_to_meter(wall_length_unit, Number(wall_length));
+      const block_length_m = convert_to_meter(block_length_unit, Number(block_length));
+      const cap_length_m = convert_to_meter(cap_length_unit, Number(cap_length));
+      const backfill_thickness_m = convert_to_meter(backfill_thickness_unit, Number(backfill_thickness));
+      const backfill_length_m = convert_to_meter(backfill_length_unit, Number(backfill_length));
+      const backfill_height_m = convert_to_meter(backfill_height_unit, Number(backfill_height));
+
+      const block_rows = Math.ceil(wall_height_m / block_height_m);
+      const block_columns = Math.ceil(wall_length_m / block_length_m);
+      const blocks = block_columns * (block_rows - 1);
+      const blocks_price = blocks * wall_block_price;
+
+      const caps = wall_length_m / cap_length_m;
+      const caps_price = caps * cap_block_price;
+
+      const backfill_volume = backfill_thickness_m * backfill_length_m * backfill_height_m;
+      const backfill_weight = 1346 * backfill_volume;
+
+      // ✅ Match Laravel: invalid unit should make price 0
+      const backfill_weight_unit = convert_to_price_unit(clean_backfill_price_unit, backfill_weight);
+      const backfill_total_price =
+        backfill_weight_unit > 0 ? backfill_weight_unit * backfill_price : 0;
+
+      const total_cost = backfill_total_price + blocks_price + caps_price;
+
+      param.tech_blocks = Math.ceil(blocks);
+      param.tech_blocks_price = Math.ceil(blocks_price);
+      param.tech_caps = Math.ceil(caps);
+      param.tech_caps_price = Math.ceil(caps_price);
+      param.tech_backfill_volume = Number(backfill_volume.toFixed(3));
+      param.tech_backfill_weight = Math.ceil(backfill_weight);
+      param.tech_backfill_total_price = Math.ceil(backfill_total_price);
+      param.tech_total_cost = Math.ceil(total_cost);
+
+      return param;
+    } else {
+      return { error: "Please! Check Your Input" };
+    }
   }
 
-  // 🔹 Convert to price unit (same as Laravel)
-  function convert_to_price_unit(unit, value) {
-    let ans = 0;
-    if (unit == "dag") ans = value * 100;
-    else if (unit == "lb") ans = value * 2.205;
-    else if (unit == "kg") ans = value;
-    else if (unit == "t") ans = value / 1000;
-    else if (unit == "oz") ans = value * 35.274;
-    else if (unit == "stone") ans = value / 6.35;
-    else if (unit == "Us ton") ans = value / 907.2;
-    else if (unit == "Long ton") ans = value / 1016;
-    // ⚠️ Laravel returns nothing if unit doesn't match — we replicate that:
-    else ans = 0;
-    return ans;
-  }
+  async getCalculationSquareyardsCalculator(body) {
+    let first = body.tech_first;
+    let unit1 = body.tech_unit1;
+    let second = body.tech_second;
+    let unit2 = body.tech_unit2;
+    let third = body.tech_third;
+    let unit3 = body.tech_unit3;
+    let currancy = body.tech_currancy;
 
-  if (
-    !isNaN(wall_height) &&
-    !isNaN(block_height) &&
-    !isNaN(cap_length) &&
-    !isNaN(backfill_thickness) &&
-    !isNaN(backfill_height) &&
-    !isNaN(backfill_length) &&
-    !isNaN(backfill_price) &&
-    !isNaN(block_length) &&
-    !isNaN(cap_block_price) &&
-    !isNaN(wall_block_price) &&
-    !isNaN(wall_length)
-  ) {
-    const wall_height_m = convert_to_meter(wall_height_unit, Number(wall_height));
-    const block_height_m = convert_to_meter(block_height_unit, Number(block_height));
-    const wall_length_m = convert_to_meter(wall_length_unit, Number(wall_length));
-    const block_length_m = convert_to_meter(block_length_unit, Number(block_length));
-    const cap_length_m = convert_to_meter(cap_length_unit, Number(cap_length));
-    const backfill_thickness_m = convert_to_meter(backfill_thickness_unit, Number(backfill_thickness));
-    const backfill_length_m = convert_to_meter(backfill_length_unit, Number(backfill_length));
-    const backfill_height_m = convert_to_meter(backfill_height_unit, Number(backfill_height));
+    const param = {};
 
-    const block_rows = Math.ceil(wall_height_m / block_height_m);
-    const block_columns = Math.ceil(wall_length_m / block_length_m);
-    const blocks = block_columns * (block_rows - 1);
-    const blocks_price = blocks * wall_block_price;
+    // Remove currency symbol (like "$ " etc.)
+    unit3 = unit3?.replace(currancy + " ", "");
 
-    const caps = wall_length_m / cap_length_m;
-    const caps_price = caps * cap_block_price;
+    // --- Convert length to centimeters ---
+    function con_cm(a, b) {
+      if (a === "mm") {
+        return b / 10;
+      } else if (a === "cm") {
+        return b * 1;
+      } else if (a === "m") {
+        return b * 100;
+      } else if (a === "in") {
+        return b * 2.54;
+      } else if (a === "ft") {
+        return b * 30.48;
+      } else if (a === "yd") {
+        return b * 91.44;
+      }
+      return b;
+    }
 
-    const backfill_volume = backfill_thickness_m * backfill_length_m * backfill_height_m;
-    const backfill_weight = 1346 * backfill_volume;
+    // --- Convert area to square centimeters ---
+    function con_cm_sq(a, b) {
+      if (a === "mm²") {
+        return b / 10;
+      } else if (a === "cm²") {
+        return b * 1;
+      } else if (a === "dm") {
+        return b * 10;
+      } else if (a === "m²") {
+        return b * 100;
+      } else if (a === "km²") {
+        return b * 100000;
+      } else if (a === "in²") {
+        return b * 2.54;
+      } else if (a === "ft²") {
+        return b * 30.48;
+      } else if (a === "yd²") {
+        return b * 91.44;
+      } else if (a === "a") {
+        return b * 1000000;
+      } else if (a === "da") {
+        return b * 1000;
+      } else if (a === "ha") {
+        return b * 100000000;
+      } else if (a === "ac") {
+        return b * 40468564.224;
+      }
+      return b;
+    }
 
-    // ✅ Match Laravel: invalid unit should make price 0
-    const backfill_weight_unit = convert_to_price_unit(clean_backfill_price_unit, backfill_weight);
-    const backfill_total_price =
-      backfill_weight_unit > 0 ? backfill_weight_unit * backfill_price : 0;
+    // --- Validate numeric inputs ---
+    if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+      first = con_cm(unit1, Number(first));
+      second = con_cm(unit2, Number(second));
+      third = con_cm_sq(unit3, Number(third));
 
-    const total_cost = backfill_total_price + blocks_price + caps_price;
+      const yd_ans = first * second;
+      const price = yd_ans * third;
 
-    param.tech_blocks = Math.ceil(blocks);
-    param.tech_blocks_price = Math.ceil(blocks_price);
-    param.tech_caps = Math.ceil(caps);
-    param.tech_caps_price = Math.ceil(caps_price);
-    param.tech_backfill_volume = Number(backfill_volume.toFixed(3));
-    param.tech_backfill_weight = Math.ceil(backfill_weight);
-    param.tech_backfill_total_price = Math.ceil(backfill_total_price);
-    param.tech_total_cost = Math.ceil(total_cost);
+      param.tech_yd_ans = yd_ans;
+      param.tech_price = price;
 
     return param;
   } else {
     return { error: "Please! Check Your Input" };
   }
 }
+
+
 
 
 
