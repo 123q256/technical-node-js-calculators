@@ -59300,7 +59300,6 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
     return param;
   }
 
-
   async  getCalculationConcreteBlockCalculator(body) {
     const width = body.tech_width;
     const height = body.tech_height;
@@ -59596,7 +59595,6 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
         return { error: "Server error occurred" };
       }
     }
-
 
   async getCalculationFramingCalculator(body) {
     try {
@@ -60562,7 +60560,6 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
       }
     }
 
-
   async getCalculationSandCalculator(body) {
       let length = parseFloat(body.tech_length);
       let length_unit = body.tech_length_unit;
@@ -61262,7 +61259,6 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
       param.error = 'Invalid shape value';
       return param;
   }
-
 
   async getCalculationAsphaltCalculator(body) {
     try {
@@ -62083,7 +62079,6 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
     }
   }
 
-
     async getCalculationFenceCalculator(body) {
     try {
         let f_length = body.tech_f_length;
@@ -62687,7 +62682,6 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
     }
   }
 
-
   async getCalculationTileCalculator(body) {
     try {
       let {
@@ -62878,7 +62872,6 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
       return { error: 'Calculation failed. Please check your inputs.' };
     }
   }
-
 
     async getCalculationFlooringCalculator(body) {
     try {
@@ -63289,494 +63282,488 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
     }
   }
 
-
-      async getCalculationRampCalculator(body) {
-      try {
-          let appli = body.tech_appli;
-          let unit = body.tech_unit;
-          let unit0 = body.tech_unit0;
-          let unit1 = body.tech_unit1;
-          let unit2 = body.tech_unit2;
-          let r_type = body.tech_r_type;
-          let no = body.tech_no;
-          let no1 = body.tech_no1;
-          let no2 = body.tech_no2;
-          let width = body.tech_width;
-          let calc = body.tech_calc;
-
-        appli = appli?.trim();
-        unit = unit?.trim();
-        unit0 = unit0?.trim();
-        unit1 = unit1?.trim();
-        unit2 = unit2?.trim();
-        r_type = r_type?.trim();
-        calc = calc?.trim();
-
-        const param = {};
-
-        // -------------------- CASE 1: calc == "one" --------------------
-        if (calc === "one") {
-          if (!isNaN(no)) {
-            no = parseFloat(no);
-            let r, ramplength;
-
-            switch (appli) {
-              case "a":
-                r = 1 / 12;
-                ramplength = no * 12;
-                break;
-              case "b":
-                r = 1 / 16;
-                ramplength = no * 16;
-                break;
-              case "c":
-                r = 1 / 20;
-                ramplength = no * 20;
-                break;
-              case "d":
-                r = 2 / 12;
-                ramplength = (no * 12) / 2;
-                break;
-              case "e":
-                r = 3 / 12;
-                ramplength = (no * 12) / 3;
-                break;
-              default:
-                return { error: "Invalid appli value" };
-            }
-
-            const grade = r * 100;
-            const rad = Math.atan(r);
-            const deg = (rad * 180) / Math.PI;
-            let runs = Math.sqrt(Math.pow(ramplength, 2) - Math.pow(no, 2));
-
-            const millirad = rad * 1000;
-            const microrad = rad * 1000000;
-            const minarc = rad * ((60 * 180) / Math.PI);
-            const secarc = rad * ((3600 * 180) / Math.PI);
-            const gradian = rad * (200 / Math.PI);
-            const turns = rad / (2 * Math.PI);
-            let pirad = deg * (Math.PI / 180);
-            pirad = pirad / Math.PI;
-
-            param.tech_millirad = Number(millirad.toFixed(1));
-            param.tech_microrad = Math.round(microrad);
-            param.tech_secarc = Math.round(secarc);
-            param.tech_gradian = Number(gradian.toFixed(2));
-            param.tech_turns = Number(turns.toFixed(5));
-            param.tech_pirad = Number(pirad.toFixed(5));
-            param.tech_minarc = Math.round(minarc);
-            param.tech_grade = Number(grade.toFixed(2));
-            param.tech_r_type = r_type;
-            param.tech_appli = appli;
-            param.tech_runs = Number(runs.toFixed(3));
-            param.tech_unit = unit;
-            param.tech_deg = Number(deg.toFixed(2));
-            param.tech_rad = Number(rad.toFixed(4));
-            param.tech_ramplength = ramplength;
-
-            return { status: "success", payload: param };
-          } else {
-            return { error: "Please! Check your input" };
-          }
-        }
-
-        // -------------------- CASE 2: calc != "one" --------------------
-        else {
-          function ramp(unit, value) {
-            value = parseFloat(value);
-            switch (unit) {
-              case "mm":
-                return value / 10;
-              case "cm":
-                return value * 1;
-              case "m":
-                return value * 100;
-              case "in":
-                return value * 2.54;
-              case "ft":
-                return value * 30.48;
-              default:
-                return value;
-            }
-          }
-
-          no1 = ramp(unit0, no1);
-          no2 = ramp(unit1, no2);
-          width = ramp(unit2, width);
-
-          if (!isNaN(no) && !isNaN(no2) && !isNaN(width)) {
-            no = parseFloat(no);
-            const Hypotenuse1 = Math.pow(no1, 2) + Math.pow(no2, 2);
-            const Hypotenuse = Math.sqrt(Hypotenuse1);
-            const alpha1 = Math.pow(no2, 2) + Math.pow(Hypotenuse, 2) - Math.pow(no1, 2);
-            const alpha2 = alpha1 / (2 * no2 * Hypotenuse);
-            const alpha = Math.acos(alpha2) * (180 / Math.PI);
-            const beta = 90 - alpha;
-            const area = no1 * no2 + width * (no1 + no2 + Hypotenuse);
-            const volume = (no1 * no2 * width) / 2;
-            const sv = area / volume;
-
-            param.tech_unit = unit;
-            param.tech_Hypotenuse = Number(Hypotenuse.toFixed(3));
-            param.tech_Hypotenuse1 = Hypotenuse1;
-            param.tech_alpha = Number(alpha.toFixed(3));
-            param.tech_alpha2 = Number(alpha2.toFixed(3));
-            param.tech_alpha1 = Number(alpha1.toFixed(3));
-            param.tech_beta = Number(beta.toFixed(4));
-            param.tech_area = Number(area.toFixed(3));
-            param.tech_volume = Number(volume.toFixed(3));
-            param.tech_sv = Number(sv.toFixed(3));
-            param.tech_no1 = no1;
-            param.tech_no2 = no2;
-            param.tech_width = width;
-
-            return { status: "success", payload: param };
-          } else {
-            return { error: "Please! Check your input" };
-          }
-        }
-      } catch (error) {
-        return { error: "Server error occurred", details: error.message };
-      }
-    }
-
-
-
-      async getCalculationSquareMeterCalculator(body) {
+    async getCalculationRampCalculator(body) {
     try {
-            let volume_select = body.tech_volume_select;
-          let length = body.tech_length;
-          let l_units = body.tech_l_units;
-          let width = body.tech_width;
-          let w_units = body.tech_w_units;
-          let side = body.tech_side;
-          let s_units = body.tech_s_units;
-          let quantity = body.tech_quantity;
-          let price = body.tech_price;
+        let appli = body.tech_appli;
+        let unit = body.tech_unit;
+        let unit0 = body.tech_unit0;
+        let unit1 = body.tech_unit1;
+        let unit2 = body.tech_unit2;
+        let r_type = body.tech_r_type;
+        let no = body.tech_no;
+        let no1 = body.tech_no1;
+        let no2 = body.tech_no2;
+        let width = body.tech_width;
+        let calc = body.tech_calc;
+
+      appli = appli?.trim();
+      unit = unit?.trim();
+      unit0 = unit0?.trim();
+      unit1 = unit1?.trim();
+      unit2 = unit2?.trim();
+      r_type = r_type?.trim();
+      calc = calc?.trim();
 
       const param = {};
 
-      // Parse & sanitize inputs
-      volume_select = parseInt(volume_select);
-      length = parseFloat(length);
-      width = parseFloat(width);
-      side = parseFloat(side);
-      quantity = quantity ? parseFloat(quantity) : 1;
-      price = price !== undefined && price !== null && price !== "" ? parseFloat(price) : null;
+      // -------------------- CASE 1: calc == "one" --------------------
+      if (calc === "one") {
+        if (!isNaN(no)) {
+          no = parseFloat(no);
+          let r, ramplength;
 
-      // ✅ Conversion function to meters
-      function meterconvert(value, unit) {
-        switch (unit) {
-          case "mm":
-            return value / 1000;
-          case "cm":
-            return value / 100;
-          case "in":
-            return value / 39.37;
-          case "ft":
-            return value / 3.281;
-          case "yd":
-            return value / 1.094;
-          default:
-            return value;
-        }
-      }
+          switch (appli) {
+            case "a":
+              r = 1 / 12;
+              ramplength = no * 12;
+              break;
+            case "b":
+              r = 1 / 16;
+              ramplength = no * 16;
+              break;
+            case "c":
+              r = 1 / 20;
+              ramplength = no * 20;
+              break;
+            case "d":
+              r = 2 / 12;
+              ramplength = (no * 12) / 2;
+              break;
+            case "e":
+              r = 3 / 12;
+              ramplength = (no * 12) / 3;
+              break;
+            default:
+              return { error: "Invalid appli value" };
+          }
 
-      // Convert all dimensions to meters
-      const length_m = meterconvert(length, l_units);
-      const width_m = meterconvert(width, w_units);
-      const side_m = meterconvert(side, s_units);
+          const grade = r * 100;
+          const rad = Math.atan(r);
+          const deg = (rad * 180) / Math.PI;
+          let runs = Math.sqrt(Math.pow(ramplength, 2) - Math.pow(no, 2));
 
-      let res = 0;
-      let cost = 0;
+          const millirad = rad * 1000;
+          const microrad = rad * 1000000;
+          const minarc = rad * ((60 * 180) / Math.PI);
+          const secarc = rad * ((3600 * 180) / Math.PI);
+          const gradian = rad * (200 / Math.PI);
+          const turns = rad / (2 * Math.PI);
+          let pirad = deg * (Math.PI / 180);
+          pirad = pirad / Math.PI;
 
-      // ✅ CASE 1: Rectangle (volume_select = 1)
-      if (volume_select === 1) {
-        if (isNaN(length_m)) {
-          return { error: "Please! Check Your Inputs" };
-        }
+          param.tech_millirad = Number(millirad.toFixed(1));
+          param.tech_microrad = Math.round(microrad);
+          param.tech_secarc = Math.round(secarc);
+          param.tech_gradian = Number(gradian.toFixed(2));
+          param.tech_turns = Number(turns.toFixed(5));
+          param.tech_pirad = Number(pirad.toFixed(5));
+          param.tech_minarc = Math.round(minarc);
+          param.tech_grade = Number(grade.toFixed(2));
+          param.tech_r_type = r_type;
+          param.tech_appli = appli;
+          param.tech_runs = Number(runs.toFixed(3));
+          param.tech_unit = unit;
+          param.tech_deg = Number(deg.toFixed(2));
+          param.tech_rad = Number(rad.toFixed(4));
+          param.tech_ramplength = ramplength;
 
-        res = width_m * length_m;
-        if (isNaN(price)) {
-          res = res * quantity;
+          return { status: "success", payload: param };
         } else {
-          cost = price * res;
+          return { error: "Please! Check your input" };
         }
       }
 
-      // ✅ CASE 2: Square (volume_select = 2)
-      else if (volume_select === 2) {
-        res = Math.pow(width_m, 2);
-        if (isNaN(price)) {
-          res = res * quantity;
-        } else {
-          cost = price * res;
-        }
-      }
-
-      // ✅ CASE 3: Circle (volume_select = 3)
-      else if (volume_select === 3) {
-        if (isNaN(length_m)) {
-          return { error: "Please! Check Your Inputs" };
-        }
-
-        const radi = length_m / 2;
-        res = 3.1416 * Math.pow(radi, 2);
-        if (isNaN(price)) {
-          res = res * quantity;
-        } else {
-          cost = price * res;
-        }
-      }
-
-      // ✅ CASE 4: Triangle (default)
+      // -------------------- CASE 2: calc != "one" --------------------
       else {
-        if (isNaN(length_m) || isNaN(width_m) || isNaN(side_m)) {
-          return { error: "Please! Check Your Inputs" };
+        function ramp(unit, value) {
+          value = parseFloat(value);
+          switch (unit) {
+            case "mm":
+              return value / 10;
+            case "cm":
+              return value * 1;
+            case "m":
+              return value * 100;
+            case "in":
+              return value * 2.54;
+            case "ft":
+              return value * 30.48;
+            default:
+              return value;
+          }
         }
 
-        res =
-          0.25 *
-          Math.sqrt(
-            (length_m + width_m + side_m) *
-              (-length_m + width_m + side_m) *
-              (length_m - width_m + side_m) *
-              (length_m + width_m - side_m)
-          );
+        no1 = ramp(unit0, no1);
+        no2 = ramp(unit1, no2);
+        width = ramp(unit2, width);
 
-        if (isNaN(price)) {
-          res = res * quantity;
+        if (!isNaN(no) && !isNaN(no2) && !isNaN(width)) {
+          no = parseFloat(no);
+          const Hypotenuse1 = Math.pow(no1, 2) + Math.pow(no2, 2);
+          const Hypotenuse = Math.sqrt(Hypotenuse1);
+          const alpha1 = Math.pow(no2, 2) + Math.pow(Hypotenuse, 2) - Math.pow(no1, 2);
+          const alpha2 = alpha1 / (2 * no2 * Hypotenuse);
+          const alpha = Math.acos(alpha2) * (180 / Math.PI);
+          const beta = 90 - alpha;
+          const area = no1 * no2 + width * (no1 + no2 + Hypotenuse);
+          const volume = (no1 * no2 * width) / 2;
+          const sv = area / volume;
+
+          param.tech_unit = unit;
+          param.tech_Hypotenuse = Number(Hypotenuse.toFixed(3));
+          param.tech_Hypotenuse1 = Hypotenuse1;
+          param.tech_alpha = Number(alpha.toFixed(3));
+          param.tech_alpha2 = Number(alpha2.toFixed(3));
+          param.tech_alpha1 = Number(alpha1.toFixed(3));
+          param.tech_beta = Number(beta.toFixed(4));
+          param.tech_area = Number(area.toFixed(3));
+          param.tech_volume = Number(volume.toFixed(3));
+          param.tech_sv = Number(sv.toFixed(3));
+          param.tech_no1 = no1;
+          param.tech_no2 = no2;
+          param.tech_width = width;
+
+          return { status: "success", payload: param };
         } else {
-          cost = price * res;
+          return { error: "Please! Check your input" };
         }
       }
-
-      // ✅ Prepare final output
-      if (!isNaN(price)) {
-        param.tech_res = Number(res.toFixed(6));
-        param.tech_cost = Number(cost.toFixed(6));
-      } else {
-        param.tech_res = Number(res.toFixed(6));
-      }
-
-
-      return { status: "success", payload: param };
     } catch (error) {
       return { error: "Server error occurred", details: error.message };
     }
-  }
+    }
 
+    async getCalculationSquareMeterCalculator(body) {
+    try {
+          let volume_select = body.tech_volume_select;
+        let length = body.tech_length;
+        let l_units = body.tech_l_units;
+        let width = body.tech_width;
+        let w_units = body.tech_w_units;
+        let side = body.tech_side;
+        let s_units = body.tech_s_units;
+        let quantity = body.tech_quantity;
+        let price = body.tech_price;
 
-      async getCalculationStoneCalculator(body) {
-        // Extract and trim input values
-        const selection = (body.tech_selection || '').toString().trim();
-        const length = (body.tech_length || '').toString().trim();
-        const length_unit = (body.tech_length_unit || '').toString().trim();
-        const width = (body.tech_width || '').toString().trim();
-        const width_unit = (body.tech_width_unit || '').toString().trim();
-        const area = (body.tech_area || '').toString().trim();
-        const area_unit = (body.tech_area_unit || '').toString().trim();
-        const depth = (body.tech_depth || '').toString().trim();
-        const depth_unit = (body.tech_depth_unit || '').toString().trim();
-        const volume = (body.tech_volume || '').toString().trim();
-        const volume_unit = (body.tech_volume_unit || '').toString().trim();
-        const material = (body.tech_material || '').toString().trim();
-        let price = (body.tech_price || '').toString().trim();
-        let price_unit = (body.tech_price_unit || '').toString().trim();
-        const currancy = body.tech_currancy || '';
-        
-        // Remove currency from price_unit
-        if (currancy) {
-          price_unit = price_unit.replace(currancy + ' ', '');
-        }
+    const param = {};
 
-        const result = {};
+    // Parse & sanitize inputs
+    volume_select = parseInt(volume_select);
+    length = parseFloat(length);
+    width = parseFloat(width);
+    side = parseFloat(side);
+    quantity = quantity ? parseFloat(quantity) : 1;
+    price = price !== undefined && price !== null && price !== "" ? parseFloat(price) : null;
 
-        // Helper function: Convert units to feet
-        function unit_ft(a, b) {
-          let ans1 = 0;
-          if (b === "cm") {
-            ans1 = a / 30.48;
-          } else if (b === "m") {
-            ans1 = a * 3.281;
-          } else if (b === "in") {
-            ans1 = a / 12;
-          } else if (b === "yd") {
-            ans1 = a * 3;
-          } else if (b === "ft") {
-            ans1 = a * 1;
-          }
-          return ans1;
-        }
+    // ✅ Conversion function to meters
+    function meterconvert(value, unit) {
+      switch (unit) {
+        case "mm":
+          return value / 1000;
+        case "cm":
+          return value / 100;
+        case "in":
+          return value / 39.37;
+        case "ft":
+          return value / 3.281;
+        case "yd":
+          return value / 1.094;
+        default:
+          return value;
+      }
+    }
 
-        // Helper function: Convert area units to ft²
-        function unit_area(aa, bb) {
-          let ans2 = 0;
-          if (bb === "ft²") {
-            ans2 = aa * 1;
-          } else if (bb === "yd²") {
-            ans2 = aa * 9;
-          } else if (bb === "m²") {
-            ans2 = aa * 10.764;
-          }
-          return ans2;
-        }
+    // Convert all dimensions to meters
+    const length_m = meterconvert(length, l_units);
+    const width_m = meterconvert(width, w_units);
+    const side_m = meterconvert(side, s_units);
 
-        // Helper function: Convert volume units to ft³
-        function unit_vol(a, b) {
-          let ans3 = 0;
-          if (b === "ft³") {
-            ans3 = a * 1;
-          } else if (b === "yd³") {
-            ans3 = a * 27;
-          } else if (b === "m³") {
-            ans3 = a * 35.315;
-          }
-          return ans3;
-        }
+    let res = 0;
+    let cost = 0;
 
-        // Helper function: Calculate material tons (imperial)
-        function material_val(a, b) {
-          let tons1 = 0, tons2 = 0;
-          
-          // Convert to string for comparison
-          const matStr = b.toString();
-          
-          if (matStr === "105") {
-            tons1 = a * 1.4;
-            tons2 = a * 1.7;
-          } else if (matStr === "150") {
-            tons1 = a * 1.5;
-            tons2 = a * 1.7;
-          } else if (matStr === "160") {
-            tons1 = a * 1.5;
-            tons2 = a * 1.7;
-          } else if (matStr === "145") {
-            tons1 = a * 1.3;
-            tons2 = a * 1.5;
-          } else if (matStr === "168") {
-            tons1 = a * 1.5;
-            tons2 = a * 1.7;
-          } else if (matStr === "188") {
-            tons1 = a * 1;
-            tons2 = a * 1.3;
-          } else if (matStr === "100") {
-            tons1 = a * 1.7;
-            tons2 = a * 2;
-          }
-          return [tons1, tons2];
-        }
-
-        // Helper function: Calculate material tons (metric)
-        function material_m(a, b) {
-          let tons1 = 0, tons2 = 0;
-          
-          // Convert to string for comparison
-          const matStr = b.toString();
-          
-          if (matStr === "105") {
-            tons1 = a * 1.66;
-            tons2 = a * 2.02;
-          } else if (matStr === "150") {
-            tons1 = a * 1.78;
-            tons2 = a * 2.02;
-          } else if (matStr === "160") {
-            tons1 = a * 1;
-            tons2 = a * 2.02;
-          } else if (matStr === "145") {
-            tons1 = a * 1.54;
-            tons2 = a * 1.78;
-          } else if (matStr === "168") {
-            tons1 = a * 1.78;
-            tons2 = a * 2.02;
-          } else if (matStr === "188") {
-            tons1 = a * 1.19;
-            tons2 = a * 1.54;
-          } else if (matStr === "100") {
-            tons1 = a * 2.02;
-            tons2 = a * 2.34;
-          }
-          return [tons1, tons2];
-        }
-
-        // Main calculation logic
-        let cubicyd1 = 0, array = [0, 0];
-
-        if (selection == "1") {
-          // Length x Width x Depth calculation
-          if (!isNaN(parseFloat(length)) && !isNaN(parseFloat(width)) && !isNaN(parseFloat(depth))) {
-            const lengthFt = unit_ft(parseFloat(length), length_unit);
-            const widthFt = unit_ft(parseFloat(width), width_unit);
-            const depthFt = unit_ft(parseFloat(depth), depth_unit);
-            const cubicyd = lengthFt * widthFt * depthFt;
-            cubicyd1 = cubicyd / 27;
-            array = material_val(cubicyd1, material);
-            result.tech_cubicyd1 = cubicyd1;
-            result.tech_array = array;
-          } else {
-            result.error = 'Please! Check Your Input';
-            return result;
-          }
-        } else if (selection == "2") {
-          // Area x Depth calculation
-          if (!isNaN(parseFloat(area)) && !isNaN(parseFloat(depth))) {
-            const areaFt = unit_area(parseFloat(area), area_unit);
-            const depthFt = unit_ft(parseFloat(depth), depth_unit);
-            let cubicyd;
-            if (area_unit === "3" && depth_unit === "m") {
-              cubicyd = (areaFt / 10.764) * (depthFt / 3.281);
-            } else {
-              cubicyd = areaFt * depthFt;
-            }
-            cubicyd1 = cubicyd / 27;
-            array = material_val(cubicyd1, material);
-            result.tech_array = array;
-            result.tech_cubicyd1 = cubicyd1;
-          } else {
-            result.error = 'Please! Check Your Input';
-            return result;
-          }
-        } else if (selection == "3") {
-          // Volume calculation
-          if (!isNaN(parseFloat(volume))) {
-            if (volume_unit === "1") {
-              cubicyd1 = parseFloat(volume) / 27;
-              array = material_val(cubicyd1, material);
-            } else if (volume_unit === "2") {
-              cubicyd1 = parseFloat(volume);
-              array = material_val(cubicyd1, material);
-            } else {
-              cubicyd1 = parseFloat(volume);
-              array = material_m(cubicyd1, material);
-            }
-            result.tech_cubicyd1 = cubicyd1;
-            result.tech_array = array;
-          } else {
-            result.error = 'Please! Check Your Input';
-            return result;
-          }
-        }
-
-        // Price calculation
-        if (!isNaN(parseFloat(price)) && array) {
-          const priceNum = parseFloat(price);
-          if (price_unit === "per ton") {
-            const price_ton = array.map(v => v * priceNum);
-            result.tech_price_ton = price_ton;
-          } else {
-            const price_cu = priceNum * cubicyd1;
-            result.tech_price_cu = price_cu;
-          }
-          result.tech_price = priceNum;
-        }
-
-        return result;
+    // ✅ CASE 1: Rectangle (volume_select = 1)
+    if (volume_select === 1) {
+      if (isNaN(length_m)) {
+        return { error: "Please! Check Your Inputs" };
       }
 
+      res = width_m * length_m;
+      if (isNaN(price)) {
+        res = res * quantity;
+      } else {
+        cost = price * res;
+      }
+    }
+
+    // ✅ CASE 2: Square (volume_select = 2)
+    else if (volume_select === 2) {
+      res = Math.pow(width_m, 2);
+      if (isNaN(price)) {
+        res = res * quantity;
+      } else {
+        cost = price * res;
+      }
+    }
+
+    // ✅ CASE 3: Circle (volume_select = 3)
+    else if (volume_select === 3) {
+      if (isNaN(length_m)) {
+        return { error: "Please! Check Your Inputs" };
+      }
+
+      const radi = length_m / 2;
+      res = 3.1416 * Math.pow(radi, 2);
+      if (isNaN(price)) {
+        res = res * quantity;
+      } else {
+        cost = price * res;
+      }
+    }
+
+    // ✅ CASE 4: Triangle (default)
+    else {
+      if (isNaN(length_m) || isNaN(width_m) || isNaN(side_m)) {
+        return { error: "Please! Check Your Inputs" };
+      }
+
+      res =
+        0.25 *
+        Math.sqrt(
+          (length_m + width_m + side_m) *
+            (-length_m + width_m + side_m) *
+            (length_m - width_m + side_m) *
+            (length_m + width_m - side_m)
+        );
+
+      if (isNaN(price)) {
+        res = res * quantity;
+      } else {
+        cost = price * res;
+      }
+    }
+
+    // ✅ Prepare final output
+    if (!isNaN(price)) {
+      param.tech_res = Number(res.toFixed(6));
+      param.tech_cost = Number(cost.toFixed(6));
+    } else {
+      param.tech_res = Number(res.toFixed(6));
+    }
 
 
-      async getCalculationRoomSizeCalculator(body) {
+    return { status: "success", payload: param };
+    } catch (error) {
+    return { error: "Server error occurred", details: error.message };
+    }
+    }
+
+    async getCalculationStoneCalculator(body) {
+      // Extract and trim input values
+      const selection = (body.tech_selection || '').toString().trim();
+      const length = (body.tech_length || '').toString().trim();
+      const length_unit = (body.tech_length_unit || '').toString().trim();
+      const width = (body.tech_width || '').toString().trim();
+      const width_unit = (body.tech_width_unit || '').toString().trim();
+      const area = (body.tech_area || '').toString().trim();
+      const area_unit = (body.tech_area_unit || '').toString().trim();
+      const depth = (body.tech_depth || '').toString().trim();
+      const depth_unit = (body.tech_depth_unit || '').toString().trim();
+      const volume = (body.tech_volume || '').toString().trim();
+      const volume_unit = (body.tech_volume_unit || '').toString().trim();
+      const material = (body.tech_material || '').toString().trim();
+      let price = (body.tech_price || '').toString().trim();
+      let price_unit = (body.tech_price_unit || '').toString().trim();
+      const currancy = body.tech_currancy || '';
+      
+      // Remove currency from price_unit
+      if (currancy) {
+        price_unit = price_unit.replace(currancy + ' ', '');
+      }
+
+      const result = {};
+
+      // Helper function: Convert units to feet
+      function unit_ft(a, b) {
+        let ans1 = 0;
+        if (b === "cm") {
+          ans1 = a / 30.48;
+        } else if (b === "m") {
+          ans1 = a * 3.281;
+        } else if (b === "in") {
+          ans1 = a / 12;
+        } else if (b === "yd") {
+          ans1 = a * 3;
+        } else if (b === "ft") {
+          ans1 = a * 1;
+        }
+        return ans1;
+      }
+
+      // Helper function: Convert area units to ft²
+      function unit_area(aa, bb) {
+        let ans2 = 0;
+        if (bb === "ft²") {
+          ans2 = aa * 1;
+        } else if (bb === "yd²") {
+          ans2 = aa * 9;
+        } else if (bb === "m²") {
+          ans2 = aa * 10.764;
+        }
+        return ans2;
+      }
+
+      // Helper function: Convert volume units to ft³
+      function unit_vol(a, b) {
+        let ans3 = 0;
+        if (b === "ft³") {
+          ans3 = a * 1;
+        } else if (b === "yd³") {
+          ans3 = a * 27;
+        } else if (b === "m³") {
+          ans3 = a * 35.315;
+        }
+        return ans3;
+      }
+
+      // Helper function: Calculate material tons (imperial)
+      function material_val(a, b) {
+        let tons1 = 0, tons2 = 0;
+        
+        // Convert to string for comparison
+        const matStr = b.toString();
+        
+        if (matStr === "105") {
+          tons1 = a * 1.4;
+          tons2 = a * 1.7;
+        } else if (matStr === "150") {
+          tons1 = a * 1.5;
+          tons2 = a * 1.7;
+        } else if (matStr === "160") {
+          tons1 = a * 1.5;
+          tons2 = a * 1.7;
+        } else if (matStr === "145") {
+          tons1 = a * 1.3;
+          tons2 = a * 1.5;
+        } else if (matStr === "168") {
+          tons1 = a * 1.5;
+          tons2 = a * 1.7;
+        } else if (matStr === "188") {
+          tons1 = a * 1;
+          tons2 = a * 1.3;
+        } else if (matStr === "100") {
+          tons1 = a * 1.7;
+          tons2 = a * 2;
+        }
+        return [tons1, tons2];
+      }
+
+      // Helper function: Calculate material tons (metric)
+      function material_m(a, b) {
+        let tons1 = 0, tons2 = 0;
+        
+        // Convert to string for comparison
+        const matStr = b.toString();
+        
+        if (matStr === "105") {
+          tons1 = a * 1.66;
+          tons2 = a * 2.02;
+        } else if (matStr === "150") {
+          tons1 = a * 1.78;
+          tons2 = a * 2.02;
+        } else if (matStr === "160") {
+          tons1 = a * 1;
+          tons2 = a * 2.02;
+        } else if (matStr === "145") {
+          tons1 = a * 1.54;
+          tons2 = a * 1.78;
+        } else if (matStr === "168") {
+          tons1 = a * 1.78;
+          tons2 = a * 2.02;
+        } else if (matStr === "188") {
+          tons1 = a * 1.19;
+          tons2 = a * 1.54;
+        } else if (matStr === "100") {
+          tons1 = a * 2.02;
+          tons2 = a * 2.34;
+        }
+        return [tons1, tons2];
+      }
+
+      // Main calculation logic
+      let cubicyd1 = 0, array = [0, 0];
+
+      if (selection == "1") {
+        // Length x Width x Depth calculation
+        if (!isNaN(parseFloat(length)) && !isNaN(parseFloat(width)) && !isNaN(parseFloat(depth))) {
+          const lengthFt = unit_ft(parseFloat(length), length_unit);
+          const widthFt = unit_ft(parseFloat(width), width_unit);
+          const depthFt = unit_ft(parseFloat(depth), depth_unit);
+          const cubicyd = lengthFt * widthFt * depthFt;
+          cubicyd1 = cubicyd / 27;
+          array = material_val(cubicyd1, material);
+          result.tech_cubicyd1 = cubicyd1;
+          result.tech_array = array;
+        } else {
+          result.error = 'Please! Check Your Input';
+          return result;
+        }
+      } else if (selection == "2") {
+        // Area x Depth calculation
+        if (!isNaN(parseFloat(area)) && !isNaN(parseFloat(depth))) {
+          const areaFt = unit_area(parseFloat(area), area_unit);
+          const depthFt = unit_ft(parseFloat(depth), depth_unit);
+          let cubicyd;
+          if (area_unit === "3" && depth_unit === "m") {
+            cubicyd = (areaFt / 10.764) * (depthFt / 3.281);
+          } else {
+            cubicyd = areaFt * depthFt;
+          }
+          cubicyd1 = cubicyd / 27;
+          array = material_val(cubicyd1, material);
+          result.tech_array = array;
+          result.tech_cubicyd1 = cubicyd1;
+        } else {
+          result.error = 'Please! Check Your Input';
+          return result;
+        }
+      } else if (selection == "3") {
+        // Volume calculation
+        if (!isNaN(parseFloat(volume))) {
+          if (volume_unit === "1") {
+            cubicyd1 = parseFloat(volume) / 27;
+            array = material_val(cubicyd1, material);
+          } else if (volume_unit === "2") {
+            cubicyd1 = parseFloat(volume);
+            array = material_val(cubicyd1, material);
+          } else {
+            cubicyd1 = parseFloat(volume);
+            array = material_m(cubicyd1, material);
+          }
+          result.tech_cubicyd1 = cubicyd1;
+          result.tech_array = array;
+        } else {
+          result.error = 'Please! Check Your Input';
+          return result;
+        }
+      }
+
+      // Price calculation
+      if (!isNaN(parseFloat(price)) && array) {
+        const priceNum = parseFloat(price);
+        if (price_unit === "per ton") {
+          const price_ton = array.map(v => v * priceNum);
+          result.tech_price_ton = price_ton;
+        } else {
+          const price_cu = priceNum * cubicyd1;
+          result.tech_price_cu = price_cu;
+        }
+        result.tech_price = priceNum;
+      }
+
+      return result;
+    }
+  
+  async getCalculationRoomSizeCalculator(body) {
   try {
     let submit = body.tech_name;
     let lenght_f = body.tech_lenght_f;
@@ -63862,8 +63849,534 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
   } catch (error) {
     return { error: "An error occurred during calculation." };
   }
-}
+  }
 
+  async  getCalculationTankVolumeCalculator(body) {
+    const {
+      tech_operations: operations,
+      tech_first: first,
+      tech_second: second,
+      tech_third: third,
+      tech_four: four,
+      tech_units1: units1,
+      tech_units2: units2,
+      tech_units3: units3,
+      tech_units4: units4,
+      tech_fill_units: fill_units,
+      tech_fill: fill
+    } = body;
+
+  const result = {};
+  // Unit conversion function
+
+  function inchesConvert(value, unit) {
+    const conversions = {
+      'ft': value * 12,
+      'in': value * 1,
+      'cm': value / 2.54,
+      'm': value * 39.37,
+      'mm': value / 25.4
+    };
+    return conversions[unit] || value;
+  }
+
+  let v_tank, v_fill, per_ans;
+
+  try {
+    // Operation 3: Horizontal Cylinder
+    if (operations == "3") {
+      if (!isNaN(first) && !isNaN(second)) {
+        const length = inchesConvert(parseFloat(first), units1);
+        const diameter = inchesConvert(parseFloat(second), units2);
+        const r = diameter / 2;
+        const sq_r = Math.pow(r, 2);
+        v_tank = 3.14 * sq_r * length;
+        // console.log(v_tank);
+        if (!isNaN(fill)) {
+          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+          console.log(fillHeight);
+          if (fillHeight <= diameter) {
+            const a_ans1 = r - fillHeight;
+            const f_ans1 = a_ans1 / r;
+            const acoc_ans = Math.acos(f_ans1);
+            const angle_ans = 2 * acoc_ans;
+            const sin_ans = Math.sin(angle_ans);
+            const angle_sin = angle_ans - sin_ans;
+            v_fill = 0.5 * sq_r * angle_sin * length;
+            per_ans = (fillHeight / diameter) * 100;
+          } else {
+            return { error: 'It seems your tank is over filled.' };
+          }
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 4: Vertical Cylinder
+    else if (operations == "4") {
+      if (!isNaN(first) && !isNaN(second)) {
+        const height = inchesConvert(parseFloat(first), units1);
+        const diameter = inchesConvert(parseFloat(second), units2);
+        const r = diameter / 2;
+        const sq_r = Math.pow(r, 2);
+        v_tank = Math.PI * sq_r * height;
+
+        if (!isNaN(fill)) {
+          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+          if (fillHeight <= height) {
+            v_fill = Math.PI * sq_r * fillHeight;
+            per_ans = (fillHeight / height) * 100;
+          } else {
+            return { error: 'It seems your tank is over filled.' };
+          }
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 5: Rectangular Tank
+    else if (operations == "5") {
+      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+        const height = inchesConvert(parseFloat(first), units1);
+        const width = inchesConvert(parseFloat(second), units2);
+        const length = inchesConvert(parseFloat(third), units3);
+        v_tank = height * width * length;
+
+        if (!isNaN(fill)) {
+          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+          if (fillHeight <= height) {
+            v_fill = width * length * fillHeight;
+            per_ans = (fillHeight / height) * 100;
+          } else {
+            return { error: 'It seems your tank is over filled.' };
+          }
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 6: Horizontal Capsule
+    else if (operations == "6") {
+      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+        const height = inchesConvert(parseFloat(first), units1);
+        const width = inchesConvert(parseFloat(second), units2);
+        const length = inchesConvert(parseFloat(third), units3);
+
+        if (width > height) {
+          const r = height / 2;
+          const sq_r = Math.pow(r, 2);
+          const a = width - height;
+          const ra = 2 * r * a;
+          const pi_sqr = Math.PI * sq_r;
+          v_tank = (pi_sqr + ra) * length;
+
+          if (!isNaN(fill)) {
+            const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+            if (fillHeight <= height) {
+              const a_ans1 = r - fillHeight;
+              const f_ans1 = a_ans1 / r;
+              const acoc_ans = Math.acos(f_ans1);
+              const angle_ans = 2 * acoc_ans;
+              const sin_ans = Math.sin(angle_ans);
+              const angle_sin = angle_ans - sin_ans;
+              const v_segment = 0.5 * sq_r * angle_sin * length;
+              const v_fill3 = a * length * fillHeight;
+              v_fill = v_segment + v_fill3;
+              per_ans = (fillHeight / height) * 100;
+            } else {
+              return { error: 'It seems your tank is over filled.' };
+            }
+          }
+        } else {
+          return { error: 'Width must be greater than height' };
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 7: Vertical Capsule
+    else if (operations == "7") {
+      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+        const height = inchesConvert(parseFloat(first), units1);
+        const width = inchesConvert(parseFloat(second), units2);
+        const length = inchesConvert(parseFloat(third), units3);
+
+        if (height > width) {
+          const r = width / 2;
+          const sq_r = Math.pow(r, 2);
+          const a = height - width;
+          const h_r = height - r;
+          const ra = 2 * r * a;
+          const pi_sqr = Math.PI * sq_r;
+          v_tank = (pi_sqr + ra) * length;
+
+          if (!isNaN(fill)) {
+            const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+            if (fillHeight <= height) {
+              if (fillHeight < r) {
+                const a_ans1 = r - fillHeight;
+                const f_ans1 = a_ans1 / r;
+                const acoc_ans = Math.acos(f_ans1);
+                const angle_ans = 2 * acoc_ans;
+                const sin_ans = Math.sin(angle_ans);
+                const angle_sin = angle_ans - sin_ans;
+                v_fill = 0.5 * sq_r * angle_sin * length;
+              } else if (fillHeight > r && fillHeight < a) {
+                const f_r = fillHeight - r;
+                const v_fill_1 = 0.5 * Math.PI * sq_r * length;
+                const v_fill_2 = f_r * length * width;
+                v_fill = v_fill_1 + v_fill_2;
+              } else if (h_r < height && fillHeight < height) {
+                const a_ans1 = r - fillHeight;
+                const f_ans1 = a_ans1 / r;
+                const acoc_ans = Math.acos(f_ans1);
+                const angle_ans = 2 * acoc_ans;
+                const sin_ans = Math.sin(angle_ans);
+                const angle_sin = angle_ans - sin_ans;
+                const v_segment = (Math.PI * sq_r * length) - (0.5 * sq_r * angle_sin * length);
+                v_fill = v_tank - v_segment;
+              }
+              per_ans = (fillHeight / height) * 100;
+            } else {
+              return { error: 'It seems your tank is over filled.' };
+            }
+          }
+        } else {
+          return { error: 'Height must be greater than Width' };
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 8: Horizontal Dish Ends
+    else if (operations == "8") {
+      if (!isNaN(first) && !isNaN(second)) {
+        const length = inchesConvert(parseFloat(first), units1);
+        const diameter = inchesConvert(parseFloat(second), units2);
+        const r = diameter / 2;
+        const sq_r = Math.pow(r, 2);
+        const pi_sqr = Math.PI * sq_r;
+        const ra = 1.33333333333 * r;
+        const ra_a = ra + length;
+        v_tank = pi_sqr * ra_a;
+
+        if (!isNaN(fill)) {
+          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+          if (fillHeight <= diameter) {
+            const a_ans1 = r - fillHeight;
+            const f_ans1 = a_ans1 / r;
+            const acoc_ans = Math.acos(f_ans1);
+            const angle_ans = 2 * acoc_ans;
+            const sin_ans = Math.sin(angle_ans);
+            const angle_sin = angle_ans - sin_ans;
+            const v_segment = 0.5 * sq_r * angle_sin * length;
+            
+            let v_fill2 = fillHeight < diameter ? v_segment : v_tank - v_segment;
+            
+            const sq_fill = Math.pow(fillHeight, 2);
+            const pi_fill = Math.PI * sq_fill;
+            const step1_ans = pi_fill / 3;
+            const d1 = 1.5 * diameter;
+            const step2_ans = d1 - fillHeight;
+            const step_ans = step1_ans * step2_ans;
+            v_fill = v_fill2 + step_ans;
+            per_ans = (fillHeight / diameter) * 100;
+          } else {
+            return { error: 'It seems your tank is over filled.' };
+          }
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 9: Vertical Dish Ends
+    else if (operations == "9") {
+      if (!isNaN(first) && !isNaN(second)) {
+        const length = inchesConvert(parseFloat(first), units1);
+        const diameter = inchesConvert(parseFloat(second), units2);
+        const r = diameter / 2;
+        const sq_r = Math.pow(r, 2);
+        const pi_sqr = Math.PI * sq_r;
+        const ra = 1.33333333333 * r;
+        const ra_a = ra + length;
+        v_tank = pi_sqr * ra_a;
+
+        if (!isNaN(fill)) {
+          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+          const condition = length + diameter;
+          const r_length = r + length;
+
+          if (fillHeight <= condition) {
+            if (fillHeight < r) {
+              const sq_fill = Math.pow(fillHeight, 2);
+              const pi_fill = Math.PI * sq_fill;
+              const step1_ans = pi_fill / 3;
+              const d1 = 1.5 * diameter;
+              const step2_ans = d1 - fillHeight;
+              v_fill = step1_ans * step2_ans;
+            } else if (fillHeight > r && fillHeight < r_length) {
+              const sq_c = Math.pow(r, 3);
+              const stepans = fillHeight - r;
+              v_fill = 0.6666666666 * Math.PI * sq_c + Math.PI * sq_r * stepans;
+            } else if (r_length < fillHeight) {
+              const sq_fill = Math.pow(fillHeight, 2);
+              const pi_fill = Math.PI * sq_fill;
+              const step1_ans = pi_fill / 3;
+              const d1 = 1.5 * diameter;
+              const step_ans = length + diameter - fillHeight;
+              const step3 = d1 - step_ans;
+              const final_step = step1_ans * step3;
+              v_fill = v_tank - final_step;
+            }
+            per_ans = (fillHeight / condition) * 100;
+          } else {
+            return { error: 'It seems your tank is over filled.' };
+          }
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 12: Horizontal Oval
+    else if (operations == "12") {
+      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+        const height = inchesConvert(parseFloat(first), units1);
+        const width = inchesConvert(parseFloat(second), units2);
+        const length = inchesConvert(parseFloat(third), units3);
+        const h4 = height / 4;
+        v_tank = Math.PI * width * length * h4;
+
+        if (!isNaN(fill)) {
+          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+          if (fillHeight <= height) {
+            const w4 = width / 4;
+            const sq_fill = Math.pow(fillHeight, 2);
+            const sq_h = Math.pow(height, 2);
+            const square_f = fillHeight / height;
+            const square_s = sq_fill / sq_h;
+            const sq_ans = 4 * square_f - 4 * square_s;
+            const square_ans = Math.sqrt(sq_ans);
+            const fh = 2 * square_f;
+            const ans_1 = 1 - fh;
+            const a_ans_1 = Math.acos(ans_1);
+            const answer1 = a_ans_1 - ans_1;
+            const final_ans2 = answer1 * square_ans;
+            v_fill = height * length * w4 * final_ans2;
+            if (v_fill < 0) {
+              v_fill = v_fill * -1;
+            }
+            per_ans = (fillHeight / height) * 100;
+          } else {
+            return { error: 'It seems your tank is over filled.' };
+          }
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 13: Vertical Cylinder with Cone Bottom
+    else if (operations == "13") {
+      if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four)) {
+        const topDia = inchesConvert(parseFloat(first), units1);
+        const botDia = inchesConvert(parseFloat(second), units2);
+        const cylHeight = inchesConvert(parseFloat(third), units3);
+        const coneHeight = inchesConvert(parseFloat(four), units4);
+
+        if (topDia > botDia) {
+          const R_top = topDia / 2;
+          const sq_Rtop = Math.pow(R_top, 2);
+          const v_cylinder = Math.PI * sq_Rtop * cylHeight;
+
+          const R_bot = botDia / 2;
+          const sq_Rbot = Math.pow(R_bot, 2);
+          const main_part = sq_Rtop + R_top * R_bot + sq_Rbot;
+          const v_frustum = 0.3333333333 * Math.PI * coneHeight * main_part;
+
+          v_tank = v_frustum + v_cylinder;
+
+          if (!isNaN(fill)) {
+            const fillHeight = parseFloat(fill);
+            if (fillHeight <= coneHeight) {
+              const diff = topDia - botDia;
+              const z2 = botDia / diff;
+              const z = coneHeight * z2;
+              const fill_z = fillHeight + z;
+              const con_z = coneHeight + z;
+              const diff2 = fill_z / con_z;
+              const R = 0.5 * topDia * diff2;
+              const square_R = Math.pow(R, 2);
+              const Answ = square_R + R * R_bot + sq_Rbot;
+              v_fill = 0.333333333 * Math.PI * coneHeight * Answ;
+              per_ans = (fillHeight / coneHeight) * 100;
+            } else if (fillHeight > coneHeight) {
+              const radi = topDia - botDia;
+              const radius = radi / 2;
+              const radius_sq = Math.pow(radius, 2);
+              const ans1 = fillHeight - coneHeight;
+              const c_volume = Math.PI * radius_sq * ans1;
+              v_fill = v_frustum + c_volume;
+            }
+          }
+        } else {
+          return { error: 'Top diameter should be bigger than bottom diameter.' };
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 14: Vertical Cylinder with Cone Top
+    else if (operations == "14") {
+      if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four)) {
+        const topDia = inchesConvert(parseFloat(first), units1);
+        const botDia = inchesConvert(parseFloat(second), units2);
+        const cylHeight = inchesConvert(parseFloat(third), units3);
+        const coneHeight = inchesConvert(parseFloat(four), units4);
+
+        if (botDia > topDia) {
+          const R_top = topDia / 2;
+          const sq_Rtop = Math.pow(R_top, 2);
+          const v_cylinder = Math.PI * sq_Rtop * cylHeight;
+
+          const R_bot = botDia / 2;
+          const sq_Rbot = Math.pow(R_bot, 2);
+          const main_part = sq_Rtop + R_top * R_bot + sq_Rbot;
+          const v_frustum = 0.3333333333 * Math.PI * coneHeight * main_part;
+
+          v_tank = v_frustum + v_cylinder;
+
+          if (!isNaN(fill)) {
+            const fillHeight = parseFloat(fill);
+            if (fillHeight <= coneHeight) {
+              const diff = topDia - botDia;
+              const z2 = botDia / diff;
+              const z = coneHeight * z2;
+              const fill_z = fillHeight + z;
+              const con_z = coneHeight + z;
+              const diff2 = fill_z / con_z;
+              const R = 0.5 * topDia * diff2;
+              const square_R = Math.pow(R, 2);
+              const Answ = square_R + R * R_bot + sq_Rbot;
+              v_fill = 0.333333333 * Math.PI * coneHeight * Answ;
+              per_ans = (fillHeight / coneHeight) * 100;
+            } else if (fillHeight > coneHeight) {
+              const radi = topDia - botDia;
+              const radius = radi / 2;
+              const radius_sq = Math.pow(radius, 2);
+              const ans1 = fillHeight - coneHeight;
+              const c_volume = Math.PI * radius_sq * ans1;
+              v_fill = v_frustum + c_volume;
+            }
+          }
+        } else {
+          return { error: 'Bottom diameter should be bigger than top diameter.' };
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 15: Cone
+    else if (operations == "15") {
+      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+        const topDia = inchesConvert(parseFloat(first), units1);
+        const botDia = inchesConvert(parseFloat(second), units2);
+        const height = inchesConvert(parseFloat(third), units3);
+
+        if (topDia > botDia) {
+          const R_top = topDia / 2;
+          const sq_Rtop = Math.pow(R_top, 2);
+          const R_bot = botDia / 2;
+          const sq_Rbot = Math.pow(R_bot, 2);
+          const main_part = sq_Rtop + R_top * R_bot + sq_Rbot;
+          v_tank = 0.3333333333 * Math.PI * height * main_part;
+
+          if (!isNaN(fill)) {
+            const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+            if (fillHeight <= topDia) {
+              const diff = topDia - botDia;
+              const z2 = botDia / diff;
+              const z = height * z2;
+              const fill_z = fillHeight + z;
+              const con_z = z + height;
+              const fill_con = fill_z / con_z;
+              const R = 0.5 * topDia * fill_con;
+              const square_R = Math.pow(R, 2);
+              const Answ = square_R + R * R_bot + sq_Rbot;
+              v_fill = 0.333333333 * Math.PI * height * Answ;
+              per_ans = (fillHeight / four) * 100;
+            } else {
+              return { error: 'It seems your tank is over filled.' };
+            }
+          }
+        } else {
+          return { error: 'Top diameter should be bigger than bottom diameter.' };
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Operation 16: Sphere
+    else if (operations == "16") {
+      if (!isNaN(first)) {
+        const diameter = inchesConvert(parseFloat(first), units1);
+        const r = diameter / 2;
+        const cube_r = Math.pow(r, 3);
+        v_tank = 1.333333333 * Math.PI * cube_r;
+
+        if (!isNaN(fill)) {
+          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+          if (fillHeight < diameter) {
+            const r2 = fillHeight / 2;
+            const cube_r2 = Math.pow(r2, 3);
+            v_fill = 1.333333333 * Math.PI * cube_r2;
+            per_ans = (fillHeight / four) * 100;
+          } else {
+            return { error: 'It seems your tank is over filled.' };
+          }
+        }
+      } else {
+        return { error: 'Invalid input values.' };
+      }
+    }
+
+    // Convert volumes to different units
+    if (v_tank !== undefined) {
+      result.tech_v_tank = v_tank;
+      result.tech_v_feet = v_tank / 1728;
+      result.tech_v_liter = v_tank / 61.024;
+      result.tech_v_meter = v_tank / 61024;
+      result.tech_us_gallons = v_tank / 231;
+      result.tech_v_yard = v_tank / 46656;
+      result.tech_v_cm = v_tank * 16.387;
+    }
+
+    if (v_fill !== undefined) {
+      result.tech_v_fill = v_fill;
+      result.tech_v_feet_fill = v_fill / 1728;
+      result.tech_v_liter_fill = v_fill / 61.024;
+      result.tech_v_meter_fill = v_fill / 61024;
+      result.tech_us_gallons_fill = v_fill / 231;
+      result.tech_v_yard_fill = v_fill / 46656;
+      result.tech_v_cm_fill = v_fill * 16.387;
+      result.tech_per_ans = per_ans;
+    }
+
+    return result;
+
+  } catch (error) {
+    return { error: 'Calculation error: ' + error.message };
+  }
+}
 
 
 
