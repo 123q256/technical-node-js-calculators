@@ -10,6 +10,12 @@ const isLeapYear = require("dayjs/plugin/isLeapYear");
 dayjs.extend(isoWeek);
 dayjs.extend(dayOfYear);
 dayjs.extend(isLeapYear);
+const utc = require("dayjs/plugin/utc");
+dayjs.extend(utc);
+const localizedFormat = require("dayjs/plugin/localizedFormat");
+dayjs.extend(localizedFormat);
+
+
 
 const moment = require("moment");
 const customParseFormat = require("dayjs/plugin/customParseFormat");
@@ -5056,199 +5062,7 @@ class CalculatorsServices {
     }
   }
 
-  /**
-   * getCalculationWeeksBetweenDatesCalculator: Service Method
-   * POST: /api/calculators-lol/weeks-between-dates-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-  async getCalculationWeeksBetweenDatesCalculator(input) {
-    const { startDay, startMonth, startYear, endDay, endMonth, endYear } =
-      input;
 
-    // Create moment objects for both start and end dates
-    const startDate = moment({
-      year: startYear,
-      month: startMonth - 1,
-      day: startDay,
-    });
-    const endDate = moment({ year: endYear, month: endMonth - 1, day: endDay });
-
-    // Calculate the difference in days
-    const totalDaysDifference = endDate.diff(startDate, "days");
-    const weeksDifference = Math.floor(totalDaysDifference / 7);
-    const remainingDays = totalDaysDifference % 7;
-
-    const result = {
-      startDate: startDate.format("YYYY-MM-DD"),
-      endDate: endDate.format("YYYY-MM-DD"),
-      remainingDays,
-      weeksDifference,
-    };
-
-    return result;
-  }
-
-  /**
-   * getCalculationMonthsLeftInTheYearCalculator: Service Method
-   * POST: /api/calculators-lol/months-left-in-the-year
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationMonthsLeftInTheYearCalculator(input) {
-    const { day, month, year } = input;
-    const now = moment(`${year}-${month}-${day}`, "YYYY-MM-DD");
-
-    if (Number.isInteger(day)) {
-      const isLeapYear = now.isLeapYear();
-      const daysInYear = isLeapYear ? 366 : 365;
-      const weeksInYear = 52;
-
-      // End of the year
-      const endOfYear = moment(`${year}-12-31 23:59:59`, "YYYY-MM-DD HH:mm:ss");
-
-      // Calculate remaining days
-      const daysRemaining = endOfYear.diff(now, "days");
-
-      // Calculate remaining weeks and days
-      const weeksRemaining = endOfYear.diff(now, "weeks");
-      const remainingDaysAfterWeeks = daysRemaining - weeksRemaining * 7;
-
-      // Calculate remaining months and days
-      const monthsRemaining = endOfYear.diff(now, "months");
-      const remainingDaysAfterMonths = daysRemaining - monthsRemaining * 30; // Approximation
-
-      // Calculate remaining hours
-      const hoursRemaining = endOfYear.diff(now, "hours");
-
-      const result = {
-        now: now.format("MM-DD-YYYY"),
-        daysRemaining: daysRemaining,
-        weeksRemaining: weeksRemaining,
-        remainingDaysAfterWeeks: remainingDaysAfterWeeks,
-        monthsRemaining: monthsRemaining,
-        remainingDaysAfterMonths: remainingDaysAfterMonths,
-        hoursRemaining: hoursRemaining,
-      };
-
-      return result;
-    }
-  }
-
-  /**
-   * getCalculationHowManyDaysUntilBirthdayCalculator: Service Method
-   * POST: /api/calculators-lol/how-many-days-until-my-birthday
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-  async getCalculationHowManyDaysUntilBirthdayCalculator(input) {
-    const { birthdayDay, birthdayMonth, birthdayYear } = input;
-
-    // Parse the provided date of birth
-    const dob = moment(
-      `${birthdayYear}-${birthdayMonth}-${birthdayDay}`,
-      "YYYY-MM-DD"
-    );
-
-    // Calculate the age
-    const age = moment().diff(dob, "years");
-
-    // Calculate the next birthday
-    let nextBirthday = moment(
-      `${moment().year()}-${birthdayMonth}-${birthdayDay}`,
-      "YYYY-MM-DD"
-    );
-
-    if (nextBirthday.isBefore(moment())) {
-      nextBirthday = nextBirthday.add(1, "year");
-    }
-
-    const daysUntilNextBirthday = nextBirthday.diff(moment(), "days");
-    const diffInHours = nextBirthday.diff(moment(), "hours");
-    const diffInMinutes = nextBirthday.diff(moment(), "minutes");
-    const diffInMonths = nextBirthday.diff(moment(), "months");
-
-    // New Variables
-    const nextBirthdayYear = nextBirthday.year(); // The year of the next birthday
-    const remainingWeeks = nextBirthday.diff(moment(), "weeks"); // Weeks remaining until next birthday
-    const remainingDaysAfterWeeks = daysUntilNextBirthday - remainingWeeks * 7; // Remaining days after full weeks
-
-    const result = {
-      dob: dob.format("MM-DD-YYYY"),
-      age: age,
-      nextBirthday: nextBirthday.format("MM-DD-YYYY"),
-      nextBirthdayYear: nextBirthdayYear, // New variable
-      daysUntilNextBirthday: daysUntilNextBirthday,
-      diffInHours: diffInHours,
-      diffInMinutes: diffInMinutes,
-      diffInMonths: diffInMonths,
-      remainingWeeks: remainingWeeks, // New variable
-      remainingDaysAfterWeeks: remainingDaysAfterWeeks, // New variable
-    };
-
-    return result;
-  }
-
-  /**
-   * getCalculationMonthsFromNowCalculator: Service Method
-   * POST: /api/calculators-lol/months-from-now
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-  async getCalculationMonthsFromNowCalculator(input) {
-    let { monthnumber, presencedate } = input;
-
-    // Check if the 'number' is a valid number
-    if (!isNaN(monthnumber)) {
-      monthnumber = parseInt(monthnumber);
-      let response = {};
-
-      // Handling months addition
-      if (monthnumber >= 1 || monthnumber === 0) {
-        const date1 = moment(presencedate);
-        const dateAfterAddingMonths = date1.add(monthnumber, "months");
-        const isLeapYear = dateAfterAddingMonths.isLeapYear();
-        const daysInYear = isLeapYear ? 366 : 365;
-        const weeksInYear = 52;
-        const currentWeekOfYear = dateAfterAddingMonths.week();
-        const currentDayOfYear = dateAfterAddingMonths.dayOfYear();
-
-        response.date_name = dateAfterAddingMonths.format("dddd");
-        response.t_date = dateAfterAddingMonths.format("MMMM D, YYYY");
-        response.daysInYear = daysInYear;
-        response.weeksInYear = weeksInYear;
-        response.currentWeekOfYear = currentWeekOfYear;
-        response.currentDayOfYear = currentDayOfYear;
-
-        return response;
-      }
-      // Handling months subtraction
-      else if (monthnumber <= -1) {
-        const date2 = moment(presencedate);
-        const dateAfterSubtractingMonths = date2.subtract(
-          Math.abs(monthnumber),
-          "months"
-        );
-        const isLeapYear = dateAfterSubtractingMonths.isLeapYear();
-        const daysInYear = isLeapYear ? 366 : 365;
-        const weeksInYear = 52;
-        const currentWeekOfYear = dateAfterSubtractingMonths.week();
-        const currentDayOfYear = dateAfterSubtractingMonths.dayOfYear();
-
-        response.daysInYear = daysInYear;
-        response.weeksInYear = weeksInYear;
-        response.currentWeekOfYear = currentWeekOfYear;
-        response.currentDayOfYear = currentDayOfYear;
-        response.date_name = dateAfterSubtractingMonths.format("dddd");
-        response.t_date = dateAfterSubtractingMonths.format("MMMM D, YYYY");
-
-        return response;
-      }
-    } else {
-      return { error: "Please add number of Months" };
-    }
-  }
 
   /**
    * getCalculationDaysLeftInTheYearCalculator: Service Method
@@ -5851,149 +5665,6 @@ class CalculatorsServices {
     };
   }
 
-  /**
-   * getCalculationDaysSinceDateCalculator: Service Method
-   * POST: /api/calculators-lol/weeks-left-in-the-year
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationWeekLeftInTheYearCalculator(body) {
-    // Destructuring the input from the request body
-    const { day, month, year } = body;
-
-    // Create a moment object for the given date
-    const now = moment([year, month - 1, day]); // Month is 0-based in moment.js
-
-    if (isNaN(day)) {
-      return { error: "Invalid day input" };
-    }
-
-    // Check if it's a leap year
-    const isLeapYear = now.isLeapYear();
-    const daysInYear = isLeapYear ? 366 : 365;
-    const weeksInYear = 52;
-
-    // Get the last day of the year
-    const endOfYear = moment([year, 11, 31, 23, 59, 59]); // December 31st, 23:59:59
-
-    // Calculate remaining days in the year
-    const daysRemaining = endOfYear.diff(now, "days");
-
-    // Calculate remaining weeks
-    const weeksRemaining = endOfYear.diff(now, "weeks");
-
-    // Calculate remaining days after full weeks
-    const remainingDaysAfterWeeks = daysRemaining - weeksRemaining * 7;
-
-    // Calculate remaining months and approximate days
-    const monthsRemaining = endOfYear.diff(now, "months");
-    const remainingDaysAfterMonths = daysRemaining - monthsRemaining * 30; // Approximation of days in month
-
-    // Calculate remaining hours
-    const hoursRemaining = endOfYear.diff(now, "hours");
-
-    // Returning the result in the response
-    return {
-      now: now.format("MM-DD-YYYY"),
-      daysRemaining,
-      weeksRemaining,
-      remainingDaysAfterWeeks,
-      monthsRemaining,
-      remainingDaysAfterMonths,
-      hoursRemaining,
-    };
-  }
-
-  /**
-   * getCalculationJuliansDateCalculator: Service Method
-   * POST: /api/calculators-lol/julians-date-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationJuliansDateCalculator(body) {
-    let { day, month, year, timecheck, julian } = body;
-
-    const dob = `${year}-${month.toString().padStart(2, "0")}-${day
-      .toString()
-      .padStart(2, "0")}`;
-    const date1 = new Date(dob).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-    if (timecheck === "stat") {
-      // Handling Julian date calculation (Gregorian to Julian conversion)
-      if (month <= 2) {
-        year -= 1;
-        month += 12;
-      }
-      const A = Math.floor(year / 100);
-      const B = 2 - A + Math.floor(A / 4);
-      const julianDate =
-        Math.floor(365.25 * (year + 4716)) +
-        Math.floor(30.6001 * (month + 1)) +
-        day +
-        B -
-        1524.5;
-      return { julianDate, date1 };
-    } else {
-      if (!julian) {
-        return { error: "Please Enter Julian Date" };
-      }
-
-      julian += 0.5; // Adding 0.5 for fractional days
-
-      let Z = Math.floor(julian);
-      let F = julian - Z;
-
-      let A;
-      if (Z < 2299161) {
-        A = Z;
-      } else {
-        const alpha = Math.floor((Z - 1867216.25) / 36524.25);
-        A = Z + 1 + alpha - Math.floor(alpha / 4);
-      }
-
-      const B = A + 1524;
-      const C = Math.floor((B - 122.1) / 365.25);
-      const D = Math.floor(365.25 * C);
-      const E = Math.floor((B - D) / 30.6001);
-
-      day = B - D - Math.floor(30.6001 * E) + F;
-      if (E < 14) {
-        month = E - 1;
-      } else {
-        month = E - 13;
-      }
-
-      if (month > 2) {
-        year = C - 4716;
-      } else {
-        year = C - 4715;
-      }
-
-      year = Math.floor(year);
-      month = Math.floor(month);
-      day = Math.floor(day);
-
-      // Formatting the year as negative if it is below 1 (Before Christ)
-      if (year < 1) {
-        year = -Math.abs(year); // Ensure that the year is negative (e.g., -4712)
-      }
-
-      // Format the Julian date output
-      const julDate = `${new Date(year, month - 1, day).toLocaleDateString(
-        "en-US",
-        { weekday: "long", month: "long", day: "numeric" }
-      )}, ${year}`;
-
-      return { jul_date: julDate, date1 };
-    }
-  }
 
   /**
    * getCalculationWeekAgoCalculator: Service Method
@@ -63763,261 +63434,139 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
       return result;
     }
   
-  async getCalculationRoomSizeCalculator(body) {
-  try {
-    let submit = body.tech_name;
-    let lenght_f = body.tech_lenght_f;
-    let lenght_in = body.tech_lenght_in;
-    let width_f = body.tech_width_f;
-    let width_in = body.tech_width_in;
-    let perce = body.tech_perce;
-    let lenght_m = body.tech_lenght_m;
-    let width_m = body.tech_width_m;
-    let param = {};
+    async getCalculationRoomSizeCalculator(body) {
+    try {
+      let submit = body.tech_name;
+      let lenght_f = body.tech_lenght_f;
+      let lenght_in = body.tech_lenght_in;
+      let width_f = body.tech_width_f;
+      let width_in = body.tech_width_in;
+      let perce = body.tech_perce;
+      let lenght_m = body.tech_lenght_m;
+      let width_m = body.tech_width_m;
+      let param = {};
 
-    // Check which mode we are in: 'feet' or 'meter'
-    if (submit === "feet") {
-      const lengthCount = lenght_f.length;
-      const widthCount = width_f.length;
+      // Check which mode we are in: 'feet' or 'meter'
+      if (submit === "feet") {
+        const lengthCount = lenght_f.length;
+        const widthCount = width_f.length;
 
-      let lenght_foot = 0;
+        let lenght_foot = 0;
 
-      for (let i = 0; i < Math.min(lengthCount, widthCount); i++) {
-        const lf = lenght_f[i] === "" ? 0 : Number(lenght_f[i]);
-        const li = lenght_in[i] === "" ? 0 : Number(lenght_in[i]);
-        const wf = width_f[i] === "" ? 0 : Number(width_f[i]);
-        const wi = width_in[i] === "" ? 0 : Number(width_in[i]);
+        for (let i = 0; i < Math.min(lengthCount, widthCount); i++) {
+          const lf = lenght_f[i] === "" ? 0 : Number(lenght_f[i]);
+          const li = lenght_in[i] === "" ? 0 : Number(lenght_in[i]);
+          const wf = width_f[i] === "" ? 0 : Number(width_f[i]);
+          const wi = width_in[i] === "" ? 0 : Number(width_in[i]);
 
-        // Validate numeric inputs
-        if (
-          (isNaN(lf) && isNaN(li)) ||
-          (isNaN(wf) && isNaN(wi))
-        ) {
-          param.error = "Please! Check Your Input";
-          return param;
-        }
-
-        const lengthInFeet = lf + li / 12;
-        const widthInFeet = wf + wi / 12;
-        lenght_foot += lengthInFeet * widthInFeet;
-      }
-
-      const f_r_s = lenght_foot;
-      if (perce != 0 && f_r_s != 0) {
-        const p = (Number(perce) / 100) * f_r_s;
-        const perc = f_r_s + p;
-        param["perc"] = perc;
-      }
-
-      param["f_r_s"] = f_r_s;
-
-    } else if (submit === "meter") {
-      const lengthCount = lenght_m.length;
-      const widthCount = width_m.length;
-
-      let m_lenght_sum = 0;
-
-      for (let i = 0; i < Math.min(lengthCount, widthCount); i++) {
-        const lm = Number(lenght_m[i]);
-        const wm = Number(width_m[i]);
-
-        if (isNaN(lm) || isNaN(wm)) {
-          param.error = "Please! Check Your Input";
-          return param;
-        }
-
-        m_lenght_sum += lm * wm;
-      }
-
-      const m_r_s = m_lenght_sum;
-
-      if (perce != 0 && m_r_s != 0) {
-        const p = (Number(perce) / 100) * m_r_s;
-        const perc = m_r_s + p;
-        param["perc"] = perc;
-      }
-
-      param["m_r_s"] = m_r_s;
-    }
-
-    // Common params
-    param["submit"] = submit;
-    param["perce"] = perce;
-    param["RESULT"] = 1;
-
-    return param;
-  } catch (error) {
-    return { error: "An error occurred during calculation." };
-  }
-  }
-
-  async  getCalculationTankVolumeCalculator(body) {
-    const {
-      tech_operations: operations,
-      tech_first: first,
-      tech_second: second,
-      tech_third: third,
-      tech_four: four,
-      tech_units1: units1,
-      tech_units2: units2,
-      tech_units3: units3,
-      tech_units4: units4,
-      tech_fill_units: fill_units,
-      tech_fill: fill
-    } = body;
-
-  const result = {};
-  // Unit conversion function
-
-  function inchesConvert(value, unit) {
-    const conversions = {
-      'ft': value * 12,
-      'in': value * 1,
-      'cm': value / 2.54,
-      'm': value * 39.37,
-      'mm': value / 25.4
-    };
-    return conversions[unit] || value;
-  }
-
-  let v_tank, v_fill, per_ans;
-
-  try {
-    // Operation 3: Horizontal Cylinder
-    if (operations == "3") {
-      if (!isNaN(first) && !isNaN(second)) {
-        const length = inchesConvert(parseFloat(first), units1);
-        const diameter = inchesConvert(parseFloat(second), units2);
-        const r = diameter / 2;
-        const sq_r = Math.pow(r, 2);
-        v_tank = 3.14 * sq_r * length;
-        // console.log(v_tank);
-        if (!isNaN(fill)) {
-          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
-          console.log(fillHeight);
-          if (fillHeight <= diameter) {
-            const a_ans1 = r - fillHeight;
-            const f_ans1 = a_ans1 / r;
-            const acoc_ans = Math.acos(f_ans1);
-            const angle_ans = 2 * acoc_ans;
-            const sin_ans = Math.sin(angle_ans);
-            const angle_sin = angle_ans - sin_ans;
-            v_fill = 0.5 * sq_r * angle_sin * length;
-            per_ans = (fillHeight / diameter) * 100;
-          } else {
-            return { error: 'It seems your tank is over filled.' };
+          // Validate numeric inputs
+          if (
+            (isNaN(lf) && isNaN(li)) ||
+            (isNaN(wf) && isNaN(wi))
+          ) {
+            param.error = "Please! Check Your Input";
+            return param;
           }
+
+          const lengthInFeet = lf + li / 12;
+          const widthInFeet = wf + wi / 12;
+          lenght_foot += lengthInFeet * widthInFeet;
         }
-      } else {
-        return { error: 'Invalid input values.' };
-      }
-    }
 
-    // Operation 4: Vertical Cylinder
-    else if (operations == "4") {
-      if (!isNaN(first) && !isNaN(second)) {
-        const height = inchesConvert(parseFloat(first), units1);
-        const diameter = inchesConvert(parseFloat(second), units2);
-        const r = diameter / 2;
-        const sq_r = Math.pow(r, 2);
-        v_tank = Math.PI * sq_r * height;
+        const f_r_s = lenght_foot;
+        if (perce != 0 && f_r_s != 0) {
+          const p = (Number(perce) / 100) * f_r_s;
+          const perc = f_r_s + p;
+          param["perc"] = perc;
+        }
 
-        if (!isNaN(fill)) {
-          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
-          if (fillHeight <= height) {
-            v_fill = Math.PI * sq_r * fillHeight;
-            per_ans = (fillHeight / height) * 100;
-          } else {
-            return { error: 'It seems your tank is over filled.' };
+        param["f_r_s"] = f_r_s;
+
+      } else if (submit === "meter") {
+        const lengthCount = lenght_m.length;
+        const widthCount = width_m.length;
+
+        let m_lenght_sum = 0;
+
+        for (let i = 0; i < Math.min(lengthCount, widthCount); i++) {
+          const lm = Number(lenght_m[i]);
+          const wm = Number(width_m[i]);
+
+          if (isNaN(lm) || isNaN(wm)) {
+            param.error = "Please! Check Your Input";
+            return param;
           }
+
+          m_lenght_sum += lm * wm;
         }
-      } else {
-        return { error: 'Invalid input values.' };
+
+        const m_r_s = m_lenght_sum;
+
+        if (perce != 0 && m_r_s != 0) {
+          const p = (Number(perce) / 100) * m_r_s;
+          const perc = m_r_s + p;
+          param["perc"] = perc;
+        }
+
+        param["m_r_s"] = m_r_s;
       }
+
+      // Common params
+      param["submit"] = submit;
+      param["perce"] = perce;
+      param["RESULT"] = 1;
+
+      return param;
+    } catch (error) {
+      return { error: "An error occurred during calculation." };
+    }
     }
 
-    // Operation 5: Rectangular Tank
-    else if (operations == "5") {
-      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
-        const height = inchesConvert(parseFloat(first), units1);
-        const width = inchesConvert(parseFloat(second), units2);
-        const length = inchesConvert(parseFloat(third), units3);
-        v_tank = height * width * length;
+      async  getCalculationTankVolumeCalculator(body) {
+        const {
+          tech_operations: operations,
+          tech_first: first,
+          tech_second: second,
+          tech_third: third,
+          tech_four: four,
+          tech_units1: units1,
+          tech_units2: units2,
+          tech_units3: units3,
+          tech_units4: units4,
+          tech_fill_units: fill_units,
+          tech_fill: fill
+        } = body;
 
-        if (!isNaN(fill)) {
-          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
-          if (fillHeight <= height) {
-            v_fill = width * length * fillHeight;
-            per_ans = (fillHeight / height) * 100;
-          } else {
-            return { error: 'It seems your tank is over filled.' };
-          }
-        }
-      } else {
-        return { error: 'Invalid input values.' };
+      const result = {};
+      // Unit conversion function
+
+      function inchesConvert(value, unit) {
+        const conversions = {
+          'ft': value * 12,
+          'in': value * 1,
+          'cm': value / 2.54,
+          'm': value * 39.37,
+          'mm': value / 25.4
+        };
+        return conversions[unit] || value;
       }
-    }
 
-    // Operation 6: Horizontal Capsule
-    else if (operations == "6") {
-      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
-        const height = inchesConvert(parseFloat(first), units1);
-        const width = inchesConvert(parseFloat(second), units2);
-        const length = inchesConvert(parseFloat(third), units3);
+      let v_tank, v_fill, per_ans;
 
-        if (width > height) {
-          const r = height / 2;
-          const sq_r = Math.pow(r, 2);
-          const a = width - height;
-          const ra = 2 * r * a;
-          const pi_sqr = Math.PI * sq_r;
-          v_tank = (pi_sqr + ra) * length;
-
-          if (!isNaN(fill)) {
-            const fillHeight = inchesConvert(parseFloat(fill), fill_units);
-            if (fillHeight <= height) {
-              const a_ans1 = r - fillHeight;
-              const f_ans1 = a_ans1 / r;
-              const acoc_ans = Math.acos(f_ans1);
-              const angle_ans = 2 * acoc_ans;
-              const sin_ans = Math.sin(angle_ans);
-              const angle_sin = angle_ans - sin_ans;
-              const v_segment = 0.5 * sq_r * angle_sin * length;
-              const v_fill3 = a * length * fillHeight;
-              v_fill = v_segment + v_fill3;
-              per_ans = (fillHeight / height) * 100;
-            } else {
-              return { error: 'It seems your tank is over filled.' };
-            }
-          }
-        } else {
-          return { error: 'Width must be greater than height' };
-        }
-      } else {
-        return { error: 'Invalid input values.' };
-      }
-    }
-
-    // Operation 7: Vertical Capsule
-    else if (operations == "7") {
-      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
-        const height = inchesConvert(parseFloat(first), units1);
-        const width = inchesConvert(parseFloat(second), units2);
-        const length = inchesConvert(parseFloat(third), units3);
-
-        if (height > width) {
-          const r = width / 2;
-          const sq_r = Math.pow(r, 2);
-          const a = height - width;
-          const h_r = height - r;
-          const ra = 2 * r * a;
-          const pi_sqr = Math.PI * sq_r;
-          v_tank = (pi_sqr + ra) * length;
-
-          if (!isNaN(fill)) {
-            const fillHeight = inchesConvert(parseFloat(fill), fill_units);
-            if (fillHeight <= height) {
-              if (fillHeight < r) {
+      try {
+        // Operation 3: Horizontal Cylinder
+        if (operations == "3") {
+          if (!isNaN(first) && !isNaN(second)) {
+            const length = inchesConvert(parseFloat(first), units1);
+            const diameter = inchesConvert(parseFloat(second), units2);
+            const r = diameter / 2;
+            const sq_r = Math.pow(r, 2);
+            v_tank = 3.14 * sq_r * length;
+            // console.log(v_tank);
+            if (!isNaN(fill)) {
+              const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+              console.log(fillHeight);
+              if (fillHeight <= diameter) {
                 const a_ans1 = r - fillHeight;
                 const f_ans1 = a_ans1 / r;
                 const acoc_ans = Math.acos(f_ans1);
@@ -64025,360 +63574,920 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
                 const sin_ans = Math.sin(angle_ans);
                 const angle_sin = angle_ans - sin_ans;
                 v_fill = 0.5 * sq_r * angle_sin * length;
-              } else if (fillHeight > r && fillHeight < a) {
-                const f_r = fillHeight - r;
-                const v_fill_1 = 0.5 * Math.PI * sq_r * length;
-                const v_fill_2 = f_r * length * width;
-                v_fill = v_fill_1 + v_fill_2;
-              } else if (h_r < height && fillHeight < height) {
+                per_ans = (fillHeight / diameter) * 100;
+              } else {
+                return { error: 'It seems your tank is over filled.' };
+              }
+            }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Operation 4: Vertical Cylinder
+        else if (operations == "4") {
+          if (!isNaN(first) && !isNaN(second)) {
+            const height = inchesConvert(parseFloat(first), units1);
+            const diameter = inchesConvert(parseFloat(second), units2);
+            const r = diameter / 2;
+            const sq_r = Math.pow(r, 2);
+            v_tank = Math.PI * sq_r * height;
+
+            if (!isNaN(fill)) {
+              const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+              if (fillHeight <= height) {
+                v_fill = Math.PI * sq_r * fillHeight;
+                per_ans = (fillHeight / height) * 100;
+              } else {
+                return { error: 'It seems your tank is over filled.' };
+              }
+            }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Operation 5: Rectangular Tank
+        else if (operations == "5") {
+          if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+            const height = inchesConvert(parseFloat(first), units1);
+            const width = inchesConvert(parseFloat(second), units2);
+            const length = inchesConvert(parseFloat(third), units3);
+            v_tank = height * width * length;
+
+            if (!isNaN(fill)) {
+              const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+              if (fillHeight <= height) {
+                v_fill = width * length * fillHeight;
+                per_ans = (fillHeight / height) * 100;
+              } else {
+                return { error: 'It seems your tank is over filled.' };
+              }
+            }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Operation 6: Horizontal Capsule
+        else if (operations == "6") {
+          if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+            const height = inchesConvert(parseFloat(first), units1);
+            const width = inchesConvert(parseFloat(second), units2);
+            const length = inchesConvert(parseFloat(third), units3);
+
+            if (width > height) {
+              const r = height / 2;
+              const sq_r = Math.pow(r, 2);
+              const a = width - height;
+              const ra = 2 * r * a;
+              const pi_sqr = Math.PI * sq_r;
+              v_tank = (pi_sqr + ra) * length;
+
+              if (!isNaN(fill)) {
+                const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+                if (fillHeight <= height) {
+                  const a_ans1 = r - fillHeight;
+                  const f_ans1 = a_ans1 / r;
+                  const acoc_ans = Math.acos(f_ans1);
+                  const angle_ans = 2 * acoc_ans;
+                  const sin_ans = Math.sin(angle_ans);
+                  const angle_sin = angle_ans - sin_ans;
+                  const v_segment = 0.5 * sq_r * angle_sin * length;
+                  const v_fill3 = a * length * fillHeight;
+                  v_fill = v_segment + v_fill3;
+                  per_ans = (fillHeight / height) * 100;
+                } else {
+                  return { error: 'It seems your tank is over filled.' };
+                }
+              }
+            } else {
+              return { error: 'Width must be greater than height' };
+            }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Operation 7: Vertical Capsule
+        else if (operations == "7") {
+          if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+            const height = inchesConvert(parseFloat(first), units1);
+            const width = inchesConvert(parseFloat(second), units2);
+            const length = inchesConvert(parseFloat(third), units3);
+
+            if (height > width) {
+              const r = width / 2;
+              const sq_r = Math.pow(r, 2);
+              const a = height - width;
+              const h_r = height - r;
+              const ra = 2 * r * a;
+              const pi_sqr = Math.PI * sq_r;
+              v_tank = (pi_sqr + ra) * length;
+
+              if (!isNaN(fill)) {
+                const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+                if (fillHeight <= height) {
+                  if (fillHeight < r) {
+                    const a_ans1 = r - fillHeight;
+                    const f_ans1 = a_ans1 / r;
+                    const acoc_ans = Math.acos(f_ans1);
+                    const angle_ans = 2 * acoc_ans;
+                    const sin_ans = Math.sin(angle_ans);
+                    const angle_sin = angle_ans - sin_ans;
+                    v_fill = 0.5 * sq_r * angle_sin * length;
+                  } else if (fillHeight > r && fillHeight < a) {
+                    const f_r = fillHeight - r;
+                    const v_fill_1 = 0.5 * Math.PI * sq_r * length;
+                    const v_fill_2 = f_r * length * width;
+                    v_fill = v_fill_1 + v_fill_2;
+                  } else if (h_r < height && fillHeight < height) {
+                    const a_ans1 = r - fillHeight;
+                    const f_ans1 = a_ans1 / r;
+                    const acoc_ans = Math.acos(f_ans1);
+                    const angle_ans = 2 * acoc_ans;
+                    const sin_ans = Math.sin(angle_ans);
+                    const angle_sin = angle_ans - sin_ans;
+                    const v_segment = (Math.PI * sq_r * length) - (0.5 * sq_r * angle_sin * length);
+                    v_fill = v_tank - v_segment;
+                  }
+                  per_ans = (fillHeight / height) * 100;
+                } else {
+                  return { error: 'It seems your tank is over filled.' };
+                }
+              }
+            } else {
+              return { error: 'Height must be greater than Width' };
+            }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Operation 8: Horizontal Dish Ends
+        else if (operations == "8") {
+          if (!isNaN(first) && !isNaN(second)) {
+            const length = inchesConvert(parseFloat(first), units1);
+            const diameter = inchesConvert(parseFloat(second), units2);
+            const r = diameter / 2;
+            const sq_r = Math.pow(r, 2);
+            const pi_sqr = Math.PI * sq_r;
+            const ra = 1.33333333333 * r;
+            const ra_a = ra + length;
+            v_tank = pi_sqr * ra_a;
+
+            if (!isNaN(fill)) {
+              const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+              if (fillHeight <= diameter) {
                 const a_ans1 = r - fillHeight;
                 const f_ans1 = a_ans1 / r;
                 const acoc_ans = Math.acos(f_ans1);
                 const angle_ans = 2 * acoc_ans;
                 const sin_ans = Math.sin(angle_ans);
                 const angle_sin = angle_ans - sin_ans;
-                const v_segment = (Math.PI * sq_r * length) - (0.5 * sq_r * angle_sin * length);
-                v_fill = v_tank - v_segment;
+                const v_segment = 0.5 * sq_r * angle_sin * length;
+                
+                let v_fill2 = fillHeight < diameter ? v_segment : v_tank - v_segment;
+                
+                const sq_fill = Math.pow(fillHeight, 2);
+                const pi_fill = Math.PI * sq_fill;
+                const step1_ans = pi_fill / 3;
+                const d1 = 1.5 * diameter;
+                const step2_ans = d1 - fillHeight;
+                const step_ans = step1_ans * step2_ans;
+                v_fill = v_fill2 + step_ans;
+                per_ans = (fillHeight / diameter) * 100;
+              } else {
+                return { error: 'It seems your tank is over filled.' };
               }
-              per_ans = (fillHeight / height) * 100;
+            }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Operation 9: Vertical Dish Ends
+        else if (operations == "9") {
+          if (!isNaN(first) && !isNaN(second)) {
+            const length = inchesConvert(parseFloat(first), units1);
+            const diameter = inchesConvert(parseFloat(second), units2);
+            const r = diameter / 2;
+            const sq_r = Math.pow(r, 2);
+            const pi_sqr = Math.PI * sq_r;
+            const ra = 1.33333333333 * r;
+            const ra_a = ra + length;
+            v_tank = pi_sqr * ra_a;
+
+            if (!isNaN(fill)) {
+              const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+              const condition = length + diameter;
+              const r_length = r + length;
+
+              if (fillHeight <= condition) {
+                if (fillHeight < r) {
+                  const sq_fill = Math.pow(fillHeight, 2);
+                  const pi_fill = Math.PI * sq_fill;
+                  const step1_ans = pi_fill / 3;
+                  const d1 = 1.5 * diameter;
+                  const step2_ans = d1 - fillHeight;
+                  v_fill = step1_ans * step2_ans;
+                } else if (fillHeight > r && fillHeight < r_length) {
+                  const sq_c = Math.pow(r, 3);
+                  const stepans = fillHeight - r;
+                  v_fill = 0.6666666666 * Math.PI * sq_c + Math.PI * sq_r * stepans;
+                } else if (r_length < fillHeight) {
+                  const sq_fill = Math.pow(fillHeight, 2);
+                  const pi_fill = Math.PI * sq_fill;
+                  const step1_ans = pi_fill / 3;
+                  const d1 = 1.5 * diameter;
+                  const step_ans = length + diameter - fillHeight;
+                  const step3 = d1 - step_ans;
+                  const final_step = step1_ans * step3;
+                  v_fill = v_tank - final_step;
+                }
+                per_ans = (fillHeight / condition) * 100;
+              } else {
+                return { error: 'It seems your tank is over filled.' };
+              }
+            }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Operation 12: Horizontal Oval
+        else if (operations == "12") {
+          if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+            const height = inchesConvert(parseFloat(first), units1);
+            const width = inchesConvert(parseFloat(second), units2);
+            const length = inchesConvert(parseFloat(third), units3);
+            const h4 = height / 4;
+            v_tank = Math.PI * width * length * h4;
+
+            if (!isNaN(fill)) {
+              const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+              if (fillHeight <= height) {
+                const w4 = width / 4;
+                const sq_fill = Math.pow(fillHeight, 2);
+                const sq_h = Math.pow(height, 2);
+                const square_f = fillHeight / height;
+                const square_s = sq_fill / sq_h;
+                const sq_ans = 4 * square_f - 4 * square_s;
+                const square_ans = Math.sqrt(sq_ans);
+                const fh = 2 * square_f;
+                const ans_1 = 1 - fh;
+                const a_ans_1 = Math.acos(ans_1);
+                const answer1 = a_ans_1 - ans_1;
+                const final_ans2 = answer1 * square_ans;
+                v_fill = height * length * w4 * final_ans2;
+                if (v_fill < 0) {
+                  v_fill = v_fill * -1;
+                }
+                per_ans = (fillHeight / height) * 100;
+              } else {
+                return { error: 'It seems your tank is over filled.' };
+              }
+            }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Operation 13: Vertical Cylinder with Cone Bottom
+        else if (operations == "13") {
+          if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four)) {
+            const topDia = inchesConvert(parseFloat(first), units1);
+            const botDia = inchesConvert(parseFloat(second), units2);
+            const cylHeight = inchesConvert(parseFloat(third), units3);
+            const coneHeight = inchesConvert(parseFloat(four), units4);
+
+            if (topDia > botDia) {
+              const R_top = topDia / 2;
+              const sq_Rtop = Math.pow(R_top, 2);
+              const v_cylinder = Math.PI * sq_Rtop * cylHeight;
+
+              const R_bot = botDia / 2;
+              const sq_Rbot = Math.pow(R_bot, 2);
+              const main_part = sq_Rtop + R_top * R_bot + sq_Rbot;
+              const v_frustum = 0.3333333333 * Math.PI * coneHeight * main_part;
+
+              v_tank = v_frustum + v_cylinder;
+
+              if (!isNaN(fill)) {
+                const fillHeight = parseFloat(fill);
+                if (fillHeight <= coneHeight) {
+                  const diff = topDia - botDia;
+                  const z2 = botDia / diff;
+                  const z = coneHeight * z2;
+                  const fill_z = fillHeight + z;
+                  const con_z = coneHeight + z;
+                  const diff2 = fill_z / con_z;
+                  const R = 0.5 * topDia * diff2;
+                  const square_R = Math.pow(R, 2);
+                  const Answ = square_R + R * R_bot + sq_Rbot;
+                  v_fill = 0.333333333 * Math.PI * coneHeight * Answ;
+                  per_ans = (fillHeight / coneHeight) * 100;
+                } else if (fillHeight > coneHeight) {
+                  const radi = topDia - botDia;
+                  const radius = radi / 2;
+                  const radius_sq = Math.pow(radius, 2);
+                  const ans1 = fillHeight - coneHeight;
+                  const c_volume = Math.PI * radius_sq * ans1;
+                  v_fill = v_frustum + c_volume;
+                }
+              }
             } else {
-              return { error: 'It seems your tank is over filled.' };
+              return { error: 'Top diameter should be bigger than bottom diameter.' };
             }
-          }
-        } else {
-          return { error: 'Height must be greater than Width' };
-        }
-      } else {
-        return { error: 'Invalid input values.' };
-      }
-    }
-
-    // Operation 8: Horizontal Dish Ends
-    else if (operations == "8") {
-      if (!isNaN(first) && !isNaN(second)) {
-        const length = inchesConvert(parseFloat(first), units1);
-        const diameter = inchesConvert(parseFloat(second), units2);
-        const r = diameter / 2;
-        const sq_r = Math.pow(r, 2);
-        const pi_sqr = Math.PI * sq_r;
-        const ra = 1.33333333333 * r;
-        const ra_a = ra + length;
-        v_tank = pi_sqr * ra_a;
-
-        if (!isNaN(fill)) {
-          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
-          if (fillHeight <= diameter) {
-            const a_ans1 = r - fillHeight;
-            const f_ans1 = a_ans1 / r;
-            const acoc_ans = Math.acos(f_ans1);
-            const angle_ans = 2 * acoc_ans;
-            const sin_ans = Math.sin(angle_ans);
-            const angle_sin = angle_ans - sin_ans;
-            const v_segment = 0.5 * sq_r * angle_sin * length;
-            
-            let v_fill2 = fillHeight < diameter ? v_segment : v_tank - v_segment;
-            
-            const sq_fill = Math.pow(fillHeight, 2);
-            const pi_fill = Math.PI * sq_fill;
-            const step1_ans = pi_fill / 3;
-            const d1 = 1.5 * diameter;
-            const step2_ans = d1 - fillHeight;
-            const step_ans = step1_ans * step2_ans;
-            v_fill = v_fill2 + step_ans;
-            per_ans = (fillHeight / diameter) * 100;
           } else {
-            return { error: 'It seems your tank is over filled.' };
+            return { error: 'Invalid input values.' };
           }
         }
-      } else {
-        return { error: 'Invalid input values.' };
-      }
-    }
 
-    // Operation 9: Vertical Dish Ends
-    else if (operations == "9") {
-      if (!isNaN(first) && !isNaN(second)) {
-        const length = inchesConvert(parseFloat(first), units1);
-        const diameter = inchesConvert(parseFloat(second), units2);
-        const r = diameter / 2;
-        const sq_r = Math.pow(r, 2);
-        const pi_sqr = Math.PI * sq_r;
-        const ra = 1.33333333333 * r;
-        const ra_a = ra + length;
-        v_tank = pi_sqr * ra_a;
+        // Operation 14: Vertical Cylinder with Cone Top
+        else if (operations == "14") {
+          if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four)) {
+            const topDia = inchesConvert(parseFloat(first), units1);
+            const botDia = inchesConvert(parseFloat(second), units2);
+            const cylHeight = inchesConvert(parseFloat(third), units3);
+            const coneHeight = inchesConvert(parseFloat(four), units4);
 
-        if (!isNaN(fill)) {
-          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
-          const condition = length + diameter;
-          const r_length = r + length;
+            if (botDia > topDia) {
+              const R_top = topDia / 2;
+              const sq_Rtop = Math.pow(R_top, 2);
+              const v_cylinder = Math.PI * sq_Rtop * cylHeight;
 
-          if (fillHeight <= condition) {
-            if (fillHeight < r) {
-              const sq_fill = Math.pow(fillHeight, 2);
-              const pi_fill = Math.PI * sq_fill;
-              const step1_ans = pi_fill / 3;
-              const d1 = 1.5 * diameter;
-              const step2_ans = d1 - fillHeight;
-              v_fill = step1_ans * step2_ans;
-            } else if (fillHeight > r && fillHeight < r_length) {
-              const sq_c = Math.pow(r, 3);
-              const stepans = fillHeight - r;
-              v_fill = 0.6666666666 * Math.PI * sq_c + Math.PI * sq_r * stepans;
-            } else if (r_length < fillHeight) {
-              const sq_fill = Math.pow(fillHeight, 2);
-              const pi_fill = Math.PI * sq_fill;
-              const step1_ans = pi_fill / 3;
-              const d1 = 1.5 * diameter;
-              const step_ans = length + diameter - fillHeight;
-              const step3 = d1 - step_ans;
-              const final_step = step1_ans * step3;
-              v_fill = v_tank - final_step;
-            }
-            per_ans = (fillHeight / condition) * 100;
-          } else {
-            return { error: 'It seems your tank is over filled.' };
-          }
-        }
-      } else {
-        return { error: 'Invalid input values.' };
-      }
-    }
+              const R_bot = botDia / 2;
+              const sq_Rbot = Math.pow(R_bot, 2);
+              const main_part = sq_Rtop + R_top * R_bot + sq_Rbot;
+              const v_frustum = 0.3333333333 * Math.PI * coneHeight * main_part;
 
-    // Operation 12: Horizontal Oval
-    else if (operations == "12") {
-      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
-        const height = inchesConvert(parseFloat(first), units1);
-        const width = inchesConvert(parseFloat(second), units2);
-        const length = inchesConvert(parseFloat(third), units3);
-        const h4 = height / 4;
-        v_tank = Math.PI * width * length * h4;
+              v_tank = v_frustum + v_cylinder;
 
-        if (!isNaN(fill)) {
-          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
-          if (fillHeight <= height) {
-            const w4 = width / 4;
-            const sq_fill = Math.pow(fillHeight, 2);
-            const sq_h = Math.pow(height, 2);
-            const square_f = fillHeight / height;
-            const square_s = sq_fill / sq_h;
-            const sq_ans = 4 * square_f - 4 * square_s;
-            const square_ans = Math.sqrt(sq_ans);
-            const fh = 2 * square_f;
-            const ans_1 = 1 - fh;
-            const a_ans_1 = Math.acos(ans_1);
-            const answer1 = a_ans_1 - ans_1;
-            const final_ans2 = answer1 * square_ans;
-            v_fill = height * length * w4 * final_ans2;
-            if (v_fill < 0) {
-              v_fill = v_fill * -1;
-            }
-            per_ans = (fillHeight / height) * 100;
-          } else {
-            return { error: 'It seems your tank is over filled.' };
-          }
-        }
-      } else {
-        return { error: 'Invalid input values.' };
-      }
-    }
-
-    // Operation 13: Vertical Cylinder with Cone Bottom
-    else if (operations == "13") {
-      if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four)) {
-        const topDia = inchesConvert(parseFloat(first), units1);
-        const botDia = inchesConvert(parseFloat(second), units2);
-        const cylHeight = inchesConvert(parseFloat(third), units3);
-        const coneHeight = inchesConvert(parseFloat(four), units4);
-
-        if (topDia > botDia) {
-          const R_top = topDia / 2;
-          const sq_Rtop = Math.pow(R_top, 2);
-          const v_cylinder = Math.PI * sq_Rtop * cylHeight;
-
-          const R_bot = botDia / 2;
-          const sq_Rbot = Math.pow(R_bot, 2);
-          const main_part = sq_Rtop + R_top * R_bot + sq_Rbot;
-          const v_frustum = 0.3333333333 * Math.PI * coneHeight * main_part;
-
-          v_tank = v_frustum + v_cylinder;
-
-          if (!isNaN(fill)) {
-            const fillHeight = parseFloat(fill);
-            if (fillHeight <= coneHeight) {
-              const diff = topDia - botDia;
-              const z2 = botDia / diff;
-              const z = coneHeight * z2;
-              const fill_z = fillHeight + z;
-              const con_z = coneHeight + z;
-              const diff2 = fill_z / con_z;
-              const R = 0.5 * topDia * diff2;
-              const square_R = Math.pow(R, 2);
-              const Answ = square_R + R * R_bot + sq_Rbot;
-              v_fill = 0.333333333 * Math.PI * coneHeight * Answ;
-              per_ans = (fillHeight / coneHeight) * 100;
-            } else if (fillHeight > coneHeight) {
-              const radi = topDia - botDia;
-              const radius = radi / 2;
-              const radius_sq = Math.pow(radius, 2);
-              const ans1 = fillHeight - coneHeight;
-              const c_volume = Math.PI * radius_sq * ans1;
-              v_fill = v_frustum + c_volume;
-            }
-          }
-        } else {
-          return { error: 'Top diameter should be bigger than bottom diameter.' };
-        }
-      } else {
-        return { error: 'Invalid input values.' };
-      }
-    }
-
-    // Operation 14: Vertical Cylinder with Cone Top
-    else if (operations == "14") {
-      if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four)) {
-        const topDia = inchesConvert(parseFloat(first), units1);
-        const botDia = inchesConvert(parseFloat(second), units2);
-        const cylHeight = inchesConvert(parseFloat(third), units3);
-        const coneHeight = inchesConvert(parseFloat(four), units4);
-
-        if (botDia > topDia) {
-          const R_top = topDia / 2;
-          const sq_Rtop = Math.pow(R_top, 2);
-          const v_cylinder = Math.PI * sq_Rtop * cylHeight;
-
-          const R_bot = botDia / 2;
-          const sq_Rbot = Math.pow(R_bot, 2);
-          const main_part = sq_Rtop + R_top * R_bot + sq_Rbot;
-          const v_frustum = 0.3333333333 * Math.PI * coneHeight * main_part;
-
-          v_tank = v_frustum + v_cylinder;
-
-          if (!isNaN(fill)) {
-            const fillHeight = parseFloat(fill);
-            if (fillHeight <= coneHeight) {
-              const diff = topDia - botDia;
-              const z2 = botDia / diff;
-              const z = coneHeight * z2;
-              const fill_z = fillHeight + z;
-              const con_z = coneHeight + z;
-              const diff2 = fill_z / con_z;
-              const R = 0.5 * topDia * diff2;
-              const square_R = Math.pow(R, 2);
-              const Answ = square_R + R * R_bot + sq_Rbot;
-              v_fill = 0.333333333 * Math.PI * coneHeight * Answ;
-              per_ans = (fillHeight / coneHeight) * 100;
-            } else if (fillHeight > coneHeight) {
-              const radi = topDia - botDia;
-              const radius = radi / 2;
-              const radius_sq = Math.pow(radius, 2);
-              const ans1 = fillHeight - coneHeight;
-              const c_volume = Math.PI * radius_sq * ans1;
-              v_fill = v_frustum + c_volume;
-            }
-          }
-        } else {
-          return { error: 'Bottom diameter should be bigger than top diameter.' };
-        }
-      } else {
-        return { error: 'Invalid input values.' };
-      }
-    }
-
-    // Operation 15: Cone
-    else if (operations == "15") {
-      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
-        const topDia = inchesConvert(parseFloat(first), units1);
-        const botDia = inchesConvert(parseFloat(second), units2);
-        const height = inchesConvert(parseFloat(third), units3);
-
-        if (topDia > botDia) {
-          const R_top = topDia / 2;
-          const sq_Rtop = Math.pow(R_top, 2);
-          const R_bot = botDia / 2;
-          const sq_Rbot = Math.pow(R_bot, 2);
-          const main_part = sq_Rtop + R_top * R_bot + sq_Rbot;
-          v_tank = 0.3333333333 * Math.PI * height * main_part;
-
-          if (!isNaN(fill)) {
-            const fillHeight = inchesConvert(parseFloat(fill), fill_units);
-            if (fillHeight <= topDia) {
-              const diff = topDia - botDia;
-              const z2 = botDia / diff;
-              const z = height * z2;
-              const fill_z = fillHeight + z;
-              const con_z = z + height;
-              const fill_con = fill_z / con_z;
-              const R = 0.5 * topDia * fill_con;
-              const square_R = Math.pow(R, 2);
-              const Answ = square_R + R * R_bot + sq_Rbot;
-              v_fill = 0.333333333 * Math.PI * height * Answ;
-              per_ans = (fillHeight / four) * 100;
+              if (!isNaN(fill)) {
+                const fillHeight = parseFloat(fill);
+                if (fillHeight <= coneHeight) {
+                  const diff = topDia - botDia;
+                  const z2 = botDia / diff;
+                  const z = coneHeight * z2;
+                  const fill_z = fillHeight + z;
+                  const con_z = coneHeight + z;
+                  const diff2 = fill_z / con_z;
+                  const R = 0.5 * topDia * diff2;
+                  const square_R = Math.pow(R, 2);
+                  const Answ = square_R + R * R_bot + sq_Rbot;
+                  v_fill = 0.333333333 * Math.PI * coneHeight * Answ;
+                  per_ans = (fillHeight / coneHeight) * 100;
+                } else if (fillHeight > coneHeight) {
+                  const radi = topDia - botDia;
+                  const radius = radi / 2;
+                  const radius_sq = Math.pow(radius, 2);
+                  const ans1 = fillHeight - coneHeight;
+                  const c_volume = Math.PI * radius_sq * ans1;
+                  v_fill = v_frustum + c_volume;
+                }
+              }
             } else {
-              return { error: 'It seems your tank is over filled.' };
+              return { error: 'Bottom diameter should be bigger than top diameter.' };
             }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Operation 15: Cone
+        else if (operations == "15") {
+          if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+            const topDia = inchesConvert(parseFloat(first), units1);
+            const botDia = inchesConvert(parseFloat(second), units2);
+            const height = inchesConvert(parseFloat(third), units3);
+
+            if (topDia > botDia) {
+              const R_top = topDia / 2;
+              const sq_Rtop = Math.pow(R_top, 2);
+              const R_bot = botDia / 2;
+              const sq_Rbot = Math.pow(R_bot, 2);
+              const main_part = sq_Rtop + R_top * R_bot + sq_Rbot;
+              v_tank = 0.3333333333 * Math.PI * height * main_part;
+
+              if (!isNaN(fill)) {
+                const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+                if (fillHeight <= topDia) {
+                  const diff = topDia - botDia;
+                  const z2 = botDia / diff;
+                  const z = height * z2;
+                  const fill_z = fillHeight + z;
+                  const con_z = z + height;
+                  const fill_con = fill_z / con_z;
+                  const R = 0.5 * topDia * fill_con;
+                  const square_R = Math.pow(R, 2);
+                  const Answ = square_R + R * R_bot + sq_Rbot;
+                  v_fill = 0.333333333 * Math.PI * height * Answ;
+                  per_ans = (fillHeight / four) * 100;
+                } else {
+                  return { error: 'It seems your tank is over filled.' };
+                }
+              }
+            } else {
+              return { error: 'Top diameter should be bigger than bottom diameter.' };
+            }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Operation 16: Sphere
+        else if (operations == "16") {
+          if (!isNaN(first)) {
+            const diameter = inchesConvert(parseFloat(first), units1);
+            const r = diameter / 2;
+            const cube_r = Math.pow(r, 3);
+            v_tank = 1.333333333 * Math.PI * cube_r;
+
+            if (!isNaN(fill)) {
+              const fillHeight = inchesConvert(parseFloat(fill), fill_units);
+              if (fillHeight < diameter) {
+                const r2 = fillHeight / 2;
+                const cube_r2 = Math.pow(r2, 3);
+                v_fill = 1.333333333 * Math.PI * cube_r2;
+                per_ans = (fillHeight / four) * 100;
+              } else {
+                return { error: 'It seems your tank is over filled.' };
+              }
+            }
+          } else {
+            return { error: 'Invalid input values.' };
+          }
+        }
+
+        // Convert volumes to different units
+        if (v_tank !== undefined) {
+          result.tech_v_tank = v_tank;
+          result.tech_v_feet = v_tank / 1728;
+          result.tech_v_liter = v_tank / 61.024;
+          result.tech_v_meter = v_tank / 61024;
+          result.tech_us_gallons = v_tank / 231;
+          result.tech_v_yard = v_tank / 46656;
+          result.tech_v_cm = v_tank * 16.387;
+        }
+
+        if (v_fill !== undefined) {
+          result.tech_v_fill = v_fill;
+          result.tech_v_feet_fill = v_fill / 1728;
+          result.tech_v_liter_fill = v_fill / 61.024;
+          result.tech_v_meter_fill = v_fill / 61024;
+          result.tech_us_gallons_fill = v_fill / 231;
+          result.tech_v_yard_fill = v_fill / 46656;
+          result.tech_v_cm_fill = v_fill * 16.387;
+          result.tech_per_ans = per_ans;
+        }
+
+        return result;
+
+      } catch (error) {
+        return { error: 'Calculation error: ' + error.message };
+      }
+    }
+
+    async  getCalculationDaysSinceDateCalculator(body) {
+      try {
+        const day = parseInt(body.tech_day);
+        const month = parseInt(body.tech_month);
+        const year = parseInt(body.tech_year);
+        const day1 = parseInt(body.tech_day1);
+        const month1 = parseInt(body.tech_month1);
+        const year1 = parseInt(body.tech_year1);
+
+        // Create dates
+        let date1 = dayjs.utc(`${year}-${month}-${day}`, "YYYY-M-D");
+        let date2 = dayjs.utc(`${year1}-${month1}-${day1}`, "YYYY-M-D");
+
+        // Ensure correct order
+        if (date2.isBefore(date1)) {
+          const temp = date1;
+          date1 = date2;
+          date2 = temp;
+        }
+
+        // Total days (same as Laravel)
+        const totaldays = date2.diff(date1, "day");
+
+        let workingDays = 0;
+        let holidays = 0;
+        let currentDate = date1;
+
+        // Loop until the day BEFORE date2 (to match Laravel)
+        while (currentDate.isBefore(date2, "day")) {
+          const dayOfWeek = currentDate.day(); // 0=Sun, 6=Sat
+          if (dayOfWeek === 0 || dayOfWeek === 6) {
+            holidays++;
+          } else {
+            workingDays++;
+          }
+          currentDate = currentDate.add(1, "day");
+        }
+
+        return {
+          workingDays,
+          holidays,
+          totaldays,
+        };
+      } catch (error) {
+        console.error("Error in getCalculationDaysSinceDateCalculator:", error);
+        return { error: "Invalid input or calculation error." };
+      }
+    }
+
+    async  getCalculationhowManyDaysUntilMyBirthdayCalculator(body) {
+      try {
+        // ✅ Define the Age class inside the function
+        class Age {
+          constructor() {
+            this.age = "";
+          }
+
+          calculateAge(timestamp) {
+            const now = dayjs.utc();
+            const birthDate = dayjs.utc(timestamp);
+
+            let age = now.year() - birthDate.year();
+            const monthDiff = now.month() - birthDate.month();
+            const dayDiff = now.date() - birthDate.date();
+
+            if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+              age--;
+            }
+
+            this.age = age;
+          }
+
+          getAge2() {
+            return this.age;
+          }
+
+          getRank(rank) {
+            const strRank = String(rank);
+            const last = parseInt(strRank.slice(-1));
+            const secLast = parseInt(strRank.slice(-2, -1));
+            let ext;
+
+            if (last > 3 || last === 0) ext = "th";
+            else if (last === 3) ext = "rd";
+            else if (last === 2) ext = "nd";
+            else ext = "st";
+
+            if (
+              (last === 1 && secLast === 1) ||
+              (last === 2 && secLast === 1) ||
+              (last === 3 && secLast === 1)
+            ) {
+              ext = "th";
+            }
+
+            return `${rank}${ext}`;
+          }
+        }
+
+        // ✅ Extract input values
+        const day = parseInt(body.tech_day);
+        const month = parseInt(body.tech_month);
+        const year = parseInt(body.tech_year);
+
+        // ✅ Validate DOB
+        const dob = dayjs.utc(`${year}-${month}-${day}`, "YYYY-M-D");
+        if (!dob.isValid()) {
+          return { error: "Invalid date of birth" };
+        }
+
+        // ✅ Calculate age
+        const ageObj = new Age();
+        ageObj.calculateAge(dob.toDate().getTime());
+        const age = ageObj.getAge2();
+
+        // ✅ Get current date
+        const now = dayjs.utc();
+
+        // ✅ Find next birthday
+        let nextBirthday = dayjs.utc(`${now.year()}-${month}-${day}`, "YYYY-M-D");
+        if (nextBirthday.isBefore(now)) {
+          nextBirthday = nextBirthday.add(1, "year");
+        }
+
+        // ✅ Calculate differences
+        const daysUntilNextBirthday = nextBirthday.diff(now, "day");
+        const diffInHours = nextBirthday.diff(now, "hour");
+        const diffInMinutes = nextBirthday.diff(now, "minute");
+        const diffInMonths = nextBirthday.diff(now, "month");
+
+        // ✅ Build and return response
+        return {
+          tech_nextBirthday: nextBirthday.format("YYYY-MM-DD"),
+          tech_dob: dob.format("MM-DD-YYYY"),
+          tech_age:age,
+          tech_diffInHours:diffInHours,
+          tech_diffInMinutes:diffInMinutes,
+          tech_diffInMonths:diffInMonths,
+          tech_daysUntilNextBirthday:daysUntilNextBirthday,
+        };
+
+      } catch (error) {
+        console.error("Error:", error);
+        return { error: "Internal server error" };
+      }
+    }
+
+    async  getCalculationhowManymonthsLeftIntheYearCalculator(body) {
+      try {
+        const day = parseInt(body.tech_day);
+        const month = parseInt(body.tech_month);
+        const year = parseInt(body.tech_year);
+
+        // Create current date in UTC
+        const now = dayjs.utc(`${year}-${month}-${day}`, "YYYY-M-D");
+        if (!now.isValid()) {
+          return { error: "Invalid date provided" };
+        }
+
+        // Check leap year
+        const isLeap = now.isLeapYear();
+        const daysInYear = isLeap ? 366 : 365;
+        const weeksInYear = 52;
+
+        // End of current year
+        const endOfYear = dayjs.utc(`${year}-12-31T23:59:59Z`);
+
+        // Calculate differences
+        const daysRemaining = endOfYear.diff(now, "day");
+        const weeksRemaining = endOfYear.diff(now, "week");
+        const remainingDaysAfterWeeks = daysRemaining - (weeksRemaining * 7);
+
+        const monthsRemaining = endOfYear.diff(now, "month");
+        const remainingDaysAfterMonths = daysRemaining - (monthsRemaining * 30); // Approximation
+
+        const hoursRemaining = endOfYear.diff(now, "hour");
+
+        return {
+          tech_now: now.format("MM-DD-YYYY"),
+          tech_isLeapYear: isLeap,
+          tech_daysInYear:daysInYear,
+          tech_weeksInYear:weeksInYear,
+          tech_daysRemaining:daysRemaining,
+          tech_weeksRemaining:weeksRemaining,
+          tech_remainingDaysAfterWeeks:remainingDaysAfterWeeks,
+          tech_monthsRemaining:monthsRemaining,
+          tech_remainingDaysAfterMonths:remainingDaysAfterMonths,
+          tech_hoursRemaining:hoursRemaining
+        };
+
+      } catch (error) {
+        console.error("Error calculating months left:", error);
+        return { error: "Internal Server Error" };
+      }
+    }
+
+    async  getCalculationhowManyWeeksLeftIntheYearCalculator(body) {
+      try {
+        const day = parseInt(body.tech_day);
+        const month = parseInt(body.tech_month);
+        const year = parseInt(body.tech_year);
+
+        // Validate input
+        const now = dayjs.utc(`${year}-${month}-${day}`, "YYYY-M-D");
+        if (!now.isValid()) {
+          return { error: "Invalid date provided" };
+        }
+
+        // Check leap year
+        const isLeap = now.isLeapYear();
+        const daysInYear = isLeap ? 366 : 365;
+        const weeksInYear = 52;
+
+        // End of current year
+        const endOfYear = dayjs.utc(`${year}-12-31T23:59:59Z`);
+
+        // Calculate differences
+        const daysRemaining = endOfYear.diff(now, "day");
+        const weeksRemaining = endOfYear.diff(now, "week");
+        const remainingDaysAfterWeeks = daysRemaining - (weeksRemaining * 7);
+
+        const monthsRemaining = endOfYear.diff(now, "month");
+        const remainingDaysAfterMonths = daysRemaining - (monthsRemaining * 30); // Approximation
+        const hoursRemaining = endOfYear.diff(now, "hour");
+
+        // Return results (same structure as Laravel version)
+        return {
+          tech_now: now.format("MM-DD-YYYY"),
+          tech_isLeapYear: isLeap,
+          tech_daysInYear:daysInYear,
+          tech_weeksInYear:weeksInYear,
+          tech_daysRemaining:daysRemaining,
+          tech_weeksRemaining:weeksRemaining,
+          tech_remainingDaysAfterWeeks:remainingDaysAfterWeeks,
+          tech_monthsRemaining:monthsRemaining,
+          tech_remainingDaysAfterMonths:remainingDaysAfterMonths,
+          tech_hoursRemaining:hoursRemaining
+        };
+
+      } catch (error) {
+        console.error("Error calculating weeks left:", error);
+        return { error: "Internal Server Error" };
+      }
+    }
+
+    async  getCalculationMonthFromNowCalculator(body) {
+      try {
+        const number = parseInt(body.tech_number);
+        const current = body.tech_current;
+
+        if (!isNaN(number)) {
+          if (number >= 1 || number == 0) {
+            const date1 = dayjs.utc(current);
+            const dateAfterAddingMonths = date1.add(number, "month");
+
+            const isLeap = dateAfterAddingMonths.isLeapYear();
+            const daysInYear = isLeap ? 366 : 365;
+            const weeksInYear = 52;
+            const currentWeekOfYear = dateAfterAddingMonths.isoWeek(); // ✅ ISO-based week number
+            const currentDayOfYear = dateAfterAddingMonths.dayOfYear();
+
+            return {
+              tech_date_name: dateAfterAddingMonths.format("dddd"),
+              tech_t_date: dateAfterAddingMonths.format("MMMM D, YYYY"),
+              tech_daysInYear:daysInYear,
+              tech_weeksInYear:weeksInYear,
+              tech_currentWeekOfYear:currentWeekOfYear,
+              tech_currentDayOfYear:currentDayOfYear
+            };
+          } else if (number <= -1) {
+            const date2 = dayjs.utc(current);
+            const dateAfterSubtractingMonths = date2.subtract(Math.abs(number), "month");
+
+            const isLeap = dateAfterSubtractingMonths.isLeapYear();
+            const daysInYear = isLeap ? 366 : 365;
+            const weeksInYear = 52;
+            const currentWeekOfYear = dateAfterSubtractingMonths.isoWeek(); // ✅ ISO-based week number
+            const currentDayOfYear = dateAfterSubtractingMonths.dayOfYear();
+
+            return {
+              tech_date_name: dateAfterSubtractingMonths.format("dddd"),
+              tech_t_date: dateAfterSubtractingMonths.format("MMMM D, YYYY"),
+              tech_daysInYear:daysInYear,
+              tech_weeksInYear:weeksInYear,
+              tech_currentWeekOfYear:currentWeekOfYear,
+              tech_currentDayOfYear:currentDayOfYear
+            };
           }
         } else {
-          return { error: 'Top diameter should be bigger than bottom diameter.' };
+          return { error: "Please add Number of Months" };
         }
-      } else {
-        return { error: 'Invalid input values.' };
+
+      } catch (error) {
+        console.error("Error in getCalculationMonthFromNowCalculator:", error);
+        return { error: "Internal Server Error" };
       }
     }
 
-    // Operation 16: Sphere
-    else if (operations == "16") {
-      if (!isNaN(first)) {
-        const diameter = inchesConvert(parseFloat(first), units1);
-        const r = diameter / 2;
-        const cube_r = Math.pow(r, 3);
-        v_tank = 1.333333333 * Math.PI * cube_r;
+    async  getCalculationWeeksBetweenDatesCalculator(body) {
+      try {
+        const day = parseInt(body.tech_day);
+        const month = parseInt(body.tech_month);
+        const year = parseInt(body.tech_year);
+        const day1 = parseInt(body.tech_day1);
+        const month1 = parseInt(body.tech_month1);
+        const year1 = parseInt(body.tech_year1);
 
-        if (!isNaN(fill)) {
-          const fillHeight = inchesConvert(parseFloat(fill), fill_units);
-          if (fillHeight < diameter) {
-            const r2 = fillHeight / 2;
-            const cube_r2 = Math.pow(r2, 3);
-            v_fill = 1.333333333 * Math.PI * cube_r2;
-            per_ans = (fillHeight / four) * 100;
-          } else {
-            return { error: 'It seems your tank is over filled.' };
+        // Create UTC dates
+        const date1 = dayjs.utc(`${year}-${month}-${day}`, "YYYY-M-D");
+        const date2 = dayjs.utc(`${year1}-${month1}-${day1}`, "YYYY-M-D");
+
+        // Validate both dates
+        if (!date1.isValid() || !date2.isValid()) {
+          return { error: "Invalid date(s) provided" };
+        }
+
+        // Calculate absolute difference in days
+        const totalDays = Math.abs(date2.diff(date1, "day"));
+        const weeks = Math.floor(totalDays / 7);
+        const days = totalDays % 7;
+
+        // Return result (mimicking Laravel's structure)
+        return {
+          tech_date1: date1.format("YYYY-MM-DD"),
+          tech_date2: date2.format("YYYY-MM-DD"),
+          tech_weeks:weeks,
+          tech_days:days
+        };
+      } catch (error) {
+        console.error("Error in getCalculationWeeksBetweenDatesCalculator:", error);
+        return { error: "Internal Server Error" };
+      }
+    }
+    
+
+  async  getCalculationJuliansDateCalculator(body) {
+      const result = {};
+      
+      const day = parseInt(body.tech_day);
+      const month = parseInt(body.tech_month);
+      const year = parseInt(body.tech_year);
+      const timecheck = body.tech_timecheck;
+      const julian = parseFloat(body.tech_julian);
+      
+      // Format date string
+      const dob = `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      
+      // Format date1 (e.g., "Monday, January 01, 2024")
+      const date1Obj = new Date(year, month - 1, day);
+      const date1 = date1Obj.toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: '2-digit'
+      });
+      
+      if (timecheck === 'stat') {
+          // Gregorian to Julian Date conversion
+          let adjYear = year;
+          let adjMonth = month;
+          
+          if (adjMonth <= 2) {
+              adjYear -= 1;
+              adjMonth += 12;
           }
-        }
+          
+          const A = Math.floor(adjYear / 100);
+          const B = 2 - A + Math.floor(A / 4);
+          const julianDate = Math.floor(365.25 * (adjYear + 4716)) + 
+                            Math.floor(30.6001 * (adjMonth + 1)) + 
+                            day + B - 1524.5;
+          
+          result.tech_julianDate = julianDate;
+          
       } else {
-        return { error: 'Invalid input values.' };
+          // Julian Date to Gregorian conversion
+          if (!julian && julian !== 0) {
+              return { error: 'Please Enter Julian Date' };
+          }
+          
+          let adjJulian = julian + 0.5;
+          const Z = Math.floor(adjJulian);
+          const F = adjJulian - Z;
+          
+          let A;
+          if (Z < 2299161) {
+              A = Z;
+          } else {
+              const alpha = Math.floor((Z - 1867216.25) / 36524.25);
+              A = Z + 1 + alpha - Math.floor(alpha / 4);
+          }
+          
+          const B = A + 1524;
+          const C = Math.floor((B - 122.1) / 365.25);
+          const D = Math.floor(365.25 * C);
+          const E = Math.floor((B - D) / 30.6001);
+          
+          let calcDay = B - D - Math.floor(30.6001 * E) + F;
+          
+          let calcMonth;
+          if (E < 14) {
+              calcMonth = E - 1;
+          } else {
+              calcMonth = E - 13;
+          }
+          
+          let calcYear;
+          if (calcMonth > 2) {
+              calcYear = C - 4716;
+          } else {
+              calcYear = C - 4715;
+          }
+          
+          calcYear = Math.floor(calcYear);
+          calcMonth = Math.floor(calcMonth);
+          calcDay = Math.floor(calcDay);
+          
+          // Calculate day of week using standard Julian Day formula
+          // This matches PHP's internal calculation
+          const jd = Math.floor(julian + 0.5);
+          const dayOfWeekIndex = (jd + 4) % 7;
+          const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                            'July', 'August', 'September', 'October', 'November', 'December'];
+          
+          const dayOfWeek = dayNames[dayOfWeekIndex];
+          const monthName = monthNames[calcMonth - 1];
+          const dayStr = calcDay.toString().padStart(2, '0');
+          
+          // Format: "Tuesday, -4712 July 27"
+          const jul_date = `${dayOfWeek}, ${calcYear} ${monthName} ${dayStr}`;
+          
+          result.tech_jul_date = jul_date;
       }
-    }
-
-    // Convert volumes to different units
-    if (v_tank !== undefined) {
-      result.tech_v_tank = v_tank;
-      result.tech_v_feet = v_tank / 1728;
-      result.tech_v_liter = v_tank / 61.024;
-      result.tech_v_meter = v_tank / 61024;
-      result.tech_us_gallons = v_tank / 231;
-      result.tech_v_yard = v_tank / 46656;
-      result.tech_v_cm = v_tank * 16.387;
-    }
-
-    if (v_fill !== undefined) {
-      result.tech_v_fill = v_fill;
-      result.tech_v_feet_fill = v_fill / 1728;
-      result.tech_v_liter_fill = v_fill / 61.024;
-      result.tech_v_meter_fill = v_fill / 61024;
-      result.tech_us_gallons_fill = v_fill / 231;
-      result.tech_v_yard_fill = v_fill / 46656;
-      result.tech_v_cm_fill = v_fill * 16.387;
-      result.tech_per_ans = per_ans;
-    }
-
-    return result;
-
-  } catch (error) {
-    return { error: 'Calculation error: ' + error.message };
+      
+      result.tech_date1 = date1;
+      
+      return result;
   }
-}
-
-
 
 
 
