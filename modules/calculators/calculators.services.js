@@ -104,45 +104,7 @@ class AgeCalculator {
 }
 
 class CalculatorsServices {
-  /**
-   * getCalulationOfDaysAgoCalculator: Service Method
-   * POST: /api/calculators-lol/days-ago-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
 
-  async getCalculationOfDaysAgoCalculator(body) {
-    const elapsedNumber = parseInt(body.elapsedNumber);
-    const referenceDate = body.referenceDate;
-
-    if (isNaN(elapsedNumber)) {
-      return { error: "Please add Number of Weeks" };
-    }
-
-    let date = dayjs(referenceDate);
-    let targetDate;
-
-    if (elapsedNumber <= -1 || elapsedNumber === 0) {
-      targetDate = date.add(Math.abs(elapsedNumber), "day");
-    } else if (elapsedNumber >= 1) {
-      targetDate = date.subtract(elapsedNumber, "day");
-    }
-
-    const isLeap = targetDate.isLeapYear();
-    const daysInYear = isLeap ? 366 : 365;
-    const weeksInYear = 52;
-    const currentWeekOfYear = targetDate.isoWeek();
-    const currentDayOfYear = targetDate.dayOfYear();
-
-    return {
-      dayName: targetDate.format("dddd"),
-      formattedDate: targetDate.format("MMMM D, YYYY"),
-      totalDaysInYear: daysInYear,
-      totalWeeksInYear: weeksInYear,
-      weekOfYear: currentWeekOfYear,
-      dayOfYear: currentDayOfYear,
-    };
-  }
 
   /**
    * getCalculationCatAgeCalculator: Service Method
@@ -4937,325 +4899,7 @@ class CalculatorsServices {
     };
   }
 
-  /**
-   * getCalculationWeekCalculator: Service Method
-   * POST: /api/calculators-lol/week-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
 
-  async getCalculationWeekCalculator(data) {
-    const startDate = data.startDate; // previously: current
-    const endDate = data.endDate; // previously: next
-    const weekCount = data.weekCount; // previously: number
-    const selectionType = data.selectionType; // previously: stype
-
-    let result = {};
-
-    if (selectionType === "s_date") {
-      if (isNaN(weekCount)) {
-        return { error: "Please input Number of weeks" };
-      }
-      const date = dayjs(startDate);
-      const updatedDate = date.add(Number(weekCount), "week");
-      result.addedDate = updatedDate.format("MMMM D, YYYY");
-      return result;
-    } else if (selectionType === "e_date") {
-      if (isNaN(weekCount)) {
-        return { error: "Please input Number of weeks" };
-      }
-      const date = dayjs(startDate);
-      const updatedDate = date.subtract(Number(weekCount), "week");
-      result.subtractedDate = updatedDate.format("MMMM D, YYYY");
-      return result;
-    } else {
-      const date1 = dayjs(startDate);
-      const date2 = dayjs(endDate);
-      const diffDays = Math.abs(date1.diff(date2, "day"));
-      const totalWeeks = Math.floor(diffDays / 7);
-      result.totalWeeks = totalWeeks;
-      return result;
-    }
-  }
-
-  /**
-   * getCalculationyearFromTodayCalculator: Service Method
-   * POST: /api/calculators-lol/years-from-today
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationyearFromTodayCalculator(body) {
-    const yearCount = body.yearCount; // old: number
-    const referenceDate = body.referenceDate; // old: current
-
-    let result = {};
-
-    if (isNaN(yearCount)) {
-      return { error: "Please add Number of Years" };
-    }
-
-    const startDate = dayjs(referenceDate);
-
-    if (yearCount >= 1 || yearCount === 0) {
-      const futureDate = startDate.add(Number(yearCount), "year");
-      const totalDays = futureDate.diff(startDate, "day");
-      const totalWeeks = Math.floor(totalDays / 7);
-
-      result.totalWeeks = totalWeeks;
-      result.totalDays = totalDays;
-      result.dayName = futureDate.format("dddd");
-      result.formattedDate = futureDate.format("MMMM D, YYYY");
-      return result;
-    } else if (yearCount <= -1) {
-      const pastDate = startDate.subtract(Math.abs(yearCount), "year");
-      const totalDays = pastDate.diff(startDate, "day");
-      const totalWeeks = Math.floor(totalDays / 7);
-
-      result.totalWeeks = totalWeeks.toString(); // will be negative
-      result.totalDays = totalDays.toString(); // will be negative
-      result.dayName = pastDate.format("dddd");
-      result.formattedDate = pastDate.format("MMMM D, YYYY");
-      return result;
-    }
-  }
-  /**
-   * getCalculationHoursAgoCalculator: Service Method
-   * POST: /api/calculators-lol/hours-ago-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationHoursAgoCalculator(body) {
-    const inputHour = parseInt(body.inputHour);
-    const inputMinute = parseInt(body.inputMinute);
-    const inputSecond = parseInt(body.inputSecond);
-    const subtractHour = parseInt(body.subtractHour);
-    const subtractMinute = parseInt(body.subtractMinute);
-
-    // Create base time using today's date + time
-    let currentTime = dayjs()
-      .hour(inputHour)
-      .minute(inputMinute)
-      .second(inputSecond);
-
-    let result = {};
-
-    if (inputHour >= 1 || inputMinute >= 1 || inputSecond >= 1) {
-      // Subtract time
-      const adjustedTime = currentTime
-        .subtract(subtractHour, "hour")
-        .subtract(subtractMinute, "minute");
-      result.t_date = adjustedTime.format("MMMM D, YYYY");
-      result.days = currentTime.diff(adjustedTime, "day");
-      result.time = adjustedTime.format("hh:mm A");
-      return result;
-    } else {
-      // Add time
-      const adjustedTime = currentTime
-        .add(Math.abs(subtractHour), "hour")
-        .add(Math.abs(subtractMinute), "minute");
-      result.t_date = adjustedTime.format("MMMM D, YYYY");
-      result.days = currentTime.diff(adjustedTime, "day"); // still 0 unless cross-day
-      result.time = adjustedTime.format("hh:mm A");
-      return result;
-    }
-  }
-
-
-
-  /**
-   * getCalculationDaysLeftInTheYearCalculator: Service Method
-   * POST: /api/calculators-lol/days-left-in-the-year
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationDaysLeftInTheYearCalculator(data) {
-    const { inputDay, inputMonth, inputYear } = data;
-
-    if (!isNaN(inputDay) && !isNaN(inputMonth) && !isNaN(inputYear)) {
-      const formattedDay = String(inputDay).padStart(2, "0");
-      const formattedMonth = String(inputMonth).padStart(2, "0");
-
-      const selectedDate = dayjs(
-        `${inputYear}-${formattedMonth}-${formattedDay}`,
-        "YYYY-MM-DD"
-      );
-
-      if (!selectedDate.isValid()) {
-        return {
-          status: "error",
-          message: "Invalid date format.",
-        };
-      }
-
-      const finalDayOfYear = dayjs(`${inputYear}-12-31T23:59:59`);
-      const leapYear = selectedDate.isLeapYear();
-      const totalDaysInYear = leapYear ? 366 : 365;
-
-      const totalDaysLeft = finalDayOfYear.diff(selectedDate, "day");
-      const fullWeeksLeft = Math.floor(totalDaysLeft / 7);
-      const leftoverDaysAfterWeeks = totalDaysLeft % 7;
-
-      const monthsLeft = finalDayOfYear.diff(selectedDate, "month");
-      const leftoverDaysAfterMonths = totalDaysLeft - monthsLeft * 30; // Approximation
-
-      const hoursLeft = finalDayOfYear.diff(selectedDate, "hour");
-
-      return {
-        status: "success",
-        payload: {
-          currentDate: selectedDate.format("MM-DD-YYYY"),
-          totalDaysLeft,
-          fullWeeksLeft,
-          leftoverDaysAfterWeeks,
-          monthsLeft,
-          leftoverDaysAfterMonths,
-          hoursLeft,
-        },
-      };
-    }
-
-    return {
-      status: "error",
-      message: "Invalid input: day, month, and year must be numeric.",
-    };
-  }
-  /**
-   * getCalculationYearAgoCalculator: Service Method
-   * POST: /api/calculators-lol/years-ago-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationYearAgoCalculator(inputData) {
-    const { yearCount, currentDate } = inputData;
-
-    if (!isNaN(yearCount)) {
-      const current = dayjs(currentDate, "YYYY-MM-DD");
-
-      if (!current.isValid()) {
-        return {
-          status: "error",
-          message: "Invalid current date format. Use YYYY-MM-DD",
-        };
-      }
-
-      let resultDate;
-      if (yearCount >= 1) {
-        resultDate = current.subtract(yearCount, "year");
-      } else {
-        resultDate = current.add(Math.abs(yearCount), "year");
-      }
-
-      const dayDifference = current.diff(resultDate, "day");
-      const weekDifference = Math.floor(dayDifference / 7);
-      const monthDifference = current.diff(resultDate, "month");
-
-      return {
-        status: "success",
-        payload: {
-          totalDays: dayDifference,
-          totalWeeks: weekDifference,
-          totalMonths: monthDifference,
-          resultDayName: resultDate.format("dddd"),
-          formattedDate: resultDate.format("MMMM D, YYYY"),
-        },
-      };
-    } else {
-      return {
-        status: "error",
-        message: "Please provide a valid number of years.",
-      };
-    }
-  }
-
-  /**
-   * getCalculationHoursFromNowCalculator: Service Method
-   * POST: /api/calculators-lol/hours-from-now
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-  async getCalculationHoursFromNowCalculator(inputData) {
-    const {
-      hourValue, // Original: hours
-      minuteValue, // Original: minuts
-      secondValue, // Original: sec
-      addHours, // Original: hrs
-      addMinutes, // Original: min
-    } = inputData;
-
-    if (
-      [hourValue, minuteValue, secondValue, addHours, addMinutes].some((val) =>
-        isNaN(val)
-      )
-    ) {
-      return {
-        status: "error",
-        message: "All inputs must be numeric.",
-      };
-    }
-
-    const initialTime = dayjs()
-      .hour(Number(hourValue))
-      .minute(Number(minuteValue))
-      .second(Number(secondValue));
-
-    const newTime = initialTime
-      .add(Number(addHours), "hour")
-      .add(Number(addMinutes), "minute");
-
-    return {
-      status: "success",
-      originalTime: initialTime.format("hh:mm:ss A"), // 12-hour format
-      updatedTime: newTime.format("hh:mm:ss A"), // 12-hour format
-    };
-  }
-
-  /**
-   * getCalculationDaysFromTodayCalculator: Service Method
-   * POST: /api/calculators-lol/days-from-today
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationDaysFromTodayCalculator(body) {
-    const {
-      dateValue, // original: current
-      daysOffset, // original: number
-    } = body;
-
-    if (isNaN(daysOffset)) {
-      return { status: "error", message: "Please add a valid number of days" };
-    }
-
-    const parsedDate = dayjs(dateValue, [
-      "YYYY-MM-DD",
-      "MM/DD/YYYY",
-      "DD-MM-YYYY",
-    ]);
-    if (!parsedDate.isValid()) {
-      return { status: "error", message: "Invalid date format" };
-    }
-
-    let newDate;
-    if (daysOffset >= 1 || daysOffset == 0) {
-      newDate = parsedDate.add(Number(daysOffset), "day");
-    } else {
-      newDate = parsedDate.subtract(Math.abs(daysOffset), "day");
-    }
-
-    return {
-      status: "success",
-      daysdateName: newDate.format("dddd"),
-      daysfullDate: newDate.format("MMMM D, YYYY"),
-      daysukDate: newDate.format("D MMMM, YYYY"),
-      daysdmy: newDate.format("DD/MM/YY"),
-      daysmdy: newDate.format("MM/DD/YY"),
-      daysiso: newDate.format("YYYY-MM-DD"),
-    };
-  }
 
   /**
    * getCalculationDaysElapsedTimeCalculator: Service Method
@@ -5663,177 +5307,6 @@ class CalculatorsServices {
       holidays,
       totalDays,
     };
-  }
-
-
-  /**
-   * getCalculationWeekAgoCalculator: Service Method
-   * POST: /api/calculators-lol/weeks-ago-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationWeekAgoCalculator(body) {
-    let { number, current } = body;
-
-    // Ensure number is a valid number and not a string like '0'
-    if (typeof number === "number" && !isNaN(number)) {
-      if (number <= -1 || number === 0) {
-        // Adding weeks in the past
-        const date1 = dayjs(current);
-        const dateAfterAddingWeeks = date1.add(Math.abs(number), "week"); // Add weeks in absolute value
-
-        // Determine leap year and days in year
-        const isLeapYear = dateAfterAddingWeeks.isLeapYear();
-        const daysInYear = isLeapYear ? 366 : 365;
-        const weeksInYear = 52;
-
-        // Get ISO week of the year and day of the year
-        const currentWeekOfYear = dateAfterAddingWeeks.isoWeek(); // ISO 8601 week
-        const currentDayOfYear = dateAfterAddingWeeks.dayOfYear();
-
-        // Prepare response
-        const result = {
-          date_name: dateAfterAddingWeeks.format("dddd"),
-          t_date: dateAfterAddingWeeks.format("MMMM D, YYYY"),
-          daysInYear: daysInYear,
-          weeksInYear: weeksInYear,
-          currentWeekOfYear: currentWeekOfYear,
-          currentDayOfYear: currentDayOfYear,
-        };
-
-        return result;
-      } else if (number >= 1) {
-        // Subtracting weeks in the future
-        const date2 = dayjs(current);
-        const dateAfterSubtractingWeeks = date2.subtract(number, "week");
-
-        // Determine leap year and days in year
-        const isLeapYear = dateAfterSubtractingWeeks.isLeapYear();
-        const daysInYear = isLeapYear ? 366 : 365;
-        const weeksInYear = 52;
-
-        // Get ISO week of the year and day of the year
-        const currentWeekOfYear = dateAfterSubtractingWeeks.isoWeek(); // ISO 8601 week
-        const currentDayOfYear = dateAfterSubtractingWeeks.dayOfYear();
-
-        // Prepare response
-        const result = {
-          date_name: dateAfterSubtractingWeeks.format("dddd"),
-          t_date: dateAfterSubtractingWeeks.format("MMMM D, YYYY"),
-          daysInYear: daysInYear,
-          weeksInYear: weeksInYear,
-          currentWeekOfYear: currentWeekOfYear,
-          currentDayOfYear: currentDayOfYear,
-        };
-
-        return result;
-      }
-    } else {
-      return { error: "Please add Number of Weeks" };
-    }
-  }
-
-  /**
-   * getCalculationtimeUntilCalculator: Service Method
-   * POST: /api/calculators-lol/time-until-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationtimeUntilCalculator(body) {
-    let { current, next } = body;
-
-    // Parse the input dates
-    const currentTime = dayjs(current);
-    const nextTime = dayjs(next);
-    const today = dayjs();
-
-    // Validate the dates
-    if (!currentTime.isValid() || !nextTime.isValid()) {
-      return { error: "Please enter valid dates" };
-    }
-
-    // Check if next date is in the past
-    if (nextTime.isBefore(today)) {
-      return { error: "Next date cannot be less than today's date." };
-    }
-
-    // Calculate total difference in seconds
-    const totalSeconds = nextTime.diff(currentTime, "second");
-
-    // Convert seconds into years, months, days, hours, minutes, seconds
-    const years = Math.floor(totalSeconds / (365 * 24 * 60 * 60));
-    const months = Math.floor(
-      (totalSeconds % (365 * 24 * 60 * 60)) / (30 * 24 * 60 * 60)
-    );
-    const days = Math.floor(
-      (totalSeconds % (30 * 24 * 60 * 60)) / (24 * 60 * 60)
-    );
-    const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
-    const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
-    const seconds = totalSeconds % 60;
-
-    // Prepare the response
-    const result = {
-      years: years,
-      months: months,
-      days: days,
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds,
-    };
-
-    return result;
-  }
-
-  /**
-   * getCalculationWeekFromTodayCalculator: Service Method
-   * POST: /api/calculators-lol/time-until-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-  async getCalculationWeekFromTodayCalculator(body) {
-    let { number, current } = body;
-
-    // Ensure 'number' is a valid number
-    if (typeof number === "number" && !isNaN(number)) {
-      let date1 = dayjs(current); // Parse the current date input
-
-      let dateAfterAddingDays;
-      let daysInYear, weeksInYear, currentWeekOfYear, currentDayOfYear;
-
-      if (number >= 1 || number === 0) {
-        // Adding weeks
-        dateAfterAddingDays = date1.add(Math.abs(number), "week");
-      } else if (number <= -1) {
-        // Subtracting weeks
-        dateAfterAddingDays = date1.subtract(Math.abs(number), "week");
-      }
-
-      // Determine if the year is a leap year
-      const isLeapYear = dateAfterAddingDays.isLeapYear();
-      daysInYear = isLeapYear ? 366 : 365;
-      weeksInYear = 52;
-
-      // Get week of the year and day of the year
-      currentWeekOfYear = dateAfterAddingDays.isoWeek(); // ISO 8601 week number
-      currentDayOfYear = dateAfterAddingDays.dayOfYear();
-
-      // Prepare response
-      const result = {
-        date_name: dateAfterAddingDays.format("dddd"), // Day name
-        t_date: dateAfterAddingDays.format("MMMM D, YYYY"), // Formatted date
-        daysInYear: daysInYear,
-        weeksInYear: weeksInYear,
-        currentWeekOfYear: currentWeekOfYear,
-        currentDayOfYear: currentDayOfYear,
-      };
-
-      return result;
-    } else {
-      return { error: "Please add Number of Weeks" };
-    }
   }
 
   /**
@@ -64382,112 +63855,672 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
         return { error: "Internal Server Error" };
       }
     }
-    
 
-  async  getCalculationJuliansDateCalculator(body) {
-      const result = {};
-      
-      const day = parseInt(body.tech_day);
-      const month = parseInt(body.tech_month);
-      const year = parseInt(body.tech_year);
-      const timecheck = body.tech_timecheck;
-      const julian = parseFloat(body.tech_julian);
-      
-      // Format date string
-      const dob = `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-      
-      // Format date1 (e.g., "Monday, January 01, 2024")
-      const date1Obj = new Date(year, month - 1, day);
-      const date1 = date1Obj.toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: '2-digit'
-      });
-      
-      if (timecheck === 'stat') {
-          // Gregorian to Julian Date conversion
-          let adjYear = year;
-          let adjMonth = month;
-          
-          if (adjMonth <= 2) {
-              adjYear -= 1;
-              adjMonth += 12;
-          }
-          
-          const A = Math.floor(adjYear / 100);
-          const B = 2 - A + Math.floor(A / 4);
-          const julianDate = Math.floor(365.25 * (adjYear + 4716)) + 
-                            Math.floor(30.6001 * (adjMonth + 1)) + 
-                            day + B - 1524.5;
-          
-          result.tech_julianDate = julianDate;
-          
-      } else {
-          // Julian Date to Gregorian conversion
-          if (!julian && julian !== 0) {
-              return { error: 'Please Enter Julian Date' };
-          }
-          
-          let adjJulian = julian + 0.5;
-          const Z = Math.floor(adjJulian);
-          const F = adjJulian - Z;
-          
-          let A;
-          if (Z < 2299161) {
-              A = Z;
-          } else {
-              const alpha = Math.floor((Z - 1867216.25) / 36524.25);
-              A = Z + 1 + alpha - Math.floor(alpha / 4);
-          }
-          
-          const B = A + 1524;
-          const C = Math.floor((B - 122.1) / 365.25);
-          const D = Math.floor(365.25 * C);
-          const E = Math.floor((B - D) / 30.6001);
-          
-          let calcDay = B - D - Math.floor(30.6001 * E) + F;
-          
-          let calcMonth;
-          if (E < 14) {
-              calcMonth = E - 1;
-          } else {
-              calcMonth = E - 13;
-          }
-          
-          let calcYear;
-          if (calcMonth > 2) {
-              calcYear = C - 4716;
-          } else {
-              calcYear = C - 4715;
-          }
-          
-          calcYear = Math.floor(calcYear);
-          calcMonth = Math.floor(calcMonth);
-          calcDay = Math.floor(calcDay);
-          
-          // Calculate day of week using standard Julian Day formula
-          // This matches PHP's internal calculation
-          const jd = Math.floor(julian + 0.5);
-          const dayOfWeekIndex = (jd + 4) % 7;
-          const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-          const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                            'July', 'August', 'September', 'October', 'November', 'December'];
-          
-          const dayOfWeek = dayNames[dayOfWeekIndex];
-          const monthName = monthNames[calcMonth - 1];
-          const dayStr = calcDay.toString().padStart(2, '0');
-          
-          // Format: "Tuesday, -4712 July 27"
-          const jul_date = `${dayOfWeek}, ${calcYear} ${monthName} ${dayStr}`;
-          
-          result.tech_jul_date = jul_date;
+    async  getCalculationJuliansDateCalculator(body) {
+        const result = {};
+        
+        const day = parseInt(body.tech_day);
+        const month = parseInt(body.tech_month);
+        const year = parseInt(body.tech_year);
+        const timecheck = body.tech_timecheck;
+        const julian = parseFloat(body.tech_julian);
+        
+        // Format date string
+        const dob = `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        
+        // Format date1 (e.g., "Monday, January 01, 2024")
+        const date1Obj = new Date(year, month - 1, day);
+        const date1 = date1Obj.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: '2-digit'
+        });
+        
+        if (timecheck === 'stat') {
+            // Gregorian to Julian Date conversion
+            let adjYear = year;
+            let adjMonth = month;
+            
+            if (adjMonth <= 2) {
+                adjYear -= 1;
+                adjMonth += 12;
+            }
+            
+            const A = Math.floor(adjYear / 100);
+            const B = 2 - A + Math.floor(A / 4);
+            const julianDate = Math.floor(365.25 * (adjYear + 4716)) + 
+                              Math.floor(30.6001 * (adjMonth + 1)) + 
+                              day + B - 1524.5;
+            
+            result.tech_julianDate = julianDate;
+            
+        } else {
+            // Julian Date to Gregorian conversion
+            if (!julian && julian !== 0) {
+                return { error: 'Please Enter Julian Date' };
+            }
+            
+            let adjJulian = julian + 0.5;
+            const Z = Math.floor(adjJulian);
+            const F = adjJulian - Z;
+            
+            let A;
+            if (Z < 2299161) {
+                A = Z;
+            } else {
+                const alpha = Math.floor((Z - 1867216.25) / 36524.25);
+                A = Z + 1 + alpha - Math.floor(alpha / 4);
+            }
+            
+            const B = A + 1524;
+            const C = Math.floor((B - 122.1) / 365.25);
+            const D = Math.floor(365.25 * C);
+            const E = Math.floor((B - D) / 30.6001);
+            
+            let calcDay = B - D - Math.floor(30.6001 * E) + F;
+            
+            let calcMonth;
+            if (E < 14) {
+                calcMonth = E - 1;
+            } else {
+                calcMonth = E - 13;
+            }
+            
+            let calcYear;
+            if (calcMonth > 2) {
+                calcYear = C - 4716;
+            } else {
+                calcYear = C - 4715;
+            }
+            
+            calcYear = Math.floor(calcYear);
+            calcMonth = Math.floor(calcMonth);
+            calcDay = Math.floor(calcDay);
+            
+            // Calculate day of week using standard Julian Day formula
+            // This matches PHP's internal calculation
+            const jd = Math.floor(julian + 0.5);
+            const dayOfWeekIndex = (jd + 4) % 7;
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            const dayOfWeek = dayNames[dayOfWeekIndex];
+            const monthName = monthNames[calcMonth - 1];
+            const dayStr = calcDay.toString().padStart(2, '0');
+            
+            // Format: "Tuesday, -4712 July 27"
+            const jul_date = `${dayOfWeek}, ${calcYear} ${monthName} ${dayStr}`;
+            
+            result.tech_jul_date = jul_date;
+        }
+        
+        result.tech_date1 = date1;
+        
+        return result;
+    }
+ 
+    async getCalculationDaysLeftInTheYearCalculator(body) {
+      try {
+        const day = parseInt(body.tech_day);
+        const month = parseInt(body.tech_month);
+        const year = parseInt(body.tech_year);
+
+        if (isNaN(day) || isNaN(month) || isNaN(year)) {
+          return { error: "Invalid date input" };
+        }
+
+        // ✅ Create proper date
+        const dob = dayjs.utc(`${year}-${month}-${day}`, "YYYY-M-D");
+        if (!dob.isValid()) {
+          return { error: "Invalid date format" };
+        }
+
+        const date1 = dob.format("dddd, MMMM DD, YYYY");
+        const now = dob; // same as Carbon($date1)
+
+        // ✅ Leap year check
+        const leapYear = now.isLeapYear();
+        const daysInYear = leapYear ? 366 : 365;
+
+        // ✅ End of the year
+        const endOfYear = dayjs.utc(`${year}-12-31 23:59:59`);
+
+        // ✅ Differences
+        const daysRemaining = endOfYear.diff(now, "day");
+        const weeksRemaining = endOfYear.diff(now, "week");
+        const remainingDaysAfterWeeks = daysRemaining - weeksRemaining * 7;
+
+        const monthsRemaining = endOfYear.diff(now, "month");
+        const remainingDaysAfterMonths = daysRemaining - monthsRemaining * 30;
+
+        const hoursRemaining = endOfYear.diff(now, "hour");
+
+        // ✅ Prepare result
+        const result = {
+          tech_date1:date1,
+          tech_now: now.format("MM-DD-YYYY"),
+          tech_daysRemaining: daysRemaining,
+          tech_weeksRemaining: weeksRemaining,
+          tech_remainingDaysAfterWeeks: remainingDaysAfterWeeks,
+          tech_monthsRemaining: monthsRemaining,
+          tech_remainingDaysAfterMonths: remainingDaysAfterMonths,
+          tech_hoursRemaining: hoursRemaining,
+          tech_isLeapYear: leapYear,
+          tech_daysInYear: daysInYear,
+        };
+
+        return { status: "success", payload: result };
+      } catch (error) {
+        return { status: "fail", message: error.message };
       }
-      
-      result.tech_date1 = date1;
-      
-      return result;
+    }
+
+    /**
+   * getCalculationDaysAgoCalculator: Service Method
+   * POST: /api/calculators-lol/days-ago-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationDaysAgoCalculator(body) {
+      try {
+        const number = parseInt(body.tech_number);
+            const current = body.tech_current; // e.g., "2025-10-18"
+
+        if (isNaN(number)) {
+          return { error: "Please add Number of Weeks" };
+        }
+
+        const date = dayjs.utc(current, "YYYY-MM-DD");
+        if (!date.isValid()) {
+          return { error: "Invalid current date" };
+        }
+
+        let targetDate;
+
+        // ✅ Match Laravel logic:
+        if (number <= -1 || number === 0) {
+          // Add days (abs of negative number)
+          targetDate = date.add(Math.abs(number), "day");
+        } else if (number >= 1) {
+          // Subtract days
+          targetDate = date.subtract(number, "day");
+        }
+
+        const isLeap = targetDate.isLeapYear();
+        const daysInYear = isLeap ? 366 : 365;
+        const weeksInYear = 52;
+        const currentWeekOfYear = targetDate.week();
+        const currentDayOfYear = targetDate.dayOfYear();
+
+        const result = {
+          tech_date_name: targetDate.format("dddd"),
+          tech_t_date: targetDate.format("MMMM D, YYYY"),
+          tech_daysInYear: daysInYear,
+          tech_weeksInYear: weeksInYear,
+          tech_currentWeekOfYear: currentWeekOfYear,
+          tech_currentDayOfYear: currentDayOfYear,
+        };
+
+        return { status: "success", payload: result };
+      } catch (error) {
+        return { status: "fail", message: error.message };
+      }
   }
+
+    /**
+   * getCalculationWeeksAgoCalculator: Service Method
+   * POST: /api/calculators-lol/weeks-ago-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationWeeksAgoCalculator(body) {
+      try {
+        // ✅ Support both Laravel-style and tech_ prefix
+        const number = parseInt(body.tech_number);
+        const current = body.tech_current; // e.g. "2025-10-26"
+
+        if (isNaN(number)) {
+          return { status: "success", payload: { error: "Please add Number of Weeks" } };
+        }
+
+        const date = dayjs.utc(current, "YYYY-MM-DD");
+        if (!date.isValid()) {
+          return { status: "success", payload: { error: "Invalid current date" } };
+        }
+
+        let targetDate;
+
+        // ✅ Laravel logic replication
+        if (number <= -1 || number === 0) {
+          targetDate = date.add(Math.abs(number), "week");
+        } else if (number >= 1) {
+          targetDate = date.subtract(number, "week");
+        }
+
+        const isLeap = targetDate.isLeapYear();
+        const daysInYear = isLeap ? 366 : 365;
+        const weeksInYear = 52;
+        const currentWeekOfYear = targetDate.week();
+        const currentDayOfYear = targetDate.dayOfYear();
+
+        const result = {
+          tech_date_name: targetDate.format("dddd"),
+          tech_t_date: targetDate.format("MMMM D, YYYY"),
+          tech_daysInYear:daysInYear,
+          tech_weeksInYear:weeksInYear,
+          tech_currentWeekOfYear:currentWeekOfYear,
+          tech_currentDayOfYear:currentDayOfYear,
+        };
+
+        return { status: "success", payload: result };
+      } catch (error) {
+        return { status: "fail", message: error.message };
+      }
+    }
+
+        /**
+   * getCalculationYearsAgoCalculator: Service Method
+   * POST: /api/calculators-lol/years-ago-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationYearsAgoCalculator(body) {
+    try {
+      const number = parseInt(body.tech_number);
+      const current = body.tech_current; // e.g. "2025-10-26"
+
+      // ✅ Validate inputs
+      if (isNaN(number)) {
+        return { error: "Please add Number of Years" };
+      }
+
+      const dateNow = dayjs.utc(current, "YYYY-MM-DD");
+      if (!dateNow.isValid()) {
+        return { error: "Invalid current date" };
+      }
+
+      let targetDate;
+
+      // ✅ Case 1: Subtract years if number >= 1
+      if (number >= 1) {
+        targetDate = dateNow.subtract(number, "year");
+      } 
+      // ✅ Case 2: Add years if number < 0
+      else {
+        targetDate = dateNow.add(Math.abs(number), "year");
+      }
+
+      // ✅ Calculate differences
+      const daysDifference = Math.abs(dateNow.diff(targetDate, "day"));
+      const weeksDifference = Math.abs(dateNow.diff(targetDate, "week"));
+      const monthsDifference = Math.abs(dateNow.diff(targetDate, "month"));
+
+      // ✅ Build response
+      const result = {
+        tech_DayOfYear: daysDifference,
+        tech_WeekOfYear: weeksDifference,
+        tech_diffInMonths: monthsDifference,
+        tech_date_name: targetDate.format("dddd"), // Day name
+        tech_t_date: targetDate.format("MMMM D, YYYY"), // Example: October 18, 2025
+      };
+
+      return result;
+
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
+    /**
+   * getCalculationHoursAgoCalculator: Service Method
+   * POST: /api/calculators-lol/hours-ago-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+  async getCalculationHoursAgoCalculator(body) {
+    try {
+      const hours = parseInt(body.tech_hours);
+      const minutes = parseInt(body.tech_minutes);
+      const seconds = parseInt(body.tech_seconds);
+      const hrs = parseInt(body.tech_hrs);
+      const min = parseInt(body.tech_min);
+
+      // ✅ Create base time from inputs (use UTC)
+      let current = dayjs.utc().hour(hours).minute(minutes).second(seconds);
+
+      // ✅ Validate input
+      if (isNaN(hours) || isNaN(minutes) || isNaN(seconds)) {
+        return { error: "Invalid current time" };
+      }
+
+      let result = {};
+
+      // ✅ Case 1: Subtract time if current >= 1
+      if (hours >= 1 || minutes >= 1 || seconds >= 1) {
+        const timeSubtract = current
+          .subtract(hrs, "hour")
+          .subtract(min, "minute");
+
+        const t_date = timeSubtract.format("MMMM D, YYYY");
+        const days = Math.abs(current.diff(timeSubtract, "day"));
+
+        result.tech_days = days;
+        result.tech_t_date = t_date;
+        result.tech_time = timeSubtract.format("hh:mm A");
+      } 
+      // ✅ Case 2: Add time if current < 1
+      else {
+        const timeAdd = current
+          .add(Math.abs(hrs), "hour")
+          .add(Math.abs(min), "minute");
+
+        const t_date = timeAdd.format("MMMM D, YYYY");
+        const days = Math.abs(current.diff(timeAdd, "day"));
+
+        result.tech_days = days;
+        result.tech_t_date = t_date;
+        result.tech_time = timeAdd.format("hh:mm A");
+      }
+
+      return result;
+
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
+
+  /**
+   * getCalculationTimeUntilCalculator: Service Method
+   * POST: /api/calculators-lol/time-until-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationTimeUntilCalculator(body) {
+      try {
+        const currentInput = body.tech_current; // e.g. "2025-10-18 10:30:00"
+        const nextInput = body.tech_next;       // e.g. "2025-12-25 12:00:00"
+
+        // ✅ Parse dates in UTC
+        const currentTime = dayjs.utc(currentInput);
+        const nextTime = dayjs.utc(nextInput);
+        const today = dayjs.utc();
+
+        // ✅ Validate date inputs
+        if (!currentTime.isValid() || !nextTime.isValid()) {
+          return { error: "Please enter valid dates" };
+        }
+
+        // ✅ Ensure next date is not in the past
+        if (nextTime.isBefore(today)) {
+          return { error: "Next date cannot be less than today's date." };
+        }
+
+        // ✅ Total seconds difference
+        const totalSeconds = nextTime.diff(currentTime, "second");
+
+        // ✅ Break down into time units
+        const years = Math.floor(totalSeconds / (365 * 24 * 60 * 60));
+        const months = Math.floor(
+          (totalSeconds % (365 * 24 * 60 * 60)) / (30 * 24 * 60 * 60)
+        );
+        const days = Math.floor(
+          (totalSeconds % (30 * 24 * 60 * 60)) / (24 * 60 * 60)
+        );
+        const hours = Math.floor(
+          (totalSeconds % (24 * 60 * 60)) / (60 * 60)
+        );
+        const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+        const seconds = totalSeconds % 60;
+
+        // ✅ Return structured response
+        return {
+          tech_years:years,
+          tech_months:months,
+          tech_days:days,
+          tech_hours:hours,
+          tech_minutes:minutes,
+          tech_seconds:seconds,
+        };
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
+
+     /**
+   * getCalculationHoursFromNowCalculator: Service Method
+   * POST: /api/calculators-lol/hours-from-now
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationHoursFromNowCalculator(body) {
+    try {
+      const hours = parseInt(body.tech_hours);
+      const minutes = parseInt(body.tech_minuts);
+      const seconds = parseInt(body.tech_sec);
+      const hrs = parseInt(body.tech_hrs);
+      const min = parseInt(body.tech_min);
+
+      // ✅ Create initial time (UTC)
+      const date1 = dayjs.utc().hour(hours).minute(minutes).second(seconds);
+
+      // ✅ Add given hours and minutes
+      const hoursAdding = date1.add(hrs, "hour").add(min, "minute");
+
+      // ✅ Return formatted data
+      return {
+        tech_original_time: date1.format("HH:mm:ss"),
+        tech_new_time: hoursAdding.format("HH:mm:ss"),
+        tech_full_date: hoursAdding.format("YYYY-MM-DD HH:mm:ss"),
+      };
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
+
+  /**
+   * getCalculationyearFromTodayCalculator: Service Method
+   * POST: /api/calculators-lol/years-from-today
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationyearFromTodayCalculator(body) {
+      try {
+        const number = parseInt(body.tech_number);
+        const current = body.tech_current; // e.g. "2025-10-26"
+
+        if (isNaN(number)) {
+          return { error: "Please add Number of Years" };
+        }
+
+        const date1 = dayjs.utc(current);
+
+        let dateAfterAddingYear;
+        if (number >= 1 || number === 0) {
+          // ✅ Add years
+          dateAfterAddingYear = date1.add(number, "year");
+        } else {
+          // ✅ Subtract years
+          dateAfterAddingYear = date1.subtract(Math.abs(number), "year");
+        }
+
+        // ✅ Calculate differences
+        const daysDifference = Math.abs(date1.diff(dateAfterAddingYear, "day"));
+        const weeksDifference = Math.abs(date1.diff(dateAfterAddingYear, "week"));
+
+        // ✅ Format output
+        return {
+          tech_: number >= 0 ? weeksDifference : `-${weeksDifference}`,
+          tech_DayOfYear: number >= 0 ? daysDifference : `-${daysDifference}`,
+          tech_date_name: dateAfterAddingYear.format("dddd"),
+          tech_t_date: dateAfterAddingYear.format("MMMM D, YYYY"),
+          // Optional formats if needed:
+          tech_uk_date: dateAfterAddingYear.format("D MMMM, YYYY"),
+          tech_number_format: dateAfterAddingYear.format("DD/MM/YY"),
+          tech_usa_num: dateAfterAddingYear.format("MM/DD/YY"),
+          tech_iso: dateAfterAddingYear.format("YYYY-MM-DD")
+        };
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
+
+    /**
+     * getCalculationWeekFromTodayCalculator: Service Method
+     * POST: /api/calculators-lol/time-until-calculator
+     * @param {Object} body Having Properties for Creating New Roles
+     * @returns Object with message property having success method
+     */
+    async getCalculationWeekFromTodayCalculator(body) {
+      try {
+        const number = parseInt(body.tech_number);
+        const current = body.tech_current; // e.g. "2025-10-26"
+
+        if (isNaN(number)) {
+          return { error: "Please add Number of Weeks" };
+        }
+
+        const date = dayjs.utc(current);
+        let resultDate;
+
+        // ✅ Add or subtract weeks
+        if (number >= 1 || number === 0) {
+          resultDate = date.add(number, "week");
+        } else {
+          resultDate = date.subtract(Math.abs(number), "week");
+        }
+
+        // ✅ Leap year check
+        const isLeapYear =
+          (resultDate.year() % 4 === 0 && resultDate.year() % 100 !== 0) ||
+          resultDate.year() % 400 === 0;
+
+        const daysInYear = isLeapYear ? 366 : 365;
+        const weeksInYear = 52;
+
+        // ✅ Compute week/day of year manually
+        const startOfYear = resultDate.startOf("year");
+        const currentDayOfYear = resultDate.diff(startOfYear, "day") + 1;
+        const currentWeekOfYear = Math.ceil(currentDayOfYear / 7);
+
+        // ✅ Build output
+        return {
+          tech_date_name: resultDate.format("dddd"),
+          tech_t_date: resultDate.format("MMMM D, YYYY"),
+          tech_daysInYear: daysInYear,
+          tech_weeksInYear: weeksInYear,
+          tech_currentWeekOfYear: currentWeekOfYear,
+          tech_currentDayOfYear: currentDayOfYear,
+          // Optional formats:
+          tech_uk_date: resultDate.format("D MMMM, YYYY"),
+          tech_number: resultDate.format("DD/MM/YY"),
+          tech_usa_num: resultDate.format("MM/DD/YY"),
+          tech_iso: resultDate.format("YYYY-MM-DD"),
+        };
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
+
+    /**
+     * getCalculationDaysFromTodayCalculator: Service Method
+     * POST: /api/calculators-lol/days-from-today
+     * @param {Object} body Having Properties for Creating New Roles
+     * @returns Object with message property having success method
+     */
+
+    async getCalculationDaysFromTodayCalculator(body) {
+      try {
+        const number = parseInt(body.tech_number);
+        const current = body.tech_current; // e.g. "2025-10-26"
+
+        if (isNaN(number)) {
+          return { error: "Please add Number of days" };
+        }
+
+        const date = dayjs.utc(current);
+        let resultDate;
+
+        // ✅ Add or subtract days based on input
+        if (number >= 1 || number === 0) {
+          resultDate = date.add(number, "day");
+        } else if (number <= -1) {
+          resultDate = date.subtract(Math.abs(number), "day");
+        }
+
+        // ✅ Prepare output (same as Laravel)
+        return {
+          tech_date_name: resultDate.format("dddd"),
+          tech_t_date: resultDate.format("MMMM D, YYYY"), // e.g., October 20, 2025
+          tech_uk_date: resultDate.format("D MMMM, YYYY"), // e.g., 20 October, 2025
+          tech_number: resultDate.format("DD/MM/YY"), // e.g., 20/10/25
+          tech_usa_num: resultDate.format("MM/DD/YY"), // e.g., 10/20/25
+          tech_iso: resultDate.format("YYYY-MM-DD"), // e.g., 2025-10-20
+        };
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
+
+    /**
+     * getCalculationWeekCalculator: Service Method
+     * POST: /api/calculators-lol/week-calculator
+     * @param {Object} body Having Properties for Creating New Roles
+     * @returns Object with message property having success method
+     */
+
+    async getCalculationWeekCalculator(body) {
+      try {
+        const current = body.tech_current; // e.g., "2025-10-26"
+        const next = body.tech_next;       // optional
+        const number = parseInt(body.tech_number);
+        const stype = body.tech_stype;     // "s_date" | "e_date" | undefined
+
+        const date1 = dayjs.utc(current);
+
+        if (stype == "s_date") {
+          // ➕ Add weeks
+          if (isNaN(number)) {
+            return { error: "Please input Number of weeks" };
+          }
+          const addedDate = date1.add(number, "week");
+          return { tech_adding: addedDate.format("MMMM D, YYYY") };
+
+        } else if (stype == "e_date") {
+          // ➖ Subtract weeks
+          if (isNaN(number)) {
+            return { error: "Please input Number of weeks" };
+          }
+          const subtractedDate = date1.subtract(number, "week");
+          return { tech_subbtract: subtractedDate.format("MMMM D, YYYY") };
+
+        } else {
+          // 🔄 Difference in weeks between two dates
+          const date2 = dayjs.utc(next);
+          if (!date2.isValid() || !date1.isValid()) {
+            return { error: "Invalid date(s) provided" };
+          }
+
+          const totalDays = Math.abs(date1.diff(date2, "day"));
+          const weeks = Math.floor(totalDays / 7);
+          return { tech_weeks:weeks };
+        }
+
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
+
+
+
+
 
 
 
