@@ -16,7 +16,6 @@ const localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat);
 
 
-
 const moment = require("moment");
 const customParseFormat = require("dayjs/plugin/customParseFormat");
 const duration = require("dayjs/plugin/duration");
@@ -4785,374 +4784,9 @@ class CalculatorsServices {
     }
   }
 
-  /**
-   * getCalculationAddTimeCalculator: Service Method
-   * POST: /api/calculators-lol/add-time-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationAddTimeCalculator(data) {
-    const {
-      totalEntries,
-      hoursArray,
-      minutesArray,
-      secondsArray,
-      millisecondsArray,
-      includeHours,
-      includeMinutes,
-      includeSeconds,
-      includeMilliseconds,
-    } = data;
-
-    let totalHours = 0;
-    let totalMinutes = 0;
-    let totalSeconds = 0;
-    let totalMilliseconds = 0;
-
-    let hoursList = [];
-    let minutesList = [];
-    let secondsList = [];
-    let millisecondsList = [];
-
-    function normalizeMilliseconds(ms) {
-      let secs = 0;
-      let mins = 0;
-      let hrs = 0;
-
-      if (ms >= 1000) {
-        secs += Math.floor(ms / 1000);
-        ms %= 1000;
-      }
-
-      if (secs >= 60) {
-        mins += Math.floor(secs / 60);
-        secs %= 60;
-      }
-
-      if (mins >= 60) {
-        hrs += Math.floor(mins / 60);
-        mins %= 60;
-      }
-
-      return [hrs, mins, secs, ms];
-    }
-
-    for (let i = 0; i < totalEntries; i++) {
-      if (!includeHours) hoursArray[i] = 0;
-      if (!includeMinutes) minutesArray[i] = 0;
-      if (!includeSeconds) secondsArray[i] = 0;
-      if (!includeMilliseconds) millisecondsArray[i] = 0;
-
-      if (
-        isNaN(hoursArray[i]) ||
-        isNaN(minutesArray[i]) ||
-        isNaN(secondsArray[i]) ||
-        isNaN(millisecondsArray[i])
-      ) {
-        return { error: "Please! Check Your Input" };
-      }
-
-      totalHours += parseInt(hoursArray[i]);
-      hoursList.push(hoursArray[i]);
-
-      totalMinutes += parseInt(minutesArray[i]);
-      minutesList.push(minutesArray[i]);
-
-      totalSeconds += parseInt(secondsArray[i]);
-      secondsList.push(secondsArray[i]);
-
-      totalMilliseconds += parseInt(millisecondsArray[i]);
-      millisecondsList.push(millisecondsArray[i]);
-    }
-
-    let [h, m, s, ms] = normalizeMilliseconds(totalMilliseconds);
-    totalHours += h;
-    totalMinutes += m;
-    totalSeconds += s;
-    totalMilliseconds = ms;
-
-    if (totalMinutes >= 60) {
-      totalHours += Math.floor(totalMinutes / 60);
-      totalMinutes %= 60;
-    }
-
-    if (totalSeconds >= 60) {
-      totalMinutes += Math.floor(totalSeconds / 60);
-      totalSeconds %= 60;
-      if (totalMinutes >= 60) {
-        totalHours += Math.floor(totalMinutes / 60);
-        totalMinutes %= 60;
-      }
-    }
-
-    return {
-      hoursList,
-      minutesList,
-      secondsList,
-      millisecondsList,
-      totalHours,
-      totalMinutes,
-      totalSeconds,
-      totalMilliseconds,
-      RESULT: 1,
-    };
-  }
 
 
 
-  /**
-   * getCalculationDaysElapsedTimeCalculator: Service Method
-   * POST: /api/calculators-lol/elapsed-time-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationDaysElapsedTimeCalculator(body) {
-    let result = {};
-    let {
-      time_units,
-      start_time,
-      start_time_one,
-      start_time_sec,
-      start_time_three,
-      start_time_unit,
-      end_time,
-      end_time_one,
-      end_time_sec,
-      end_time_three,
-      end_time_unit,
-      time_format,
-      start_hour,
-      start_minute,
-      start_second,
-      start_unit,
-      end_hour,
-      end_minute,
-      end_second,
-      end_unit,
-    } = body;
-
-    function timeUnit(start_time, start_time_unit) {
-      if (start_time_unit === "sec") {
-        return start_time;
-      } else if (start_time_unit === "mins") {
-        return start_time * 60;
-      } else if (start_time_unit === "hrs") {
-        return start_time * 3600;
-      }
-      return start_time;
-    }
-
-    function otherTime(start_time_one, start_time_sec, start_time_unit) {
-      let interval;
-      if (start_time_unit === "mins/sec") {
-        interval = start_time_one * 60 + start_time_sec;
-      } else if (start_time_unit === "hrs/mins") {
-        interval = start_time_one * 3600 + start_time_sec * 60;
-      }
-      return interval;
-    }
-
-    function otherTimeSec(
-      start_time_one,
-      start_time_sec,
-      start_time_three,
-      start_time_unit
-    ) {
-      let interval;
-      if (start_time_unit === "hrs/mins/sec") {
-        interval =
-          start_time_one * 3600 + start_time_sec * 60 + start_time_three;
-      }
-      return interval;
-    }
-
-    if (time_units === "elapsed") {
-      if (
-        !isNaN(start_time) &&
-        !isNaN(start_time_one) &&
-        !isNaN(start_time_sec) &&
-        !isNaN(start_time_three) &&
-        !isNaN(end_time) &&
-        !isNaN(end_time_one) &&
-        !isNaN(end_time_sec) &&
-        !isNaN(end_time_three)
-      ) {
-        if (["sec", "mins", "hrs"].includes(start_time_unit)) {
-          start_time = timeUnit(start_time, start_time_unit);
-        } else if (start_time_unit === "hrs/mins/sec") {
-          start_time = otherTimeSec(
-            start_time_one,
-            start_time_sec,
-            start_time_three,
-            start_time_unit
-          );
-        } else {
-          start_time = otherTime(
-            start_time_one,
-            start_time_sec,
-            start_time_unit
-          );
-        }
-
-        if (["sec", "mins", "hrs"].includes(end_time_unit)) {
-          end_time = timeUnit(end_time, end_time_unit);
-        } else if (end_time_unit === "hrs/mins/sec") {
-          end_time = otherTimeSec(
-            end_time_one,
-            end_time_sec,
-            end_time_three,
-            end_time_unit
-          );
-        } else {
-          end_time = otherTime(end_time_one, end_time_sec, end_time_unit);
-        }
-
-        if (end_time < start_time) {
-          result.error = "The end time should be greater than the start time";
-          return result;
-        }
-
-        let timeElapsedStart = moment.duration(start_time, "seconds");
-        let timeElapsedEnd = moment.duration(end_time, "seconds");
-        let diff = moment.duration(end_time - start_time, "seconds");
-
-        let hours = diff.hours();
-        let minutes = diff.minutes();
-        let seconds = diff.seconds();
-
-        result.Elapsedanswer = end_time - start_time;
-        result.Elapsedhours = hours;
-        result.Elapsedminutes = minutes;
-        result.Elapsedseconds = seconds;
-      } else {
-        result.error = "Please! Check Your Input";
-        return result;
-      }
-    } else {
-      if (time_format === "24") {
-        if (
-          !isNaN(start_hour) &&
-          !isNaN(start_minute) &&
-          !isNaN(start_second) &&
-          !isNaN(end_hour) &&
-          !isNaN(end_minute) &&
-          !isNaN(end_second)
-        ) {
-          // Validation to ensure the hour, minute, and second are within acceptable ranges
-          // Validate start time hours, minutes, and seconds
-          if (start_hour >= 24) {
-            result.error = "Start clock time hour should be less than 24";
-            return result;
-          }
-          if (start_minute >= 60) {
-            result.error = "Start clock time minute should be less than 60";
-            return result;
-          }
-          if (start_second >= 60) {
-            result.error = "Start clock time second should be less than 60";
-            return result;
-          }
-
-          // Validate end time hours, minutes, and seconds
-          if (end_hour >= 24) {
-            result.error = "End clock time hour should be less than 24";
-            return result;
-          }
-          if (end_minute >= 60) {
-            result.error = "End clock time minute should be less than 60";
-            return result;
-          }
-          if (end_second >= 60) {
-            result.error = "End clock time second should be less than 60";
-            return result;
-          }
-          let startClock = start_hour * 3600 + start_minute * 60 + start_second;
-          let endClock = end_hour * 3600 + end_minute * 60 + end_second;
-          let answer = endClock - startClock;
-
-          let diff = moment.duration(answer, "seconds");
-          result.Elapsedhours = diff.hours();
-          result.Elapsedminutes = diff.minutes();
-          result.Elapsedseconds = diff.seconds();
-
-          // Add the answer field here
-          result.Elapsedanswer = answer;
-        } else {
-          result.error = "Please! Check Your Input";
-          return result;
-        }
-      } else {
-        if (
-          !isNaN(start_hour) &&
-          !isNaN(start_minute) &&
-          !isNaN(start_second) &&
-          !isNaN(end_hour) &&
-          !isNaN(end_minute) &&
-          !isNaN(end_second)
-        ) {
-          if (start_hour >= 12) {
-            result.error = "Start time hour must be less than 12.";
-            return result;
-          }
-          if (start_minute >= 60) {
-            result.error = "Start time minute must be less than 60.";
-            return result;
-          }
-          if (start_second >= 60) {
-            result.error = "Start time second must be less than 60.";
-            return result;
-          }
-
-          // Validate end time hours, minutes, and seconds for 12-hour format
-          if (end_hour >= 12) {
-            result.error = "End time hour must be less than 12.";
-            return result;
-          }
-          if (end_minute >= 60) {
-            result.error = "End time minute must be less than 60.";
-            return result;
-          }
-          if (end_second >= 60) {
-            result.error = "End time second must be less than 60.";
-            return result;
-          }
-
-          // Convert 12-hour format to 24-hour format
-          if (start_unit === "PM" && start_hour !== 12) {
-            start_hour += 12;
-          }
-
-          if (end_unit === "PM" && end_hour !== 12) {
-            end_hour += 12;
-          }
-
-          let startTime = start_hour * 3600 + start_minute * 60 + start_second;
-          let endTime = end_hour * 3600 + end_minute * 60 + end_second;
-          let answer = endTime - startTime;
-          console.log(answer);
-          let diff = moment.duration(answer, "seconds");
-          result.Elapsedhours = -diff.hours();
-          result.Elapsedminutes = -diff.minutes();
-          result.Elapsedseconds = -diff.seconds();
-
-          // Handle negative answer (PM to AM)
-          if (answer < 0) {
-            answer += 24 * 60 * 60; // Add 24 hours in seconds
-          }
-
-          result.Elapsedanswer = answer;
-        } else {
-          result.error = "Please! Check Your Input";
-          return result;
-        }
-      }
-    }
-
-    result.RESULT = 1;
-    return result;
-  }
 
   /**
    * getCalculationMonthCalculator: Service Method
@@ -64518,8 +64152,482 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
       }
     }
 
+      /**
+     * getCalculationDaysUntilCalculator: Service Method
+     * POST: /api/calculators-lol/days-until-calculator
+     * @param {Object} body Having Properties for Creating New Roles
+     * @returns Object with message property having success method
+     */
+
+    async getCalculationDaysUntilCalculator(body) {
+      try {
+        const current = body.tech_current;
+        const next = body.tech_next;
+        const startEvent = body.tech_startEvent;
+        const inc_all = body.tech_inc_all;
+        const inc_day = body.tech_inc_day;
+        const weekDay = body.tech_weekDay; // array or single value
+
+        if (!current || !next) {
+          return { error: "Please! Check Your Input" };
+        }
+
+        const date1 = dayjs.utc(current);
+        const date2 = dayjs.utc(next);
+
+        if (!date1.isValid() || !date2.isValid()) {
+          return { error: "Invalid date(s) provided" };
+        }
+
+        // Calculate difference
+        const totaldays = Math.abs(date2.diff(date1, "day"));
+        const weeks = Math.floor(totaldays / 7);
+        const days = totaldays % 7;
+        const months = Math.abs(date2.diff(date1, "month"));
+
+        let adjTotalDays = totaldays;
+        let adjDays = days;
+        let hours = 0;
+
+        // ➕ Include one extra day
+        if (inc_day) {
+          adjDays += 1;
+          adjTotalDays += 1;
+        }
+
+        // ⚙️ Handle "Include All" and "Selected Weekdays"
+        if (!inc_all) {
+          if (!weekDay || weekDay.length === 0) {
+            adjDays = 0;
+            hours = 0;
+          } else {
+            const selectedDays = Array.isArray(weekDay) ? weekDay : [weekDay];
+            const additionalDays = selectedDays.length;
+
+            if (additionalDays > 0) {
+              adjDays = weeks * additionalDays + adjDays;
+              hours = adjDays * 24;
+            }
+          }
+        }
+
+        // ✅ Final response
+        return {
+          tech_totaldays: adjTotalDays,
+          tech_months:months,
+          tech_weeks:weeks,
+          tech_days: adjDays,
+          tech_hours:hours,
+        };
+
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
 
 
+      /**
+   * getCalculationDaysElapsedTimeCalculator: Service Method
+   * POST: /api/calculators-lol/elapsed-time-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationDaysElapsedTimeCalculator(body) {
+      try {
+        // Extract all inputs
+        const main_units = body.tech_main_units?.trim();
+        const elapsed_start = parseFloat(body.tech_elapsed_start);
+        const elapsed_start_one = parseFloat(body.tech_elapsed_start_one);
+        const elapsed_start_sec = parseFloat(body.tech_elapsed_start_sec);
+        const elapsed_start_three = parseFloat(body.tech_elapsed_start_three);
+        const elapsed_start_unit = body.tech_elapsed_start_unit?.trim();
+
+        const elapsed_end = parseFloat(body.tech_elapsed_end);
+        const elapsed_end_one = parseFloat(body.tech_elapsed_end_one);
+        const elapsed_end_sec = parseFloat(body.tech_elapsed_end_sec);
+        const elapsed_end_three = parseFloat(body.tech_elapsed_end_three);
+        const elapsed_end_unit = body.tech_elapsed_end_unit?.trim();
+
+        const clock_format = body.tech_clock_format?.trim();
+        let clock_hour = parseFloat(body.tech_clock_hour);
+        let clock_minute = parseFloat(body.tech_clock_minute);
+        let clock_second = parseFloat(body.tech_clock_second);
+        const clock_start_unit = body.tech_clock_start_unit?.trim();
+        let clock_hur = parseFloat(body.tech_clock_hur);
+        let clock_mints = parseFloat(body.tech_clock_mints);
+        let clock_secs = parseFloat(body.tech_clock_secs);
+        const clock_end_unit = body.tech_clock_end_unit?.trim();
+
+        // Helper functions
+        const time_unit = (value, unit) => {
+          if (unit === "sec") return value;
+          if (unit === "mins") return value * 60;
+          if (unit === "hrs") return value * 3600;
+          return value;
+        };
+
+        const other_time = (v1, v2, unit) => {
+          if (unit === "mins/sec") return v1 * 60 + v2;
+          if (unit === "hrs/mins") return v1 * 3600 + v2 * 60;
+          return 0;
+        };
+
+        const other_time_sec = (v1, v2, v3, unit) => {
+          if (unit === "hrs/mins/sec") return v1 * 3600 + v2 * 60 + v3;
+          return 0;
+        };
+
+        let hours = 0, minutes = 0, seconds = 0, answer = 0;
+
+        // ───────────────────────────────────────────────
+        // 🧮 CASE 1: "elapsed" (unit-based calculation)
+        // ───────────────────────────────────────────────
+        if (main_units == "elapsed") {
+          if (
+            [elapsed_start, elapsed_start_one, elapsed_start_sec, elapsed_start_three, elapsed_end, elapsed_end_one, elapsed_end_sec, elapsed_end_three].every(
+              (v) => !isNaN(v)
+            )
+          ) {
+            let start, end;
+
+            // Convert start time
+            if (["sec", "mins", "hrs"].includes(elapsed_start_unit)) {
+              start = time_unit(elapsed_start, elapsed_start_unit);
+            } else if (elapsed_start_unit === "hrs/mins/sec") {
+              start = other_time_sec(elapsed_start_one, elapsed_start_sec, elapsed_start_three, elapsed_start_unit);
+            } else {
+              start = other_time(elapsed_start_one, elapsed_start_sec, elapsed_start_unit);
+            }
+
+            // Convert end time
+            if (["sec", "mins", "hrs"].includes(elapsed_end_unit)) {
+              end = time_unit(elapsed_end, elapsed_end_unit);
+            } else if (elapsed_end_unit === "hrs/mins/sec") {
+              end = other_time_sec(elapsed_end_one, elapsed_end_sec, elapsed_end_three, elapsed_end_unit);
+            } else {
+              end = other_time(elapsed_end_one, elapsed_end_sec, elapsed_end_unit);
+            }
+
+            if (end < start) {
+              return { error: "The end time should be greater than the start time" };
+            }
+
+            answer = end - start;
+            hours = Math.floor(answer / 3600);
+            minutes = Math.floor((answer % 3600) / 60);
+            seconds = answer % 60;
+          } else {
+            return { error: "Please! Check Your Input" };
+          }
+        } 
+        
+        // ───────────────────────────────────────────────
+        // 🕐 CASE 2: CLOCK FORMAT (12hr or 24hr)
+        // ───────────────────────────────────────────────
+        else {
+          if (clock_format == "24") {
+            if (
+              [clock_hour, clock_minute, clock_second, clock_hur, clock_mints, clock_secs].every((v) => !isNaN(v))
+            ) {
+              if (clock_hour > clock_hur)
+                return { error: "End time must be later than start time." };
+              if (clock_hour >= 24)
+                return { error: "Start time hour must be less than 24." };
+              if (clock_minute >= 60)
+                return { error: "Start time minute must be less than 60." };
+              if (clock_second >= 60)
+                return { error: "Start time second must be less than 60." };
+              if (clock_hur >= 24)
+                return { error: "End time hour must be less than 24." };
+              if (clock_mints >= 60)
+                return { error: "End time minute must be less than 60." };
+              if (clock_secs >= 60)
+                return { error: "End time second must be less than 60." };
+
+              const start_seconds = clock_hour * 3600 + clock_minute * 60 + clock_second;
+              const end_seconds = clock_hur * 3600 + clock_mints * 60 + clock_secs;
+
+              answer = end_seconds - start_seconds;
+              hours = Math.floor(answer / 3600);
+              minutes = Math.floor((answer % 3600) / 60);
+              seconds = answer % 60;
+            } else {
+              return { error: "Please! Check Your Input" };
+            }
+          } 
+          
+          // ───────────────────────────────────────────────
+          // 12-hour clock format
+          // ───────────────────────────────────────────────
+          else {
+            if (
+              [clock_hour, clock_minute, clock_second, clock_hur, clock_mints, clock_secs].every((v) => !isNaN(v))
+            ) {
+              if (clock_hour >= 12)
+                return { error: "Start clock time hour should be less than 12" };
+              if (clock_minute >= 60)
+                return { error: "Start clock minute should be less than 60" };
+              if (clock_second >= 60)
+                return { error: "Start clock second should be less than 60" };
+              if (clock_hur >= 12)
+                return { error: "End clock time hour should be less than 12" };
+              if (clock_mints >= 60)
+                return { error: "End clock minute should be less than 60" };
+              if (clock_secs >= 60)
+                return { error: "End clock second should be less than 60" };
+
+              // Convert 12-hour to 24-hour format
+              if (clock_start_unit === "PM" && clock_hour !== 12) clock_hour += 12;
+              if (clock_end_unit === "PM" && clock_hur !== 12) clock_hur += 12;
+
+              const start_time = clock_hour * 3600 + clock_minute * 60 + clock_second;
+              const end_time = clock_hur * 3600 + clock_mints * 60 + clock_secs;
+
+              answer = end_time - start_time;
+
+              // Handle negative duration (PM → AM transition)
+              if (answer < 0) answer += 24 * 60 * 60;
+
+              hours = Math.floor(answer / 3600);
+              minutes = Math.floor((answer % 3600) / 60);
+              seconds = answer % 60;
+            } else {
+              return { error: "Please! Check Your Input" };
+            }
+          }
+        }
+
+        // ✅ Final result
+        return {
+          tech_hours:hours,
+          tech_minutes:minutes,
+          tech_seconds:seconds,
+          tech_answer:answer,
+        };
+
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
+
+     /**
+   * getCalculationAddTimeCalculator: Service Method
+   * POST: /api/calculators-lol/add-time-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+    async getCalculationAddTimeCalculator(body) {
+      try {
+        // ✅ Extract inputs safely (arrays or falsy)
+        let inhour = body.tech_inhour || false;
+        let inminutes = body.tech_inminutes || false;
+        let inseconds = body.tech_inseconds || false;
+        let inmiliseconds = body.tech_inmiliseconds || false;
+
+        let checkbox1 = body.tech_checkbox1 || false;
+        let checkbox2 = body.tech_checkbox2 || false;
+        let checkbox3 = body.tech_checkbox3 || false;
+        let checkbox4 = body.tech_checkbox4 || false;
+
+        let count_val = parseInt(body.tech_count_val);
+
+        // ✅ Helper: Convert milliseconds into h:m:s:ms
+        function convertMilliseconds(milliseconds) {
+          let seconds = 0;
+          let minutes = 0;
+          let hours = 0;
+
+          if (milliseconds >= 1000) {
+            seconds += Math.floor(milliseconds / 1000);
+            milliseconds %= 1000;
+          }
+
+          if (seconds >= 60) {
+            minutes += Math.floor(seconds / 60);
+            seconds %= 60;
+          }
+
+          if (minutes >= 60) {
+            hours += Math.floor(minutes / 60);
+            minutes %= 60;
+          }
+
+          return [hours, minutes, seconds, milliseconds];
+        }
+
+        // ✅ Initialize totals
+        let time_hour = 0;
+        let time_minutes = 0;
+        let time_seconds = 0;
+        let time_miliseconds = 0;
+
+        let hour_list = [];
+        let min_list = [];
+        let sec_list = [];
+        let mili_list = [];
+
+        for (let i = 0; i < count_val; i++) {
+          // 🧩 Handle checkboxes (if unchecked, make value 0)
+          let h = checkbox1 ? (inhour?.[i] || 0) : 0;
+          let m = checkbox2 ? (inminutes?.[i] || 0) : 0;
+          let s = checkbox3 ? (inseconds?.[i] || 0) : 0;
+          let ms = checkbox4 ? (inmiliseconds?.[i] || 0) : 0;
+
+          // ✅ Convert empty strings to 0 and ensure numeric
+          h = h === "" ? 0 : parseFloat(h);
+          m = m === "" ? 0 : parseFloat(m);
+          s = s === "" ? 0 : parseFloat(s);
+          ms = ms === "" ? 0 : parseFloat(ms);
+
+          if (
+            !isNaN(h) &&
+            !isNaN(m) &&
+            !isNaN(s) &&
+            !isNaN(ms)
+          ) {
+            time_hour += h;
+            time_minutes += m;
+            time_seconds += s;
+            time_miliseconds += ms;
+
+            hour_list.push(h);
+            min_list.push(m);
+            sec_list.push(s);
+            mili_list.push(ms);
+          } else {
+            return { error: "Please! Check Your Input" };
+          }
+        }
+
+        // ✅ Convert overflow milliseconds to h:m:s
+        let [hours, minutes, seconds, remainingMilliseconds] = convertMilliseconds(time_miliseconds);
+        time_hour += hours;
+        time_minutes += minutes;
+        time_seconds += seconds;
+        time_miliseconds = remainingMilliseconds;
+
+        // ✅ Normalize minutes and seconds
+        if (time_minutes >= 60) {
+          time_hour += Math.floor(time_minutes / 60);
+          time_minutes %= 60;
+        }
+
+        if (time_seconds >= 60) {
+          time_minutes += Math.floor(time_seconds / 60);
+          time_seconds %= 60;
+          if (time_minutes >= 60) {
+            time_hour += Math.floor(time_minutes / 60);
+            time_minutes %= 60;
+          }
+        }
+
+        // ✅ Final result
+        return {
+          tech_hour_list:hour_list,
+          tech_min_list:min_list,
+          tech_sec_list:sec_list,
+          tech_mili_list:mili_list,
+          tech_time_hour:time_hour,
+          tech_time_minutes:time_minutes,
+          tech_time_seconds:time_seconds,
+          tech_time_miliseconds:time_miliseconds,
+        };
+      } catch (err) {
+        return { error: err.message };
+      }
+    }
+
+     /**
+   * getCalculationTimeDurationCalculator: Service Method
+   * POST: /api/calculators-lol/time-duration-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+      async getCalculationTimeDurationCalculator(body) {
+       
+
+        try {
+          const calculator_time = body.tech_calculator_time;
+          const submit = body.tech_submit;
+
+          const start_date = body.tech_start_date;
+          const end_date = body.tech_end_date;
+
+          const d_start_h = parseInt(body.tech_d_start_h);
+          const d_start_m = parseInt(body.tech_d_start_m);
+          const d_start_s = parseInt(body.tech_d_start_s);
+          const d_start_ampm = body.tech_d_start_ampm?.toLowerCase();
+
+          const d_end_h = parseInt(body.tech_d_end_h);
+          const d_end_m = parseInt(body.tech_d_end_m);
+          const d_end_s = parseInt(body.tech_d_end_s);
+          const d_end_ampm = body.tech_d_end_ampm?.toLowerCase();
+
+          let start_time_str, end_time_str, start_time_res, end_time_res, days_ans;
+
+          if (calculator_time === "time_cal") {
+            const t_start_h = parseInt(body.tech_t_start_h);
+            const t_start_m = parseInt(body.tech_t_start_m);
+            const t_start_s = parseInt(body.tech_t_start_s);
+            const t_start_ampm = body.tech_t_start_ampm?.toLowerCase();
+
+            const t_end_h = parseInt(body.tech_t_end_h);
+            const t_end_m = parseInt(body.tech_t_end_m);
+            const t_end_s = parseInt(body.tech_t_end_s);
+            const t_end_ampm = body.tech_t_end_ampm?.toLowerCase();
+
+            start_time_str = `${t_start_h}:${t_start_m}:${t_start_s} ${t_start_ampm}`;
+            end_time_str = `${t_end_h}:${t_end_m}:${t_end_s} ${t_end_ampm}`;
+
+            start_time_res = dayjs(`2006-04-14 ${start_time_str}`, "YYYY-MM-DD hh:mm:ss a");
+            end_time_res = dayjs(`2006-04-15 ${end_time_str}`, "YYYY-MM-DD hh:mm:ss a");
+            days_ans = 0;
+          } else {
+            // ✅ DATE_CAL mode
+            start_time_str = `${d_start_h}:${d_start_m}:${d_start_s} ${d_start_ampm}`;
+            end_time_str = `${d_end_h}:${d_end_m}:${d_end_s} ${d_end_ampm}`;
+
+            // ✅ Parse in LOCAL TIME (not UTC)
+            start_time_res = dayjs(`${start_date} ${start_time_str}`, "YYYY-MM-DD hh:mm:ss a");
+            end_time_res = dayjs(`${end_date} ${end_time_str}`, "YYYY-MM-DD hh:mm:ss a");
+
+            const dStart = dayjs(start_date, "YYYY-MM-DD");
+            const dEnd = dayjs(end_date, "YYYY-MM-DD");
+            days_ans = dEnd.diff(dStart, "day");
+          }
+
+          // ✅ Difference in local time
+          const diffMs = end_time_res.diff(start_time_res);
+          const diff = dayjs.duration(diffMs);
+
+          const hours = diff.hours();
+          const minutes = diff.minutes();
+          const seconds = diff.seconds();
+
+          const total_days = +(days_ans + hours / 24 + minutes / 1440 + seconds / 86400).toFixed(2);
+          const total_hours = +(hours + minutes / 60 + seconds / 3600 + days_ans * 24).toFixed(2);
+          const total_minutes = +(hours * 60 + minutes + seconds / 60 + days_ans * 1440).toFixed(2);
+          const total_seconds = +(hours * 3600 + minutes * 60 + seconds + days_ans * 86400).toFixed(2);
+
+          return {
+            status: "success",
+            payload: {
+              tech_days_ans: days_ans,
+              tech_hours: hours.toString().padStart(2, "0"),
+              tech_minutes: minutes.toString().padStart(2, "0"),
+              tech_seconds: seconds.toString().padStart(2, "0"),
+              tech_total_days: total_days,
+              tech_total_hours: total_hours,
+              tech_total_minutes: total_minutes,
+              tech_total_seconds: total_seconds,
+              tech_calculator_time: submit,
+            },
+          };
+        } catch (error) {
+          return { status: "error", message: error.message };
+        }
+      }
 
 
 

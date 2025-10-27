@@ -545,59 +545,6 @@ router.post(
   })
 );
 
-/**
- * POST: Used to get calculation based on your age
- * /api/calculators-lol/add-time-calculator
- */
-
-router.post(
-  "/add-time-calculator",
-  asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAddTimeCalculator(
-      req.body
-    );
-
-    // Check if result contains an error
-    if (result && result.error) {
-      return res
-        .status(HttpCodes.BAD_REQUEST) // 400
-        .json(new ApiResponse(result));
-    }
-
-    // Otherwise return success
-    return res
-      .status(HttpCodes.OK) // 200
-      .json(new ApiResponse(result));
-  })
-);
-
-
-/**
- * POST: Used to get calculation based on your age
- * /api/calculators-lol/elapsed-time-calculator
- */
-
-router.post(
-  "/elapsed-time-calculator",
-  asyncHandler(async (req, res) => {
-    const result =
-      await CalculatorsServices.getCalculationDaysElapsedTimeCalculator(
-        req.body
-      );
-
-    // Check if result contains an error
-    if (result && result.error) {
-      return res
-        .status(HttpCodes.BAD_REQUEST) // 400
-        .json(new ApiResponse(result));
-    }
-
-    // Otherwise return success
-    return res
-      .status(HttpCodes.OK) // 200
-      .json(new ApiResponse(result));
-  })
-);
 
 /**
  * POST: Used to get calculation based on your age
@@ -16518,8 +16465,6 @@ router.post(
   })
 );
 
-
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/week-calculator
@@ -16546,6 +16491,113 @@ router.post(
   })
 );
 
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/days-until-calculator
+ */
+
+router.post(
+  "/days-until-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationDaysUntilCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/elapsed-time-calculator
+ */
+
+router.post(
+  "/elapsed-time-calculator",
+  asyncHandler(async (req, res) => {
+    const result =
+      await CalculatorsServices.getCalculationDaysElapsedTimeCalculator(
+        req.body
+      );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/add-time-calculator
+ */
+
+router.post(
+  "/add-time-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationAddTimeCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/time-duration-calculator
+ */
+
+router.post(
+  "/time-duration-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationTimeDurationCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
 
 
 module.exports = router;
