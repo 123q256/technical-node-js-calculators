@@ -4442,462 +4442,9 @@ class CalculatorsServices {
     }
   }
 
-  /**
-   * getCalculationLeadTimeCalculator: Service Method
-   * POST: /api/calculators-lol/date-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationLeadTimeCalculator(requestData) {
-    try {
-      // Ensure the values are treated as numbers before performing calculations
-      let calculationType = (requestData.calculationType || "")
-        .toString()
-        .trim();
-      let prepTime = parseFloat(requestData.prepTime) || 0; // Ensure it's a number
-      let procTime = parseFloat(requestData.procTime) || 0; // Ensure it's a number
-      let postProcTime = parseFloat(requestData.postProcTime) || 0; // Ensure it's a number
-      let prepUnits = (requestData.prepUnits || "").toString().trim();
-      let procUnits = (requestData.procUnits || "").toString().trim();
-      let postProcUnits = (requestData.postProcUnits || "").toString().trim();
-      let orderPlaceTime = (requestData.orderPlaceTime || "").toString().trim();
-      let orderReceiveTime = (requestData.orderReceiveTime || "")
-        .toString()
-        .trim();
-      let supplyDelay = parseFloat(requestData.supplyDelay) || 0; // Ensure it's a number
-      let supplyUnits = (requestData.supplyUnits || "").toString().trim();
-      let reqDelay = parseFloat(requestData.reqDelay) || 0; // Ensure it's a number
-      let reqUnits = (requestData.reqUnits || "").toString().trim();
-
-      // Function to convert time to hours and minutes
-      function convertToHoursMins(time, format = "%02d Hours %02d Minutes") {
-        if (time < 1) {
-          return;
-        }
-        let hours = Math.floor(time / 60);
-        let minutes = time % 60;
-        return sprintf(format, hours, minutes);
-      }
-
-      // Function to convert units to a consistent format
-      function convert(value, units) {
-        if (units === "sec") {
-          value = value / 86400;
-        } else if (units === "min") {
-          value = value / 1440;
-        } else if (units === "hrs") {
-          value = value / 24;
-        } else if (units === "wks") {
-          value = value * 7;
-        } else if (units === "mos") {
-          value = value * 30.417;
-        } else if (units === "yrs") {
-          value = value * 365;
-        }
-        return value;
-      }
-
-      // Check for valid 'calculationType' and calculate accordingly
-      if (calculationType && calculationType !== "") {
-        let result = {};
-        if (calculationType === "manufac") {
-          if (isNaN(prepTime) || isNaN(procTime) || isNaN(postProcTime)) {
-            throw new Error("Please! Check Your Input");
-          }
-
-          // Apply conversion if units are provided
-          if (prepUnits) {
-            prepTime = convert(prepTime, prepUnits);
-          }
-          if (procUnits) {
-            procTime = convert(procTime, procUnits);
-          }
-          if (postProcUnits) {
-            postProcTime = convert(postProcTime, postProcUnits);
-          }
-
-          // Now add the times correctly as numbers
-          let manufacTime = prepTime + procTime + postProcTime; // Ensure it's numerical addition
-          result = { prepTime, procTime, postProcTime, manufacTime };
-        } else if (calculationType === "order") {
-          if (!orderPlaceTime || !orderReceiveTime) {
-            throw new Error("Please! Check Your Input");
-          }
-          let fromTime = Date.parse(orderPlaceTime);
-          let toTime = Date.parse(orderReceiveTime);
-          let diffMinutes = Math.round(Math.abs(fromTime - toTime) / 60000);
-          let timeDiff = convertToHoursMins(diffMinutes);
-          result = { timeDiff, diffMinutes };
-        } else if (calculationType === "supply") {
-          if (isNaN(supplyDelay) || isNaN(reqDelay)) {
-            throw new Error("Please! Check Your Input");
-          }
-
-          // Apply the correct conversion to supplyDelay and reqDelay
-          if (supplyUnits) {
-            supplyDelay = convert(supplyDelay, supplyUnits);
-          }
-          if (reqUnits) {
-            reqDelay = convert(reqDelay, reqUnits);
-          }
-
-          // Now calculate the correct supply time
-          let totalSupplyTime = supplyDelay + reqDelay;
-          result = { supplyDelay, reqDelay, totalSupplyTime };
-        } else {
-          throw new Error("Please! Check Your Input");
-        }
-
-        result.calculationType = calculationType;
-        result.RESULT = 1;
-
-        return result;
-      } else {
-        throw new Error("Please! Check Your Input");
-      }
-    } catch (error) {
-      return { error: error.message };
-    }
-  }
-
-  /**
-   * getCalculationReadingTimeCalculator: Service Method
-   * POST: /api/calculators-lol/reading-time-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationReadingTimeCalculator(requestData) {
-    const readingSpeed = requestData.readingSpeed?.trim();
-    let pagesRead = parseFloat(requestData.pagesRead?.trim());
-    const unitOfBook = requestData.unitOfBook?.trim();
-    const totalLengthOfBook = parseFloat(requestData.totalLengthOfBook?.trim());
-    const dailyReadingAmount = parseFloat(
-      requestData.dailyReadingAmount?.trim()
-    );
-    const outputUnit = requestData.outputUnit?.trim();
-    const timeUnit = requestData.timeUnit?.trim(); // not used
-    const readingOutputUnit = requestData.readingOutputUnit?.trim();
-    const periodOutputUnit = requestData.periodOutputUnit?.trim();
-
-    const result = {};
-
-    if (!isNaN(pagesRead) && !isNaN(totalLengthOfBook)) {
-      if (unitOfBook === "hr") {
-        pagesRead = pagesRead / 60;
-      }
-
-      let timeRequired = totalLengthOfBook / pagesRead;
-      let formattedTimeRequired;
-
-      if (outputUnit === "min") {
-        formattedTimeRequired = `${timeRequired} min`;
-      } else if (outputUnit === "hr") {
-        timeRequired = timeRequired / 60;
-        timeRequired = parseFloat(timeRequired.toFixed(3));
-        formattedTimeRequired = `${timeRequired} hrs`;
-      } else if (outputUnit === "min/hr") {
-        const hours = Math.floor(timeRequired / 60);
-        const minutes = timeRequired % 60;
-        formattedTimeRequired = `${hours} hrs ${minutes} min`;
-      }
-
-      if (!isNaN(dailyReadingAmount)) {
-        const readingPerUnit = timeRequired / totalLengthOfBook;
-        const readingMinutesPerDay = readingPerUnit * 1440;
-        let totalReadingAmount = dailyReadingAmount / readingMinutesPerDay;
-        let timeSpent = (timeRequired / dailyReadingAmount) * 1440;
-
-        // Convert totalReadingAmount to required unit
-        switch (readingOutputUnit) {
-          case "min":
-            totalReadingAmount = `${totalReadingAmount.toFixed(3)} min`;
-            break;
-          case "hr":
-            totalReadingAmount = `${totalReadingAmount * 60} hrs`;
-            break;
-          case "day":
-            totalReadingAmount = `${totalReadingAmount * 1440} days`;
-            break;
-          case "week":
-            totalReadingAmount = `${totalReadingAmount * 10080} wks`;
-            break;
-          case "month":
-            totalReadingAmount = `${totalReadingAmount * 43800} mons`;
-            break;
-          case "year":
-            totalReadingAmount = `${totalReadingAmount * 525600} yrs`;
-            break;
-        }
-
-        // Convert timeSpent to required unit
-        switch (periodOutputUnit) {
-          case "min":
-            timeSpent = `${timeSpent} min`;
-            break;
-          case "hr":
-            timeSpent = `${(timeSpent / 60).toFixed(1)} hrs`;
-            break;
-          case "day":
-            timeSpent = `${(timeSpent / 1440).toFixed(1)} day`;
-            break;
-          case "week":
-            timeSpent = `${(timeSpent / 10080).toFixed(1)} wks`;
-            break;
-          case "month":
-            timeSpent = `${(timeSpent / 43800).toFixed(1)} mons`;
-            break;
-          case "year":
-            timeSpent = `${(timeSpent / 525600).toFixed(1)} yrs`;
-            break;
-          case "minutes/hour": {
-            const hours = Math.floor(timeSpent / 60);
-            const minutes = timeSpent % 60;
-            timeSpent = `${hours}hr ${minutes}min`;
-            break;
-          }
-          case "year/month/day": {
-            const minutesPerYear = 365 * 24 * 60;
-            const minutesPerMonth = 30 * 24 * 60;
-            const minutesPerDay = 24 * 60;
-            const years = Math.floor(timeSpent / minutesPerYear);
-            let remainingMinutes = timeSpent % minutesPerYear;
-            const months = Math.floor(remainingMinutes / minutesPerMonth);
-            remainingMinutes %= minutesPerMonth;
-            const days = Math.floor(remainingMinutes / minutesPerDay);
-            timeSpent = `${years}year ${months}mon ${days}day`;
-            break;
-          }
-          case "week/day": {
-            const minutesPerWeek = 7 * 24 * 60;
-            const minutesPerDay = 24 * 60;
-            const week = Math.floor(timeSpent / minutesPerWeek);
-            const days = Math.floor(
-              (timeSpent % minutesPerWeek) / minutesPerDay
-            );
-            timeSpent = `${week}week ${days}day`;
-            break;
-          }
-          case "day/hour/minutes": {
-            const minutesPerDay = 24 * 60;
-            const minutesPerHour = 60;
-            const days = Math.floor(timeSpent / minutesPerDay);
-            const remainingMinutes = timeSpent % minutesPerDay;
-            const hours = Math.floor(remainingMinutes / minutesPerHour);
-            const minutes = remainingMinutes % minutesPerHour;
-            timeSpent = `${days} day, ${hours} hr, ${minutes} min`;
-            break;
-          }
-        }
-
-        result.totalReadingAmount = totalReadingAmount;
-        result.timeSpent = timeSpent;
-      }
-
-      result.answer = formattedTimeRequired;
-      result.RESULT = 1;
-    } else {
-      result.error = "Please! Check Your Input";
-    }
-
-    return result;
-  }
-
-  /**
-   * getCalculationWorkingDaysCalculator: Service Method
-   * POST: /api/calculators-lol/working-days-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationWorkingDaysCalculator(body) {
-    const initial_date = body.initial_date?.trim();
-    const final_date = body.final_date?.trim();
-    const work_days = body.work_days?.trim();
-    const include_final_day = body.include_final_day?.trim();
-
-    function calculateWorkDays(start_timestamp, end_timestamp, work_days) {
-      let total_days = 0;
-      while (start_timestamp <= end_timestamp) {
-        const current_day = new Date(start_timestamp).getDay() + 1; // Get day of the week (1 = Monday, 7 = Sunday)
-
-        if (
-          work_days === "Exclude weekends" &&
-          current_day !== 6 &&
-          current_day !== 7
-        ) {
-          total_days++;
-        } else if (work_days === "Exclude only Sunday" && current_day !== 7) {
-          total_days++;
-        } else if (work_days === "Include all days") {
-          total_days++;
-        }
-
-        start_timestamp += 24 * 60 * 60 * 1000; // Add 1 day in milliseconds
-      }
-      return total_days;
-    }
-
-    if (initial_date && final_date) {
-      const start_timestamp = new Date(initial_date).getTime();
-      const end_timestamp = new Date(final_date).getTime();
-
-      if (isNaN(start_timestamp) || isNaN(end_timestamp)) {
-        return {
-          error: "Invalid date format",
-        };
-      }
-
-      let total_days = 0;
-
-      if (work_days === "Exclude weekends") {
-        total_days = calculateWorkDays(
-          start_timestamp,
-          end_timestamp,
-          "Exclude weekends"
-        );
-      } else if (work_days === "Exclude only Sunday") {
-        total_days = calculateWorkDays(
-          start_timestamp,
-          end_timestamp,
-          "Exclude only Sunday"
-        );
-      } else {
-        total_days = Math.ceil(
-          (end_timestamp - start_timestamp) / (1000 * 60 * 60 * 24)
-        ); // Days between dates
-      }
-
-      if (include_final_day === "No") {
-        total_days--;
-      }
-
-      return {
-        total_working_days: total_days,
-        RESULT: 1,
-      };
-    } else {
-      return {
-        error: "Please provide both the starting and ending dates",
-      };
-    }
-  }
 
 
 
-
-
-  /**
-   * getCalculationMonthCalculator: Service Method
-   * POST: /api/calculators-lol/month-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-  async getCalculationMonthCalculator(body) {
-    let result = {};
-
-    let { first_date, last_date } = body;
-
-    if (first_date && last_date) {
-      let datetime1 = moment(first_date);
-      let datetime2 = moment(last_date);
-      let diff = datetime2.diff(datetime1, "months"); // Get the difference in months
-      let months = diff;
-      let days = datetime2.diff(datetime1.add(diff, "months"), "days"); // Get remaining days after months
-
-      result.Finalmonths = months;
-      result.Finaldays = days;
-      result.RESULT = 1;
-    } else {
-      result.error = "Check your input, please";
-    }
-
-    return result;
-  }
-
-  /**
-   * getCalculationDateDurationCalculator: Service Method
-   * POST: /api/calculators-lol/date-duration-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  // dateDurationCalculator.js
-  async getCalculationDateDurationCalculator(body) {
-    const { s_date, e_date, checkbox } = body;
-    const result = {};
-
-    if (!s_date || !e_date) {
-      result.error = "Please! Check Your Input.";
-      return result;
-    }
-
-    let start = dayjs(s_date, "YYYY-MM-DD");
-    let end = dayjs(e_date, "YYYY-MM-DD");
-
-    // ✅ Include end date if checkbox is true
-    let displayEnd = end;
-    if (checkbox) {
-      end = end.add(1, "day"); // Include end date in calculation
-      displayEnd = end.subtract(1, "day"); // But display original end date
-    }
-
-    // Swap if start is after end
-    if (start.isAfter(end)) {
-      [start, end] = [end, start];
-    }
-
-    const fromFormatted = start.format("MMM DD, YYYY");
-    const toFormatted = displayEnd.format("MMM DD, YYYY");
-
-    // Calculate year, month, day difference manually
-    let tempStart = start.clone();
-    let years = 0,
-      months = 0,
-      days = 0;
-
-    while (tempStart.add(1, "year").isSameOrBefore(end)) {
-      tempStart = tempStart.add(1, "year");
-      years++;
-    }
-
-    while (tempStart.add(1, "month").isSameOrBefore(end)) {
-      tempStart = tempStart.add(1, "month");
-      months++;
-    }
-
-    while (tempStart.add(1, "day").isSameOrBefore(end)) {
-      tempStart = tempStart.add(1, "day");
-      days++;
-    }
-
-    // Total seconds between
-    const diffInSeconds = Math.abs(end.unix() - start.unix());
-
-    // Remove seconds from Y/M/D
-    const totalUsedSec =
-      years * 365 * 24 * 60 * 60 +
-      months * 30 * 24 * 60 * 60 +
-      days * 24 * 60 * 60;
-    const remaining = diffInSeconds - totalUsedSec;
-
-    const hrs = Math.floor(remaining / 3600);
-    const mins = Math.floor((remaining % 3600) / 60);
-    const secs = remaining % 60;
-
-    return {
-      from: fromFormatted,
-      to: toFormatted,
-      years,
-      months,
-      days,
-      hours: hrs,
-      minutes: mins,
-      seconds: secs,
-      RESULT: 1,
-    };
-  }
 
   /**
    * getCalculationDaysSinceDateCalculator: Service Method
@@ -4943,291 +4490,8 @@ class CalculatorsServices {
     };
   }
 
-  /**
-   * getCalculationDaysUntilCalculator: Service Method
-   * POST: /api/calculators-lol/birth-year-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-  async getCalculationBirthYearCalculator(body) {
-    const { date, age, age_unit, choose, submit } = body;
 
-    // Validate inputs
-    if (date && !isNaN(age) && choose && age_unit) {
-      let newYear;
 
-      // Parse the date
-      let parsedDate = dayjs(date);
-
-      if (!parsedDate.isValid()) {
-        return { status: "error", message: "Invalid date input" };
-      }
-
-      // Subtract age based on the age unit
-      switch (age_unit) {
-        case "years":
-          newYear = parsedDate.subtract(age, "year").year();
-          break;
-        case "months":
-          newYear = parsedDate.subtract(age, "month").year();
-          break;
-        case "weeks":
-          newYear = parsedDate.subtract(age, "week").year();
-          break;
-        case "days":
-          newYear = parsedDate.subtract(age, "day").year();
-          break;
-        case "hours":
-          newYear = parsedDate.subtract(age, "hour").year();
-          break;
-        case "minutes":
-          newYear = parsedDate.subtract(age, "minute").year();
-          break;
-        case "seconds":
-          newYear = parsedDate.subtract(age, "second").year();
-          break;
-        default:
-          return { status: "error", message: "Invalid age unit" };
-      }
-
-      // If 'choose' is 'before', subtract 1 from the year
-      if (choose === "before") {
-        newYear -= 1;
-      }
-
-      // Return the result
-      return {
-        status: "success",
-        payload: {
-          newYear: newYear,
-        },
-      };
-    } else {
-      return { status: "error", message: "Please! Check Your Input" };
-    }
-  }
-
-  /**
-   * getCalculationDeadlineCalculator: Service Method
-   * POST: /api/calculators-lol/deadline-calculator
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationDeadlineCalculator(body) {
-    const { date, period, Number, before_after } = body;
-
-    // Validate the inputs
-    if (!date || isNaN(Number)) {
-      return { status: "error", message: "Please check your input." };
-    }
-
-    // Validate the date format
-    const parsedDate = dayjs(date);
-    if (!parsedDate.isValid()) {
-      return {
-        status: "error",
-        message: "Invalid date format. Please use YYYY-MM-DD.",
-      };
-    }
-
-    let interval;
-
-    // Handle the period (Days, Weeks, Years)
-    if (period === "Days") {
-      interval = "day";
-    } else if (period === "Weeks") {
-      interval = "week";
-    } else if (period === "Years") {
-      interval = "year";
-    } else {
-      return {
-        status: "error",
-        message: "Invalid period. Please select Days, Weeks, or Years.",
-      };
-    }
-
-    // Perform the calculation based on before_after
-    let result;
-    if (before_after === "Before") {
-      result = parsedDate.subtract(Number, interval);
-    } else {
-      result = parsedDate.add(Number, interval);
-    }
-
-    // Format the result in "M dd, YYYY" format
-    const formattedResult = result.format("MMM DD, YYYY");
-
-    return {
-      status: "success",
-      payload: {
-        answer: formattedResult,
-        RESULT: 1,
-      },
-    };
-  }
-
-  /**
-   * getCalculationMilitaryTimeConverterCalculator: Service Method
-   * POST: /api/calculators-lol/military-time-converter
-   * @param {Object} body Having Properties for Creating New Roles
-   * @returns Object with message property having success method
-   */
-
-  async getCalculationMilitaryTimeConverterCalculator(body) {
-    const { conversion, military_time } = body;
-
-    function eng_time(num) {
-      const reading = [
-        "zero ",
-        "one ",
-        "two ",
-        "three ",
-        "four ",
-        "five ",
-        "six ",
-        "seven ",
-        "eight ",
-        "nine ",
-        "ten ",
-        "eleven ",
-        "twelve ",
-        "thirteen ",
-        "fourteen ",
-        "fifteen ",
-        "sixteen ",
-        "seventeen ",
-        "eighteen ",
-        "nineteen ",
-        "twenty ",
-        "twenty-one ",
-        "twenty-two ",
-        "twenty-three ",
-        "twenty-four ",
-        "twenty-five ",
-        "twenty-six ",
-        "twenty-seven ",
-        "twenty-eight ",
-        "twenty-nine ",
-        "thirty ",
-        "thirty-one ",
-        "thirty-two ",
-        "thirty-three ",
-        "thirty-four ",
-        "thirty-five ",
-        "thirty-six ",
-        "thirty-seven ",
-        "thirty-eight ",
-        "thirty-nine ",
-        "forty ",
-        "forty-one ",
-        "forty-two ",
-        "forty-three ",
-        "forty-four ",
-        "forty-five ",
-        "forty-six ",
-        "forty-seven ",
-        "forty-eight ",
-        "forty-nine ",
-        "fifty ",
-        "fifty-one ",
-        "fifty-two ",
-        "fifty-three ",
-        "fifty-four ",
-        "fifty-five ",
-        "fifty-six ",
-        "fifty-seven ",
-        "fifty-eight ",
-        "fifty-nine ",
-      ];
-
-      let f_two = num.substring(0, 2); // hour
-      let l_two = num.substring(2, 4); // minute
-      let hr = reading[parseInt(f_two)];
-      let minText = reading[parseInt(l_two)];
-
-      return hr + minText;
-    }
-
-    if (conversion === "1") {
-      if (isNaN(military_time)) {
-        return { status: "error", message: "Please! Check Your Input" };
-      }
-
-      const originalInput = military_time.toString(); // "136"
-      const padded = originalInput.padStart(4, "0"); // "0136"
-      const hourStr = padded.slice(0, padded.length - 2); // "13"
-      const minuteStr = padded.slice(-2); // "36"
-      const hour = parseInt(hourStr);
-      const minute = parseInt(minuteStr);
-
-      if (hour < 0 || hour >= 24 || minute < 0 || minute >= 60) {
-        return { status: "error", message: "Please! Check Your Input" };
-      }
-
-      const chubees_ghante = `${hourStr}:${minuteStr}`; // ✅ FIXED HERE
-      const bara_ghante = dayjs(chubees_ghante, "HH:mm").format("h:mm a");
-      const eng_word = eng_time(`${hourStr}${minuteStr}`);
-
-      return {
-        status: "success",
-        payload: {
-          military_time: originalInput,
-          eng_word: eng_word.trim(),
-          bara_ghante: bara_ghante,
-          chubees_ghante: chubees_ghante,
-        },
-      };
-    }
-
-    // Convert 12-hour or 24-hour time to military
-    else if (conversion === "2") {
-      if (isNaN(hur) || isNaN(min)) {
-        return { status: "error", message: "Please! Check Your Input" };
-      }
-
-      if (hours === "24h") {
-        const hrStr = hur.toString().padStart(2, "0");
-        const minStr = min.toString().padStart(2, "0");
-        const time = hrStr + minStr;
-        const chubees_ghante = `${hrStr}:${minStr}`;
-        const eng_word = eng_time(time);
-
-        return {
-          status: "success",
-          payload: {
-            bara_ghante: chubees_ghante,
-            chubees_ghante: chubees_ghante,
-            military_time: time,
-            eng_word: eng_word,
-            RESULT: 1,
-          },
-        };
-      } else if (hours === "12h") {
-        const hrStr = hur.toString().padStart(2, "0");
-        const minStr = min.toString().padStart(2, "0");
-        const time = `${hrStr}:${minStr} ${am_pm}`;
-        const hrs_ans = dayjs(time, "hh:mm a").format("HH");
-        const min_ans = dayjs(time, "hh:mm a").format("mm");
-        const chubees_ghante = `${hrs_ans}:${min_ans}`;
-        const military_time = hrs_ans + min_ans;
-        const eng_word = eng_time(military_time);
-
-        return {
-          status: "success",
-          payload: {
-            military_time: military_time,
-            eng_word: eng_word,
-            bara_ghante: time,
-            chubees_ghante: chubees_ghante,
-            RESULT: 1,
-          },
-        };
-      }
-    }
-
-    return { status: "error", message: "Invalid conversion type" };
-  }
 
   /**
    * getCalculationRoundtoTheNearestCentCalculator: Service Method
@@ -64544,93 +63808,1643 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
    * @param {Object} body Having Properties for Creating New Roles
    * @returns Object with message property having success method
    */
-      async getCalculationTimeDurationCalculator(body) {
+  
+
+        async getCalculationTimeDurationCalculator(body) {
+        const result = {};
+        // Extract and trim input values
+        const t_start_h = String(body.tech_t_start_h || '').trim();
+        const t_start_m = String(body.tech_t_start_m || '').trim();
+        const t_start_s = String(body.tech_t_start_s || '').trim();
+        const t_start_ampm = String(body.tech_t_start_ampm || '').trim();
+        const t_end_h = String(body.tech_t_end_h || '').trim();
+        const t_end_m = String(body.tech_t_end_m || '').trim();
+        const t_end_s = String(body.tech_t_end_s || '').trim();
+        const t_end_ampm = String(body.tech_t_end_ampm || '').trim();
+        const start_date = String(body.tech_start_date || '').trim();
+        const end_date = String(body.tech_end_date || '').trim();
+        const d_start_h = String(body.tech_d_start_h || '').trim();
+        const d_start_m = String(body.tech_d_start_m || '').trim();
+        const d_start_s = String(body.tech_d_start_s || '').trim();
+        const d_start_ampm = String(body.tech_d_start_ampm || '').trim();
+        const d_end_h = String(body.tech_d_end_h || '').trim();
+        const d_end_m = String(body.tech_d_end_m || '').trim();
+        const d_end_s = String(body.tech_d_end_s || '').trim();
+        const d_end_ampm = String(body.tech_d_end_ampm || '').trim();
+        const submit = String(body.tech_submit || '').trim();
+        const calculator_time = String(body.tech_calculator_time || '').trim();
+        
+        let start_time_res, end_time_res, days_ans;
+        
+        if (calculator_time == "time_cal") {
+            // Time Calculator Logic - FIXED: Use actual dates from input
+            let start_h = parseInt(t_start_h);
+            let start_m = parseInt(t_start_m);
+            let start_s = parseInt(t_start_s);
+            let end_h = parseInt(t_end_h);
+            let end_m = parseInt(t_end_m);
+            let end_s = parseInt(t_end_s);
+            
+            // Validation
+            if (isNaN(start_h) || start_h > 23 || start_h < 0) {
+                result.error = 'Please enter a valid Start Hour.';
+                return result;
+            }
+            if (isNaN(end_h) || end_h > 23 || end_h < 0) {
+                result.error = 'Please enter a valid End Hour.';
+                return result;
+            }
+            if (isNaN(start_m) || start_m > 59 || start_m < 0 || t_start_m === "") {
+                result.error = 'Please enter a valid Start Minute.';
+                return result;
+            }
+            if (isNaN(end_m) || end_m > 59 || end_m < 0 || t_end_m === "") {
+                result.error = 'Please enter a valid End Minute.';
+                return result;
+            }
+            if (isNaN(start_s) || start_s > 59 || start_s < 0 || t_start_s === "") {
+                result.error = 'Please enter a valid Start Second.';
+                return result;
+            }
+            if (isNaN(end_s) || end_s > 59 || end_s < 0 || t_end_s === "") {
+                result.error = 'Please enter a valid End Second.';
+                return result;
+            }
+            
+            // Handle empty or 0 hours
+            if (!start_h || start_h === 0) {
+                start_h = 12;
+            }
+            if (!end_h || end_h === 0) {
+                end_h = 12;
+            }
+            
+            // Format time components
+            const formatted_start_h = String(start_h).padStart(2, '0');
+            const formatted_start_m = String(start_m).padStart(2, '0');
+            const formatted_start_s = String(start_s).padStart(2, '0');
+            
+            // Build start time
+            let start_time_str;
+            if (start_h <= 12) {
+                start_time_str = `${formatted_start_h}:${formatted_start_m}:${formatted_start_s} ${t_start_ampm}`;
+                start_time_res = moment(start_time_str, 'hh:mm:ss a');
+            } else {
+                start_time_str = `${formatted_start_h}:${formatted_start_m}:${formatted_start_s}`;
+                start_time_res = moment(start_time_str, 'HH:mm:ss');
+            }
+            
+            // Format end time components
+            const formatted_end_h = String(end_h).padStart(2, '0');
+            const formatted_end_m = String(end_m).padStart(2, '0');
+            const formatted_end_s = String(end_s).padStart(2, '0');
+            
+            // Build end time
+            let end_time_str;
+            if (end_h <= 12) {
+                end_time_str = `${formatted_end_h}:${formatted_end_m}:${formatted_end_s} ${t_end_ampm}`;
+                end_time_res = moment(end_time_str, 'hh:mm:ss a');
+            } else {
+                end_time_str = `${formatted_end_h}:${formatted_end_m}:${formatted_end_s}`;
+                end_time_res = moment(end_time_str, 'HH:mm:ss');
+            }
+            
+            // FIXED: Use actual dates from input instead of hardcoded dates
+            start_time_res = moment(`${start_date} ${start_time_res.format('HH:mm:ss')}`);
+            end_time_res = moment(`${end_date} ${end_time_res.format('HH:mm:ss')}`);
+            
+            // Calculate day difference
+            days_ans = Math.floor(end_time_res.diff(start_time_res, 'days', true));
+            
+        } else {
+            // Date Calculator Logic
+            let start_h = parseInt(d_start_h);
+            let start_m = parseInt(d_start_m);
+            let start_s = parseInt(d_start_s);
+            let end_h = parseInt(d_end_h);
+            let end_m = parseInt(d_end_m);
+            let end_s = parseInt(d_end_s);
+            
+            // Validation
+            if (isNaN(start_h) || start_h > 23 || start_h < 0) {
+                result.error = 'Please enter a valid Start Hour.';
+                return result;
+            }
+            if (isNaN(end_h) || end_h > 23 || end_h < 0) {
+                result.error = 'Please enter a valid End Hour.';
+                return result;
+            }
+            if (isNaN(start_m) || start_m > 59 || start_m < 0 || d_start_m === "") {
+                result.error = 'Please enter a valid Start Minute.';
+                return result;
+            }
+            if (isNaN(end_m) || end_m > 59 || end_m < 0 || d_end_m === "") {
+                result.error = 'Please enter a valid End Minute.';
+                return result;
+            }
+            if (isNaN(start_s) || start_s > 59 || start_s < 0 || d_start_s === "") {
+                result.error = 'Please enter a valid Start Second.';
+                return result;
+            }
+            if (isNaN(end_s) || end_s > 59 || end_s < 0 || d_end_s === "") {
+                result.error = 'Please enter a valid End Second.';
+                return result;
+            }
+            
+            // Handle empty or 0 hours
+            if (!start_h || start_h === 0) {
+                start_h = 12;
+            }
+            if (!end_h || end_h === 0) {
+                end_h = 12;
+            }
+            
+            // Format time components (using d_ variables for date calculator)
+            const formatted_start_h = String(start_h).padStart(2, '0');
+            const formatted_start_m = String(start_m).padStart(2, '0');
+            const formatted_start_s = String(start_s).padStart(2, '0');
+            
+            // Build start time
+            let start_time_str;
+            if (start_h <= 12) {
+                start_time_str = `${formatted_start_h}:${formatted_start_m}:${formatted_start_s} ${d_start_ampm}`;
+                const start_time_temp = moment(start_time_str, 'hh:mm:ss a');
+                start_time_str = start_time_temp.format('HH:mm:ss');
+            } else {
+                start_time_str = `${formatted_start_h}:${formatted_start_m}:${formatted_start_s}`;
+            }
+            
+            // Format end time components
+            const formatted_end_h = String(end_h).padStart(2, '0');
+            const formatted_end_m = String(end_m).padStart(2, '0');
+            const formatted_end_s = String(end_s).padStart(2, '0');
+            
+            // Build end time
+            let end_time_str;
+            if (end_h <= 12) {
+                end_time_str = `${formatted_end_h}:${formatted_end_m}:${formatted_end_s} ${d_end_ampm}`;
+                const end_time_temp = moment(end_time_str, 'hh:mm:ss a');
+                end_time_str = end_time_temp.format('HH:mm:ss');
+            } else {
+                end_time_str = `${formatted_end_h}:${formatted_end_m}:${formatted_end_s}`;
+            }
+            
+            // Combine dates with times
+            start_time_res = moment(`${start_date} ${start_time_str}`);
+            end_time_res = moment(`${end_date} ${end_time_str}`);
+            
+            // Calculate day difference
+            const dStart = moment(start_date);
+            const dEnd = moment(end_date);
+            days_ans = dEnd.diff(dStart, 'days');
+        }
+        
+        // Calculate duration
+        const duration = moment.duration(end_time_res.diff(start_time_res));
+        
+        const days = Math.floor(duration.asDays());
+        const hours = duration.hours();
+        const minutes = duration.minutes();
+        const seconds = duration.seconds();
+        
+        // Calculate totals
+        const total_days = parseFloat(duration.asDays().toFixed(2));
+        const total_hours = parseFloat(duration.asHours().toFixed(2));
+        const total_minutes = parseFloat(duration.asMinutes().toFixed(2));
+        const total_seconds = parseFloat(duration.asSeconds().toFixed(2));
+        
+        // Prepare result
+        result.days_ans = days;
+        result.hours = hours;
+        result.minutes = minutes;
+        result.seconds = seconds;
+        result.total_days = total_days;
+        result.total_hours = total_hours;
+        result.total_minutes = total_minutes;
+        result.total_seconds = total_seconds;
+        result.calculator_time = submit;
+        result.RESULT = 1;
+        
+        console.log(result);
+        return {
+            "status": "success",
+            "payload": result
+        };
+    }
+
+  /**
+   * getCalculationDaysUntilCalculator: Service Method
+   * POST: /api/calculators-lol/birth-year-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async  getCalculationBirthYearCalculator(body) {
+      try {
+        const date = body.tech_date;
+        const age = parseFloat(body.tech_age);
+        const ageUnit = body.tech_age_unit;
+        const choose = body.tech_choose;
+        const submit = body.tech_submit;
+
+        // ✅ Validation check (similar to Laravel)
+        if (!date || isNaN(age) || !ageUnit || !choose || !submit) {
+          return { error: "Please! Check Your Input" };
+        }
+
+        let newDate = dayjs(date);
+        if (!newDate.isValid()) {
+          return { error: "Invalid date" };
+        }
+
+        // ✅ Subtract based on age unit
+        switch (ageUnit) {
+          case "years":
+            newDate = newDate.subtract(age, "year");
+            break;
+          case "months":
+            newDate = newDate.subtract(age, "month");
+            break;
+          case "weeks":
+            newDate = newDate.subtract(age, "week");
+            break;
+          case "days":
+            newDate = newDate.subtract(age, "day");
+            break;
+          case "hours":
+            newDate = newDate.subtract(age, "hour");
+            break;
+          case "minutes":
+            newDate = newDate.subtract(age, "minute");
+            break;
+          case "second":
+            newDate = newDate.subtract(age, "second");
+            break;
+          default:
+            return { error: "Invalid age unit" };
+        }
+
+        // ✅ Extract the year
+        let newYear = newDate.year();
+
+        // ✅ Apply "before" logic (same as Laravel)
+        if (choose === "before") {
+          newYear = newYear - 1;
+        }
+
+        // ✅ Return same format as Laravel
+        return {
        
+            tech_newYear: newYear,
+        };
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
 
-        try {
-          const calculator_time = body.tech_calculator_time;
-          const submit = body.tech_submit;
 
-          const start_date = body.tech_start_date;
-          const end_date = body.tech_end_date;
+    
+  /**
+   * getCalculationWorkingDaysCalculator: Service Method
+   * POST: /api/calculators-lol/working-days-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
 
-          const d_start_h = parseInt(body.tech_d_start_h);
-          const d_start_m = parseInt(body.tech_d_start_m);
-          const d_start_s = parseInt(body.tech_d_start_s);
-          const d_start_ampm = body.tech_d_start_ampm?.toLowerCase();
+    async getCalculationWorkingDaysCalculator(body) {
+      try {
+        const start_date = body.tech_start_date?.trim();
+        const end_date = body.tech_end_date?.trim();
+        const working_days = body.tech_working_days?.trim(); // "Exclude weekends", "Exclude only Sunday", "Include all days"
+        const include_end_date = body.tech_include_end_date?.trim(); // "Yes" or "No"
+        const submit = body.tech_submit;
 
-          const d_end_h = parseInt(body.tech_d_end_h);
-          const d_end_m = parseInt(body.tech_d_end_m);
-          const d_end_s = parseInt(body.tech_d_end_s);
-          const d_end_ampm = body.tech_d_end_ampm?.toLowerCase();
+        // ✅ Validation
+        if (!start_date || !end_date) {
+          return { error: "Please provide both the starting and ending dates" };
+        }
 
-          let start_time_str, end_time_str, start_time_res, end_time_res, days_ans;
+        const start = dayjs(start_date, "YYYY-MM-DD");
+        const end = dayjs(end_date, "YYYY-MM-DD");
 
-          if (calculator_time === "time_cal") {
-            const t_start_h = parseInt(body.tech_t_start_h);
-            const t_start_m = parseInt(body.tech_t_start_m);
-            const t_start_s = parseInt(body.tech_t_start_s);
-            const t_start_ampm = body.tech_t_start_ampm?.toLowerCase();
+        if (!start.isValid() || !end.isValid()) {
+          return { error: "Invalid date format" };
+        }
 
-            const t_end_h = parseInt(body.tech_t_end_h);
-            const t_end_m = parseInt(body.tech_t_end_m);
-            const t_end_s = parseInt(body.tech_t_end_s);
-            const t_end_ampm = body.tech_t_end_ampm?.toLowerCase();
+        // ✅ Helper function (same as PHP’s calculateWorkingDays)
+        function calculateWorkingDays(startDate, endDate, type) {
+          let result = 0;
+          let current = startDate;
 
-            start_time_str = `${t_start_h}:${t_start_m}:${t_start_s} ${t_start_ampm}`;
-            end_time_str = `${t_end_h}:${t_end_m}:${t_end_s} ${t_end_ampm}`;
+          while (current.isBefore(endDate) || current.isSame(endDate, "day")) {
+            const currentDay = current.day(); // 0 = Sunday, 6 = Saturday
 
-            start_time_res = dayjs(`2006-04-14 ${start_time_str}`, "YYYY-MM-DD hh:mm:ss a");
-            end_time_res = dayjs(`2006-04-15 ${end_time_str}`, "YYYY-MM-DD hh:mm:ss a");
-            days_ans = 0;
-          } else {
-            // ✅ DATE_CAL mode
-            start_time_str = `${d_start_h}:${d_start_m}:${d_start_s} ${d_start_ampm}`;
-            end_time_str = `${d_end_h}:${d_end_m}:${d_end_s} ${d_end_ampm}`;
+            if (type === "Exclude weekends") {
+              if (currentDay !== 6 && currentDay !== 0) result++;
+            } else if (type === "Exclude only Sunday") {
+              if (currentDay !== 0) result++;
+            } else if (type === "Include all days") {
+              result++;
+            }
 
-            // ✅ Parse in LOCAL TIME (not UTC)
-            start_time_res = dayjs(`${start_date} ${start_time_str}`, "YYYY-MM-DD hh:mm:ss a");
-            end_time_res = dayjs(`${end_date} ${end_time_str}`, "YYYY-MM-DD hh:mm:ss a");
-
-            const dStart = dayjs(start_date, "YYYY-MM-DD");
-            const dEnd = dayjs(end_date, "YYYY-MM-DD");
-            days_ans = dEnd.diff(dStart, "day");
+            current = current.add(1, "day");
           }
 
-          // ✅ Difference in local time
-          const diffMs = end_time_res.diff(start_time_res);
-          const diff = dayjs.duration(diffMs);
+          return result;
+        }
 
-          const hours = diff.hours();
-          const minutes = diff.minutes();
-          const seconds = diff.seconds();
+        // ✅ Calculate working days
+        let result = 0;
 
-          const total_days = +(days_ans + hours / 24 + minutes / 1440 + seconds / 86400).toFixed(2);
-          const total_hours = +(hours + minutes / 60 + seconds / 3600 + days_ans * 24).toFixed(2);
-          const total_minutes = +(hours * 60 + minutes + seconds / 60 + days_ans * 1440).toFixed(2);
-          const total_seconds = +(hours * 3600 + minutes * 60 + seconds + days_ans * 86400).toFixed(2);
+        if (working_days == "Exclude weekends") {
+          result = calculateWorkingDays(start, end, "Exclude weekends");
+        } else if (working_days == "Exclude only Sunday") {
+          result = calculateWorkingDays(start, end, "Exclude only Sunday");
+        } else {
+          // Include all days
+          result = Math.ceil(end.diff(start, "day"));
+        }
+
+        // ✅ Handle "Include end date" toggle
+        if (include_end_date == "No") {
+          result--;
+        }
+
+        // ✅ Ensure result not negative
+        if (result < 0) result = 0;
+
+        // ✅ Return result
+        return {
+          status: "success",
+          payload: {
+            tech_answer: result,
+            tech_result: 1,
+          },
+        };
+      } catch (error) {
+        return { error: error.message };
+      }
+    }
+
+  /**
+   * getCalculationDeadlineCalculator: Service Method
+   * POST: /api/calculators-lol/deadline-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationDeadlineCalculator(body) {
+      try {
+        const date = body.tech_date?.trim();
+        const period = body.tech_period?.trim();
+        const number = body.tech_number ? parseFloat(body.tech_number) : null;
+        const before_after = body.tech_before_after?.trim();
+
+        let param = {};
+
+        // ✅ Validation
+        if (!date || isNaN(number)) {
+          param.error = "Please check your input.";
+          return param;
+        }
+
+        const parsedDate = dayjs(date, "YYYY-MM-DD", true);
+        if (!parsedDate.isValid()) {
+          param.error = "Invalid date format. Please use YYYY-MM-DD.";
+          return param;
+        }
+
+        // ✅ Determine period
+        let interval;
+        if (period === "Days") {
+          interval = "day";
+        } else if (period === "Weeks") {
+          interval = "week";
+        } else if (period === "Years") {
+          interval = "year";
+        } else {
+          param.error = "Invalid period. Please select Days, Weeks, or Years.";
+          return param;
+        }
+
+        // ✅ Apply before/after logic
+        let resultDate;
+        if (before_after === "Before") {
+          resultDate = parsedDate.subtract(number, interval);
+        } else {
+          resultDate = parsedDate.add(number, interval);
+        }
+
+        // ✅ Format final result
+        const formatted = resultDate.format("MMM DD, YYYY");
+
+        param.tech_answer = formatted;
+        return param;
+      } catch (error) {
+        return { error: "An unexpected error occurred: " + error.message };
+      }
+    }
+    
+  /**
+   * getCalculationMonthCalculator: Service Method
+   * POST: /api/calculators-lol/month-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+  
+    async getCalculationMonthCalculator(body) {
+      try {
+        // Extract & sanitize inputs
+        const start_date = body.tech_start_date ? body.tech_start_date.trim() : "";
+        const end_date = body.tech_end_date ? body.tech_end_date.trim() : "";
+
+        if (!start_date || !end_date) {
+          return { error: "Please! Check Your Input" };
+        }
+
+        // Parse dates
+        const start = dayjs.utc(start_date);
+        const end = dayjs.utc(end_date);
+
+        if (!start.isValid() || !end.isValid()) {
+          return { error: "Invalid date format" };
+        }
+
+        // Ensure correct order
+        const from = start.isBefore(end) ? start : end;
+        const to = start.isBefore(end) ? end : start;
+
+        // Calculate difference
+        const yearsDiff = to.diff(from, "year");
+        const monthsDiff = to.diff(from.add(yearsDiff, "year"), "month");
+        const daysDiff = to.diff(from.add(yearsDiff, "year").add(monthsDiff, "month"), "day");
+
+        const totalMonths = yearsDiff * 12 + monthsDiff;
+
+        return {
+            tech_months: totalMonths,
+            tech_days: daysDiff,
+        };
+      } catch (error) {
+        return { error: "Something went wrong", details: error.message };
+      }
+    }
+
+
+  /**
+   * getCalculationReadingTimeCalculator: Service Method
+   * POST: /api/calculators-lol/reading-time-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationReadingTimeCalculator(body) {
+      try {
+        // Extract input and sanitize
+        const reading_speed = body.tech_reading_speed ? body.tech_reading_speed.trim() : "";
+        const read_pages = parseFloat(body.tech_read_pages);
+        const book_unit = body.tech_book_unit ? body.tech_book_unit.trim() : "";
+        const book_leng = parseFloat(body.tech_book_leng);
+        const daily_reading = parseFloat(body.tech_daily_reading);
+        const total_unit = body.tech_total_unit ? body.tech_total_unit.trim() : "";
+        const time_unit = body.tech_time_unit ? body.tech_time_unit.trim() : "";
+        const reading_unit = body.tech_reading_unit ? body.tech_reading_unit.trim() : "";
+        const period_unit = body.tech_period_unit ? body.tech_period_unit.trim() : "";
+
+        // ✅ Validate numeric inputs
+        if (!isFinite(read_pages) || !isFinite(book_leng)) {
+          return { error: "Please! Check Your Input" };
+        }
+
+        let adjusted_read_pages = read_pages;
+        if (book_unit === "hr") {
+          adjusted_read_pages = read_pages / 60;
+        }
+
+        // Base answer (minutes)
+        let answer = book_leng / adjusted_read_pages;
+        let answer_main = "";
+
+        // ✅ Handle total unit conversion
+        if (total_unit === "min") {
+          answer_main = `${answer} min`;
+        } else if (total_unit === "hr") {
+          answer = answer / 60;
+          answer = parseFloat(answer.toFixed(3));
+          answer_main = `${answer} hrs`;
+        } else if (total_unit === "min/hr") {
+          const hours = Math.floor(answer / 60);
+          const minutes = Math.round(answer % 60);
+          answer_main = `${hours} hrs ${minutes} min`;
+        }
+
+        let total_daily_reading = "";
+        let period_spent = "";
+
+        // ✅ Handle daily reading and period conversions
+        if (isFinite(daily_reading)) {
+          const dly_reading = answer / book_leng;
+          const dly_reading_min = dly_reading * 1440;
+          let total_daily_reading_val = daily_reading / dly_reading_min;
+          let period_spent_val = (answer / daily_reading) * 1440;
+
+          // --- Convert total_daily_reading ---
+          switch (reading_unit) {
+            case "min":
+              total_daily_reading = `${total_daily_reading_val.toFixed(3)} min`;
+              break;
+            case "hr":
+              total_daily_reading = `${(total_daily_reading_val * 60).toFixed(3)} hrs`;
+              break;
+            case "day":
+              total_daily_reading = `${(total_daily_reading_val * 1440).toFixed(3)} days`;
+              break;
+            case "week":
+              total_daily_reading = `${(total_daily_reading_val * 10080).toFixed(3)} wks`;
+              break;
+            case "month":
+              total_daily_reading = `${(total_daily_reading_val * 43800).toFixed(3)} mons`;
+              break;
+            case "year":
+              total_daily_reading = `${(total_daily_reading_val * 525600).toFixed(3)} yrs`;
+              break;
+          }
+
+          // --- Convert period_spent ---
+          const minutesPerYear = 365 * 24 * 60;
+          const minutesPerMonth = 30 * 24 * 60;
+          const minutesPerWeek = 7 * 24 * 60;
+          const minutesPerDay = 24 * 60;
+
+          switch (period_unit) {
+            case "min":
+              period_spent = `${period_spent_val} min`;
+              break;
+            case "hr":
+              period_spent = `${(period_spent_val / 60).toFixed(1)} hrs`;
+              break;
+            case "day":
+              period_spent = `${(period_spent_val / 1440).toFixed(1)} day`;
+              break;
+            case "week":
+              period_spent = `${(period_spent_val / 10080).toFixed(1)} wks`;
+              break;
+            case "month":
+              period_spent = `${(period_spent_val / 43800).toFixed(1)} mons`;
+              break;
+            case "year":
+              period_spent = `${(period_spent_val / 525600).toFixed(1)} yrs`;
+              break;
+            case "minutes/hour": {
+              const hours = Math.floor(period_spent_val / 60);
+              const minutes = Math.floor(period_spent_val % 60);
+              period_spent = `${hours} hr ${minutes} min`;
+              break;
+            }
+            case "year/month/day": {
+              const years = Math.floor(period_spent_val / minutesPerYear);
+              let remaining = period_spent_val % minutesPerYear;
+              const months = Math.floor(remaining / minutesPerMonth);
+              remaining = remaining % minutesPerMonth;
+              const days = Math.floor(remaining / minutesPerDay);
+              period_spent = `${years} year ${months} mon ${days} day`;
+              break;
+            }
+            case "week/day": {
+              const weeks = Math.floor(period_spent_val / minutesPerWeek);
+              const days = Math.floor((period_spent_val % minutesPerWeek) / minutesPerDay);
+              period_spent = `${weeks} week ${days} day`;
+              break;
+            }
+            case "day/hour/minutes": {
+              const days = Math.floor(period_spent_val / minutesPerDay);
+              let remaining = period_spent_val % minutesPerDay;
+              const hours = Math.floor(remaining / 60);
+              const minutes = Math.floor(remaining % 60);
+              period_spent = `${days} day, ${hours} hr, ${minutes} min`;
+              break;
+            }
+          }
+        }
+
+        // ✅ Final Response
+        return {
+            tech_answer: answer_main,
+            tech_total_daily_reading: total_daily_reading,
+            tech_period_spent: period_spent,
+        };
+      } catch (error) {
+        return { error: "Something went wrong", details: error.message };
+      }
+    }
+
+
+    
+  /**
+   * getCalculationMilitaryTimeConverterCalculator: Service Method
+   * POST: /api/calculators-lol/military-time-converter
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationMilitaryTimeConverterCalculator(body) {
+      const conversion = body.tech_conversion;
+      const military_time = body.tech_military_time;
+      const hours = body.tech_hours;
+      const hur = body.tech_hur;
+      const min = body.tech_min;
+      const am_pm = body.tech_am_pm;
+
+      function eng_time(num) {
+        const reading = [
+          "zero ",
+          "one ",
+          "two ",
+          "three ",
+          "four ",
+          "five ",
+          "six ",
+          "seven ",
+          "eight ",
+          "nine ",
+          "ten ",
+          "eleven ",
+          "twelve ",
+          "thirteen ",
+          "fourteen ",
+          "fifteen ",
+          "sixteen ",
+          "seventeen ",
+          "eighteen ",
+          "nineteen ",
+          "twenty ",
+          "twenty-one ",
+          "twenty-two ",
+          "twenty-three ",
+          "twenty-four ",
+          "twenty-five ",
+          "twenty-six ",
+          "twenty-seven ",
+          "twenty-eight ",
+          "twenty-nine ",
+          "thirty ",
+          "thirty-one ",
+          "thirty-two ",
+          "thirty-three ",
+          "thirty-four ",
+          "thirty-five ",
+          "thirty-six ",
+          "thirty-seven ",
+          "thirty-eight ",
+          "thirty-nine ",
+          "forty ",
+          "forty-one ",
+          "forty-two ",
+          "forty-three ",
+          "forty-four ",
+          "forty-five ",
+          "forty-six ",
+          "forty-seven ",
+          "forty-eight ",
+          "forty-nine ",
+          "fifty ",
+          "fifty-one ",
+          "fifty-two ",
+          "fifty-three ",
+          "fifty-four ",
+          "fifty-five ",
+          "fifty-six ",
+          "fifty-seven ",
+          "fifty-eight ",
+          "fifty-nine ",
+        ];
+
+        let f_two = num.substring(0, 2); // hour
+        let l_two = num.substring(2, 4); // minute
+        let hr = reading[parseInt(f_two)];
+        let minText = reading[parseInt(l_two)];
+
+        // ✅ Always prefix "zero" when hour < 10
+        if (parseInt(f_two) < 10) {
+          hr = "zero " + hr.trim() + " ";
+        }
+
+        return hr + minText;
+      }
+
+      if (conversion === "1") {
+        if (isNaN(military_time)) {
+          return { status: "error", message: "Please! Check Your Input" };
+        }
+
+        const originalInput = military_time.toString();
+        const padded = originalInput.padStart(4, "0");
+        const hourStr = padded.slice(0, padded.length - 2);
+        const minuteStr = padded.slice(-2);
+        const hour = parseInt(hourStr);
+        const minute = parseInt(minuteStr);
+
+        if (hour < 0 || hour >= 24 || minute < 0 || minute >= 60) {
+          return { status: "error", message: "Please! Check Your Input" };
+        }
+
+        const chubees_ghante = `${hourStr}:${minuteStr}`;
+        const bara_ghante = dayjs(chubees_ghante, "HH:mm").format("h:mm a");
+        const eng_word = eng_time(`${hourStr}${minuteStr}`);
+
+        return {
+          status: "success",
+          payload: {
+            tech_military_time: originalInput,
+            tech_eng_word: eng_word.trim(),
+            tech_bara_ghante: bara_ghante,
+            tech_chubees_ghante: chubees_ghante,
+          },
+        };
+      }
+
+      // Convert 12-hour or 24-hour time to military
+      else if (conversion === "2") {
+        if (isNaN(hur) || isNaN(min)) {
+          return { status: "error", message: "Please! Check Your Input" };
+        }
+
+        if (hours === "24h") {
+          const hrStr = hur.toString().padStart(2, "0");
+          const minStr = min.toString().padStart(2, "0");
+          const time = hrStr + minStr;
+          const chubees_ghante = `${hrStr}:${minStr}`;
+          const eng_word = eng_time(time);
 
           return {
             status: "success",
             payload: {
-              tech_days_ans: days_ans,
-              tech_hours: hours.toString().padStart(2, "0"),
-              tech_minutes: minutes.toString().padStart(2, "0"),
-              tech_seconds: seconds.toString().padStart(2, "0"),
-              tech_total_days: total_days,
-              tech_total_hours: total_hours,
-              tech_total_minutes: total_minutes,
-              tech_total_seconds: total_seconds,
-              tech_calculator_time: submit,
+              tech_bara_ghante: chubees_ghante,
+              tech_chubees_ghante: chubees_ghante,
+              tech_military_time: time,
+              tech_eng_word: eng_word.trim(),
             },
           };
-        } catch (error) {
-          return { status: "error", message: error.message };
+        } else if (hours === "12h") {
+          const hrStr = hur.toString().padStart(2, "0");
+          const minStr = min.toString().padStart(2, "0");
+          const time = `${hrStr}:${minStr} ${am_pm}`;
+          const hrs_ans = dayjs(time, "hh:mm a").format("HH");
+          const min_ans = dayjs(time, "hh:mm a").format("mm");
+          const chubees_ghante = `${hrs_ans}:${min_ans}`;
+          const military_time = hrs_ans + min_ans;
+          const eng_word = eng_time(military_time);
+
+          return {
+            status: "success",
+            payload: {
+              tech_military_time: military_time,
+              tech_eng_word: eng_word.trim(),
+              tech_bara_ghante: time,
+              tech_chubees_ghante: chubees_ghante,
+            },
+          };
         }
       }
 
+      return { status: "error", message: "Invalid conversion type" };
+    }
 
 
+
+    
+  /**
+   * getCalculationDateDurationCalculator: Service Method
+   * POST: /api/calculators-lol/date-duration-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+  // dateDurationCalculator.js
+  async getCalculationDateDurationCalculator(body) {
+      const s_date = body.tech_s_date;
+      const e_date = body.tech_e_date;
+      const checkbox = body.tech_checkbox;
+
+      const result = {};
+
+      if (!s_date || !e_date) {
+        result.error = "Please! Check Your Input.";
+        return result;
+      }
+
+      let start = dayjs(s_date, "YYYY-MM-DD");
+      let end = dayjs(e_date, "YYYY-MM-DD");
+
+      // ✅ Include end date if checkbox is true
+      let displayEnd = end;
+      if (checkbox) {
+        end = end.add(1, "day"); // Include end date in calculation
+        displayEnd = end.subtract(1, "day"); // But display original end date
+      }
+
+      // Swap if start is after end
+      if (start.isAfter(end)) {
+        [start, end] = [end, start];
+      }
+
+      const fromFormatted = start.format("MMM DD, YYYY");
+      const toFormatted = displayEnd.format("MMM DD, YYYY");
+
+      // Calculate year, month, day difference manually
+      let tempStart = start.clone();
+      let years = 0,
+        months = 0,
+        days = 0;
+
+      while (tempStart.add(1, "year").isSameOrBefore(end)) {
+        tempStart = tempStart.add(1, "year");
+        years++;
+      }
+
+      while (tempStart.add(1, "month").isSameOrBefore(end)) {
+        tempStart = tempStart.add(1, "month");
+        months++;
+      }
+
+      while (tempStart.add(1, "day").isSameOrBefore(end)) {
+        tempStart = tempStart.add(1, "day");
+        days++;
+      }
+
+      // Total seconds between
+      const diffInSeconds = Math.abs(end.unix() - start.unix());
+
+      // Remove seconds from Y/M/D
+      const totalUsedSec =
+        years * 365 * 24 * 60 * 60 +
+        months * 30 * 24 * 60 * 60 +
+        days * 24 * 60 * 60;
+      const remaining = diffInSeconds - totalUsedSec;
+
+      const hrs = Math.floor(remaining / 3600);
+      const mins = Math.floor((remaining % 3600) / 60);
+      const secs = remaining % 60;
+
+      return {
+        tech_from: fromFormatted,
+        tech_to: toFormatted,
+        tech_years:years,
+        tech_months:months,
+        tech_days:days,
+        tech_hours: hrs,
+        tech_minutes: mins,
+        tech_seconds: secs,
+      };
+    }
+    
+  /**
+   * getCalculationLeadTimeCalculator: Service Method
+   * POST: /api/calculators-lol/date-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationLeadTimeCalculator(body) {
+    try {
+      // ✅ Extract inputs safely
+      let tech_type = body.tech_type;
+      let tech_pre_time = parseFloat(body.tech_pre_time);
+      let tech_pre_units = body.tech_pre_units?.replace("<", "") || "";
+      let tech_p_time = parseFloat(body.tech_p_time);
+      let tech_p_units = body.tech_p_units?.replace("<", "") || "";
+      let tech_post_time = parseFloat(body.tech_post_time);
+      let tech_post_units = body.tech_post_units?.replace("<", "") || "";
+      let tech_place_time = body.tech_place_time;
+      let tech_receive_time = body.tech_receive_time;
+      let tech_s_delay = parseFloat(body.tech_s_delay);
+      let tech_supply_units = body.tech_supply_units?.replace("<", "") || "";
+      let tech_r_delay = parseFloat(body.tech_r_delay);
+      let tech_r_units = body.tech_r_units?.replace("<", "") || "";
+
+      // ✅ Return error if no type
+      if (!tech_type) {
+        return { status: "error", message: "Please! Check Your Input" };
+      }
+
+      // ✅ Default response object
+      let result = {
+        tech_type,
+      };
+
+      // 🏭 Type: manufac
+      if (tech_type === "manufac") {
+        if (isNaN(tech_pre_time) || isNaN(tech_p_time) || isNaN(tech_post_time)) {
+          return { status: "error", message: "Please! Check Your Input" };
+        }
+
+        // ❌ Laravel does not convert units here
+        // ✅ Just sum raw numbers directly
+        let tech_manufac = tech_pre_time + tech_p_time + tech_post_time;
+
+        result.tech_pre_time = tech_pre_time;
+        result.tech_p_time = tech_p_time;
+        result.tech_post_time = tech_post_time;
+        result.tech_manufac = tech_manufac;
+      }
+
+      // 🕒 Type: order
+      else if (tech_type === "order") {
+        if (!tech_place_time || !tech_receive_time) {
+          return { status: "error", message: "Please! Check Your Input" };
+        }
+
+        const from_time = new Date(tech_place_time).getTime();
+        const to_time = new Date(tech_receive_time).getTime();
+
+        // ✅ Difference in minutes
+        const diff_minutes = Math.round(Math.abs(to_time - from_time) / 60000);
+
+        // ✅ Convert minutes to readable hours/minutes
+        const hours = Math.floor(diff_minutes / 60);
+        const minutes = diff_minutes % 60;
+        const time_diff = `${hours} Hours ${minutes} Minutes`;
+
+        result.tech_timeDiff = time_diff;
+        result.tech_diff_minutes = diff_minutes;
+      }
+
+      // 🚚 Type: supply
+      else if (tech_type === "supply") {
+        if (isNaN(tech_s_delay) || isNaN(tech_r_delay)) {
+          return { status: "error", message: "Please! Check Your Input" };
+        }
+
+        // ❌ Laravel does not convert units
+        // ✅ Just add both numbers directly
+        let tech_supply = tech_s_delay + tech_r_delay;
+
+        result.tech_s_delay = tech_s_delay;
+        result.tech_r_delay = tech_r_delay;
+        result.tech_supply = tech_supply;
+      }
+
+      // ❌ Invalid type
+      else {
+        return { status: "error", message: "Please! Check Your Input" };
+      }
+      return {
+         result,
+      };
+    } catch (error) {
+      return {
+        status: "error",
+        message: error.message,
+      };
+    }
+  }
+
+  /**
+   * getCalculationTimeSpanCalculator: Service Method
+   * POST: /api/calculators-lol/time-span-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+    async getCalculationTimeSpanCalculator(body) {
+      try {
+        // ✅ Extract inputs
+        let clock_format = body.tech_clock_format;
+        let s_hour = parseInt(body.tech_s_hour);
+        let s_min = parseInt(body.tech_s_min);
+        let s_sec = parseInt(body.tech_s_sec);
+        let s_ampm = body.tech_s_ampm;
+        let e_hour = parseInt(body.tech_e_hour);
+        let e_min = parseInt(body.tech_e_min);
+        let e_sec = parseInt(body.tech_e_sec);
+        let e_ampm = body.tech_e_ampm;
+
+        // ✅ Validate inputs
+        if (
+          isNaN(s_hour) ||
+          isNaN(s_min) ||
+          isNaN(s_sec) ||
+          isNaN(e_hour) ||
+          isNaN(e_min) ||
+          isNaN(e_sec)
+        ) {
+          return { status: "error", message: "Please! Check Your Input" };
+        }
+
+        // ✅ Helper: convert 12h -> 24h
+        function to24Hour(hour, ampm) {
+          if (ampm === "pm" && hour < 12) return hour + 12;
+          if (ampm === "am" && hour === 12) return 0;
+          return hour;
+        }
+
+        // ✅ Helper: zero-pad
+        function pad(num) {
+          return String(num).padStart(2, "0");
+        }
+
+        // ✅ Convert start/end to total seconds
+        let startSeconds, endSeconds;
+
+        if (clock_format == 12) {
+          if (!s_ampm || !e_ampm) {
+            return { status: "error", message: "Please! Check Your Input" };
+          }
+          startSeconds = to24Hour(s_hour, s_ampm) * 3600 + s_min * 60 + s_sec;
+          endSeconds = to24Hour(e_hour, e_ampm) * 3600 + e_min * 60 + e_sec;
+        } else {
+          startSeconds = s_hour * 3600 + s_min * 60 + s_sec;
+          endSeconds = e_hour * 3600 + e_min * 60 + e_sec;
+        }
+
+        // ✅ Calculate differences
+        let diffSeconds = endSeconds - startSeconds;
+        let absDiff = Math.abs(diffSeconds);
+        
+        let h = Math.floor(absDiff / 3600);
+        let m = Math.floor((absDiff % 3600) / 60);
+        let s = Math.floor(absDiff % 60);
+
+        // ✅ Laravel format ke according values set karein
+        let tech_first_to_second, tech_first_to_second_over_night, 
+            tech_second_to_first, tech_second_to_first_over_night;
+
+        if (diffSeconds >= 0) {
+          // Normal case
+          tech_first_to_second = `${pad(h)}:${pad(m)}:${pad(s)}`;                    // "05:00:00"
+          tech_first_to_second_over_night = `${pad(h + 24)}:${pad(m)}:${pad(s)}`;   // "29:00:00"
+          tech_second_to_first = `-${pad(h)}:${pad(m)}:${pad(s)}`;                  // "-05:00:00"
+          tech_second_to_first_over_night = `${pad(24 - h)}:${pad(m)}:${pad(s)}`;   // "19:00:00"
+        } else {
+          // Reverse case
+          tech_first_to_second = `-${pad(h)}:${pad(m)}:${pad(s)}`;                  // "-05:00:00"
+          tech_first_to_second_over_night = `${pad(24 - h)}:${pad(m)}:${pad(s)}`;   // "19:00:00"
+          tech_second_to_first = `${pad(h)}:${pad(m)}:${pad(s)}`;                   // "05:00:00"
+          tech_second_to_first_over_night = `${pad(h + 24)}:${pad(m)}:${pad(s)}`;   // "29:00:00"
+        }
+
+        // ✅ Final result exactly matching Laravel format
+        return {
+          status: "success",
+          payload: {
+            tech_first_to_second: tech_first_to_second,
+            tech_first_to_second_over_night: tech_first_to_second_over_night,
+            tech_second_to_first: tech_second_to_first,
+            tech_second_to_first_over_night: tech_second_to_first_over_night,
+          },
+        };
+      } catch (error) {
+        return { status: "error", message: error.message };
+      }
+  }
+
+    /**
+   * getCalculationTimeCalculator: Service Method
+   * POST: /api/calculators-lol/time-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+
+    async  getCalculationTimeCalculator(body) {
+        const locale = body.locale || 'en';
+        let submitt;
+        if (locale === 'en') {
+            return handleEnglishLocale(body);
+        } else {
+            return handleUrduLocale(body);
+        }
+    
+
+    function handleEnglishLocale(body) {
+        const submitt = body.tech_sim_adv;
+        
+        if (submitt === 'time_first') {
+            return calculateTimeAddSubtract(body);
+        } else if (submitt === 'time_second') {
+            return calculateDateTimeAddSubtract(body);
+        } else if (submitt === 'time_third') {
+            return calculateTimeExpression(body);
+        } else {
+            return { error: 'please check your input' };
+        }
+    }
+
+    function calculateTimeAddSubtract(body) {
+        let t_days = body.tech_t_days;
+        let t_hours = body.tech_t_hours;
+        let t_min = body.tech_t_min;
+        let t_sec = body.tech_t_sec;
+        let t_method = body.tech_t_method;
+        let te_days = body.tech_te_days;
+        let te_hours = body.tech_te_hours;
+        let te_min = body.tech_te_min;
+        let te_sec = body.tech_te_sec;
+
+        
+        // Validation for time 1
+        if (!t_days && !t_hours && !t_min && !t_sec) {
+            return { error: 'Please enter any input at time 1' };
+        }
+        
+        // Set defaults
+        t_days = t_days || 0;
+        t_hours = t_hours || 0;
+        t_min = t_min || 0;
+        t_sec = t_sec || 0;
+        
+        // Validation for time 2
+        if (!te_days && !te_hours && !te_min && !te_sec) {
+            return { error: 'Please enter any input at time 2' };
+        }
+        
+        te_days = te_days || 0;
+        te_hours = te_hours || 0;
+        te_min = te_min || 0;
+        te_sec = te_sec || 0;
+        
+        let seconds, min, hour, days, method;
+        
+        if (t_method === 'plus') {
+            seconds = parseInt(t_sec) + parseInt(te_sec);
+            min = parseInt(t_min) + parseInt(te_min);
+            hour = parseInt(t_hours) + parseInt(te_hours);
+            days = parseInt(t_days) + parseInt(te_days);
+            
+            while (seconds >= 60) {
+                min += 1;
+                seconds -= 60;
+            }
+            while (min >= 60) {
+                hour += 1;
+                min -= 60;
+            }
+            while (hour >= 24) {
+                days += 1;
+                hour -= 24;
+            }
+            method = "+";
+        } else {
+            t_days = parseInt(t_days);
+            t_hours = parseInt(t_hours);
+            t_min = parseInt(t_min);
+            t_sec = parseInt(t_sec);
+            te_days = parseInt(te_days);
+            te_hours = parseInt(te_hours);
+            te_min = parseInt(te_min);
+            te_sec = parseInt(te_sec);
+            
+            if (t_days > te_days) {
+                if (te_sec > t_sec) {
+                    t_sec += 60;
+                    t_min -= 1;
+                }
+                if (te_min > t_min) {
+                    t_min += 60;
+                    t_hours -= 1;
+                }
+                if (te_hours > t_hours) {
+                    t_hours += 24;
+                    t_days -= 1;
+                }
+            }
+            
+            seconds = t_sec - te_sec;
+            min = t_min - te_min;
+            hour = t_hours - te_hours;
+            days = t_days - te_days;
+            
+            while (seconds >= 60) {
+                min += 1;
+                seconds -= 60;
+            }
+            while (min >= 60) {
+                hour += 1;
+                min -= 60;
+            }
+            while (hour >= 24) {
+                days += 1;
+                hour -= 24;
+            }
+            method = "-";
+        }
+        
+        let totalDays = min + (seconds / 60);
+        totalDays = hour + (totalDays / 60);
+        totalDays = days + (totalDays / 24);
+        
+        const totalHours = totalDays * 24;
+        const totalMin = totalDays * 24 * 60;
+        const totalSec = totalDays * 24 * 60 * 60;
+        
+        return {
+            tech_submitt:submitt,
+            tech_t_method: method,
+            tech_t_sec: parseInt(body.t_sec) || 0,
+            tech_t_min: parseInt(body.t_min) || 0,
+            tech_t_hours: parseInt(body.t_hours) || 0,
+            tech_t_days: parseInt(body.t_days) || 0,
+            tech_te_sec: parseInt(body.te_sec) || 0,
+            tech_te_min: parseInt(body.te_min) || 0,
+            tech_te_hours: parseInt(body.te_hours) || 0,
+            tech_te_days: parseInt(body.te_days) || 0,
+            tech_totalDays: totalDays,
+            tech_totalHours:totalHours,
+            tech_totalMin: totalMin,
+            tech_totalSec: totalSec,
+            tech_seconds: seconds,
+            tech_min: min,
+            tech_hour: hour,
+            tech_days: days
+        };
+    }
+
+    function calculateDateTimeAddSubtract(body) {
+       let td_date = body.tech_td_date;
+        let t_hours = body.tech_t_hours;
+        let t_min = body.tech_t_min;
+        let t_sec = body.tech_t_sec;
+        let td_method = body.tech_td_method;
+        let td_days = body.tech_td_days;
+        let td_hours = body.tech_td_hours;
+        let td_min = body.tech_td_min;
+        let td_sec = body.tech_td_sec;
+        let am_pm = body.tech_am_pm;
+        
+        if (!isNumeric(t_hours) || !isNumeric(t_min) || !isNumeric(t_sec)) {
+            return { error: 'Please provide a valid start time.' };
+        }
+        
+        if (!td_date) {
+            return { error: 'Please! Enter Start Date.' };
+        }
+        
+        // Default values
+        const addSec = parseInt(td_sec) || 0;
+        const addMin = parseInt(td_min) || 0;
+        const addHours = parseInt(td_hours) || 0;
+        const addDays = parseInt(td_days) || 0;
+        
+        // Time string banao - t_hours, t_min, t_sec se (NOT ts_hours!)
+        let time;
+        if (am_pm == "am" || am_pm == "pm") {
+            time = `${t_hours}:${t_min}:${t_sec} ${am_pm}`;
+        } else {
+            time = `${t_hours}:${t_min}:${t_sec}`;
+        }
+        
+        const date = td_date;
+        const dateTime = date;
+        
+        // Method set karo
+        let method;
+        if (td_method == "plus") {
+            method = "add";
+        } else {
+            method = "subtract";
+        }
+        
+        // Laravel format: strtotime("$dateTime $time ...")
+        let resDate = moment(`${dateTime} ${time}`, 'YYYY-MM-DD h:m:s A');
+        
+        // Add/Subtract in exact Laravel sequence
+        resDate = resDate[method](addDays, 'days');
+        resDate = resDate[method](addHours, 'hours');  
+        resDate = resDate[method](addMin, 'minutes');
+        resDate = resDate[method](addSec, 'seconds');
+        
+        // Format output
+        const finalDate = resDate.format('MMMM, DD, YYYY');
+        const resDay = resDate.format('dddd');
+        let resTime = resDate.format('hh:mm:ss A');
+        
+        if (am_pm == "24") {
+            resTime = resDate.format('HH:mm:ss');
+        }
+        
+        return {
+            tech_finalDate: finalDate,
+            tech_resTime: resTime,
+            tech_resDay: resDay
+        };
+    }
+
+    function calculateTimeExpression(body) {
+        let input = body.tech_input;
+        
+        if (!input) {
+            return { error: 'please check your input' };
+        }
+        
+        const components = input.split(/\s*([\+\-\*\/])\s*/);
+        let totalDuration = 0; // Total duration in seconds
+        
+        for (let i = 0; i < components.length; i++) {
+            const part = components[i];
+            
+            if (i % 2 === 0) {
+                const matches = [...part.matchAll(/(\d+)([dhms])/g)];
+                let duration = 0;
+                
+                for (const match of matches) {
+                    const value = parseInt(match[1]);
+                    const unit = match[2];
+                    
+                    switch (unit) {
+                        case 'd':
+                            duration += value * 86400;
+                            break;
+                        case 'h':
+                            duration += value * 3600;
+                            break;
+                        case 'm':
+                            duration += value * 60;
+                            break;
+                        case 's':
+                            duration += value;
+                            break;
+                    }
+                }
+                
+                if (i === 0 || components[i - 1] === '+') {
+                    totalDuration += duration;
+                } else if (components[i - 1] === '-') {
+                    totalDuration -= duration;
+                } else if (components[i - 1] === '*' || components[i - 1] === '/') {
+                    return { error: 'please check your input' };
+                }
+            }
+        }
+        
+        const days = Math.floor(totalDuration / 86400);
+        const hours = Math.floor((totalDuration % 86400) / 3600);
+        const minutes = Math.floor((totalDuration % 3600) / 60);
+        const seconds = totalDuration % 60;
+        
+        const totleresult = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        const secondsResult = totalDuration;
+        const mintsResult = totalDuration / 60;
+        const hoursResult = totalDuration / 3600;
+        const daysResult = totalDuration / 86400;
+        
+     return {
+        tech_totleresult: totleresult,
+        tech_days: days,
+        tech_hours: hours,
+        tech_minutes: minutes,
+        tech_seconds: seconds,
+        tech_secondsResult: secondsResult,
+        tech_mintsResult: mintsResult,
+        tech_hoursResult: hoursResult,
+        tech_daysResult: daysResult,
+      };
+
+    }
+
+    function handleUrduLocale(body) {
+        const time_type = body.tech_time_type;
+        
+        if (time_type == '1') {
+            return calculateTimeAddSubtractUrdu(body);
+        } else if (time_type == '2') {
+            return calculateTimeDifference(body);
+        } else if (time_type == '3') {
+            return calculateDateTimeFromStart(body);
+        } else if (time_type == '4') {
+            return calculateDateTimeDifference(body);
+        }
+        
+        return { error: 'Invalid time_type' };
+    }
+
+    function calculateTimeAddSubtractUrdu(body) {
+          let t_days = body.tech_t_days;
+          let t_hours = body.tech_t_hours;
+          let t_min = body.tech_t_min;
+          let t_sec = body.tech_t_sec;
+          let t_method = body.tech_t_method;
+
+          let te_days = body.tech_te_days;
+          let te_hours = body.tech_te_hours;
+          let te_min = body.tech_te_min;
+          let te_sec = body.tech_te_sec;
+
+        // Convert to arrays if not already
+        te_sec = Array.isArray(te_sec) ? te_sec : [te_sec];
+        te_min = Array.isArray(te_min) ? te_min : [te_min];
+        te_hours = Array.isArray(te_hours) ? te_hours : [te_hours];
+        te_days = Array.isArray(te_days) ? te_days : [te_days];
+        
+        // Validation
+        if (!t_days && !t_hours && !t_min && !t_sec) {
+            return { error: 'Please enter any input at time 1' };
+        }
+        
+        t_days = t_days || 0;
+        t_hours = t_hours || 0;
+        t_min = t_min || 0;
+        t_sec = t_sec || 0;
+        
+        if (!te_days.length && !te_hours.length && !te_min.length && !te_sec.length) {
+            return { error: 'Please enter any input at time 2' };
+        }
+        
+        const sumArray = (arr) => arr.reduce((a, b) => parseInt(a || 0) + parseInt(b || 0), 0);
+        
+        let seconds, min, hour, days, method;
+        
+        if (t_method === 'plus') {
+            seconds = parseInt(t_sec) + sumArray(te_sec);
+            min = parseInt(t_min) + sumArray(te_min);
+            hour = parseInt(t_hours) + sumArray(te_hours);
+            days = parseInt(t_days) + sumArray(te_days);
+            
+            while (seconds >= 60) {
+                min += 1;
+                seconds -= 60;
+            }
+            while (min >= 60) {
+                hour += 1;
+                min -= 60;
+            }
+            while (hour >= 24) {
+                days += 1;
+                hour -= 24;
+            }
+            method = "+";
+        } else {
+            t_days = parseInt(t_days);
+            t_hours = parseInt(t_hours);
+            t_min = parseInt(t_min);
+            t_sec = parseInt(t_sec);
+            
+            const te_days_sum = sumArray(te_days);
+            const te_hours_sum = sumArray(te_hours);
+            const te_min_sum = sumArray(te_min);
+            const te_sec_sum = sumArray(te_sec);
+            
+            if (t_days > te_days_sum) {
+                if (te_sec_sum > t_sec) {
+                    t_sec += 60;
+                    t_min -= 1;
+                }
+                if (te_min_sum > t_min) {
+                    t_min += 60;
+                    t_hours -= 1;
+                }
+                if (te_hours_sum > t_hours) {
+                    t_hours += 24;
+                    t_days -= 1;
+                }
+            }
+            
+            seconds = t_sec - te_sec_sum;
+            min = t_min - te_min_sum;
+            hour = t_hours - te_hours_sum;
+            days = t_days - te_days_sum;
+            
+            while (seconds >= 60) {
+                min += 1;
+                seconds -= 60;
+            }
+            while (min >= 60) {
+                hour += 1;
+                min -= 60;
+            }
+            while (hour >= 24) {
+                days += 1;
+                hour -= 24;
+            }
+            method = "-";
+        }
+        
+        let totalDays = min + (seconds / 60);
+        totalDays = hour + (totalDays / 60);
+        totalDays = days + (totalDays / 24);
+        
+        const totalHours = totalDays * 24;
+        const totalMin = totalDays * 24 * 60;
+        const totalSec = totalDays * 24 * 60 * 60;
+        
+        return {
+          tech_t_method: method,
+          tech_t_sec: parseInt(body.tech_t_sec) || 0,
+          tech_t_min: parseInt(body.tech_t_min) || 0,
+          tech_t_hours: parseInt(body.tech_t_hours) || 0,
+          tech_t_days: parseInt(body.tech_t_days) || 0,
+          tech_te_sec: te_sec,
+          tech_te_min: te_min,
+          tech_te_hours: te_hours,
+          tech_te_days: te_days,
+          tech_totalDays: totalDays,
+          tech_totalHours: totalHours,
+          tech_totalMin: totalMin,
+          tech_totalSec: totalSec,
+          tech_seconds: seconds,
+          tech_min: min,
+          tech_hour: hour,
+          tech_days: days,
+        };
+
+    }
+
+    function calculateTimeDifference(body) {
+            let startTime = body.tech_s_time;
+      let endTime = body.tech_e_time;
+
+
+        if (!startTime || !endTime) {
+            return { error: 'Please Add Both Time.' };
+        }
+        
+        const start = moment(startTime, 'HH:mm:ss');
+        let end = moment(endTime, 'HH:mm:ss');
+        
+        if (end.isBefore(start)) {
+            end.add(1, 'day');
+        }
+        
+        const duration = moment.duration(end.diff(start));
+        
+        return {
+            tech_hours: duration.hours(),
+            tech_minutes: duration.minutes(),
+            tech_seconds: duration.seconds()
+        };
+    }
+
+    function calculateDateTimeFromStart(body) {
+      let s_date = body.tech_s_date;
+      let et_time = body.tech_et_time;
+      let st_days = body.tech_st_days;
+      let st_hours = body.tech_st_hours;
+      let st_min = body.tech_st_min;
+      let st_sec = body.tech_st_sec;
+      let td_method = body.tech_td_method;
+
+        
+        if (!s_date || !et_time) {
+            return { error: 'Please Enter Time.' };
+        }
+        
+        const days = st_days || 0;
+        const hours = st_hours || 0;
+        const minutes = st_min || 0;
+        const seconds = st_sec || 0;
+        
+        if (!isNumeric(days) || !isNumeric(hours) || !isNumeric(minutes) || !isNumeric(seconds)) {
+            return { error: 'Please Fill all the Input Fields.' };
+        }
+        
+        let startDateTime = moment(`${s_date} ${et_time}`);
+        
+        if (td_method === 'plus') {
+            startDateTime.add(days, 'days')
+                        .add(hours, 'hours')
+                        .add(minutes, 'minutes')
+                        .add(seconds, 'seconds');
+        } else {
+            startDateTime.subtract(days, 'days')
+                        .subtract(hours, 'hours')
+                        .subtract(minutes, 'minutes')
+                        .subtract(seconds, 'seconds');
+        }
+        
+        return {
+            tech_formattedDate: startDateTime.format('YYYY-MM-DD'),
+            tech_formattedTime: startDateTime.format('hh:mm:ss A')
+        };
+    }
+
+    function calculateDateTimeDifference(body) {
+       let fs_date = body.tech_fs_date;
+        let ft_time = body.tech_ft_time;
+        let fe_date = body.tech_fe_date;
+        let fe_time = body.tech_fe_time;
+        
+        if (!fs_date || !ft_time || !fe_date || !fe_time) {
+            return { error: 'Please Fill all the Fields.' };
+        }
+        
+        const startDateTime = moment(`${fs_date} ${ft_time}`);
+        const endDateTime = moment(`${fe_date} ${fe_time}`);
+        
+        const duration = moment.duration(endDateTime.diff(startDateTime));
+        
+        return {
+            tech_days: Math.floor(duration.asDays()),
+            tech_hours: duration.hours(),
+            tech_minutes: duration.minutes(),
+            tech_seconds: duration.seconds()
+        };
+      }
+      function isNumeric(value) {
+          return !isNaN(parseFloat(value)) && isFinite(value);
+      }
+    }
+
+
+
+   
 
   }
 
