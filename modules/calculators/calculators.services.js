@@ -65442,6 +65442,534 @@ async  getCalculationLocalMaximaandMinimaCalculator(body) {
       }
     }
 
+  /**
+   * getCalculationDateCalculator: Service Method
+   * POST: /api/calculators-lol/date-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+    
+  
+      async getCalculationDateCalculator(body) {
+        try {
+         let dateTypes = body.tech_dateTypes;
+          // Date Duration fields
+          let s_date_duration = body.tech_s_date_duration;
+          let e_date_duration = body.tech_e_date_duration;
+          let checkbox_duration = body.tech_checkbox_duration;
+          // Date Calculator fields
+          let add_date_date = body.tech_add_date_date;
+          let date_method = body.tech_date_method;
+          let date_years = body.tech_date_years;
+          let date_months = body.tech_date_months;
+          let date_weeks = body.tech_date_weeks;
+          let date_days = body.tech_date_days;
+          let repeat = body.tech_repeat;
+          let add_hrs_f = body.tech_add_hrs_f;
+          let add_min_f = body.tech_add_min_f;
+          let add_sec_f = body.tech_add_sec_f;
+          let add_hrs_s = body.tech_add_hrs_s;
+          let add_min_s = body.tech_add_min_s;
+          let add_sec_s = body.tech_add_sec_s;
+          // Simple/Advanced fields
+          let sim_adv = body.tech_sim_adv;
+          let s_date = body.tech_s_date;
+          let e_date = body.tech_e_date;
+          let add_date = body.tech_add_date;
+          let method = body.tech_method;
+          let years = body.tech_years;
+          let months = body.tech_months;
+          let weeks = body.tech_weeks;
+          let days = body.tech_days;
+          let end_inc = body.tech_end_inc;
+          let sat_inc = body.tech_sat_inc;
+          let holiday_c = body.tech_holiday_c;
+          let weekend_c = body.tech_weekend_c;
+          let cal_bus = body.tech_cal_bus;
+          let ex_in = body.tech_ex_in;
+          let satting = body.tech_satting;
+          // Weekday checkboxes
+          let sun = body.tech_sun;
+          let mon = body.tech_mon;
+          let tue = body.tech_tue;
+          let wed = body.tech_wed;
+          let thu = body.tech_thu;
+          let fri = body.tech_fri;
+          let sat = body.tech_sat;
+          // Holiday checkboxes
+          let nyd = body.tech_nyd;
+          let ind = body.tech_ind;
+          let vetd = body.tech_vetd;
+          let cheve = body.tech_cheve;
+          let chirs = body.tech_chirs;
+          let nye = body.tech_nye;
+          let mlkd = body.tech_mlkd;
+          let psd = body.tech_psd;
+          let memd = body.tech_memd;
+          let labd = body.tech_labd;
+          let cold = body.tech_cold;
+          let thankd = body.tech_thankd;
+          let blkf = body.tech_blkf;
+          // Custom holidays
+          let total_i = body.tech_total_i;
+          let total_j = body.tech_total_j;
+          let d = body.tech_d;
+          let m = body.tech_m;
+          let n = body.tech_n;
+
+          const locale = body.locale || 'en';
+
+          if (locale !== 'en') {
+            // Date Duration Calculation
+            if (dateTypes === 'date_duration') {
+              return this.calculateDateDuration({
+                s_date_duration,
+                e_date_duration,
+                checkbox_duration
+              });
+            }
+            
+            // Date Calculator
+            else if (dateTypes === 'date_calculator') {
+              return this.calculateDateWithTime({
+                tech_add_date: add_date_date,
+                tech_method: date_method,
+                tech_years: date_years,
+                tech_months: date_months,
+                tech_weeks: date_weeks,
+                tech_days: date_days,
+                tech_repeat:repeat,
+                tech_add_hrs_f:add_hrs_f,
+                tech_add_min_f:add_min_f,
+                tech_add_sec_f:add_sec_f,
+                tech_add_hrs_s:add_hrs_s,
+                tech_add_min_s:add_min_s,
+                tech_add_sec_s:add_sec_s
+              });
+            }
+            
+            // Simple/Advanced Calculator
+            else {
+              if (sim_adv === 'simple') {
+                return this.calculateSimpleDate({
+                  tech_s_date:s_date,
+                  tech_e_date:e_date,
+                  tech_end_inc:end_inc,
+                  tech_sat_inc:sat_inc,
+                  tech_holiday_c:holiday_c,
+                  tech_ex_in:ex_in,
+                  tech_satting:satting,
+                  tech_sun:sun, 
+                  tech_mon:mon, 
+                  tech_tue:tue, 
+                  tech_wed:wed, 
+                  tech_thu:thu, 
+                  tech_fri:fri, 
+                  tech_sat:sat,
+                  tech_nyd:nyd, 
+                  tech_ind:ind, 
+                  tech_vetd:vetd, 
+                  tech_cheve:cheve, 
+                  tech_chirs:chirs, 
+                  tech_nye:nye,
+                  tech_mlkd:mlkd, 
+                  tech_psd:psd, 
+                  tech_memd:memd, 
+                  tech_labd:labd, 
+                  tech_cold:cold, 
+                  tech_thankd:thankd, 
+                  tech_blkf:blkf,
+                  tech_total_i:total_i, 
+                  tech_total_j:total_j, 
+                  tech_d:d, 
+                  tech_m:m, 
+                  tech_n:n
+                });
+              } 
+              else if (cal_bus) {
+                return this.calculateBusinessDays({
+                  tech_add_date:add_date,
+                  days:days,
+                  method:method,
+                  weekend_c:weekend_c,
+                  nyd, 
+                  ind, 
+                  vetd, 
+                  cheve, 
+                  chirs, 
+                  nye,
+                  mlkd, 
+                  psd, 
+                  memd, 
+                  labd, 
+                  cold, 
+                  thankd, 
+                  blkf,
+                  total_j, 
+                  d, 
+                  m, 
+                  n
+                });
+              }
+              else if (sim_adv === 'advance') {
+                return this.calculateAdvancedDate({
+                  add_date,
+                  method,
+                  years,
+                  months,
+                  weeks,
+                  days
+                });
+              }
+            }
+          } else {
+            // English locale - Date Calculator
+            return this.calculateDateWithTime({
+              add_date,
+              method,
+              years,
+              months,
+              weeks,
+              days,
+              repeat,
+              add_hrs_f,
+              add_min_f,
+              add_sec_f,
+              add_hrs_s,
+              add_min_s,
+              add_sec_s
+            });
+          }
+
+          return { error: 'Invalid request' };
+        } catch (error) {
+          console.error('Date Calculator Error:', error);
+          return { error: 'An error occurred during calculation' };
+        }
+      }
+      // Date Duration Calculation
+      calculateDateDuration({ s_date_duration, e_date_duration, checkbox_duration }) {
+        if (!s_date_duration || !e_date_duration) {
+          return { error: 'Please! Check Your Input.' };
+        }
+
+        let startDate = s_date_duration;
+        let endDate = e_date_duration;
+
+        if (checkbox_duration) {
+          endDate = moment(e_date_duration).add(1, 'day').format('YYYY-MM-DD');
+        }
+
+        const start = moment(startDate);
+        const end = moment(endDate);
+
+        const duration = moment.duration(end.diff(start));
+        
+        const years = duration.years();
+        const months = duration.months();
+        const days = duration.days();
+        const hours = duration.hours();
+        const minutes = duration.minutes();
+        const seconds = duration.seconds();
+
+        return {
+          RESULT: 1,
+          from: start.format('MMM DD, YYYY'),
+          to: end.format('MMM DD, YYYY'),
+          years,
+          months,
+          days,
+          hours,
+          minutes,
+          seconds
+        };
+      }
+      // Date Calculator with Time
+          calculateDateWithTime({
+            add_date, method, years = 0, months = 0, weeks = 0, days = 0,
+            repeat = 1, add_hrs_f = 0, add_min_f = 0, add_sec_f = 0,
+            add_hrs_s = 0, add_min_s = 0, add_sec_s = 0
+          }) {
+            if (!add_date || !method) {
+              return { error: 'Please! Check Your Input.' };
+            }
+        
+            const hasTime = add_hrs_f || add_min_f || add_sec_f || add_hrs_s || add_min_s || add_sec_s;
+            
+            // Initialize base date with time if provided
+            let baseDate = moment(add_date);
+            
+            if (hasTime) {
+              baseDate.hour(parseInt(add_hrs_f) || 0)
+                      .minute(parseInt(add_min_f) || 0)
+                      .second(parseInt(add_sec_f) || 0);
+            }
+        
+            const fromDate = baseDate.format(hasTime ? 'dddd, MMM DD, YYYY hh:mm:ss A' : 'dddd, MMM DD, YYYY');
+            const results = [];
+        
+            // Clone base date for iterations
+            let currentDate = baseDate.clone();
+        
+            for (let i = 0; i < repeat; i++) {
+              if (method === 'add') {
+                currentDate.add({
+                  years: parseInt(years) || 0,
+                  months: parseInt(months) || 0,
+                  weeks: parseInt(weeks) || 0,
+                  days: parseInt(days) || 0,
+                  hours: parseInt(add_hrs_s) || 0,
+                  minutes: parseInt(add_min_s) || 0,
+                  seconds: parseInt(add_sec_s) || 0
+                });
+              } else {
+                currentDate.subtract({
+                  years: parseInt(years) || 0,
+                  months: parseInt(months) || 0,
+                  weeks: parseInt(weeks) || 0,
+                  days: parseInt(days) || 0,
+                  hours: parseInt(add_hrs_s) || 0,
+                  minutes: parseInt(add_min_s) || 0,
+                  seconds: parseInt(add_sec_s) || 0
+                });
+              }
+              
+              // Clone current date to avoid mutation issues
+              results.push(currentDate.clone().format(hasTime ? 'dddd, MMM DD, YYYY hh:mm:ss A' : 'dddd, MMM DD, YYYY'));
+            }
+        
+            return {
+              RESULT: 1,
+              from: fromDate,
+              method,
+              years: String(years).padStart(2, '0'),
+              months: String(months).padStart(2, '0'),
+              weeks: String(weeks).padStart(2, '0'),
+              days: String(days).padStart(2, '0'),
+              ans: results,
+              repeat: String(repeat),
+              ...(hasTime && {
+                add_hrs_f: String(add_hrs_f).padStart(2, '0'),
+                add_min_f: String(add_min_f).padStart(2, '0'),
+                add_sec_f: String(add_sec_f).padStart(2, '0'),
+                add_hrs_s: String(add_hrs_s).padStart(2, '0'),
+                add_min_s: String(add_min_s).padStart(2, '0'),
+                add_sec_s: String(add_sec_s).padStart(2, '0')
+              })
+            };
+          }
+      // Simple Date Calculation (with workdays/holidays)
+      calculateSimpleDate(params) {
+        const { s_date, e_date, end_inc } = params;
+        
+        if (!s_date || !e_date) {
+          return { error: 'Please enter start and end date' };
+        }
+
+        let startDate = moment(s_date);
+        let endDate = moment(e_date);
+
+        if (end_inc) {
+          endDate.add(1, 'day');
+        }
+
+        const workdaysData = this.getWorkdays(startDate, endDate, params);
+        
+        const duration = moment.duration(endDate.diff(startDate));
+        
+        return {
+          from: startDate.format('MMM DD, YYYY'),
+          to: endDate.format('MMM DD, YYYY'),
+          count_days: 'active',
+          years: duration.years(),
+          months: duration.months(),
+          days: duration.days(),
+          hours: duration.hours(),
+          minutes: duration.minutes(),
+          seconds: duration.seconds(),
+          getworkdays: workdaysData,
+          t_days: workdaysData.workdays + workdaysData.weekend + workdaysData.holidays,
+          ...workdaysData.extraData
+        };
+      }
+
+      // Business Days Calculator
+      calculateBusinessDays(params) {
+        const { add_date, days, method, weekend_c } = params;
+        
+        if (!isNaN(days) && add_date) {
+          let date = moment(add_date);
+          let businessDays = parseInt(days);
+          let weekends = 0;
+          let holidays = 0;
+
+          if (weekend_c === 'no') {
+            // Skip weekends
+            const direction = method === '+' ? 1 : -1;
+            let count = 0;
+            
+            while (count < businessDays) {
+              date.add(direction, 'days');
+              const dayOfWeek = date.day();
+              
+              if (dayOfWeek === 0 || dayOfWeek === 6) {
+                weekends++;
+              } else {
+                count++;
+              }
+            }
+          } else {
+            // Include holidays logic here
+            const holidaysList = this.getHolidaysList(params, date.year());
+            // Implementation similar to PHP version
+          }
+
+          return {
+            from: moment(add_date).format('dddd, MMM DD, YYYY'),
+            from_s: moment(add_date).format('MMM DD, YYYY'),
+            date: date.format('dddd, MMM DD, YYYY'),
+            date_e: date.format('MMM DD, YYYY'),
+            holidays,
+            weekends
+          };
+        }
+        
+        return { error: 'Please Check Your Input' };
+      }
+
+      // Advanced Date Calculation
+      calculateAdvancedDate({ add_date, method, years = 0, months = 0, weeks = 0, days = 0 }) {
+        if (!isNaN(years) || !isNaN(months) || !isNaN(weeks) || !isNaN(days)) {
+          const date = moment(add_date);
+          const operation = method === '+' ? 'add' : 'subtract';
+          
+          date[operation]({
+            years: parseInt(years) || 0,
+            months: parseInt(months) || 0,
+            weeks: parseInt(weeks) || 0,
+            days: parseInt(days) || 0
+          });
+
+          const description = `${method === '+' ? 'Added' : 'Subtracted'} ${years} years, ${months} months, ${weeks} weeks, ${days} days`;
+
+          return {
+            from: moment(add_date).format('dddd, MMM DD, YYYY'),
+            from_s: moment(add_date).format('MMM DD, YYYY'),
+            add_days: 'active',
+            date: date.format('dddd, MMM DD, YYYY'),
+            des: description
+          };
+        }
+        
+        return { error: 'Please Check Your Input' };
+      }
+
+      // Get Workdays Helper
+      getWorkdays(startDate, endDate, params) {
+        const { sat_inc, holiday_c } = params;
+        
+        let workdays = 0;
+        let weekend = 0;
+        let holidays = 0;
+        const holidayDates = [];
+
+        if (holiday_c === 'yes') {
+          // Build holiday list
+          const holidaysList = this.getHolidaysList(params, startDate.year(), endDate.year());
+          
+          // Count days
+          let current = startDate.clone();
+          while (current.isSameOrBefore(endDate)) {
+            const dayOfWeek = current.day();
+            const isWeekend = (dayOfWeek === 0 || (dayOfWeek === 6 && !sat_inc));
+            const isHoliday = holidaysList.some(h => current.isSame(h.date, 'day'));
+            
+            if (isWeekend) {
+              weekend++;
+            } else if (isHoliday) {
+              holidays++;
+              holidayDates.push(current.format('dddd, MMM DD, YYYY'));
+            } else {
+              workdays++;
+            }
+            
+            current.add(1, 'day');
+          }
+        } else {
+          // Simple calculation without holidays
+          let current = startDate.clone();
+          while (current.isSameOrBefore(endDate)) {
+            const dayOfWeek = current.day();
+            const isWeekend = (dayOfWeek === 0 || (dayOfWeek === 6 && !sat_inc));
+            
+            if (isWeekend) {
+              weekend++;
+            } else {
+              workdays++;
+            }
+            
+            current.add(1, 'day');
+          }
+        }
+
+        return {
+          workdays,
+          weekend,
+          holidays,
+          get_holi: holidayDates,
+          extraData: {}
+        };
+      }
+
+      // Get Holidays List
+      getHolidaysList(params, startYear, endYear = startYear) {
+        const holidays = [];
+        const { nyd, ind, vetd, cheve, chirs, nye, mlkd, psd, memd, labd, cold, thankd, blkf } = params;
+
+        for (let year = startYear; year <= endYear; year++) {
+          // Fixed date holidays
+          if (nyd) holidays.push({ date: moment(`${year}-01-01`), name: "New Year's Day" });
+          if (ind) holidays.push({ date: moment(`${year}-07-04`), name: "Independence Day" });
+          if (vetd) holidays.push({ date: moment(`${year}-11-11`), name: "Veteran's Day" });
+          if (cheve) holidays.push({ date: moment(`${year}-12-24`), name: "Christmas Eve" });
+          if (chirs) holidays.push({ date: moment(`${year}-12-25`), name: "Christmas" });
+          if (nye) holidays.push({ date: moment(`${year}-12-31`), name: "New Year's Eve" });
+
+          // Floating holidays
+          if (mlkd) holidays.push({ date: this.getNthWeekday(year, 0, 1, 3), name: "M. L. King Day" });
+          if (psd) holidays.push({ date: this.getNthWeekday(year, 1, 1, 3), name: "President's Day" });
+          if (memd) holidays.push({ date: this.getNthWeekday(year, 4, 1, -1), name: "Memorial Day" });
+          if (labd) holidays.push({ date: this.getNthWeekday(year, 8, 1, 1), name: "Labor Day" });
+          if (cold) holidays.push({ date: this.getNthWeekday(year, 9, 1, 2), name: "Columbus Day" });
+          if (thankd) holidays.push({ date: this.getNthWeekday(year, 10, 4, 4), name: "Thanksgiving" });
+          if (blkf) holidays.push({ date: this.getNthWeekday(year, 10, 5, 4), name: "Black Friday" });
+        }
+
+        return holidays;
+      }
+
+      // Get Nth Weekday of Month
+      getNthWeekday(year, month, weekday, n) {
+        // month: 0-11, weekday: 0-6 (0=Sunday), n: 1-5 or -1 for last
+        const date = moment({ year, month, day: 1 });
+        
+        if (n === -1) {
+          // Last occurrence
+          date.endOf('month');
+          while (date.day() !== weekday) {
+            date.subtract(1, 'day');
+          }
+        } else {
+          // Nth occurrence
+          let count = 0;
+          while (count < n) {
+            if (date.day() === weekday) count++;
+            if (count < n) date.add(1, 'day');
+          }
+        }
+        
+        return date;
+      }
 
 
    
