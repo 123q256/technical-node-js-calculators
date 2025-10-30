@@ -68533,6 +68533,1173 @@ class CalculatorsServices {
 
     return date;
   }
+    /**
+   * getCalculationHypergeometricCalculator: Service Method
+   * POST: /api/calculators-lol/hypergeometric-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+      async getCalculationHypergeometricCalculator(body) {
+        // const { p: N, sp: K, s: n, ss: k, method, inc, rep, fun } = body;
+        let N = body.tech_p;
+        let K = body.tech_sp;
+        let n = body.tech_s;
+        let k = body.tech_ss;
+        let method = body.tech_method;
+        let inc = body.tech_inc;
+        let rep = body.tech_rep;
+        let fun = body.tech_fun;
+        const result = {};
+        
+        // Validate required fields
+        if (!isNumeric(N) || !isNumeric(K) || !isNumeric(n) || !isNumeric(k)) {
+          result.error = "Please fill All fields.";
+          return result;
+        }
+
+        // Calculate mean, variance, and standard deviation
+        const mean = parseFloat(((n * K) / N).toFixed(6));
+        const variance = (n * (K / N) * ((N - K) / N) * ((N - n) / (N - 1)));
+        const sd = parseFloat(Math.sqrt(variance).toFixed(6));
+
+        // Validation checks
+        if (n > N) {
+          result.error = "(N) Must be Greater Than (n).";
+          return result;
+        }
+        if (K > N) {
+          result.error = "(N) Must be Greater Than (K).";
+          return result;
+        }
+        if (k > n) {
+          result.error = "(n) Must be Greater Than (k).";
+          return result;
+        }
+
+        // Helper function to check if value is numeric
+        function isNumeric(val) {
+          return !isNaN(parseFloat(val)) && isFinite(val);
+        }
+
+        // Factorial function
+        function factorial(n) {
+          if (n <= 1) return 1;
+          let fact = 1;
+          for (let i = 2; i <= n; i++) {
+            fact *= i;
+          }
+          return fact;
+        }
+        // Combinations function
+        function combinations(n, k) {
+          if (n < k) return 0;
+          return Number(factorial(n) / (factorial(k) * factorial(n - k)));
+        }
+
+        // Method 1: Single calculations
+        if (method == '1') {
+          const first = combinations(K, k);
+          const second = combinations(N - K, n - k);
+          const third = combinations(N, n);
+          const a = parseFloat(((first * second) / third).toFixed(6));
+
+          let b = 0;
+          for (let i = 0; i < k; i++) {
+            const f = combinations(K, i);
+            const s = combinations(N - K, n - i);
+            const t = combinations(N, n);
+            b += (f * s) / t;
+          }
+
+          let c = 0;
+          for (let i = 0; i <= k; i++) {
+            const f = combinations(K, i);
+            const s = combinations(N - K, n - i);
+            const t = combinations(N, n);
+            c += (f * s) / t;
+          }
+
+          let d = 0;
+          for (let i = n; i > k; i--) {
+            const f = combinations(K, i);
+            const s = combinations(N - K, n - i);
+            const t = combinations(N, n);
+            d += (f * s) / t;
+          }
+
+          let e = 0;
+          for (let i = n; i >= k; i--) {
+            const f = combinations(K, i);
+            const s = combinations(N - K, n - i);
+            const t = combinations(N, n);
+            e += (f * s) / t;
+          }
+
+          result.tech_a = a;
+          result.tech_mean = mean;
+          result.tech_b = parseFloat(b.toFixed(6));
+          result.tech_variance = parseFloat(variance.toFixed(6));
+          result.tech_sd = sd;
+          result.tech_c = parseFloat(c.toFixed(6));
+          result.tech_d = parseFloat(d.toFixed(6));
+          result.tech_e = parseFloat(e.toFixed(6));
+          result.tech_method = 1;
+          return result;
+        } 
+        // Method 2: Table generation
+              else {
+          if (!isNumeric(inc) || !isNumeric(rep) || rep > 20) {
+            result.error = "Input Error";
+            return result;
+          }
+
+          const increment = parseFloat(inc);
+          const repetitions = parseInt(rep);
+          let currentK = parseFloat(k);
+          let table = '';
+          let chart = '';
+          let xval = '';
+          // Function 1: Probability mass function
+          if (fun == '1') {
+            for (let i = 1; i <= repetitions; i++) {
+              // Convert currentK to integer for combinations calculation
+              const kInt = Math.round(currentK);
+              const first = combinations(K, kInt);
+              const second = combinations(N - K, n - kInt);
+              const third = combinations(N, n);
+              const a = (first * second) / third;
+              chart += a + ',';
+              xval += kInt + ',';
+              table += `<tr><td class="py-2 border-b">${kInt}</td><td class="py-2 border-b">${a}</td><td class="py-2 border-b">${a * 100}%</td></tr>`;
+              currentK += increment;
+            }
+          }
+
+          // Function 2: Cumulative distribution (<=)
+          if (fun == '2') {
+            for (let j = 1; j <= repetitions; j++) {
+              const kInt = Math.round(currentK);
+              let a = 0;
+              
+              for (let i = 0; i <= kInt; i++) {
+                const first = combinations(K, i);
+                const second = combinations(N - K, n - i);
+                const third = combinations(N, n);
+                a += (first * second) / third;
+              }
+              
+              chart += a + ',';
+              xval += kInt + ',';
+              table += `<tr><td class="py-2 border-b">${kInt}</td><td class="py-2 border-b">${a}</td><td class="py-2 border-b">${a * 100}%</td></tr>`;
+              currentK += increment;
+            }
+          }
+
+          // Function 3: Cumulative distribution (>=)
+          if (fun == '3') {
+            for (let j = 1; j < repetitions; j++) {
+              const kInt = Math.round(currentK);
+              let a = 0;
+              
+              for (let i = n; i >= kInt; i--) {
+                const first = combinations(K, i);
+                const second = combinations(N - K, n - i);
+                const third = combinations(N, n);
+                a += (first * second) / third;
+              }
+              
+              chart += a + ',';
+              xval += kInt + ',';
+              table += `<tr><td class="py-2 border-b">${kInt}</td><td class="py-2 border-b">${a}</td><td class="py-2 border-b">${a * 100}%</td></tr>`;
+              currentK += increment;
+            }
+          }
+
+          result.tech_mean = mean;
+          result.tech_sd = sd;
+          result.tech_variance = parseFloat(variance.toFixed(6));
+          result.tech_table = table;
+          result.tech_chart = chart;
+          result.tech_xval = xval;
+          result.tech_method = 2;
+          result.RESULT = 1;
+          return result;
+        }
+      }
+
+
+   /**
+   * getCalculationZScoreCalculator: Service Method
+   * POST: /api/calculators-lol/z-score-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+      async getCalculationZScoreCalculator(body) {
+      const z_table = {
+        '-4.0': { 9: 0.00002, 8: 0.00002, 7: 0.00002, 6: 0.00002, 5: 0.00003, 4: 0.00003, 3: 0.00003, 2: 0.00003, 1: 0.00003, 0: 0.00003 },
+        '-3.9': { 9: 0.00003, 8: 0.00003, 7: 0.00004, 6: 0.00004, 5: 0.00004, 4: 0.00004, 3: 0.00004, 2: 0.00004, 1: 0.00005, 0: 0.00005 },
+        '-3.8': { 9: 0.00005, 8: 0.00005, 7: 0.00005, 6: 0.00006, 5: 0.00006, 4: 0.00006, 3: 0.00006, 2: 0.00007, 1: 0.00007, 0: 0.00007 },
+        '-3.7': { 9: 0.00008, 8: 0.00008, 7: 0.00008, 6: 0.00008, 5: 0.00009, 4: 0.00009, 3: 0.00010, 2: 0.00010, 1: 0.00010, 0: 0.00011 },
+        '-3.6': { 9: 0.00011, 8: 0.00012, 7: 0.00012, 6: 0.00013, 5: 0.00013, 4: 0.00014, 3: 0.00014, 2: 0.00015, 1: 0.00015, 0: 0.00016 },
+        '-3.5': { 9: 0.00017, 8: 0.00017, 7: 0.00018, 6: 0.00019, 5: 0.00019, 4: 0.00020, 3: 0.00021, 2: 0.00022, 1: 0.00022, 0: 0.00023 },
+        '-3.4': { 9: 0.00024, 8: 0.00025, 7: 0.00026, 6: 0.00027, 5: 0.00028, 4: 0.00029, 3: 0.00030, 2: 0.00031, 1: 0.00032, 0: 0.00034 },
+        '-3.3': { 9: 0.00035, 8: 0.00036, 7: 0.00038, 6: 0.00039, 5: 0.00040, 4: 0.00042, 3: 0.00043, 2: 0.00045, 1: 0.00047, 0: 0.00048 },
+        '-3.2': { 9: 0.00050, 8: 0.00052, 7: 0.00054, 6: 0.00056, 5: 0.00058, 4: 0.00060, 3: 0.00062, 2: 0.00064, 1: 0.00066, 0: 0.00069 },
+        '-3.1': { 9: 0.00071, 8: 0.00074, 7: 0.00076, 6: 0.00079, 5: 0.00082, 4: 0.00084, 3: 0.00087, 2: 0.00090, 1: 0.00094, 0: 0.00097 },
+        '-3.0': { 9: 0.00100, 8: 0.00104, 7: 0.00107, 6: 0.00111, 5: 0.00114, 4: 0.00118, 3: 0.00122, 2: 0.00126, 1: 0.00131, 0: 0.00135 },
+        '-2.9': { 9: 0.00139, 8: 0.00144, 7: 0.00149, 6: 0.00154, 5: 0.00159, 4: 0.00164, 3: 0.00169, 2: 0.00175, 1: 0.00181, 0: 0.00187 },
+        '-2.8': { 9: 0.00193, 8: 0.00199, 7: 0.00205, 6: 0.00212, 5: 0.00219, 4: 0.00226, 3: 0.00233, 2: 0.00240, 1: 0.00248, 0: 0.00256 },
+        '-2.7': { 9: 0.00264, 8: 0.00272, 7: 0.00280, 6: 0.00289, 5: 0.00298, 4: 0.00307, 3: 0.00317, 2: 0.00326, 1: 0.00336, 0: 0.00347 },
+        '-2.6': { 9: 0.00357, 8: 0.00368, 7: 0.00379, 6: 0.00391, 5: 0.00402, 4: 0.00415, 3: 0.00427, 2: 0.00440, 1: 0.00453, 0: 0.00466 },
+        '-2.5': { 9: 0.00480, 8: 0.00494, 7: 0.00508, 6: 0.00523, 5: 0.00539, 4: 0.00554, 3: 0.00570, 2: 0.00587, 1: 0.00604, 0: 0.00621 },
+        '-2.4': { 9: 0.00639, 8: 0.00657, 7: 0.00676, 6: 0.00695, 5: 0.00714, 4: 0.00734, 3: 0.00755, 2: 0.00776, 1: 0.00798, 0: 0.00820 },
+        '-2.3': { 9: 0.00842, 8: 0.00866, 7: 0.00889, 6: 0.00914, 5: 0.00939, 4: 0.00964, 3: 0.00990, 2: 0.01017, 1: 0.01044, 0: 0.01072 },
+        '-2.2': { 9: 0.01101, 8: 0.01130, 7: 0.01160, 6: 0.01191, 5: 0.01222, 4: 0.01255, 3: 0.01287, 2: 0.01321, 1: 0.01355, 0: 0.01390 },
+        '-2.1': { 9: 0.01426, 8: 0.01463, 7: 0.01500, 6: 0.01539, 5: 0.01578, 4: 0.01618, 3: 0.01659, 2: 0.01700, 1: 0.01743, 0: 0.01786 },
+        '-2.0': { 9: 0.01831, 8: 0.01876, 7: 0.01923, 6: 0.01970, 5: 0.02018, 4: 0.02068, 3: 0.02118, 2: 0.02169, 1: 0.02222, 0: 0.02275 },
+        '-1.9': { 9: 0.02330, 8: 0.02385, 7: 0.02442, 6: 0.02500, 5: 0.02559, 4: 0.02619, 3: 0.02680, 2: 0.02743, 1: 0.02807, 0: 0.02872 },
+        '-1.8': { 9: 0.02938, 8: 0.03005, 7: 0.03074, 6: 0.03144, 5: 0.03216, 4: 0.03288, 3: 0.03362, 2: 0.03438, 1: 0.03515, 0: 0.03593 },
+        '-1.7': { 9: 0.03673, 8: 0.03754, 7: 0.03836, 6: 0.03920, 5: 0.04006, 4: 0.04093, 3: 0.04182, 2: 0.04272, 1: 0.04363, 0: 0.04457 },
+        '-1.6': { 9: 0.04551, 8: 0.04648, 7: 0.04746, 6: 0.04846, 5: 0.04947, 4: 0.05050, 3: 0.05155, 2: 0.05262, 1: 0.05370, 0: 0.05480 },
+        '-1.5': { 9: 0.0559, 8: 0.0571, 7: 0.0582, 6: 0.0594, 5: 0.0606, 4: 0.0618, 3: 0.0630, 2: 0.0643, 1: 0.0655, 0: 0.0668 },
+        '-1.4': { 9: 0.0681, 8: 0.0694, 7: 0.0708, 6: 0.0721, 5: 0.0735, 4: 0.0749, 3: 0.0764, 2: 0.0778, 1: 0.0793, 0: 0.0808 },
+        '-1.3': { 9: 0.0823, 8: 0.0838, 7: 0.0853, 6: 0.0869, 5: 0.0885, 4: 0.0901, 3: 0.0918, 2: 0.0934, 1: 0.0951, 0: 0.0968 },
+        '-1.2': { 9: 0.0985, 8: 0.1003, 7: 0.1020, 6: 0.1038, 5: 0.1056, 4: 0.1075, 3: 0.1093, 2: 0.1112, 1: 0.1131, 0: 0.1151 },
+        '-1.1': { 9: 0.1170, 8: 0.1190, 7: 0.1210, 6: 0.1230, 5: 0.1251, 4: 0.1271, 3: 0.1292, 2: 0.1314, 1: 0.1335, 0: 0.1357 },
+        '-1.0': { 9: 0.1379, 8: 0.1401, 7: 0.1423, 6: 0.1446, 5: 0.1469, 4: 0.1492, 3: 0.1515, 2: 0.1539, 1: 0.1562, 0: 0.1587 },
+        '-0.9': { 9: 0.1611, 8: 0.1635, 7: 0.1660, 6: 0.1685, 5: 0.1711, 4: 0.1736, 3: 0.1762, 2: 0.1788, 1: 0.1814, 0: 0.1841 },
+        '-0.8': { 9: 0.1867, 8: 0.1894, 7: 0.1922, 6: 0.1949, 5: 0.1977, 4: 0.2005, 3: 0.2033, 2: 0.2061, 1: 0.2090, 0: 0.2119 },
+        '-0.7': { 9: 0.2148, 8: 0.2177, 7: 0.2206, 6: 0.2236, 5: 0.2266, 4: 0.2296, 3: 0.2327, 2: 0.2358, 1: 0.2389, 0: 0.2420 },
+        '-0.6': { 9: 0.2451, 8: 0.2483, 7: 0.2514, 6: 0.2546, 5: 0.2578, 4: 0.2611, 3: 0.2643, 2: 0.2676, 1: 0.2709, 0: 0.2743 },
+        '-0.5': { 9: 0.2776, 8: 0.2810, 7: 0.2843, 6: 0.2877, 5: 0.2912, 4: 0.2946, 3: 0.2981, 2: 0.3015, 1: 0.3050, 0: 0.3085 },
+        '-0.4': { 9: 0.3121, 8: 0.3156, 7: 0.3192, 6: 0.3228, 5: 0.3264, 4: 0.3300, 3: 0.3336, 2: 0.3372, 1: 0.3409, 0: 0.3446 },
+        '-0.3': { 9: 0.3483, 8: 0.3520, 7: 0.3557, 6: 0.3594, 5: 0.3632, 4: 0.3669, 3: 0.3707, 2: 0.3745, 1: 0.3783, 0: 0.3821 },
+        '-0.2': { 9: 0.3829, 8: 0.3897, 7: 0.3936, 6: 0.3974, 5: 0.4013, 4: 0.4052, 3: 0.4090, 2: 0.4129, 1: 0.4168, 0: 0.4207 },
+        '-0.1': { 9: 0.4247, 8: 0.4286, 7: 0.4325, 6: 0.4364, 5: 0.4404, 4: 0.4443, 3: 0.4483, 2: 0.4522, 1: 0.4562, 0: 0.4602 },
+        '-0.0': { 9: 0.4641, 8: 0.4681, 7: 0.4721, 6: 0.4761, 5: 0.4801, 4: 0.4840, 3: 0.4880, 2: 0.4920, 1: 0.4960, 0: 0.5000 },
+        '0.0': { 0: 0.50000, 1: 0.50399, 2: 0.50798, 3: 0.51197, 4: 0.51595, 5: 0.51994, 6: 0.52392, 7: 0.52790, 8: 0.53188, 9: 0.53586 },
+        '0.1': { 0: 0.53980, 1: 0.54380, 2: 0.54776, 3: 0.55172, 4: 0.55567, 5: 0.55966, 6: 0.56360, 7: 0.56749, 8: 0.57142, 9: 0.57535 },
+        '0.2': { 0: 0.57930, 1: 0.58317, 2: 0.58706, 3: 0.59095, 4: 0.59483, 5: 0.59871, 6: 0.60257, 7: 0.60642, 8: 0.61026, 9: 0.61409 },
+        '0.3': { 0: 0.61791, 1: 0.62172, 2: 0.62552, 3: 0.62930, 4: 0.63307, 5: 0.63683, 6: 0.64058, 7: 0.64431, 8: 0.64803, 9: 0.65173 },
+        '0.4': { 0: 0.65542, 1: 0.65910, 2: 0.66276, 3: 0.66640, 4: 0.67003, 5: 0.67364, 6: 0.67724, 7: 0.68082, 8: 0.68439, 9: 0.68793 },
+        '0.5': { 0: 0.69146, 1: 0.69497, 2: 0.69847, 3: 0.70194, 4: 0.70540, 5: 0.70884, 6: 0.71226, 7: 0.71566, 8: 0.71904, 9: 0.72240 },
+        '0.6': { 0: 0.72575, 1: 0.72907, 2: 0.73237, 3: 0.73565, 4: 0.73891, 5: 0.74215, 6: 0.74537, 7: 0.74857, 8: 0.75175, 9: 0.75490 },
+        '0.7': { 0: 0.75804, 1: 0.76115, 2: 0.76424, 3: 0.76730, 4: 0.77035, 5: 0.77337, 6: 0.77637, 7: 0.77935, 8: 0.78230, 9: 0.78524 },
+        '0.8': { 0: 0.78814, 1: 0.79103, 2: 0.79389, 3: 0.79673, 4: 0.79955, 5: 0.80234, 6: 0.80511, 7: 0.80785, 8: 0.81057, 9: 0.81327 },
+        '0.9': { 0: 0.81594, 1: 0.81859, 2: 0.82121, 3: 0.82381, 4: 0.82639, 5: 0.82894, 6: 0.83147, 7: 0.83398, 8: 0.83646, 9: 0.83891 },
+        '1.0': { 0: 0.84134, 1: 0.84375, 2: 0.84614, 3: 0.84849, 4: 0.85083, 5: 0.85314, 6: 0.85543, 7: 0.85769, 8: 0.85993, 9: 0.86214 },
+        '1.1': { 0: 0.86433, 1: 0.86650, 2: 0.86864, 3: 0.87076, 4: 0.87286, 5: 0.87493, 6: 0.87698, 7: 0.87900, 8: 0.88100, 9: 0.88298 },
+        '1.2': { 0: 0.88493, 1: 0.88686, 2: 0.88877, 3: 0.89065, 4: 0.89251, 5: 0.89435, 6: 0.89617, 7: 0.89796, 8: 0.89973, 9: 0.90147 },
+        '1.3': { 0: 0.90320, 1: 0.90490, 2: 0.90658, 3: 0.90824, 4: 0.90988, 5: 0.91149, 6: 0.91308, 7: 0.91466, 8: 0.91621, 9: 0.91774 },
+        '1.4': { 0: 0.91924, 1: 0.92073, 2: 0.92220, 3: 0.92364, 4: 0.92507, 5: 0.92647, 6: 0.92785, 7: 0.92922, 8: 0.93056, 9: 0.93189 },
+        '1.5': { 0: 0.93319, 1: 0.93448, 2: 0.93574, 3: 0.93699, 4: 0.93822, 5: 0.93943, 6: 0.94062, 7: 0.94179, 8: 0.94295, 9: 0.94408 },
+        '1.6': { 0: 0.94520, 1: 0.94630, 2: 0.94738, 3: 0.94845, 4: 0.94950, 5: 0.95053, 6: 0.95154, 7: 0.95254, 8: 0.95352, 9: 0.95449 },
+        '1.7': { 0: 0.95543, 1: 0.95637, 2: 0.95728, 3: 0.95818, 4: 0.95907, 5: 0.95994, 6: 0.96080, 7: 0.96164, 8: 0.96246, 9: 0.96327 },
+        '1.8': { 0: 0.96407, 1: 0.96485, 2: 0.96562, 3: 0.96638, 4: 0.96712, 5: 0.96784, 6: 0.96856, 7: 0.96926, 8: 0.96995, 9: 0.97062 },
+        '1.9': { 0: 0.97128, 1: 0.97193, 2: 0.97257, 3: 0.97320, 4: 0.97381, 5: 0.97441, 6: 0.97500, 7: 0.97558, 8: 0.97615, 9: 0.97670 },
+        '2.0': { 0: 0.97725, 1: 0.97778, 2: 0.97831, 3: 0.97882, 4: 0.97932, 5: 0.97982, 6: 0.98030, 7: 0.98077, 8: 0.98124, 9: 0.98169 },
+        '2.1': { 0: 0.98214, 1: 0.98257, 2: 0.98300, 3: 0.98341, 4: 0.98382, 5: 0.98422, 6: 0.98461, 7: 0.98500, 8: 0.98537, 9: 0.98574 },
+        '2.2': { 0: 0.98610, 1: 0.98645, 2: 0.98679, 3: 0.98713, 4: 0.98745, 5: 0.98778, 6: 0.98809, 7: 0.98840, 8: 0.98870, 9: 0.98899 },
+        '2.3': { 0: 0.98928, 1: 0.98956, 2: 0.98983, 3: 0.99010, 4: 0.99036, 5: 0.99061, 6: 0.99086, 7: 0.99111, 8: 0.99134, 9: 0.99158 },
+        '2.4': { 0: 0.99180, 1: 0.99202, 2: 0.99224, 3: 0.99245, 4: 0.99266, 5: 0.99286, 6: 0.99305, 7: 0.99324, 8: 0.99343, 9: 0.99361 },
+        '2.5': { 0: 0.99379, 1: 0.99396, 2: 0.99413, 3: 0.99430, 4: 0.99446, 5: 0.99461, 6: 0.99477, 7: 0.99492, 8: 0.99506, 9: 0.99520 },
+        '2.6': { 0: 0.99534, 1: 0.99547, 2: 0.99560, 3: 0.99573, 4: 0.99585, 5: 0.99598, 6: 0.99609, 7: 0.99621, 8: 0.99632, 9: 0.99643 },
+        '2.7': { 0: 0.99653, 1: 0.99664, 2: 0.99674, 3: 0.99683, 4: 0.99693, 5: 0.99702, 6: 0.99711, 7: 0.99720, 8: 0.99728, 9: 0.99736 },
+        '2.8': { 0: 0.99744, 1: 0.99752, 2: 0.99760, 3: 0.99767, 4: 0.99774, 5: 0.99781, 6: 0.99788, 7: 0.99795, 8: 0.99801, 9: 0.99807 },
+        '2.9': { 0: 0.99813, 1: 0.99819, 2: 0.99825, 3: 0.99831, 4: 0.99836, 5: 0.99841, 6: 0.99846, 7: 0.99851, 8: 0.99856, 9: 0.99861 },
+        '3.0': { 0: 0.99865, 1: 0.99869, 2: 0.99874, 3: 0.99878, 4: 0.99882, 5: 0.99886, 6: 0.99889, 7: 0.99893, 8: 0.99896, 9: 0.99900 },
+        '3.1': { 0: 0.99903, 1: 0.99906, 2: 0.99910, 3: 0.99913, 4: 0.99916, 5: 0.99918, 6: 0.99921, 7: 0.99924, 8: 0.99926, 9: 0.99929 },
+        '3.2': { 0: 0.99931, 1: 0.99934, 2: 0.99936, 3: 0.99938, 4: 0.99940, 5: 0.99942, 6: 0.99944, 7: 0.99946, 8: 0.99948, 9: 0.99950 },
+        '3.3': { 0: 0.99952, 1: 0.99953, 2: 0.99955, 3: 0.99957, 4: 0.99958, 5: 0.99960, 6: 0.99961, 7: 0.99962, 8: 0.99964, 9: 0.99965 },
+        '3.4': { 0: 0.99966, 1: 0.99968, 2: 0.99969, 3: 0.99970, 4: 0.99971, 5: 0.99972, 6: 0.99973, 7: 0.99974, 8: 0.99975, 9: 0.99976 },
+        '3.5': { 0: 0.99977, 1: 0.99978, 2: 0.99978, 3: 0.99979, 4: 0.99980, 5: 0.99981, 6: 0.99981, 7: 0.99982, 8: 0.99983, 9: 0.99983 },
+        '3.6': { 0: 0.99984, 1: 0.99985, 2: 0.99985, 3: 0.99986, 4: 0.99986, 5: 0.99987, 6: 0.99987, 7: 0.99988, 8: 0.99988, 9: 0.99989 },
+        '3.7': { 0: 0.99989, 1: 0.99990, 2: 0.99990, 3: 0.99990, 4: 0.99991, 5: 0.99991, 6: 0.99992, 7: 0.99992, 8: 0.99992, 9: 0.99992 },
+        '3.8': { 0: 0.99993, 1: 0.99993, 2: 0.99993, 3: 0.99994, 4: 0.99994, 5: 0.99994, 6: 0.99994, 7: 0.99995, 8: 0.99995, 9: 0.99995 },
+        '3.9': { 0: 0.99995, 1: 0.99995, 2: 0.99996, 3: 0.99996, 4: 0.99996, 5: 0.99996, 6: 0.99996, 7: 0.99996, 8: 0.99997, 9: 0.99997 },
+        '4.0': { 0: 0.99997, 1: 0.99997, 2: 0.99997, 3: 0.99997, 4: 0.99997, 5: 0.99997, 6: 0.99998, 7: 0.99998, 8: 0.99998, 9: 0.99998 }
+      };
+      const result = {};
+      // Helper function to check if value is numeric
+      const isNumeric = (val) => !isNaN(parseFloat(val)) && isFinite(val);
+      // Helper function to get Z-URL
+      const getZUrl = (rz) => {
+        if (rz < -0.126 && rz > -0.376) return 'z_score_-0.25';
+        if (rz < -0.375 && rz > -0.626) return 'z_score_-0.5';
+        if (rz < -0.625 && rz > -0.876) return 'z_score_-0.75';
+        if (rz < -0.875 && rz > -1.126) return 'z_score_-1';
+        if (rz < -1.125 && rz > -1.376) return 'z_score_-1.25';
+        if (rz < -1.375 && rz > -1.626) return 'z_score_-1.5';
+        if (rz < -1.625 && rz > -1.876) return 'z_score_-1.75';
+        if (rz < -1.875 && rz > -2.126) return 'z_score_-2';
+        if (rz < -2.125 && rz > -2.376) return 'z_score_-2.25';
+        if (rz < -2.375 && rz > -2.626) return 'z_score_-2.5';
+        if (rz < -2.625 && rz > -2.876) return 'z_score_-2.75';
+        if (rz < -2.875 && rz > -3.126) return 'z_score_-3';
+        if (rz < -3.125 && rz > -3.376) return 'z_score_-3.25';
+        if (rz < -3.375 && rz > -3.626) return 'z_score_-3.5';
+        if (rz < -3.625 && rz > -3.876) return 'z_score_-3.75';
+        if (rz < -3.875 && rz > -4.126) return 'z_score_-4';
+        if (rz < -4.125) return 'z_score_-4.25';
+        if (rz > -0.126 && rz < 0.125) return 'z_score_0';
+        if (rz > 0.124 && rz < 0.375) return 'z_score_0.25';
+        if (rz > 0.374 && rz < 0.625) return 'z_score_0.5';
+        if (rz > 0.624 && rz < 0.875) return 'z_score_0.75';
+        if (rz > 0.874 && rz < 1.125) return 'z_score_1';
+        if (rz > 1.124 && rz < 1.375) return 'z_score_1.25';
+        if (rz > 1.374 && rz < 1.625) return 'z_score_1.5';
+        if (rz > 1.624 && rz < 1.875) return 'z_score_1.75';
+        if (rz > 1.874 && rz < 2.125) return 'z_score_2';
+        if (rz > 2.124 && rz < 2.375) return 'z_score_2.25';
+        if (rz > 2.374 && rz < 2.625) return 'z_score_2.5';
+        if (rz > 2.624 && rz < 2.875) return 'z_score_2.75';
+        if (rz > 2.874 && rz < 3.125) return 'z_score_3';
+        if (rz > 3.124 && rz < 3.375) return 'z_score_3.25';
+        if (rz > 3.374 && rz < 3.625) return 'z_score_3.5';
+        if (rz > 3.624 && rz < 3.875) return 'z_score_3.75';
+        if (rz > 3.874 && rz < 4.125) return 'z_score_4';
+        if (rz > 4.124) return 'z_score_4.25';
+      };
+      // Calculate for 'dp' (Data Point)
+      if (body.tech_to_calculate == 'dp') {
+        if (isNumeric(body.tech_dsvalue) && isNumeric(body.tech_pmvalue) && isNumeric(body.tech_psdvalue)) {
+          const x = parseFloat(body.tech_dsvalue);
+          const u = parseFloat(body.tech_pmvalue);
+          const o = parseFloat(body.tech_psdvalue);
+          const ms = x - u;
+          let rz = (x - u) / o;
+
+          const rzStr = rz.toString();
+          const rzCheck = rzStr.split('');
+          let rzVal1, rzVal2;
+
+          if (rzCheck.length > 1) {
+            if (rz < 0) {
+              if (rzCheck.length === 2) {
+                rzVal1 = `${rzCheck[0]}${rzCheck[1]}.0`;
+                rzVal2 = 0;
+              } else {
+                if (rzStr.length > 3) {
+                  rzVal1 = `${rzCheck[0]}${rzCheck[1]}${rzCheck[2]}${rzCheck[3]}`;
+                }
+                if (rzStr.length > 4) {
+                  rzVal2 = parseInt(rzCheck[4]);
+                } else {
+                  rzVal2 = 0;
+                }
+              }
+            } else {
+              if (rzStr.length > 2) {
+                rzVal1 = `${rzCheck[0]}${rzCheck[1]}${rzCheck[2]}`;
+              }
+              if (rzStr.length > 3) {
+                rzVal2 = parseInt(rzCheck[3]);
+              } else {
+                rzVal2 = 0;
+              }
+            }
+          } else {
+            rzVal1 = `${rzCheck[0]}.0`;
+            rzVal2 = 0;
+          }
+
+          let ltpv, rtpv;
+
+          if (rz >= 4.1) {
+            ltpv = 1;
+            rtpv = 0;
+          } else if (rz <= -4.1) {
+            ltpv = 0;
+            rtpv = 1;
+          } else {
+            ltpv = parseFloat((z_table[rzVal1]?.[rzVal2] || 0).toFixed(5));
+            rtpv = parseFloat((1 - ltpv).toFixed(5));
+          }
+
+          const ttcl = ltpv - rtpv;
+          const ttpv = 1 - Math.abs(ttcl);
+          const zUrl = getZUrl(rz);
+
+          result.tech_z_url = zUrl;
+          result.tech_ltpv = Math.abs(ltpv);
+          result.tech_rtpv = Math.abs(rtpv);
+          result.tech_ttpv = Math.abs(ttpv);
+          result.tech_ttcl = Math.abs(ttcl);
+          result.tech_ms = ms;
+          result.tech_rz = parseFloat(rz.toFixed(4));
+          return result;
+        } else {
+          result.error = "Please fill all fields.";
+          return result;
+        }
+      }
+      // Calculate for 'sm' (Sample Mean)
+      if (body.tech_to_calculate == 'sm') {
+        if (isNumeric(body.tech_snvalue) && isNumeric(body.tech_pmvalue) && 
+            isNumeric(body.tech_psdvalue) && isNumeric(body.tech_smvalue)) {
+          const x = parseFloat(body.tech_smvalue);
+          const n = parseFloat(body.tech_snvalue);
+          const u = parseFloat(body.tech_pmvalue);
+          const o = parseFloat(body.tech_psdvalue);
+          const rz = (x - u) / (o / Math.sqrt(n));
+          const ms = x - u;
+          const sq = Math.sqrt(n);
+          const mv = o / sq;
+
+          result.tech_ms = ms;
+          result.tech_mv = mv;
+          result.tech_sq = sq;
+          result.tech_rz = parseFloat(rz.toFixed(4));
+          return result;
+        } else {
+          result.error = "Please fill all fields.";
+          return result;
+        }
+      }
+      // Calculate for 'ds' (Data Set)
+      if (body.tech_to_calculate == 'ds') {
+        let check = true;
+
+        if (!body.tech_x || !body.tech_pmvalue || !body.tech_psdvalue) {
+          check = false;
+        }
+
+        const numbers = body.tech_x
+          .split(',')
+          .map(val => val.trim())
+          .filter(val => val !== '');
+
+        for (const value of numbers) {
+          if (!isNumeric(value)) {
+            check = false;
+            break;
+          }
+        }
+
+        if (check === true) {
+          const n = numbers.length;
+          const arr = numbers.map(val => parseFloat(val));
+          const sum = arr.reduce((acc, val) => acc + val, 0);
+          const avg = sum / n;
+          const u = parseFloat(body.tech_pmvalue);
+          const o = parseFloat(body.tech_psdvalue);
+          const rz = (avg - u) / (o / Math.sqrt(n));
+
+          let a = '';
+          arr.forEach((value, index) => {
+            if (index !== arr.length - 1) {
+              a += ` ${value} +`;
+            } else {
+              a += ` ${value} `;
+            }
+          });
+
+          const sm = avg - u;
+          const sq = Math.sqrt(n);
+          const dv = o / sq;
+
+          result.tech_avg = avg;
+          result.tech_n = n;
+          result.tech_a = a;
+          result.tech_sum = sum;
+          result.tech_sm = sm;
+          result.tech_sq = sq;
+          result.tech_dv = dv;
+          result.tech_rz = parseFloat(rz.toFixed(4));
+          return result;
+        } else {
+          result.error = "Please fill all fields.";
+          return result;
+        }
+      }
+      // Calculate for 'p' (P-Value)
+      if (body.tech_to_calculate == 'p') {
+        if (isNumeric(body.tech_pvalue)) {
+          const pva = parseFloat(body.tech_pvalue);
+
+          if (pva > 0 && pva < 1) {
+            result.tech_pva = pva;
+            return result;
+          } else {
+            result.error = "Please Input value from 0 to 1.";
+            return result;
+          }
+        } else {
+          result.error = "Please Put P Value.";
+          return result;
+        }
+      }
+      return result;
+    }
+  
+       /**
+   * getCalculationCorrelationCoefficientCalculator: Service Method
+   * POST: /api/calculators-lol/z-score-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+    async getCalculationCorrelationCoefficientCalculator(body) {
+        let x = body.tech_x;
+        let y = body.tech_y;
+        let method = body.tech_method;
+
+        let check = true;
+        const param = {};
+
+        // Check if x and y are empty
+        if (!x || !y) {
+            check = false;
+        }
+
+        // Process x values
+        let xStr = x.replace(/[ ,\n\r]/g, ',');
+        while (xStr.includes(',,')) {
+            xStr = xStr.replace(',,', ',');
+        }
+        
+        let numbers = xStr.split(',')
+            .map(val => val.trim())
+            .filter(val => val !== '');
+        
+        // Validate x numbers
+        for (const value of numbers) {
+            if (isNaN(value) || value === '') {
+                check = false;
+            }
+        }
+        numbers = numbers.map(val => parseFloat(val));
+
+        // Process y values
+        let yStr = y.replace(/[ ,\n\r]/g, ',');
+        while (yStr.includes(',,')) {
+            yStr = yStr.replace(',,', ',');
+        }
+        
+        let numbersy = yStr.split(',')
+            .map(val => val.trim())
+            .filter(val => val !== '');
+        
+        // Validate y numbers
+        for (const value of numbersy) {
+            if (isNaN(value) || value === '') {
+                check = false;
+            }
+        }
+        numbersy = numbersy.map(val => parseFloat(val));
+
+        if (check === true) {
+            // Significant figures helper function
+            const sigFig = (value, digits) => {
+                let decimalPlaces;
+                if (value === 0) {
+                    decimalPlaces = digits - 1;
+                } else if (value < 0) {
+                    decimalPlaces = digits - Math.floor(Math.log10(value * -1)) - 1;
+                } else {
+                    decimalPlaces = digits - Math.floor(Math.log10(value)) - 1;
+                }
+                return parseFloat(value.toFixed(decimalPlaces));
+            };
+
+            if (numbers.length === numbersy.length) {
+                let meanx, meany, countx, arr1, arr2, arr3, arr4, arr5, final;
+
+                if (method == 1) {
+                    // Pearson correlation
+                    countx = numbers.length;
+                    const county = numbersy.length;
+                    meanx = numbers.reduce((a, b) => a + b, 0) / countx;
+                    meany = numbersy.reduce((a, b) => a + b, 0) / county;
+
+                    arr1 = [];
+                    arr2 = [];
+                    arr3 = [];
+                    arr4 = [];
+                    arr5 = [];
+
+                    for (let i = 0; i < countx; i++) {
+                        arr1.push(numbers[i] - meanx);
+                        arr2.push(Math.pow(numbers[i] - meanx, 2));
+                        arr3.push(numbersy[i] - meany);
+                        arr4.push(Math.pow(numbersy[i] - meany, 2));
+                        arr5.push((numbers[i] - meanx) * (numbersy[i] - meany));
+                    }
+
+                    const sumx = numbers.reduce((a, b) => a + b, 0);
+                    const sumy = numbersy.reduce((a, b) => a + b, 0);
+                    const mx = Math.sqrt(arr2.reduce((a, b) => a + b, 0) / countx);
+                    const my = Math.sqrt(arr4.reduce((a, b) => a + b, 0) / countx);
+                    final = (1 / countx) * (arr5.reduce((a, b) => a + b, 0) / (mx * my));
+                } else {
+                    // Spearman rank correlation
+                    let rank1 = [];
+                    let rank2 = [];
+
+                    // Calculate ranks for x
+                    for (let i = 0; i < numbers.length; i++) {
+                        let count = numbers.length;
+                        for (let j = 0; j < numbers.length; j++) {
+                            if (numbers[i] !== numbers[j]) {
+                                if (numbers[j] >= numbers[i]) {
+                                    count--;
+                                }
+                            }
+                        }
+                        rank1.push(count);
+                    }
+
+                    // Calculate ranks for y
+                    for (let i = 0; i < numbersy.length; i++) {
+                        let count = numbersy.length;
+                        for (let j = 0; j < numbersy.length; j++) {
+                            if (numbersy[i] !== numbersy[j]) {
+                                if (numbersy[j] >= numbersy[i]) {
+                                    count--;
+                                }
+                            }
+                        }
+                        rank2.push(count);
+                    }
+
+                    // Handle tied ranks for rank2
+                    const countValues = (arr) => {
+                        const counts = {};
+                        arr.forEach(val => {
+                            counts[val] = (counts[val] || 0) + 1;
+                        });
+                        return counts;
+                    };
+
+                    let double = {};
+                    const arrc = countValues(rank2);
+                    for (const [key, value] of Object.entries(arrc)) {
+                        if (value > 1) {
+                            const div = [];
+                            for (let i = 0; i < value; i++) {
+                                div.push(parseInt(key) - i);
+                            }
+                            double[key] = div.reduce((a, b) => a + b, 0) / value;
+                        }
+                    }
+
+                    let nrank2;
+                    if (Object.keys(double).length !== 0) {
+                        nrank2 = [...rank2];
+                        for (const [key1, value1] of Object.entries(double)) {
+                            for (let i = 0; i < rank2.length; i++) {
+                                if (parseInt(key1) === rank2[i]) {
+                                    nrank2[i] = value1;
+                                }
+                            }
+                        }
+                    }
+
+                    // Handle tied ranks for rank1
+                    let double1 = {};
+                    const arrc1 = countValues(rank1);
+                    for (const [key, value] of Object.entries(arrc1)) {
+                        if (value > 1) {
+                            const div1 = [];
+                            for (let i = 0; i < value; i++) {
+                                div1.push(parseInt(key) - i);
+                            }
+                            double1[key] = div1.reduce((a, b) => a + b, 0) / value;
+                        }
+                    }
+
+                    let nrank1;
+                    if (Object.keys(double1).length !== 0) {
+                        nrank1 = [...rank1];
+                        for (const [key1, value1] of Object.entries(double1)) {
+                            for (let i = 0; i < rank1.length; i++) {
+                                if (parseInt(key1) === rank1[i]) {
+                                    nrank1[i] = value1;
+                                }
+                            }
+                        }
+                    }
+
+                    const input1 = nrank1 || rank1;
+                    const input2 = nrank2 || rank2;
+                    numbers = input1;
+                    numbersy = input2;
+
+                    countx = numbers.length;
+                    const county = numbersy.length;
+                    meanx = numbers.reduce((a, b) => a + b, 0) / countx;
+                    meany = numbersy.reduce((a, b) => a + b, 0) / county;
+
+                    arr1 = [];
+                    arr2 = [];
+                    arr3 = [];
+                    arr4 = [];
+                    arr5 = [];
+
+                    for (let i = 0; i < countx; i++) {
+                        arr1.push(numbers[i] - meanx);
+                        arr2.push(Math.pow(numbers[i] - meanx, 2));
+                        arr3.push(numbersy[i] - meany);
+                        arr4.push(Math.pow(numbersy[i] - meany, 2));
+                        arr5.push((numbers[i] - meanx) * (numbersy[i] - meany));
+                    }
+
+                    const sumx = numbers.reduce((a, b) => a + b, 0);
+                    const sumy = numbersy.reduce((a, b) => a + b, 0);
+                    const mx = Math.sqrt(arr2.reduce((a, b) => a + b, 0) / countx);
+                    const my = Math.sqrt(arr4.reduce((a, b) => a + b, 0) / countx);
+                    final = (1 / countx) * (arr5.reduce((a, b) => a + b, 0) / (mx * my));
+                }
+
+                param.tech_numbers = numbers;
+                param.tech_numbersy = numbersy;
+                param.tech_method = method;
+                param.tech_meanx = meanx;
+                param.tech_meany = meany;
+                param.tech_countx = countx;
+                param.tech_arr1 = arr1;
+                param.tech_arr2 = arr2;
+                param.tech_arr3 = arr3;
+                param.tech_arr4 = arr4;
+                param.tech_arr5 = arr5;
+                param.tech_final = final;
+                param.tech_x = xStr;
+                param.tech_y = yStr;
+                return param;
+            } else {
+                param.error = "Please! Enter same number of scores for X and Y";
+                return param;
+            }
+        } else {
+            param.error = "Please check your input.";
+            return param;
+        }
+    }
+
+
+     /**
+   * getCalculationPValueCalculator: Service Method
+   * POST: /api/calculators-lol/p-value-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+    async getCalculationPValueCalculator(body) {
+       let tail = body.tech_tail;
+        let testType = body.tech_with; 
+        let score = body.tech_score;
+        let deg = body.tech_deg;
+        let deg2 = body.tech_deg2;
+        let level = body.tech_level;
+        let degree_freedom = body.tech_degree_freedom;
+
+        const result = {};
+
+        if (testType === undefined) {
+          result.error = "Please! Check Your Input";
+          return result;
+      }
+
+
+        // Z-distribution functions
+        function zcdf(z) {
+            let y, x, w;
+
+            if (z === 0.0) {
+                x = 0.0;
+            } else {
+                y = 0.5 * Math.abs(z);
+                if (y > (6 * 0.5)) {
+                    x = 1.0;
+                } else if (y < 1.0) {
+                    w = y * y;
+                    x = ((((((((0.000124818987 * w
+                        - 0.001075204047) * w + 0.005198775019) * w
+                        - 0.019198292004) * w + 0.059054035642) * w
+                        - 0.151968751364) * w + 0.319152932694) * w
+                        - 0.531923007300) * w + 0.797884560593) * y * 2.0;
+                } else {
+                    y -= 2.0;
+                    x = (((((((((((((-0.000045255659 * y
+                        + 0.000152529290) * y - 0.000019538132) * y
+                        - 0.000676904986) * y + 0.001390604284) * y
+                        - 0.000794620820) * y - 0.002034254874) * y
+                        + 0.006549791214) * y - 0.010557625006) * y
+                        + 0.011630447319) * y - 0.009279453341) * y
+                        + 0.005353579108) * y - 0.002141268741) * y
+                        + 0.000535310849) * y + 0.999936657524;
+                }
+            }
+            return z > 0.0 ? ((x + 1.0) * 0.5) : ((1.0 - x) * 0.5);
+        }
+
+        function zpval(score, tail) {
+            let pval;
+            if (tail === '0') {
+                pval = 2 * zcdf(Math.abs(score) * (-1));
+            } else if (tail === '-1') {
+                pval = zcdf(score);
+            } else if (tail === '2') {
+                pval = 1 - zcdf(score);
+            }
+            return pval;
+        }
+
+        // Gamma and Beta functions
+        function gammaln(x) {
+            const cof = [
+                76.18009172947146,
+                -86.50532032941677,
+                24.01409824083091,
+                -1.231739572450155,
+                0.1208650973866179e-2,
+                -0.5395239384953e-5
+            ];
+            let ser = 1.000000000190015;
+            let xx = x;
+            let y = x;
+            let tmp = (y = xx = x) + 5.5;
+            tmp -= (xx + 0.5) * Math.log(tmp);
+            for (let j = 0; j < 6; j++)
+                ser += cof[j] / ++y;
+            return Math.log(2.5066282746310005 * ser / xx) - tmp;
+        }
+
+        function betacf(x, a, b) {
+            const fpmin = 1e-30;
+            let m = 1;
+            const qab = a + b;
+            const qap = a + 1;
+            const qam = a - 1;
+            let c = 1;
+            let d = 1 - qab * x / qap;
+            let m2, aa, del, h;
+
+            if (Math.abs(d) < fpmin)
+                d = fpmin;
+            d = 1 / d;
+            h = d;
+
+            for (m = 1; m <= 100; m++) {
+                m2 = 2 * m;
+                aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+                d = 1 + aa * d;
+                if (Math.abs(d) < fpmin)
+                    d = fpmin;
+                c = 1 + aa / c;
+                if (Math.abs(c) < fpmin)
+                    c = fpmin;
+                d = 1 / d;
+                h *= d * c;
+                aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+                d = 1 + aa * d;
+                if (Math.abs(d) < fpmin)
+                    d = fpmin;
+                c = 1 + aa / c;
+                if (Math.abs(c) < fpmin)
+                    c = fpmin;
+                d = 1 / d;
+                del = d * c;
+                h *= del;
+                if (Math.abs(del - 1.0) < 3e-7)
+                    break;
+            }
+
+            return h;
+        }
+
+        function ibeta(x, a, b) {
+          // console.log('Inside ibeta:', x, a, b);
+            const bt = (x === 0 || x === 1) ? 0 :
+                Math.exp(gammaln(a + b) - gammaln(a) -
+                    gammaln(b) + a * Math.log(x) + b *
+                    Math.log(1 - x));
+            if (x < 0 || x > 1)
+                return false;
+            if (x < (a + 1) / (a + b + 2))
+                return bt * betacf(x, a, b) / a;
+
+            return 1 - bt * betacf(1 - x, b, a) / b;
+        }
+
+        function tpval(t, df, alt) {
+          // console.log(t,df,alt);
+          let pval;
+          if (alt == '0') {
+            pval = 2 * tcdf(Math.abs(t) * (-1), df);
+           
+          } else if (alt == '-1') {
+            pval = tcdf(t, df);
+          } else if (alt == '2') {
+                pval = 1 - tcdf(t, df);
+                // console.log(pval,'bilal');
+              }
+            return pval;
+        }
+
+             // T-distribution functions
+        function tcdf(x, dof) {
+          const changenumber = Number(dof);
+          const xnumberx = Number(x);
+          const dof2 = changenumber / 2;
+          // const bilalalal = x + Math.sqrt(x * x + dof);
+          // console.log(xnumberx,dof,dof2,'gggg');
+            // -0.02 3 1.5 gggg
+            return ibeta((xnumberx + Math.sqrt(xnumberx * xnumberx + changenumber)) / (2 * Math.sqrt(xnumberx * xnumberx + changenumber)), dof2, dof2);
+        }
+        // Chi-square functions
+        function lowRegGamma(a, x) {
+            const aln = gammaln(a);
+            let ap = a;
+            let sum = 1 / a;
+            let del = sum;
+            let b = x + 1 - a;
+            let c = 1 / 1.0e-30;
+            let d = 1 / b;
+            let h = d;
+            let i = 1;
+            const ITMAX = -~(Math.log((a >= 1) ? a : 1 / a) * 8.5 + a * 0.4 + 17);
+            let an;
+
+            if (x < 0 || a <= 0) {
+                return 0;
+            } else if (x < a + 1) {
+                for (i = 1; i <= ITMAX; i++) {
+                    sum += del *= x / ++ap;
+                }
+                return (sum * Math.exp(x * (-1) + a * Math.log(x) - (aln)));
+            }
+            for (; i <= ITMAX; i++) {
+                an = i * (-1) * (i - a);
+                b += 2;
+                d = an * d + b;
+                c = b + an / c;
+                d = 1 / d;
+                h *= d * c;
+            }
+
+            return (1 - h * Math.exp(x * (-1) + a * Math.log(x) - (aln)));
+        }
+
+        function chicdf(x, dof) {
+            if (x < 0)
+                return 0;
+            return lowRegGamma(dof / 2, x / 2);
+        }
+
+        function chipval(chi, df, alt) {
+            let pval;
+            if (alt == '0') {
+                const x = chicdf(chi, df);
+                if (x <= 0.5) {
+                    pval = 2 * x;
+                } else {
+                    pval = 2 * (1 - x);
+                }
+            } else if (alt <= '-1') {
+                pval = chicdf(chi, df);
+            } else if (alt >= '1') {
+                pval = 1 - chicdf(chi, df);
+            }
+            return pval;
+        }
+
+        // F-distribution functions
+        function Fcdf(x, df1, df2) {
+            // console.log(x,df1,df2);
+            const hellox = Number(x);
+            const hellodf1 = Number(df1);
+            const hellodf2 = Number(df2);
+            if (x < 0)
+                return 0;
+            return ibeta((hellodf1 * hellox) / (hellodf1 * hellox + hellodf2), hellodf1 / 2, hellodf2 / 2);
+        }
+
+        function Fpval(F, df1, df2, alt) {
+          // console.log(F,df1,df2,alt);
+            let pval;
+            if (alt == '0') {
+                const x = Fcdf(F, df1, df2);
+                if (x <= 0.5) {
+                    pval = 2 * x;
+                } else {
+                    pval = 2 * (1 - x);
+                }
+            } else if (alt <= '-1') {
+                pval = Fcdf(F, df1, df2);
+            } else if (alt <= '1') {
+                pval = 1 - Fcdf(F, df1, df2);
+            }
+            return pval;
+        }
+
+        // Pearson correlation functions
+        function calculateTStatistic(r, n) {
+            return (r * Math.sqrt(n - 2)) / Math.sqrt(1 - r * r);
+        }
+
+        function betaIncomplete(x, a, b) {
+            const gammalns = (x) => {
+                const cof = [
+                    76.18009172947146,
+                    -86.50532032941677,
+                    24.01409824083091,
+                    -1.231739572450155,
+                    0.1208650973866179e-2,
+                    -0.5395239384953e-5
+                ];
+                let y = x;
+                let tmp = x + 5.5;
+                tmp -= (x + 0.5) * Math.log(tmp);
+                let ser = 1.000000000190015;
+                for (let j = 0; j < 6; j++) ser += cof[j] / ++y;
+                return -tmp + Math.log(2.5066282746310005 * ser / x);
+            };
+
+            const betacfs = (x, a, b) => {
+                const MAXIT = 100;
+                const EPS = 3.0e-7;
+                const FPMIN = 1.0e-30;
+                const qab = a + b;
+                const qap = a + 1.0;
+                const qam = a - 1.0;
+                let c = 1.0;
+                let d = 1.0 - qab * x / qap;
+                if (Math.abs(d) < FPMIN) d = FPMIN;
+                d = 1.0 / d;
+                let h = d;
+                for (let m = 1, m2 = 2; m <= MAXIT; m++, m2 += 2) {
+                    let aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+                    d = 1.0 + aa * d;
+                    if (Math.abs(d) < FPMIN) d = FPMIN;
+                    c = 1.0 + aa / c;
+                    if (Math.abs(c) < FPMIN) c = FPMIN;
+                    d = 1.0 / d;
+                    h *= d * c;
+                    aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+                    d = 1.0 + aa * d;
+                    if (Math.abs(d) < FPMIN) d = FPMIN;
+                    c = 1.0 + aa / c;
+                    if (Math.abs(c) < FPMIN) c = FPMIN;
+                    d = 1.0 / d;
+                    h *= d * c;
+                }
+                return h;
+            };
+
+            const bt = (x == 0 || x == 1) ? 0 :
+                Math.exp(gammalns(a + b) - gammalns(a) - gammalns(b) + a * Math.log(x) + b * Math.log(1 - x));
+            if (x < 0.0 || x > 1.0) return 0.0;
+            if (x < (a + 1.0) / (a + b + 2.0))
+                return bt * betacfs(x, a, b) / a;
+            else
+                return 1.0 - bt * betacfs(1.0 - x, b, a) / b;
+        }
+
+        function tDistCDFs(t, df) {
+            const x = df / (df + t * t);
+            const a = df / 2.0;
+            const b = 0.5;
+            const betaIncompleteResult = betaIncomplete(x, a, b);
+            return 1.0 - 0.5 * betaIncompleteResult;
+        }
+
+        function calculatePValue(t, df) {
+            return 2 * (1 - tDistCDFs(t, df));
+        }
+
+        function pValueFromPearson(r, n) {
+            const t = calculateTStatistic(r, n);
+            const df = n - 2;
+            return calculatePValue(t, df);
+        }
+
+        // Validation
+        if (level < 0 || level > 1) {
+            result.error = "Significance level must be a number between 0 and 1";
+            return result;
+        }
+
+        let p;
+
+        // Calculate p-value based on test type
+        if (testType === 'z') {
+            if (!isFinite(score) || !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            p = zpval(score, tail);
+        } else if (testType === 't') {
+            if (!isFinite(score) || !isFinite(deg) || !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            p = tpval(score, deg, tail);
+            // console.log(p,score,deg,tail,'gagagagag');
+        } else if (testType === 'chi') {
+            if (!isFinite(score) || !isFinite(deg) || !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            p = chipval(score, deg, deg);
+        } else if (testType === 'f') {
+            if (!isFinite(score) || !isFinite(deg) || !isFinite(deg2) || !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            if (deg2 < 0) {
+                result.error = "Your values for degrees of freedom cannot be negative.";
+                return result;
+            }
+            p = Fpval(score, deg, deg2, level);
+        } else if (testType === 'r') {
+            if (!isFinite(score) || !isFinite(deg) || !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            if (score < -1 || score > 1 || deg <= 2) {
+                result.error = "score must be between -1 and 1 and deg must be greater than 2";
+                return result;
+            }
+            p = pValueFromPearson(score, deg);
+        } else if (testType === 'q') {
+            if (isFinite(score) && isFinite(deg) && isFinite(degree_freedom) && !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            if (deg < 2 || deg > 30) {
+                result.error = "Degree of freedom must be between 2 and 30.";
+                return result;
+            }
+            if (degree_freedom < 3) {
+                result.error = "Degrees of freedom must be greater than or equal to 3.";
+                return result;
+            }
+            result.tech_score = score;
+            result.tech_deg = deg;
+            result.tech_degree_freedom = degree_freedom;
+            result.tech_level = level;
+            return result;
+        }
+
+        // Determine interpretation
+        const inter = p <= level ? '' : 'not';
+
+        // Round p-value if decimal
+        if (p.toString().includes('.')) {
+            p = Math.round(p * 10000000) / 10000000;
+        }
+
+        result.tech_tail = tail;
+        result.tech_inter = inter;
+        result.tech_level = level;
+        result.tech_p = p;
+        result.RESULT = 1;
+
+        return result;
+    }
+
+   
+
+
 }
 
 module.exports = new CalculatorsServices();

@@ -16688,6 +16688,110 @@ router.post(
   })
 );
 
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/hypergeometric-calculator
+ */
+
+router.post(
+  "/hypergeometric-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationHypergeometricCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/z-score-calculator
+ */
+
+router.post(
+  "/z-score-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationZScoreCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/correlation-coefficient-calculator
+ */
+
+router.post(
+  "/correlation-coefficient-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationCorrelationCoefficientCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/p-value-calculator
+ */
+
+router.post(
+  "/p-value-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationPValueCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
 
 
 
