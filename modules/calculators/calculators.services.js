@@ -6,7 +6,7 @@ const dayjs = require("dayjs");
 const isoWeek = require("dayjs/plugin/isoWeek");
 const dayOfYear = require("dayjs/plugin/dayOfYear");
 const isLeapYear = require("dayjs/plugin/isLeapYear");
-
+   
 dayjs.extend(isoWeek);
 dayjs.extend(dayOfYear);
 dayjs.extend(isLeapYear);
@@ -21,7 +21,6 @@ const duration = require("dayjs/plugin/duration");
 dayjs.extend(customParseFormat);
 dayjs.extend(duration);
 const sprintf = require("sprintf-js").sprintf;
-
 const isSameOrBefore = require("dayjs/plugin/isSameOrBefore");
 dayjs.extend(isSameOrBefore);
 
@@ -69697,7 +69696,1300 @@ class CalculatorsServices {
         return result;
     }
 
-   
+
+      /**
+   * getCalculationProbabilityDensityFunctionCalculator: Service Method
+   * POST: /api/calculators-lol/probability-density-function
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+  async  getCalculationProbabilityDensityFunctionCalculator(body) {
+      const result = {};
+      
+      const select = body.tech_select;
+      const a = parseFloat(body.tech_a);
+      const b = parseFloat(body.tech_b);
+      const c = parseFloat(body.tech_c);
+
+      try {
+          if (select == 1) {
+              // Beta Distribution
+              if (isNumeric(a) && isNumeric(b) && isNumeric(c)) {
+                  if (c < 0 || c > 1) {
+                      result.error = "x Must be greater than 0 and less than 1";
+                      return result;
+                  }
+                  
+                  const paramA = (a - 1).toString();
+                  const paramB = (b - 1).toString();
+                  const parem = `t**(${paramA})(1-t)**(${paramB})`;
+                  
+                  try {
+                      const params = new URLSearchParams();
+                      params.append('equ', parem);
+                      params.append('wrt', 't');
+                      params.append('lb', '0');
+                      params.append('ub', '1');
+                      
+                      const response = await axios.post("http://167.172.134.148/only_integral", params, {
+                          headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                          },
+                          timeout: 120000
+                      });
+                      
+                      const buffer = response.data;
+                        const B = parseFloat(buffer[0]);
+                      const ans = (1 / B) * Math.pow(c, (a - 1)) * Math.pow((1 - c), (b - 1));
+                      
+                      result.tech_ans = ans;
+                      return result;
+                  } catch (error) {
+                      console.error('Select 1 Error:', error.message);
+                      result.error = "Server Busy! Please try again later";
+                      return result;
+                  }
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (select == 2) {
+              // Chi-Square Distribution
+              if (isNumeric(a) && isNumeric(b)) {
+                  const paramA = ((a / 2) - 1).toString();
+                  const parem = `t**(${paramA})exp(-t)`;
+                  
+                  try {
+                      const params = new URLSearchParams();
+                      params.append('equ', parem);
+                      params.append('wrt', 't');
+                      params.append('lb', '0');
+                      params.append('ub', 'oo');
+                      
+                      const response = await axios.post("http://167.172.134.148/only_integral", params, {
+                          headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                          },
+                          timeout: 120000
+                      });
+                      
+                      const buffer = response.data;
+                      const B = parseFloat(buffer[0]);
+                      const ans = (1 / (Math.pow(2, (a / 2)) * B)) * Math.pow(b, ((a / 2) - 1)) * Math.exp((-1 * b) / 2);
+                      
+                      result.tech_ans = ans;
+                      return result;
+                  } catch (error) {
+                      console.error('Select 2 Error:', error.message);
+                      result.error = "Server Busy! Please try again later";
+                      return result;
+                  }
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (select == 3) {
+              // F Distribution
+              if (isNumeric(a) && isNumeric(b) && isNumeric(c)) {
+                  const paramA = Math.abs((a / 2) - 1).toString();
+                  const paramB = Math.abs((b / 2) - 1).toString();
+                  const parem = `t**(${paramA})(1-t)**(${paramB})`;
+                  
+                  try {
+                      const params = new URLSearchParams();
+                      params.append('equ', parem);
+                      params.append('wrt', 't');
+                      params.append('lb', '0');
+                      params.append('ub', '1');
+                      
+                      const response = await axios.post("http://167.172.134.148/only_integral", params, {
+                          headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                          },
+                          timeout: 120000
+                      });
+                      
+                      const buffer = response.data;
+                      const B = parseFloat(buffer[0]);
+                      
+                      // Calculate numerator and denominator separately for debugging
+                      const numerator = Math.sqrt((Math.pow(a * c, a) * Math.pow(b, b)) / Math.pow(a * c + b, (a + b)));
+                      const denominator = c * B;
+                      const ans = numerator / denominator;
+                      
+                        result.tech_ans = ans;
+                      return result;
+                  } catch (error) {
+                      console.error('Select 3 Error:', error.message);
+                      result.error = "Server Busy! Please try again later";
+                      return result;
+                  }
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (select == 4) {
+              // Non-central t Distribution
+              if (isNumeric(a) && isNumeric(b) && isNumeric(c)) {
+                  const paramA = ((a / 2) - 1).toString();
+                  const parem = `t**(${paramA})exp(-t)`;
+                  
+                  const u = b;
+                  const v = a;
+                  const x = c;
+                  const uxValue = (u * x).toString();
+                  const x2PlusV = (Math.pow(x, 2) + v).toString();
+                  const parem1 = `y**(${v})*exp( -1/2 * ( y- ((${uxValue}) / (sqrt(${x2PlusV}) ) ))**2)`;
+                  
+                  try {
+                      const params = new URLSearchParams();
+                      params.append('equ', parem);
+                      params.append('equ1', parem1);
+                      params.append('wrt', 't');
+                      params.append('wrt1', 'y');
+                      params.append('lb', '0');
+                      params.append('ub', 'oo');
+                      
+                      const response = await axios.post("http://167.172.134.148/only_integral", params, {
+                          headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                          },
+                          timeout: 120000
+                      });
+                      
+                      const buffer = response.data;
+                        const B = parseFloat(buffer[0]);
+                            const int = parseFloat(buffer[1]);
+                      const up1 = Math.pow(v, v / 2) * Math.exp(-1 * ((v * Math.pow(u, 2)) / (2 * (Math.pow(x, 2) + v))));
+                      const btm = up1 / (Math.sqrt(Math.PI) * B * Math.pow(2, ((v - 1) / 2)) * Math.pow((Math.pow(x, 2) + v), ((v + 1) / 2)));
+                      const ans = int * btm;
+                      
+                        result.tech_ans = ans;
+                      return result;
+                  } catch (error) {
+                      console.error('Select 4 Error:', error.message);
+                      result.error = "Server Busy! Please try again later";
+                      return result;
+                  }
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (select == 5) {
+              // Normal Distribution
+              if (isNumeric(a) && isNumeric(b) && isNumeric(c)) {
+                  const ans = (1 / Math.sqrt(2 * Math.PI * Math.pow(b, 2))) * Math.exp(-1 * (Math.pow(c - a, 2) / (2 * Math.pow(b, 2))));
+                  
+                  result.tech_ans = ans;
+                  return result;
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (select == 6) {
+              // Standard Normal Distribution
+              if (isNumeric(c)) {
+                  const ans = (1 / Math.sqrt(2 * Math.PI)) * Math.exp((-1 / 2) * Math.pow(c, 2));
+                  
+                result.tech_ans = ans;
+                  return result;
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (select == 7) {
+              // Student's t Distribution
+              if (isNumeric(a) && isNumeric(b)) {
+                  const paramA = ((a / 2) - 1).toString();
+                  const paramB = (((a + 1) / 2) - 1).toString();
+                  const parem = `t**(${paramA})exp(-t)`;
+                  const parem1 = `t**(${paramB})exp(-t)`;
+                  
+                  try {
+                      const params = new URLSearchParams();
+                      params.append('equ', parem);
+                      params.append('equ1', parem1);
+                      params.append('wrt', 't');
+                      params.append('lb', '0');
+                      params.append('ub', 'oo');
+                      
+                      const response = await axios.post("http://167.172.134.148/only_integral", params, {
+                          headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                          },
+                          timeout: 120000
+                      });
+                      
+                      const buffer = response.data;
+                        const B = parseFloat(buffer[0]);
+                            const B1 = parseFloat(buffer[1]);
+                      const ans = (B1 / (Math.sqrt(a * Math.PI) * B)) * Math.pow((1 + (Math.pow(b, 2) / a)), (-1 / 2 * (a + 1)));
+                      
+                    result.tech_ans = ans;
+                      return result;
+                  } catch (error) {
+                      console.error('Select 7 Error:', error.message);
+                      result.error = "Server Busy! Please try again later";
+                      return result;
+                  }
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (select == 8) {
+              // Uniform Distribution
+              if (isNumeric(a) && isNumeric(b) && isNumeric(c)) {
+                  let ans;
+                  if (c >= a && c <= b) {
+                      ans = 1 / (b - a);
+                  } else {
+                      ans = 0;
+                  }
+                  
+                  result.tech_ans = ans;
+                  return result;
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          }
+          
+          result.error = "Invalid selection";
+          return result;
+          
+      } catch (error) {
+          console.error('Main Error:', error.message);
+          result.error = "An error occurred: " + error.message;
+          return result;
+      }
+      
+      // Helper function to check if value is numeric
+      function isNumeric(value) {
+          return !isNaN(parseFloat(value)) && isFinite(value);
+      }
+  }
+
+
+      /**
+   * getCalculationeffectSizeCalculator: Service Method
+   * POST: /api/calculators-lol/effect-size-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationeffectSizeCalculator(body) {
+      const result = {};
+      
+      // Extract and trim all request parameters
+      const effectType = body.tech_effect_type?.toString().trim();
+      const ronding = parseInt(body.tech_ronding?.toString().trim()) || 2;
+      const c_x1 = parseFloat(body.tech_c_x1?.toString().trim());
+      const c_s = parseFloat(body.tech_c_s?.toString().trim());
+      const c_pm = parseFloat(body.tech_c_pm?.toString().trim());
+      const x1 = parseFloat(body.tech_x1?.toString().trim());
+      const x2 = parseFloat(body.tech_x2?.toString().trim());
+      const n1 = parseFloat(body.tech_n1?.toString().trim());
+      const n2 = parseFloat(body.tech_n2?.toString().trim());
+      const s1 = parseFloat(body.tech_s1?.toString().trim());
+      const s2 = parseFloat(body.tech_s2?.toString().trim());
+      const p1 = parseFloat(body.tech_p1?.toString().trim());
+      const p2 = parseFloat(body.tech_p2?.toString().trim());
+      const ph_x2 = parseFloat(body.tech_ph_x2?.toString().trim());
+      const ph_n1 = parseFloat(body.tech_ph_n1?.toString().trim());
+      const cr_x2 = parseFloat(body.tech_cr_x2?.toString().trim());
+      const cr_n1 = parseFloat(body.tech_cr_n1?.toString().trim());
+      const row = parseFloat(body.tech_row?.toString().trim());
+      const col = parseFloat(body.tech_col?.toString().trim());
+      const ssr = parseFloat(body.tech_ssr?.toString().trim());
+      const sst = parseFloat(body.tech_sst?.toString().trim());
+      const ssg = parseFloat(body.tech_ssg?.toString().trim());
+      const et_sst = parseFloat(body.tech_et_sst?.toString().trim());
+      const r2f = parseFloat(body.tech_r2f?.toString().trim());
+      const f2r = parseFloat(body.tech_f2r?.toString().trim());
+      const t_value = parseFloat(body.tech_t_value?.toString().trim());
+      const df = parseFloat(body.tech_df?.toString().trim());
+
+      if (!effectType) {
+          result.error = "Please! Check Your Input";
+          return result;
+      }
+
+      const isNumeric = (value) => !isNaN(value) && isFinite(value);
+
+      try {
+          if (effectType === 'cohen2e') {
+              if (isNumeric(x1) && isNumeric(x2) && isNumeric(n1) && 
+                  isNumeric(n2) && isNumeric(s1) && isNumeric(s2)) {
+                  
+                  const s1pow = Math.pow(s1, 2);
+                  const s2pow = Math.pow(s2, 2);
+                  const res = (n1 - 1) * Math.pow(s1, 2) + (n2 - 1) * Math.pow(s2, 2);
+                  const res2 = n1 + n2 - 2;
+                  const sqr = res / res2;
+                  const sqrt = Math.sqrt(sqr);
+                  const x1x2 = Math.abs(x1 - x2);
+                  const d = x1x2 / sqrt;
+                  const cohen2e = parseFloat(d.toFixed(ronding));
+
+                  Object.assign(result, {
+                      tech_x1:x1, 
+                      tech_x2:x2, 
+                      tech_n1:n1, 
+                      tech_n2:n2, 
+                      tech_s1:s1, 
+                      tech_s2:s2, 
+                      tech_s1pow:s1pow, 
+                      tech_s2pow:s2pow,
+                      tech_res:res, 
+                      tech_res2:res2, 
+                      tech_sqr:sqr, 
+                      tech_sqrt:sqrt, 
+                      tech_x1x2:x1x2, 
+                      tech_d:d, 
+                      tech_cohen2e:cohen2e
+                  });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (effectType === 'cohen2u') {
+              if (isNumeric(x1) && isNumeric(x2) && isNumeric(n1) && 
+                  isNumeric(n2) && isNumeric(s1) && isNumeric(s2)) {
+                  
+                  const s1pow = Math.pow(s1, 2);
+                  const s2pow = Math.pow(s2, 2);
+                  const res = s1pow + s2pow;
+                  const sqr = res / 2;
+                  const sqrt = Math.sqrt(sqr);
+                  const x1x2 = Math.abs(x1 - x2);
+                  const d = Math.abs(x1 - x2) / sqrt;
+                  const cohen2u = parseFloat(d.toFixed(ronding));
+
+                  Object.assign(result, {
+                      tech_x1:x1, 
+                      tech_x2:x2, 
+                      tech_n1:n1, 
+                      tech_n2:n2, 
+                      tech_s1:s1, 
+                      tech_s2:s2, 
+                      tech_s1pow:s1pow, 
+                      tech_s2pow:s2pow,
+                      tech_res:res, 
+                      tech_sqr:sqr, 
+                      tech_sqrt:sqrt, 
+                      tech_x1x2:x1x2, 
+                      tech_d:d, 
+                      tech_cohen2u:cohen2u
+                  });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (effectType === 'cohen') {
+              if (isNumeric(c_x1) && isNumeric(c_s) && isNumeric(c_pm)) {
+                  const d = c_x1 - c_pm;
+                  const c = Math.abs(d);
+                  const res = Math.abs(d) / c_s;
+                  const cohen = parseFloat(res.toFixed(ronding));
+
+                  Object.assign(result, { 
+                    tech_c_x1:c_x1, 
+                    tech_c_s:c_s, 
+                    tech_c_pm:c_pm, 
+                    tech_res:res, 
+                    tech_c:c, 
+                    tech_d:d, 
+                    tech_cohen:cohen
+                   });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (effectType === 'h') {
+              if (isNumeric(p1) && isNumeric(p2)) {
+                  const p1sqr = Math.sqrt(p1);
+                  const p2sqr = Math.sqrt(p2);
+                  const arcp1 = Math.asin(p1sqr);
+                  const arcp2 = Math.asin(p2sqr);
+                  const res = 2 * (Math.asin(p1sqr) - Math.asin(p2sqr));
+                  const h = parseFloat(res.toFixed(ronding));
+
+                  Object.assign(result, { 
+                    tech_p1:p1, 
+                    tech_p2:p2, 
+                    tech_p1sqr:p1sqr, 
+                    tech_p2sqr:p2sqr, 
+                    tech_arcp1:arcp1, 
+                    tech_arcp2:arcp2, 
+                    tech_h:h 
+                  });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (effectType === 'phi') {
+              if (isNumeric(ph_x2) && isNumeric(ph_n1)) {
+                  const res = ph_x2 / ph_n1;
+                  const p = Math.sqrt(res);
+                  const phi = parseFloat(p.toFixed(ronding));
+
+                  Object.assign(result, { 
+                    tech_ph_x2:ph_x2, 
+                    tech_ph_n1:ph_n1, 
+                    tech_res:res, 
+                    tech_p:p, 
+                    tech_phi:phi 
+                  });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (effectType === 'cramer') {
+              if (isNumeric(cr_x2) && isNumeric(cr_n1) && isNumeric(row) && isNumeric(col)) {
+                  const r = row - 1;
+                  const c = col - 1;
+                  const min = Math.min(r, c);
+                  const res = cr_n1 * min;
+                  const v = cr_x2 / res;
+                  const x = Math.sqrt(v);
+                  const cramer = parseFloat(x.toFixed(ronding));
+
+                  Object.assign(result, { 
+                    tech_cr_x2:cr_x2, 
+                    tech_cr_n1:cr_n1, 
+                    tech_row:row, 
+                    tech_col:col, 
+                    tech_r:r, 
+                    tech_c:c, 
+                    tech_min:min, 
+                    tech_res:res, 
+                    tech_v:v, 
+                    tech_cramer:cramer 
+                  });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (effectType === 'r2') {
+              if (isNumeric(ssr) && isNumeric(sst)) {
+                  const r = ssr / sst;
+                  const res = 1 - r;
+                  const f2 = r / res;
+                  const r2 = parseFloat(f2.toFixed(ronding));
+
+                  Object.assign(result, { 
+                    tech_ssr:ssr, 
+                    tech_sst:sst, 
+                    tech_r:r, 
+                    tech_res:res, 
+                    tech_f2:f2, 
+                    tech_r2:r2 
+                  });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (effectType === 'eta2') {
+              if (isNumeric(ssg) && isNumeric(et_sst)) {
+                  const et = ssg / et_sst;
+                  const res = 1 - et;
+                  const e = et / res;
+                  const eta2 = parseFloat(e.toFixed(ronding));
+
+                  Object.assign(result, { 
+                    tech_ssg:ssg, 
+                    tech_et_sst:et_sst, 
+                    tech_et:et, 
+                    tech_res:res, 
+                    tech_eta2:eta2
+                   });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (effectType === 'r2f') {
+              if (isNumeric(row)) {
+                  const res = 1 - r2f;
+                  const r = r2f / res;
+                  const rf = parseFloat(r.toFixed(ronding));
+
+                  Object.assign(result, { 
+                    tech_r2f:r2f, 
+                    tech_res:res, 
+                    tech_r:r, 
+                    tech_rf:rf 
+                  });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (effectType === 'f2r') {
+              if (isNumeric(f2r)) {
+                  const res = 1 + f2r;
+                  const f = f2r / res;
+                  const fr = parseFloat(f.toFixed(ronding));
+
+                  Object.assign(result, { 
+                    tech_f2r:f2r, 
+                    tech_res:res, 
+                    tech_f:f, 
+                    tech_fr:fr
+                   });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else if (effectType === 'dr') {
+              if (isNumeric(t_value) && isNumeric(df)) {
+                  const res = 2 * t_value;
+                  const t = Math.pow(t_value, 2);
+                  const res2 = t + df;
+                  const ry = t / res2;
+                  const ryres = Math.sqrt(ry);
+                  const dfsqr = Math.sqrt(df);
+                  const d = res / dfsqr;
+                  const dr = parseFloat(d.toFixed(ronding));
+                  const r = parseFloat(ryres.toFixed(ronding));
+
+                  Object.assign(result, { 
+                    tech_t_value:t_value, 
+                    tech_df:df, 
+                    tech_res:res, 
+                    tech_d:d, 
+                    tech_dr:dr, 
+                    tech_dfsqr:dfsqr, 
+                    tech_t:t, 
+                    tech_res2:res2, 
+                    tech_ry:ry,
+                    tech_r:r 
+                  });
+              } else {
+                  result.error = "Please! Check Your Input";
+                  return result;
+              }
+          } 
+          else {
+              result.error = "Please! Check Your Input";
+              return result;
+          }
+
+          result.tech_effect_type = effectType;
+          return result;
+
+      } catch (error) {
+          result.error = "Calculation error: " + error.message;
+          return result;
+      }
+  }
+
+  
+  /**
+   * getCalculationDecileCalculator: Service Method
+   * POST: /api/calculators-lol/decile-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationDecileCalculator(body) {
+      const x = body.tech_x;
+      const decile = body.tech_decile;
+
+      const param = {};
+      let check = true;
+
+      // Check if x is empty
+      if (!x || x.trim() === '') {
+          check = false;
+      }
+
+      // Replace spaces, commas, and newlines with commas
+      let cleanedX = x.replace(/[\s,\n\r]+/g, ',');
+      
+      // Remove consecutive commas
+      while (cleanedX.includes(',,')) {
+          cleanedX = cleanedX.replace(/,,/g, ',');
+      }
+
+      // Split and filter the numbers
+      const numbers = cleanedX
+          .split(',')
+          .map(val => val.trim())
+          .filter(val => val !== '');
+
+      // Validate all values are numeric
+      for (const value of numbers) {
+          if (isNaN(value) || value === '') {
+              check = false;
+              break;
+          }
+      }
+
+      if (check === true) {
+          // Chunk array into pairs of 2
+          const sortArray = [];
+          for (let i = 0; i < numbers.length; i += 2) {
+              sortArray.push(numbers.slice(i, i + 2));
+          }
+
+          // Create ans_list by combining pairs with decimal point (keep as strings like PHP)
+          const ansList = [];
+          for (const value of sortArray) {
+              if (value.length === 2) {
+                  ansList.push(value[0] + '.' + value[1]);
+              } else {
+                  ansList.push(value[0]);
+              }
+          }
+
+          const totalValues = sortArray.length;
+          const decilePos = ((totalValues + 1) * (decile / 10));
+
+          let mainAns;
+
+          // Check if decile position is not a whole number
+          if (!Number.isInteger(decilePos)) {
+              const floorVal = Math.floor(decilePos);
+              const ceilVal = Math.ceil(decilePos);
+              const listFloorVal = ansList[floorVal - 1]; // Can be undefined if floorVal is 0
+              const listCeilVal = ansList[ceilVal - 1];   // Can be undefined if ceilVal exceeds array length
+              const floorMinus = decilePos - floorVal;
+              
+              // Convert to numbers for calculation
+              // PHP treats null/undefined as 0 in arithmetic operations
+              const numFloorVal = listFloorVal ? parseFloat(listFloorVal) : 0;
+              const numCeilVal = listCeilVal ? parseFloat(listCeilVal) : 0;
+              
+              mainAns = numFloorVal + floorMinus * (numCeilVal - numFloorVal);
+              
+              param.tech_floor_val = floorVal;
+              param.tech_ceil_val = ceilVal;
+              param.tech_list_floor_val = listFloorVal || null;
+              param.tech_list_ceil_val = listCeilVal || null;
+              param.tech_floor_minus = floorMinus;
+          } else {
+              mainAns = parseFloat(ansList[decilePos - 1]);
+          }
+
+          param.tech_main_ans = mainAns;
+          param.tech_total_values = totalValues;
+          param.tech_ans_list = ansList;
+          param.tech_decile_pos = decilePos;
+      } else {
+          param.error = "Please! Check Your Input";
+          return param;
+      }
+
+      return param;
+  }
+
+    /**
+   * getCalculationPertCalculator: Service Method
+   * POST: /api/calculators-lol/pert-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+  async getCalculationPertCalculator(body) {
+      const optimistic = String(body.tech_optimistic || '').trim();
+      const optimistic_one = String(body.tech_optimistic_one || '').trim();
+      const optimistic_sec = String(body.tech_optimistic_sec || '').trim();
+      const optimistic_unit = String(body.tech_optimistic_unit || '').trim();
+      const pessimistic = String(body.tech_pessimistic || '').trim();
+      const pessimistic_one = String(body.tech_pessimistic_one || '').trim();
+      const pessimistic_sec = String(body.tech_pessimistic_sec || '').trim();
+      const pessimistic_unit = String(body.tech_pessimistic_unit || '').trim();
+      const most = String(body.tech_most || '').trim();
+      const most_one = String(body.tech_most_one || '').trim();
+      const most_sec = String(body.tech_most_sec || '').trim();
+      const most_unit = String(body.tech_most_unit || '').trim();
+      const desired = String(body.tech_desired || '').trim();
+      const desired_one = String(body.tech_desired_one || '').trim();
+      const desired_sec = String(body.tech_desired_sec || '').trim();
+      const desired_unit = String(body.tech_desired_unit || '').trim();
+      const output_unit = String(body.tech_output_unit || '').trim();
+      const deviation_unit = String(body.tech_deviation_unit || '').trim();
+
+      const param = {};
+
+      // Helper function: time_unit
+      function time_unit(optimistic, optimistic_unit) {
+        let value = parseFloat(optimistic);
+        if (optimistic_unit == "hrs") {
+          value = value * 24;
+        } else if (optimistic_unit == "days") {
+          value = value * 1;
+        } else if (optimistic_unit == "wks") {
+          value = value / 7;
+        } else if (optimistic_unit == "mos") {
+          value = value / 30.417;
+        } else if (optimistic_unit == "yrs") {
+          value = value / 365;
+        }
+        return value;
+      }
+
+      // Helper function: other_time
+      function other_time(optimistic_one, optimistic_sec, optimistic_unit) {
+        let value;
+        const val1 = parseFloat(optimistic_one);
+        const val2 = parseFloat(optimistic_sec);
+        
+        if (optimistic_unit == "yrs/mos") {
+          value = (val1 * 365) + (val2 * 30.417);
+        } else if (optimistic_unit == "wks/days") {
+          value = (val1 * 7) + val2;
+        } else if (optimistic_unit == "days/hrs") {
+          value = val1 + (val2 / 24);
+        }
+        return value;
+      }
+
+      // Helper function: secore
+      function secore(x) {
+        const pi = 3.1415927;
+        const a = (8 * (pi - 3)) / (3 * pi * (4 - pi));
+        const x2 = x * x;
+        const ax2 = a * x2;
+        const num = (4 / pi) + ax2;
+        const denom = 1 + ax2;
+        const inner = (-x2) * num / denom;
+        const secore2 = 1 - Math.exp(inner);
+        return Math.sqrt(secore2);
+      }
+
+      // Helper function: cdf
+      function cdf(n) {
+        if (n < 0) {
+          return (1 - secore(n / Math.sqrt(2))) / 2;
+        } else {
+          return (1 + secore(n / Math.sqrt(2))) / 2;
+        }
+      }
+
+      // Validation
+      if (!isNaN(optimistic) && !isNaN(pessimistic) && !isNaN(most) && !isNaN(desired)) {
+        
+        // Process optimistic
+        let optimistic_val;
+        if (optimistic_unit === "yrs/mos" || optimistic_unit === "wks/days" || optimistic_unit === "days/hrs") {
+          if (!isNaN(optimistic_one) && !isNaN(optimistic_sec)) {
+            optimistic_val = other_time(optimistic_one, optimistic_sec, optimistic_unit);
+            param.tech_optimistic = optimistic_val;
+          } else {
+            param.error = "Please! Check Your Input";
+            return param;
+          }
+        } else {
+          optimistic_val = time_unit(optimistic, optimistic_unit);
+        }
+
+        // Process pessimistic
+        let pessimistic_val;
+        if (pessimistic_unit === "yrs/mos" || pessimistic_unit === "wks/days" || pessimistic_unit === "days/hrs") {
+          if (!isNaN(pessimistic_one) && !isNaN(pessimistic_sec)) {
+            pessimistic_val = other_time(pessimistic_one, pessimistic_sec, pessimistic_unit);
+            param.tech_pessimistic = pessimistic_val;
+          } else {
+            param.error = "Please! Check Your Input";
+            return param;
+          }
+        } else {
+          pessimistic_val = time_unit(pessimistic, pessimistic_unit);
+        }
+
+        // Process most
+        let most_val;
+        if (most_unit === "yrs/mos" || most_unit === "wks/days" || most_unit === "days/hrs") {
+          if (!isNaN(most_one) && !isNaN(most_sec)) {
+            most_val = other_time(most_one, most_sec, most_unit);
+            param.tech_most = most_val;
+          } else {
+            param.error = "Please! Check Your Input";
+            return param;
+          }
+        } else {
+          most_val = time_unit(most, most_unit);
+        }
+
+        // Process desired
+        let desired_val;
+        if (desired_unit === "yrs/mos" || desired_unit === "wks/days" || desired_unit === "days/hrs") {
+          if (!isNaN(desired_one) && !isNaN(desired_sec)) {
+            desired_val = other_time(desired_one, desired_sec, desired_unit);
+            param.tech_desired = desired_val;
+          } else {
+            param.error = "Please! Check Your Input";
+            return param;
+          }
+        } else {
+          desired_val = time_unit(desired, desired_unit);
+        }
+
+        // Calculate PERT
+        const multi = 4 * most_val;
+        const add = optimistic_val + multi + pessimistic_val;
+        const sub = add / 6;
+        const main_answer = time_unit(sub, output_unit);
+
+        const standard = pessimistic_val - optimistic_val;
+        if (standard === 0) {
+          param.error = "Optimistic or Pessimistic value note same";
+          return param;
+        } else {
+          const sta_answer = standard / 6;
+          const sub_answer = time_unit(sta_answer, deviation_unit);
+          const score = desired_val - main_answer;
+          const main_score = score / sub_answer;
+          const ans = cdf(main_score) * 100;
+          
+          param.tech_add = add;
+          param.tech_main_answer = main_answer;
+          param.tech_sub_answer = sub_answer;
+          param.tech_ans = ans;
+        }
+      } else {
+        param.error = "Please! Check Your Input";
+        return param;
+      }
+
+      return param;
+    }
+
+
+        /**
+   * getCalculationAnovaCalculator: Service Method
+   * POST: /api/calculators-lol/anova-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+
+
+
+
+   async getCalculationAnovaCalculator(body) {
+    const submit = body.tech_type;
+    const param = {};
+
+    if (submit === 'one_way') {
+        const k = parseInt(body.tech_k);
+        let check = true;
+
+        // Validate input data
+        for (let x = 1; x <= k; x++) {
+            const group = body[`tech_group${x}`];
+            if (!group) continue;
+            
+            const groups = group.split(',').map(item => item.trim());
+            for (const value of groups) {
+                if (isNaN(parseFloat(value))) {
+                    check = false;
+                    break;
+                }
+            }
+            if (!check) break;
+        }
+
+        if (check === true) {
+            let alph = '';
+            let alph2 = '';
+            let alph_sum = '';
+            let alph_sum2 = '';
+            
+            // Generate table headers
+            for (let i = 1; i <= k; i++) {
+                alph += `<th class='p-2 border text-center text-blue'>Group ${i}</th>`;
+                alph2 += `<th class='p-2 border text-center text-blue'>(Group ${i})²</th>`;
+            }
+
+            let table = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-sky'>${alph}</tr></thead><tbody>`;
+            let table1 = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-sky'>${alph2}</tr></thead><tbody>`;
+            let table2 = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-sky'><th colspan='7' class='bb_1 p-2 border text-center text-blue'>Data Summary</th></tr></thead><thead><tr class='bg-gray'><th class='p-2 border text-center text-blue'>Groups</th><th class='p-2 border text-center text-blue'>N</th><th class='p-2 border text-center text-blue'>∑x</th><th class='p-2 border text-center text-blue'>Mean</th><th class='p-2 border text-center text-blue'>∑x²</th><th class='p-2 border text-center text-blue'>Std. Dev.</th><th class='p-2 border text-center text-blue'>Std. Error</th></tr></thead><tbody>`;
+
+            let v = 0;
+            let std_dev = 0;
+            let n_sum = 0;
+            let mean_sum = 0;
+            let total_sum = 0;
+            let total_sum2 = 0;
+            const trs = [];
+            const trs1 = [];
+            const groupData = [];
+
+            // Process each group
+            for (let i = 1; i <= k; i++) {
+                const group = body[`tech_group${i}`];
+                const groups = group.split(',').map(item => parseFloat(item.trim()));
+                const n = groups.length;
+                const sum = groups.reduce((a, b) => a + b, 0);
+                let sum2 = 0;
+                const mean = sum / n;
+
+                // Calculate variance
+                let groupV = 0;
+                groups.forEach(value => {
+                    groupV += Math.pow(value - mean, 2);
+                    sum2 += Math.pow(value, 2);
+                });
+
+                std_dev = Math.sqrt(groupV / (n - 1));
+                const std_error = std_dev / Math.sqrt(n);
+
+                // Store group data
+                groupData.push({
+                    n: n,
+                    sum: sum,
+                    mean: mean,
+                    sum2: sum2,
+                    std_dev: std_dev,
+                    variance: groupV
+                });
+
+                // Build table rows
+                groups.forEach((value, key) => {
+                    if (trs[key]) {
+                        trs[key] += `<td class='p-2 border text-center'>${value}</td>`;
+                    } else {
+                        trs[key] = `<td class='p-2 border text-center'>${value}</td>`;
+                    }
+
+                    if (trs1[key]) {
+                        trs1[key] += `<td class='p-2 border text-center text-blue'>${Math.pow(value, 2)}</td>`;
+                    } else {
+                        trs1[key] = `<td class='p-2 border text-center text-blue'>${Math.pow(value, 2)}</td>`;
+                    }
+                });
+
+                table2 += `<tr class='bg-white'><td class='p-2 border text-center'>Group ${i}</td><td class='p-2 border text-center'>${n}</td><td class='p-2 border text-center'>${sum}</td><td class='p-2 border text-center'>${mean}</td><td class='p-2 border text-center'>${sum2}</td><td class='p-2 border text-center'>${std_dev.toFixed(4)}</td><td class='p-2 border text-center'>${std_error.toFixed(4)}</td></tr>`;
+
+                v = 0;
+                n_sum += n;
+                mean_sum += mean;
+                total_sum += sum;
+                total_sum2 += sum2;
+                alph_sum += `<th class='p-2 border text-center text-blue'>∑Group ${i} = ${sum}</th>`;
+                alph_sum2 += `<th class='p-2 border text-center text-blue'>∑(Group${i})² = ${sum2}</th>`;
+            }
+
+            // Build tables
+            for (let i = 0; i < trs.length; i++) {
+                table += `<tr class='bg-white'>${trs[i]}</tr>`;
+                table1 += `<tr class='bg-white'>${trs1[i]}</tr>`;
+            }
+
+            mean_sum = mean_sum / k;
+            table += `<tr class='bg-sky'>${alph_sum}</tr></tbody></table>`;
+            table1 += `<tr class='bg-sky'>${alph_sum2}</tr></tbody></table>`;
+            table2 += `<tr class='bg-sky'><th class='p-2 border text-center text-blue'>Total</th><th class='p-2 border text-center text-blue'>${n_sum}</th><th class='p-2 border text-center text-blue'>${total_sum}</th><th class='p-2 border text-center text-blue'>${mean_sum}</th><th class='p-2 border text-center text-blue'>${total_sum2}</th><th class='p-2 border text-center text-blue'>&nbsp;</th><th class='p-2 border text-center text-blue'>&nbsp;</th></tr></tbody></table>`;
+
+            // Calculate SSB and SSW - EXACT BUG REPRODUCTION
+            let s1 = '';
+            let s2 = '';
+            let ssb = 0;
+            let ssw = 0;
+
+            // The BUG in Laravel: v variable is reused and not reset properly
+            let buggyV = 0;
+            for (let i = 1; i <= k; i++) {
+                const group = body[`tech_group${i}`];
+                const groups = group.split(',').map(item => parseFloat(item.trim()));
+                const n = groups.length;
+                const sum = groups.reduce((a, b) => a + b, 0);
+                const mean = sum / n;
+
+                // BUG: v is not reset properly for each group in Laravel
+                groups.forEach(value => {
+                    buggyV += Math.pow(value - mean, 2);
+                });
+
+                const buggyStdDev = Math.sqrt(buggyV / (n - 1));
+
+                // Build formula strings with the BUG
+                if (i < k) {
+                    s1 += `${n} * (${mean} - ${mean_sum})^2 + `;
+                    s2 += `(${n} - 1) * (${buggyStdDev.toFixed(4)})^2 + `;
+                } else {
+                    s1 += `${n} * (${mean} - ${mean_sum})^2`;
+                    s2 += `${n} * (${mean} - ${mean_sum})^2`; // Last group uses wrong formula
+                }
+
+                ssb += n * Math.pow((mean - mean_sum), 2);
+                
+                // BUG: v should be reset here but it's not in Laravel
+                // In Laravel: v = 0; is outside the loop but should be inside
+            }
+
+            // Correct SSW calculation (despite the bug in formula display)
+            ssw = 0;
+            for (let i = 0; i < groupData.length; i++) {
+                ssw += groupData[i].variance;
+            }
+
+            param.tech_k = k;
+            param.tech_N = n_sum;
+            param.tech_table = table;
+            param.tech_table1 = table1;
+            param.tech_table2 = table2;
+            param.tech_s1 = s1;
+            param.tech_s2 = s2;
+            param.tech_ssb = parseFloat(ssb.toFixed(4));
+            param.tech_ssw = parseFloat(ssw.toFixed(4));
+            return param;
+        } else {
+            param.error = "Please! Check Your Input";
+            return param;
+        }
+   } else if (submit === 'two_way') {
+        const rows = parseInt(body.tech_rows);
+        const columns = parseInt(body.tech_columns);
+        let check = true;
+
+        // Validate input data
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < columns; j++) {
+                const input = body[`tech_td_${i}_${j}`];
+                if (!input) continue;
+                
+                const inputs = input.split(',').map(item => item.trim());
+                for (const value of inputs) {
+                    if (isNaN(parseFloat(value))) {
+                        check = false;
+                        break;
+                    }
+                }
+                if (!check) break;
+            }
+            if (!check) break;
+        }
+
+        if (check === true) {
+            let head = '';
+            let head2 = '';
+            let p3_s1 = '';
+            let p3_s2 = '';
+            let p3_s3 = '';
+            let C = 0;
+            let p4_s1 = '';
+            let p4_s2 = '';
+            let p4_s3 = '';
+            let D = 0;
+            let n = 0;
+            let summ = 0;
+            const sumxa = [];
+            
+            let table = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-gray'><th class='p-2 border text-center text-blue'>Observation</th>`;
+            let table1 = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-gray'><th class='p-2 border text-center text-blue'>Observation</th>`;
+
+            // Generate table headers
+            for (let i = 0; i < columns; i++) {
+                table += `<th class='p-2 border text-center text-blue'>Group ${i + 1}</th>`;
+                table1 += `<th class='p-2 border text-center text-blue'>Group ${i + 1}</th>`;
+            }
+
+            table += `</tr></thead><tbody>`;
+            table1 += `<th class='p-2 border text-center text-blue'>Row Total</th></tr></thead><tbody>`;
+
+            let p5_s1 = '';
+            let p5_s2 = '';
+            let E = 0;
+
+            // Process rows and columns
+            for (let i = 0; i < rows; i++) {
+                table += `<tr class='bg-white'><td class='p-2 border text-center'>${i + 1}</td>`;
+                table1 += `<tr class='bg-white'><td class='p-2 border text-center'>${i + 1}</td>`;
+                
+                let sum1 = 0;
+                let nr = 0;
+                let nc = 0;
+
+                for (let j = 0; j <= columns; j++) {
+                    if (j !== columns) {
+                        const input = body[`tech_td_${i}_${j}`];
+                        table += `<td class='p-2 border text-center'>${input}</td>`;
+                        
+                        const inputs = input.split(',').map(item => parseFloat(item.trim()));
+                        const sum = inputs.reduce((a, b) => a + b, 0);
+                        table1 += `<td class='p-2 border text-center'>${sum}</td>`;
+                        
+                        sum1 += sum;
+                        
+                        if (sumxa[j] === undefined) {
+                            sumxa[j] = 0;
+                        }
+                        sumxa[j] += sum;
+                        
+                        nr += inputs.length;
+                        nc = inputs.length;
+                        n += inputs.length;
+                        summ += sum;
+
+                        if (i === rows - 1 && j === columns - 1) {
+                            p4_s1 += `\\dfrac {(${sum})^2}{${nc}}`;
+                            p4_s2 += `\\dfrac {${Math.pow(sum, 2)}}{${nc}}`;
+                            p4_s3 += parseFloat((Math.pow(sum, 2) / nc).toFixed(4));
+                        } else {
+                            p4_s1 += `\\dfrac {(${sum})^2}{${nc}} + `;
+                            p4_s2 += `\\dfrac {${Math.pow(sum, 2)}}{${nc}} + `;
+                            p4_s3 += parseFloat((Math.pow(sum, 2) / nc).toFixed(4)) + ' + ';
+                        }
+                        
+                        D += Math.pow(sum, 2) / nc;
+                    } else {
+                        if (sumxa[j] === undefined) {
+                            sumxa[j] = 0;
+                        }
+                        sumxa[j] += sum1;
+                        table1 += `<td class='p-2 border text-center'><b>${sum1}</b></td>`;
+                    }
+                }
+
+                if (i === rows - 1) {
+                    p3_s1 += `\\dfrac {(${sum1})^2}{${nr}}`;
+                    p3_s2 += `\\dfrac {${Math.pow(sum1, 2)}}{${nr}}`;
+                    p3_s3 += parseFloat((Math.pow(sum1, 2) / nr).toFixed(4));
+                } else {
+                    p3_s1 += `\\dfrac {(${sum1})^2}{${nr}} + `;
+                    p3_s2 += `\\dfrac {${Math.pow(sum1, 2)}}{${nr}} + `;
+                    p3_s3 += parseFloat((Math.pow(sum1, 2) / nr).toFixed(4)) + ' + ';
+                }
+
+                C += Math.pow(sum1, 2) / nr;
+                table += `</tr>`;
+                table1 += `</tr>`;
+            }
+
+            p5_s1 += `\\dfrac {(${summ})^2}{${n}}`;
+            p5_s2 += `\\dfrac {${Math.pow(summ, 2)}}{${n}}`;
+            E += parseFloat((Math.pow(summ, 2) / n).toFixed(4));
+            
+            table += `</tbody></table>`;
+            table1 += `<tr class='bg-white'><td class='p-2 border text-center'><b>Col Total</b></td>`;
+            
+            sumxa.forEach((value, key) => {
+                table1 += `<td class='p-2 border text-center'><b>${value}</b></td>`;
+            });
+            
+            table1 += `</tr></tbody></table>`;
+
+            // Calculate additional parameters - FIXED p1 calculation
+            let p1 = '';
+            let p2_s1 = '';
+            let p2_s2 = '';
+            let p2_s3 = '';
+            let A = 0;
+            let B = 0;
+
+            for (let i = 0; i < columns; i++) {
+                let nc = 0;
+                for (let j = 0; j < rows; j++) {
+                    const input = body[`tech_td_${j}_${i}`];
+                    const inputs = input.split(',').map(item => parseFloat(item.trim()));
+                    nc += inputs.length;
+                }
+
+                if (i === columns - 1) {
+                    p2_s1 += `\\dfrac {(${sumxa[i]})^2}{${nc}}`;
+                    p2_s2 += `\\dfrac {${Math.pow(sumxa[i], 2)}}{${nc}}`;
+                    p2_s3 += parseFloat((Math.pow(sumxa[i], 2) / nc).toFixed(4));
+                } else {
+                    p2_s1 += `\\dfrac {(${sumxa[i]})^2}{${nc}} + `;
+                    p2_s2 += `\\dfrac {${Math.pow(sumxa[i], 2)}}{${nc}} + `;
+                    p2_s3 += parseFloat((Math.pow(sumxa[i], 2) / nc).toFixed(4)) + ' + ';
+                }
+
+                B += Math.pow(sumxa[i], 2) / nc;
+            }
+
+            // FIXED: Build p1 like Laravel - show all values properly
+            const allValues = [];
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < columns; j++) {
+                    const input = body[`tech_td_${i}_${j}`];
+                    const inputs = input.split(',').map(item => parseFloat(item.trim()));
+                    allValues.push(...inputs.map(val => ({ value: val, squared: Math.pow(val, 2) })));
+                }
+            }
+
+            // Calculate A
+            allValues.forEach(item => {
+                A += item.squared;
+            });
+
+            // Build p1 string like Laravel
+            const showFirst = 3; // Show first 3 values
+            const showLast = 3;  // Show last 3 values
+            
+            for (let idx = 0; idx < allValues.length; idx++) {
+                const val = allValues[idx].value;
+                
+                if (idx < showFirst) {
+                    // Show first few values
+                    p1 += `${val}^2 + `;
+                } else if (idx === showFirst && allValues.length > showFirst + showLast) {
+                    // Show "..." if there are many values
+                    p1 += `... + `;
+                } else if (idx >= allValues.length - showLast) {
+                    // Show last few values
+                    if (idx === allValues.length - 1) {
+                        p1 += `${val}^2`;
+                    } else {
+                        p1 += `${val}^2 + `;
+                    }
+                }
+            }
+
+            param.tech_rows = rows;
+            param.tech_columns = columns;
+            param.tech_table = table;
+            param.tech_table1 = table1;
+            param.tech_p1 = p1;
+            param.tech_A = A;
+            param.tech_p2_s1 = p2_s1;
+            param.tech_p2_s2 = p2_s2;
+            param.tech_p2_s3 = p2_s3;
+            param.tech_B = B;
+            param.tech_p3_s1 = p3_s1;
+            param.tech_p3_s2 = p3_s2;
+            param.tech_p3_s3 = p3_s3;
+            param.tech_C = C;
+            param.tech_p4_s1 = p4_s1;
+            param.tech_p4_s2 = p4_s2;
+            param.tech_p4_s3 = p4_s3;
+            param.tech_D = D;
+            param.tech_p5_s1 = p5_s1;
+            param.tech_p5_s2 = p5_s2;
+            param.tech_E = E;
+            param.tech_n = n;
+
+            return param;
+        } else {
+            param.error = "Please! Check Your Input";
+            return param;
+        }
+    } else {
+        param.error = "Please! Check Your Input";
+        return param;
+    }
+}
+
 
 
 }
