@@ -17053,6 +17053,32 @@ router.post(
   })
 );
 
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/ideal-gas-law-calculator
+ */
+
+router.post(
+  "/ideal-gas-law-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationNormalIdealGasLawCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
 
 
 
