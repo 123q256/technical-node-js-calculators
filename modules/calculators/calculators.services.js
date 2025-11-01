@@ -72245,14 +72245,6 @@ async getCalculationNormalCriticalValueCalculator(body) {
 }
  
 
-
-
-
-
-
-
-
-
      /**
    * getCalculationNormalDistributionCalculator: Service Method
    * POST: /api/calculators-lol/normal-distribution-calculator
@@ -72260,28 +72252,577 @@ async getCalculationNormalCriticalValueCalculator(body) {
    * @returns Object with message property having success method
    */
 
-  async getCalculationNormalDistributionCalculator(body) {
-     const {
-         operations,
-         find_compare,
-         f_first,
-         f_second,
-         f_third,
-         mean,
-         deviation,
-         a,
-         b,
-         c,
-         d,
-         e1,
-         e2,
-         f
-     } = body;
+//   async getCalculationNormalDistributionCalculator(body) {
+//      const {
+//          operations,
+//          find_compare,
+//          f_first,
+//          f_second,
+//          f_third,
+//          mean,
+//          deviation,
+//          a,
+//          b,
+//          c,
+//          d,
+//          e1,
+//          e2,
+//          f
+//      } = body;
  
-     const result = {};
+//      const result = {};
  
-     // Z-Table for normal distribution lookup
-     const z_table = {
+//      // Z-Table for normal distribution lookup
+//      const z_table = {
+//          '-4.0': { 9: 0.00002, 8: 0.00002, 7: 0.00002, 6: 0.00002, 5: 0.00003, 4: 0.00003, 3: 0.00003, 2: 0.00003, 1: 0.00003, 0: 0.00003 },
+//          '-3.9': { 9: 0.00003, 8: 0.00003, 7: 0.00004, 6: 0.00004, 5: 0.00004, 4: 0.00004, 3: 0.00004, 2: 0.00004, 1: 0.00005, 0: 0.00005 },
+//          '-3.8': { 9: 0.00005, 8: 0.00005, 7: 0.00005, 6: 0.00006, 5: 0.00006, 4: 0.00006, 3: 0.00006, 2: 0.00007, 1: 0.00007, 0: 0.00007 },
+//          '-3.7': { 9: 0.00008, 8: 0.00008, 7: 0.00008, 6: 0.00008, 5: 0.00009, 4: 0.00009, 3: 0.00010, 2: 0.00010, 1: 0.00010, 0: 0.00011 },
+//          '-3.6': { 9: 0.00011, 8: 0.00012, 7: 0.00012, 6: 0.00013, 5: 0.00013, 4: 0.00014, 3: 0.00014, 2: 0.00015, 1: 0.00015, 0: 0.00016 },
+//          '-3.5': { 9: 0.00017, 8: 0.00017, 7: 0.00018, 6: 0.00019, 5: 0.00019, 4: 0.00020, 3: 0.00021, 2: 0.00022, 1: 0.00022, 0: 0.00023 },
+//          '-3.4': { 9: 0.00024, 8: 0.00025, 7: 0.00026, 6: 0.00027, 5: 0.00028, 4: 0.00029, 3: 0.00030, 2: 0.00031, 1: 0.00032, 0: 0.00034 },
+//          '-3.3': { 9: 0.00035, 8: 0.00036, 7: 0.00038, 6: 0.00039, 5: 0.00040, 4: 0.00042, 3: 0.00043, 2: 0.00045, 1: 0.00047, 0: 0.00048 },
+//          '-3.2': { 9: 0.00050, 8: 0.00052, 7: 0.00054, 6: 0.00056, 5: 0.00058, 4: 0.00060, 3: 0.00062, 2: 0.00064, 1: 0.00066, 0: 0.00069 },
+//          '-3.1': { 9: 0.00071, 8: 0.00074, 7: 0.00076, 6: 0.00079, 5: 0.00082, 4: 0.00084, 3: 0.00087, 2: 0.00090, 1: 0.00094, 0: 0.00097 },
+//          '-3.0': { 9: 0.00100, 8: 0.00104, 7: 0.00107, 6: 0.00111, 5: 0.00114, 4: 0.00118, 3: 0.00122, 2: 0.00126, 1: 0.00131, 0: 0.00135 },
+//          '-2.9': { 9: 0.00139, 8: 0.00144, 7: 0.00149, 6: 0.00154, 5: 0.00159, 4: 0.00164, 3: 0.00169, 2: 0.00175, 1: 0.00181, 0: 0.00187 },
+//          '-2.8': { 9: 0.00193, 8: 0.00199, 7: 0.00205, 6: 0.00212, 5: 0.00219, 4: 0.00226, 3: 0.00233, 2: 0.00240, 1: 0.00248, 0: 0.00256 },
+//          '-2.7': { 9: 0.00264, 8: 0.00272, 7: 0.00280, 6: 0.00289, 5: 0.00298, 4: 0.00307, 3: 0.00317, 2: 0.00326, 1: 0.00336, 0: 0.00347 },
+//          '-2.6': { 9: 0.00357, 8: 0.00368, 7: 0.00379, 6: 0.00391, 5: 0.00402, 4: 0.00415, 3: 0.00427, 2: 0.00440, 1: 0.00453, 0: 0.00466 },
+//          '-2.5': { 9: 0.00480, 8: 0.00494, 7: 0.00508, 6: 0.00523, 5: 0.00539, 4: 0.00554, 3: 0.00570, 2: 0.00587, 1: 0.00604, 0: 0.00621 },
+//          '-2.4': { 9: 0.00639, 8: 0.00657, 7: 0.00676, 6: 0.00695, 5: 0.00714, 4: 0.00734, 3: 0.00755, 2: 0.00776, 1: 0.00798, 0: 0.00820 },
+//          '-2.3': { 9: 0.00842, 8: 0.00866, 7: 0.00889, 6: 0.00914, 5: 0.00939, 4: 0.00964, 3: 0.00990, 2: 0.01017, 1: 0.01044, 0: 0.01072 },
+//          '-2.2': { 9: 0.01101, 8: 0.01130, 7: 0.01160, 6: 0.01191, 5: 0.01222, 4: 0.01255, 3: 0.01287, 2: 0.01321, 1: 0.01355, 0: 0.01390 },
+//          '-2.1': { 9: 0.01426, 8: 0.01463, 7: 0.01500, 6: 0.01539, 5: 0.01578, 4: 0.01618, 3: 0.01659, 2: 0.01700, 1: 0.01743, 0: 0.01786 },
+//          '-2.0': { 9: 0.01831, 8: 0.01876, 7: 0.01923, 6: 0.01970, 5: 0.02018, 4: 0.02068, 3: 0.02118, 2: 0.02169, 1: 0.02222, 0: 0.02275 },
+//          '-1.9': { 9: 0.02330, 8: 0.02385, 7: 0.02442, 6: 0.02500, 5: 0.02559, 4: 0.02619, 3: 0.02680, 2: 0.02743, 1: 0.02807, 0: 0.02872 },
+//          '-1.8': { 9: 0.02938, 8: 0.03005, 7: 0.03074, 6: 0.03144, 5: 0.03216, 4: 0.03288, 3: 0.03362, 2: 0.03438, 1: 0.03515, 0: 0.03593 },
+//          '-1.7': { 9: 0.03673, 8: 0.03754, 7: 0.03836, 6: 0.03920, 5: 0.04006, 4: 0.04093, 3: 0.04182, 2: 0.04272, 1: 0.04363, 0: 0.04457 },
+//          '-1.6': { 9: 0.04551, 8: 0.04648, 7: 0.04746, 6: 0.04846, 5: 0.04947, 4: 0.05050, 3: 0.05155, 2: 0.05262, 1: 0.05370, 0: 0.05480 },
+//          '-1.5': { 9: 0.0559, 8: 0.0571, 7: 0.0582, 6: 0.0594, 5: 0.0606, 4: 0.0618, 3: 0.0630, 2: 0.0643, 1: 0.0655, 0: 0.0668 },
+//          '-1.4': { 9: 0.0681, 8: 0.0694, 7: 0.0708, 6: 0.0721, 5: 0.0735, 4: 0.0749, 3: 0.0764, 2: 0.0778, 1: 0.0793, 0: 0.0808 },
+//          '-1.3': { 9: 0.0823, 8: 0.0838, 7: 0.0853, 6: 0.0869, 5: 0.0885, 4: 0.0901, 3: 0.0918, 2: 0.0934, 1: 0.0951, 0: 0.0968 },
+//          '-1.2': { 9: 0.0985, 8: 0.1003, 7: 0.1020, 6: 0.1038, 5: 0.1056, 4: 0.1075, 3: 0.1093, 2: 0.1112, 1: 0.1131, 0: 0.1151 },
+//          '-1.1': { 9: 0.1170, 8: 0.1190, 7: 0.1210, 6: 0.1230, 5: 0.1251, 4: 0.1271, 3: 0.1292, 2: 0.1314, 1: 0.1335, 0: 0.1357 },
+//          '-1.0': { 9: 0.1379, 8: 0.1401, 7: 0.1423, 6: 0.1446, 5: 0.1469, 4: 0.1492, 3: 0.1515, 2: 0.1539, 1: 0.1562, 0: 0.1587 },
+//          '-0.9': { 9: 0.1611, 8: 0.1635, 7: 0.1660, 6: 0.1685, 5: 0.1711, 4: 0.1736, 3: 0.1762, 2: 0.1788, 1: 0.1814, 0: 0.1841 },
+//          '-0.8': { 9: 0.1867, 8: 0.1894, 7: 0.1922, 6: 0.1949, 5: 0.1977, 4: 0.2005, 3: 0.2033, 2: 0.2061, 1: 0.2090, 0: 0.2119 },
+//          '-0.7': { 9: 0.2148, 8: 0.2177, 7: 0.2206, 6: 0.2236, 5: 0.2266, 4: 0.2296, 3: 0.2327, 2: 0.2358, 1: 0.2389, 0: 0.2420 },
+//          '-0.6': { 9: 0.2451, 8: 0.2483, 7: 0.2514, 6: 0.2546, 5: 0.2578, 4: 0.2611, 3: 0.2643, 2: 0.2676, 1: 0.2709, 0: 0.2743 },
+//          '-0.5': { 9: 0.2776, 8: 0.2810, 7: 0.2843, 6: 0.2877, 5: 0.2912, 4: 0.2946, 3: 0.2981, 2: 0.3015, 1: 0.3050, 0: 0.3085 },
+//          '-0.4': { 9: 0.3121, 8: 0.3156, 7: 0.3192, 6: 0.3228, 5: 0.3264, 4: 0.3300, 3: 0.3336, 2: 0.3372, 1: 0.3409, 0: 0.3446 },
+//          '-0.3': { 9: 0.3483, 8: 0.3520, 7: 0.3557, 6: 0.3594, 5: 0.3632, 4: 0.3669, 3: 0.3707, 2: 0.3745, 1: 0.3783, 0: 0.3821 },
+//          '-0.2': { 9: 0.3829, 8: 0.3897, 7: 0.3936, 6: 0.3974, 5: 0.4013, 4: 0.4052, 3: 0.4090, 2: 0.4129, 1: 0.4168, 0: 0.4207 },
+//          '-0.1': { 9: 0.4247, 8: 0.4286, 7: 0.4325, 6: 0.4364, 5: 0.4404, 4: 0.4443, 3: 0.4483, 2: 0.4522, 1: 0.4562, 0: 0.4602 },
+//          '-0.0': { 9: 0.4641, 8: 0.4681, 7: 0.4721, 6: 0.4761, 5: 0.4801, 4: 0.4840, 3: 0.4880, 2: 0.4920, 1: 0.4960, 0: 0.5000 },
+//          '0.0': { 0: 0.50000, 1: 0.50399, 2: 0.50798, 3: 0.51197, 4: 0.51595, 5: 0.51994, 6: 0.52392, 7: 0.52790, 8: 0.53188, 9: 0.53586 },
+//          '0.1': { 0: 0.53980, 1: 0.54380, 2: 0.54776, 3: 0.55172, 4: 0.55567, 5: 0.55966, 6: 0.56360, 7: 0.56749, 8: 0.57142, 9: 0.57535 },
+//          '0.2': { 0: 0.57930, 1: 0.58317, 2: 0.58706, 3: 0.59095, 4: 0.59483, 5: 0.59871, 6: 0.60257, 7: 0.60642, 8: 0.61026, 9: 0.61409 },
+//          '0.3': { 0: 0.61791, 1: 0.62172, 2: 0.62552, 3: 0.62930, 4: 0.63307, 5: 0.63683, 6: 0.64058, 7: 0.64431, 8: 0.64803, 9: 0.65173 },
+//          '0.4': { 0: 0.65542, 1: 0.65910, 2: 0.66276, 3: 0.66640, 4: 0.67003, 5: 0.67364, 6: 0.67724, 7: 0.68082, 8: 0.68439, 9: 0.68793 },
+//          '0.5': { 0: 0.69146, 1: 0.69497, 2: 0.69847, 3: 0.70194, 4: 0.70540, 5: 0.70884, 6: 0.71226, 7: 0.71566, 8: 0.71904, 9: 0.72240 },
+//          '0.6': { 0: 0.72575, 1: 0.72907, 2: 0.73237, 3: 0.73565, 4: 0.73891, 5: 0.74215, 6: 0.74537, 7: 0.74857, 8: 0.75175, 9: 0.75490 },
+//          '0.7': { 0: 0.75804, 1: 0.76115, 2: 0.76424, 3: 0.76730, 4: 0.77035, 5: 0.77337, 6: 0.77637, 7: 0.77935, 8: 0.78230, 9: 0.78524 },
+//          '0.8': { 0: 0.78814, 1: 0.79103, 2: 0.79389, 3: 0.79673, 4: 0.79955, 5: 0.80234, 6: 0.80511, 7: 0.80785, 8: 0.81057, 9: 0.81327 },
+//          '0.9': { 0: 0.81594, 1: 0.81859, 2: 0.82121, 3: 0.82381, 4: 0.82639, 5: 0.82894, 6: 0.83147, 7: 0.83398, 8: 0.83646, 9: 0.83891 },
+//          '1.0': { 0: 0.84134, 1: 0.84375, 2: 0.84614, 3: 0.84849, 4: 0.85083, 5: 0.85314, 6: 0.85543, 7: 0.85769, 8: 0.85993, 9: 0.86214 },
+//          '1.1': { 0: 0.86433, 1: 0.86650, 2: 0.86864, 3: 0.87076, 4: 0.87286, 5: 0.87493, 6: 0.87698, 7: 0.87900, 8: 0.88100, 9: 0.88298 },
+//          '1.2': { 0: 0.88493, 1: 0.88686, 2: 0.88877, 3: 0.89065, 4: 0.89251, 5: 0.89435, 6: 0.89617, 7: 0.89796, 8: 0.89973, 9: 0.90147 },
+//          '1.3': { 0: 0.90320, 1: 0.90490, 2: 0.90658, 3: 0.90824, 4: 0.90988, 5: 0.91149, 6: 0.91308, 7: 0.91466, 8: 0.91621, 9: 0.91774 },
+//          '1.4': { 0: 0.91924, 1: 0.92073, 2: 0.92220, 3: 0.92364, 4: 0.92507, 5: 0.92647, 6: 0.92785, 7: 0.92922, 8: 0.93056, 9: 0.93189 },
+//          '1.5': { 0: 0.93319, 1: 0.93448, 2: 0.93574, 3: 0.93699, 4: 0.93822, 5: 0.93943, 6: 0.94062, 7: 0.94179, 8: 0.94295, 9: 0.94408 },
+//          '1.6': { 0: 0.94520, 1: 0.94630, 2: 0.94738, 3: 0.94845, 4: 0.94950, 5: 0.95053, 6: 0.95154, 7: 0.95254, 8: 0.95352, 9: 0.95449 },
+//          '1.7': { 0: 0.95543, 1: 0.95637, 2: 0.95728, 3: 0.95818, 4: 0.95907, 5: 0.95994, 6: 0.96080, 7: 0.96164, 8: 0.96246, 9: 0.96327 },
+//          '1.8': { 0: 0.96407, 1: 0.96485, 2: 0.96562, 3: 0.96638, 4: 0.96712, 5: 0.96784, 6: 0.96856, 7: 0.96926, 8: 0.96995, 9: 0.97062 },
+//          '1.9': { 0: 0.97128, 1: 0.97193, 2: 0.97257, 3: 0.97320, 4: 0.97381, 5: 0.97441, 6: 0.97500, 7: 0.97558, 8: 0.97615, 9: 0.97670 },
+//          '2.0': { 0: 0.97725, 1: 0.97778, 2: 0.97831, 3: 0.97882, 4: 0.97932, 5: 0.97982, 6: 0.98030, 7: 0.98077, 8: 0.98124, 9: 0.98169 },
+//          '2.1': { 0: 0.98214, 1: 0.98257, 2: 0.98300, 3: 0.98341, 4: 0.98382, 5: 0.98422, 6: 0.98461, 7: 0.98500, 8: 0.98537, 9: 0.98574 },
+//          '2.2': { 0: 0.98610, 1: 0.98645, 2: 0.98679, 3: 0.98713, 4: 0.98745, 5: 0.98778, 6: 0.98809, 7: 0.98840, 8: 0.98870, 9: 0.98899 },
+//          '2.3': { 0: 0.98928, 1: 0.98956, 2: 0.98983, 3: 0.99010, 4: 0.99036, 5: 0.99061, 6: 0.99086, 7: 0.99111, 8: 0.99134, 9: 0.99158 },
+//          '2.4': { 0: 0.99180, 1: 0.99202, 2: 0.99224, 3: 0.99245, 4: 0.99266, 5: 0.99286, 6: 0.99305, 7: 0.99324, 8: 0.99343, 9: 0.99361 },
+//          '2.5': { 0: 0.99379, 1: 0.99396, 2: 0.99413, 3: 0.99430, 4: 0.99446, 5: 0.99461, 6: 0.99477, 7: 0.99492, 8: 0.99506, 9: 0.99520 },
+//          '2.6': { 0: 0.99534, 1: 0.99547, 2: 0.99560, 3: 0.99573, 4: 0.99585, 5: 0.99598, 6: 0.99609, 7: 0.99621, 8: 0.99632, 9: 0.99643 },
+//          '2.7': { 0: 0.99653, 1: 0.99664, 2: 0.99674, 3: 0.99683, 4: 0.99693, 5: 0.99702, 6: 0.99711, 7: 0.99720, 8: 0.99728, 9: 0.99736 },
+//          '2.8': { 0: 0.99744, 1: 0.99752, 2: 0.99760, 3: 0.99767, 4: 0.99774, 5: 0.99781, 6: 0.99788, 7: 0.99795, 8: 0.99801, 9: 0.99807 },
+//          '2.9': { 0: 0.99813, 1: 0.99819, 2: 0.99825, 3: 0.99831, 4: 0.99836, 5: 0.99841, 6: 0.99846, 7: 0.99851, 8: 0.99856, 9: 0.99861 },
+//          '3.0': { 0: 0.99865, 1: 0.99869, 2: 0.99874, 3: 0.99878, 4: 0.99882, 5: 0.99886, 6: 0.99889, 7: 0.99893, 8: 0.99896, 9: 0.99900 },
+//          '3.1': { 0: 0.99903, 1: 0.99906, 2: 0.99910, 3: 0.99913, 4: 0.99916, 5: 0.99918, 6: 0.99921, 7: 0.99924, 8: 0.99926, 9: 0.99929 },
+//          '3.2': { 0: 0.99931, 1: 0.99934, 2: 0.99936, 3: 0.99938, 4: 0.99940, 5: 0.99942, 6: 0.99944, 7: 0.99946, 8: 0.99948, 9: 0.99950 },
+//          '3.3': { 0: 0.99952, 1: 0.99953, 2: 0.99955, 3: 0.99957, 4: 0.99958, 5: 0.99960, 6: 0.99961, 7: 0.99962, 8: 0.99964, 9: 0.99965 },
+//          '3.4': { 0: 0.99966, 1: 0.99968, 2: 0.99969, 3: 0.99970, 4: 0.99971, 5: 0.99972, 6: 0.99973, 7: 0.99974, 8: 0.99975, 9: 0.99976 },
+//          '3.5': { 0: 0.99977, 1: 0.99978, 2: 0.99978, 3: 0.99979, 4: 0.99980, 5: 0.99981, 6: 0.99981, 7: 0.99982, 8: 0.99983, 9: 0.99983 },
+//          '3.6': { 0: 0.99984, 1: 0.99985, 2: 0.99985, 3: 0.99986, 4: 0.99986, 5: 0.99987, 6: 0.99987, 7: 0.99988, 8: 0.99988, 9: 0.99989 },
+//          '3.7': { 0: 0.99989, 1: 0.99990, 2: 0.99990, 3: 0.99990, 4: 0.99991, 5: 0.99991, 6: 0.99992, 7: 0.99992, 8: 0.99992, 9: 0.99992 },
+//          '3.8': { 0: 0.99993, 1: 0.99993, 2: 0.99993, 3: 0.99994, 4: 0.99994, 5: 0.99994, 6: 0.99994, 7: 0.99995, 8: 0.99995, 9: 0.99995 },
+//          '3.9': { 0: 0.99995, 1: 0.99995, 2: 0.99996, 3: 0.99996, 4: 0.99996, 5: 0.99996, 6: 0.99996, 7: 0.99996, 8: 0.99997, 9: 0.99997 },
+//          '4.0': { 0: 0.99997, 1: 0.99997, 2: 0.99997, 3: 0.99997, 4: 0.99997, 5: 0.99997, 6: 0.99998, 7: 0.99998, 8: 0.99998, 9: 0.99998 }
+//      };
+ 
+//      // Helper function to lookup z-score in table
+//      function zain(rz) {
+//          const rz_check = String(rz).split('');
+//          let rz_val1, rz_val2;
+ 
+//          if (rz_check.length > 1) {
+//              if (rz < 0) {
+//                  if (rz_check.length === 2) {
+//                      rz_val1 = `${rz_check[0]}${rz_check[1]}.0`;
+//                      rz_val2 = 0;
+//                  } else {
+//                      rz_val1 = String(rz).substring(0, 4);
+//                      rz_val2 = String(rz).length > 4 ? parseInt(String(rz)[4]) : 0;
+//                  }
+//              } else {
+//                  rz_val1 = String(rz).substring(0, 3);
+//                  rz_val2 = String(rz).length > 3 ? parseInt(String(rz)[3]) : 0;
+//              }
+//          } else {
+//              rz_val1 = `${rz_check[0]}.0`;
+//              rz_val2 = 0;
+//          }
+ 
+//          let ltpv, rtpv;
+//          if (rz >= 4.1) {
+//              ltpv = 1;
+//              rtpv = 0;
+//          } else if (rz <= -4.1) {
+//              ltpv = 0;
+//              rtpv = 1;
+//          } else {
+//              ltpv = parseFloat((z_table[rz_val1]?.[rz_val2] || 0).toFixed(5));
+//              rtpv = parseFloat((1 - ltpv).toFixed(5));
+//          }
+ 
+//          const ttcl = ltpv - rtpv;
+//          const ttpv = 1 - Math.abs(ttcl);
+//          const z_url = getZUrl(rz);
+ 
+//          return [z_url, ltpv, rtpv, ttpv, ttcl, parseFloat(rz.toFixed(4))];
+//      }
+ 
+//      // Helper function to get z_url based on rz value
+//      function getZUrl(rz) {
+//          const ranges = [
+//              { min: -Infinity, max: -4.125, url: 'z_score_-4.25' },
+//              { min: -4.125, max: -3.876, url: 'z_score_-4' },
+//              { min: -3.876, max: -3.626, url: 'z_score_-3.75' },
+//              { min: -3.626, max: -3.376, url: 'z_score_-3.5' },
+//              { min: -3.376, max: -3.126, url: 'z_score_-3.25' },
+//              { min: -3.126, max: -2.876, url: 'z_score_-3' },
+//              { min: -2.876, max: -2.626, url: 'z_score_-2.75' },
+//              { min: -2.626, max: -2.376, url: 'z_score_-2.5' },
+//              { min: -2.376, max: -2.126, url: 'z_score_-2.25' },
+//              { min: -2.126, max: -1.876, url: 'z_score_-2' },
+//              { min: -1.876, max: -1.626, url: 'z_score_-1.75' },
+//              { min: -1.626, max: -1.376, url: 'z_score_-1.5' },
+//              { min: -1.376, max: -1.126, url: 'z_score_-1.25' },
+//              { min: -1.126, max: -0.876, url: 'z_score_-1' },
+//              { min: -0.876, max: -0.626, url: 'z_score_-0.75' },
+//              { min: -0.626, max: -0.376, url: 'z_score_-0.5' },
+//              { min: -0.376, max: -0.126, url: 'z_score_-0.25' },
+//              { min: -0.126, max: 0.125, url: 'z_score_0' },
+//              { min: 0.125, max: 0.375, url: 'z_score_0.25' },
+//              { min: 0.375, max: 0.625, url: 'z_score_0.5' },
+//              { min: 0.625, max: 0.875, url: 'z_score_0.75' },
+//              { min: 0.875, max: 1.125, url: 'z_score_1' },
+//              { min: 1.125, max: 1.375, url: 'z_score_1.25' },
+//              { min: 1.375, max: 1.625, url: 'z_score_1.5' },
+//              { min: 1.625, max: 1.875, url: 'z_score_1.75' },
+//              { min: 1.875, max: 2.125, url: 'z_score_2' },
+//              { min: 2.125, max: 2.375, url: 'z_score_2.25' },
+//              { min: 2.375, max: 2.625, url: 'z_score_2.5' },
+//              { min: 2.625, max: 2.875, url: 'z_score_2.75' },
+//              { min: 2.875, max: 3.125, url: 'z_score_3' },
+//              { min: 3.125, max: 3.375, url: 'z_score_3.25' },
+//              { min: 3.375, max: 3.625, url: 'z_score_3.5' },
+//              { min: 3.625, max: 3.875, url: 'z_score_3.75' },
+//              { min: 3.875, max: 4.125, url: 'z_score_4' },
+//              { min: 4.125, max: Infinity, url: 'z_score_4.25' }
+//          ];
+ 
+//          for (const range of ranges) {
+//              if (rz > range.min && rz < range.max) {
+//                  return range.url;
+//              }
+//          }
+//          return 'z_score_0';
+//      }
+ 
+//      // Inverse normal distribution (zinv function)
+//      function zinv(p) {
+//          const a1 = -39.6968302866538;
+//          const a2 = 220.946098424521;
+//          const a3 = -275.928510446969;
+//          const a4 = 138.357751867269;
+//          const a5 = -30.6647980661472;
+//          const a6 = 2.50662827745924;
+//          const b1 = -54.4760987982241;
+//          const b2 = 161.585836858041;
+//          const b3 = -155.698979859887;
+//          const b4 = 66.8013118877197;
+//          const b5 = -13.2806815528857;
+//          const c1 = -7.78489400243029E-03;
+//          const c2 = -0.322396458041136;
+//          const c3 = -2.40075827716184;
+//          const c4 = -2.54973253934373;
+//          const c5 = 4.37466414146497;
+//          const c6 = 2.93816398269878;
+//          const d1 = 7.78469570904146E-03;
+//          const d2 = 0.32246712907004;
+//          const d3 = 2.445134137143;
+//          const d4 = 3.75440866190742;
+//          const p_low = 0.02425;
+//          const p_high = 1 - p_low;
+ 
+//          let retVal;
+//          if (p < 0 || p > 1) {
+//              retVal = 0;
+//          } else if (p < p_low) {
+//              const q = Math.sqrt(-2 * Math.log(p));
+//              retVal = (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) / ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
+//          } else if (p <= p_high) {
+//              const q = p - 0.5;
+//              const r = q * q;
+//              retVal = (((((a1 * r + a2) * r + a3) * r + a4) * r + a5) * r + a6) * q / (((((b1 * r + b2) * r + b3) * r + b4) * r + b5) * r + 1);
+//          } else {
+//              const q = Math.sqrt(-2 * Math.log(1 - p));
+//              retVal = -(((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) / ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
+//          }
+//          return retVal;
+//      }
+ 
+//      // Main calculation logic
+//      if (operations === "3") {
+//          if (find_compare === "1") {
+//              if (isNumeric(f_first) && isNumeric(f_second) && isNumeric(f_third)) {
+//                  if (f_first > 0 && f_first < 1) {
+//                      if (f_third > 0) {
+//                          let x1 = zinv(f_first);
+//                          x1 = (-1 * f_second) + f_third * x1;
+//                          const ll = -1 * x1;
+//                          const above = Math.round(10000000 * ll) / 10000000;
+ 
+//                          x1 = zinv(f_first);
+//                          x1 = f_second + f_third * x1;
+//                          const blow = Math.round(10000000 * x1) / 10000000;
+ 
+//                          const f_first2 = f_first / 2;
+//                          x1 = zinv(0.5 - f_first2);
+//                          const ll_val = Math.round((f_second + f_third * x1) * 100000000) / 100000000;
+//                          const ul = Math.round((f_second + f_third * (-1 * x1)) * 100000000) / 100000000;
+ 
+//                          x1 = zinv(f_first2);
+//                          const ll1 = Math.round((f_second + f_third * x1) * 100000000) / 100000000;
+//                          const ul1 = Math.round((f_second + f_third * (-1 * x1)) * 100000000) / 100000000;
+ 
+//                          result.z_url = getZUrl(f_first);
+//                          result.above_first = above;
+//                          result.blow_first = blow;
+//                          result.ll_first = ll_val;
+//                          result.ul_first = ul;
+//                          result.ll1_first = ll1;
+//                          result.ul1_first = ul1;
+//                          result.option1 = 1;
+//                      } else {
+//                          result.error = "The standard deviation must be greater than zero.";
+//                          return result;
+//                      }
+//                  } else {
+//                      result.error = "Probability must be between 0 and 1.";
+//                      return result;
+//                  }
+//              } else {
+//                  result.error = "Please! Check Your Input";
+//                  return result;
+//              }
+//          } else if (find_compare === "2") {
+//              if (isNumeric(f_first) && isNumeric(f_second) && isNumeric(f_third)) {
+//                  if (f_third > 0) {
+//                      const ms_first = f_first - f_second;
+//                      const rz_first = (f_first - f_second) / f_third;
+//                      const zaini_first = zain(rz_first);
+ 
+//                      result.z_url = getZUrl(Math.abs(zaini_first[1]));
+//                      result.z_url_first = zaini_first[0];
+//                      result.ltpv_first = Math.abs(zaini_first[1]);
+//                      result.rtpv_first = Math.abs(zaini_first[2]);
+//                      result.ttpv_first = Math.abs(zaini_first[3]);
+//                      result.ttcl_first = Math.abs(zaini_first[4]);
+//                      result.ms_first = ms_first;
+//                      result.rz_first = Math.round(rz_first * 10000) / 10000;
+//                      result.option2 = 2;
+//                  } else {
+//                      result.error = "The standard deviation must be greater than zero.";
+//                      return result;
+//                  }
+//              } else {
+//                  result.error = "Please! Check Your Input";
+//                  return result;
+//              }
+//          }
+//      } else if (operations === "4") {
+//          // Handle 'a' parameter
+//          if (isNumeric(a)) {
+//              if (isNumeric(mean) && isNumeric(deviation) && isNumeric(a)) {
+//                  if (deviation > 0) {
+//                      const ms = a - mean;
+//                      const rz = (a - mean) / deviation;
+//                      const zaini = zain(rz);
+ 
+//                      result.z_url = getZUrl(Math.abs(zaini[1]));
+//                      result.ltpv = Math.abs(zaini[1]);
+//                      result.rtpv = Math.abs(zaini[2]);
+//                      result.ttpv = Math.abs(zaini[3]);
+//                      result.ttcl = Math.abs(zaini[4]);
+//                      result.ms = ms;
+//                      result.rz = Math.round(rz * 10000) / 10000;
+//                      result.a = a;
+//                  } else {
+//                      result.error = "The standard deviation must be greater than zero.";
+//                      return result;
+//                  }
+//              } else {
+//                  result.error = "Please! Check Your Input";
+//                  return result;
+//              }
+//          }
+ 
+//          // Handle 'b' parameter
+//          if (isNumeric(b)) {
+//              if (isNumeric(mean) && isNumeric(deviation) && isNumeric(b)) {
+//                  if (deviation > 0) {
+//                      const ms2 = b - mean;
+//                      const rz2 = (b - mean) / deviation;
+//                      const zaini2 = zain(rz2);
+ 
+//                      result.z_url2 = getZUrl(Math.abs(zaini2[2]));
+//                      result.z_url_second = zaini2[0];
+//                      result.ltpv2 = Math.abs(zaini2[1]);
+//                      result.rtpv2 = Math.abs(zaini2[2]);
+//                      result.ttpv2 = Math.abs(zaini2[3]);
+//                      result.ttcl2 = Math.abs(zaini2[4]);
+//                      result.ms2 = ms2;
+//                      result.rz2 = Math.round(rz2 * 10000) / 10000;
+//                      result.b = b;
+//                  } else {
+//                      result.error = "The standard deviation must be greater than zero.";
+//                      return result;
+//                  }
+//              } else {
+//                  result.error = "Please! Check Your Input";
+//                  return result;
+//              }
+//          }
+ 
+//          // Handle 'c' parameter
+//          if (isNumeric(c)) {
+//              if (isNumeric(mean) && isNumeric(deviation) && isNumeric(c)) {
+//                  if (deviation > 0) {
+//                      if (c > 0 && c < 1) {
+//                          let x1 = zinv(c);
+//                          x1 = (-1 * mean) + deviation * x1;
+//                          const ll = -1 * x1;
+//                          const above = Math.round(10000000 * ll) / 10000000;
+ 
+//                          x1 = zinv(c);
+//                          x1 = mean + deviation * x1;
+//                          const blow = Math.round(10000000 * x1) / 10000000;
+ 
+//                          const c2 = c / 2;
+//                          x1 = zinv(0.5 - c2);
+//                          const ll_val = Math.round((mean + deviation * x1) * 100000000) / 100000000;
+//                          const ul = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
+ 
+//                          x1 = zinv(c2);
+//                          const ll1 = Math.round((mean + deviation * x1) * 100000000) / 100000000;
+//                          const ul1 = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
+ 
+//                          result.z_urlc = getZUrl(c);
+//                          result.above = above;
+//                          result.blow = blow;
+//                          result.ll = ll_val;
+//                          result.ul = ul;
+//                          result.ll1 = ll1;
+//                          result.ul1 = ul1;
+//                          result.c = c;
+//                      } else {
+//                          result.error = "Probability must be between 0 and 1.";
+//                          return result;
+//                      }
+//                  } else {
+//                      result.error = "The standard deviation must be greater than zero.";
+//                      return result;
+//                  }
+//              } else {
+//                  result.error = "Please! Check Your Input";
+//                  return result;
+//              }
+//          }
+ 
+//          // Handle 'd' parameter
+//          if (isNumeric(d)) {
+//              if (isNumeric(mean) && isNumeric(deviation) && isNumeric(d)) {
+//                  if (deviation > 0) {
+//                      if (d > 0 && d < 1) {
+//                          let x1 = zinv(d);
+//                          x1 = (-1 * mean) + deviation * x1;
+//                          const ll = -1 * x1;
+//                          const above2 = Math.round(10000000 * ll) / 10000000;
+ 
+//                          x1 = zinv(d);
+//                          x1 = mean + deviation * x1;
+//                          const blow2 = Math.round(10000000 * x1) / 10000000;
+ 
+//                          const d2 = d / 2;
+//                          x1 = zinv(0.5 - d2);
+//                          const ll2 = Math.round((mean + deviation * x1) * 100000000) / 100000000;
+//                          const ul2 = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
+ 
+//                          x1 = zinv(d2);
+//                          const ll12 = Math.round((mean + deviation * x1) * 100000000) / 100000000;
+//                          const ul12 = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
+ 
+//                          result.z_urld = getZUrl(d);
+//                          result.above2 = above2;
+//                          result.blow2 = blow2;
+//                          result.ll2 = ll2;
+//                          result.ul2 = ul2;
+//                          result.ll12 = ll12;
+//                          result.ul12 = ul12;
+//                          result.d = d;
+//                      } else {
+//                          result.error = "Probability must be between 0 and 1.";
+//                          return result;
+//                      }
+//                  } else {
+//                      result.error = "The standard deviation must be greater than zero.";
+//                      return result;
+//                  }
+//              } else {
+//                  result.error = "Please! Check Your Input";
+//                  return result;
+//              }
+//          }
+ 
+//          // Handle 'e1' and 'e2' parameters (interval)
+//          if (isNumeric(e1) && isNumeric(e2)) {
+//              if (e1 < e2) {
+//                  const ms_e1 = e1 - mean;
+//                  const rz_e1 = (e1 - mean) / deviation;
+//                  const zaini_e1 = zain(rz_e1);
+ 
+//                  result.z_url_e1 = zaini_e1[0];
+//                  result.ltpv_e1 = Math.abs(zaini_e1[1]);
+//                  result.rtpv_e1 = Math.abs(zaini_e1[2]);
+//                  result.ttpv_e1 = Math.abs(zaini_e1[3]);
+//                  result.ttcl_e1 = Math.abs(zaini_e1[4]);
+//                  result.ms_e1 = ms_e1;
+//                  result.rz_e1 = Math.round(rz_e1 * 10000) / 10000;
+ 
+//                  const ms_e2 = e2 - mean;
+//                  const rz_e2 = (e2 - mean) / deviation;
+//                  const zaini_e2 = zain(rz_e2);
+ 
+//                  result.z_url_e2 = zaini_e2[0];
+//                  result.ltpv_e2 = Math.abs(zaini_e2[1]);
+//                  result.rtpv_e2 = Math.abs(zaini_e2[2]);
+//                  result.ttpv_e2 = Math.abs(zaini_e2[3]);
+//                  result.ttcl_e2 = Math.abs(zaini_e2[4]);
+//                  result.ms_e2 = ms_e2;
+//                  result.rz_e2 = Math.round(rz_e2 * 10000) / 10000;
+//                  result.e1 = e1;
+//                  result.e2 = e2;
+ 
+//                  const main_ans = Math.abs(zaini_e2[1]) - Math.abs(zaini_e1[1]);
+//                  result.z_urle = getZUrl(main_ans);
+//              } else {
+//                  result.error = "The left side of the interval has to be lesser than the right side.";
+//                  return result;
+//              }
+//          }
+ 
+//          // Handle 'f' parameter
+//          if (isNumeric(f)) {
+//              if (isNumeric(mean) && isNumeric(deviation) && isNumeric(f)) {
+//                  if (deviation > 0) {
+//                      if (f > 0 && f < 1) {
+//                          let x1 = zinv(f);
+//                          x1 = (-1 * mean) + deviation * x1;
+//                          const ll = -1 * x1;
+//                          const abovef = Math.round(10000000 * ll) / 10000000;
+ 
+//                          x1 = zinv(f);
+//                          x1 = mean + deviation * x1;
+//                          const blowf = Math.round(10000000 * x1) / 10000000;
+ 
+//                          const f2 = f / 2;
+//                          x1 = zinv(0.5 - f2);
+//                          const llf = Math.round((mean + deviation * x1) * 100000000) / 100000000;
+//                          const ulf = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
+ 
+//                          x1 = zinv(f2);
+//                          const ll1f = Math.round((mean + deviation * x1) * 100000000) / 100000000;
+//                          const ul1f = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
+ 
+//                          result.z_urlf = getZUrl(f);
+//                          result.abovef = abovef;
+//                          result.blowf = blowf;
+//                          result.llf = llf;
+//                          result.ulf = ulf;
+//                          result.ll1f = ll1f;
+//                          result.ul1f = ul1f;
+//                          result.f = f;
+//                      } else {
+//                          result.error = "Probability must be between 0 and 1.";
+//                          return result;
+//                      }
+//                  } else {
+//                      result.error = "The standard deviation must be greater than zero.";
+//                      return result;
+//                  }
+//              } else {
+//                  result.error = "Please! Check Your Input";
+//                  return result;
+//              }
+//          }
+//      }
+ 
+//      result.RESULT = 1;
+//      return result;
+ 
+//      // Helper function to check if value is numeric
+//      function isNumeric(value) {
+//          return !isNaN(parseFloat(value)) && isFinite(value);
+//      }
+//  }
+
+
+
+    async getCalculationNormalDistributionCalculator(body) {
+           let operations = body.tech_operations;
+          let find_compare = body.tech_find_compare;
+          let f_first = body.tech_f_first;
+          let f_second = body.tech_f_second;
+          let f_third = body.tech_f_third;
+          let mean = body.tech_mean;
+          let deviation = body.tech_deviation;
+          let a = body.tech_a;
+          let b = body.tech_b;
+          let c = body.tech_c;
+          let d = body.tech_d;
+          let e1 = body.tech_e1;
+          let e2 = body.tech_e2;
+          let f = body.tech_f;
+
+        const param = {};
+      if (parseFloat(c) <= 0 || parseFloat(c) >= 1 || parseFloat(d) <= 0 || parseFloat(d) >= 1 || parseFloat(f) <= 0 || parseFloat(f) >= 1) {
+        param.error = "Probability must be between 0 and 1";
+        return param;
+      }
+    
+
+    // Z-table data (same as before)
+      const z_table = {
          '-4.0': { 9: 0.00002, 8: 0.00002, 7: 0.00002, 6: 0.00002, 5: 0.00003, 4: 0.00003, 3: 0.00003, 2: 0.00003, 1: 0.00003, 0: 0.00003 },
          '-3.9': { 9: 0.00003, 8: 0.00003, 7: 0.00004, 6: 0.00004, 5: 0.00004, 4: 0.00004, 3: 0.00004, 2: 0.00004, 1: 0.00005, 0: 0.00005 },
          '-3.8': { 9: 0.00005, 8: 0.00005, 7: 0.00005, 6: 0.00006, 5: 0.00006, 4: 0.00006, 3: 0.00006, 2: 0.00007, 1: 0.00007, 0: 0.00007 },
@@ -72365,444 +72906,455 @@ async getCalculationNormalCriticalValueCalculator(body) {
          '3.9': { 0: 0.99995, 1: 0.99995, 2: 0.99996, 3: 0.99996, 4: 0.99996, 5: 0.99996, 6: 0.99996, 7: 0.99996, 8: 0.99997, 9: 0.99997 },
          '4.0': { 0: 0.99997, 1: 0.99997, 2: 0.99997, 3: 0.99997, 4: 0.99997, 5: 0.99997, 6: 0.99998, 7: 0.99998, 8: 0.99998, 9: 0.99998 }
      };
- 
-     // Helper function to lookup z-score in table
-     function zain(rz) {
-         const rz_check = String(rz).split('');
-         let rz_val1, rz_val2;
- 
-         if (rz_check.length > 1) {
-             if (rz < 0) {
-                 if (rz_check.length === 2) {
-                     rz_val1 = `${rz_check[0]}${rz_check[1]}.0`;
-                     rz_val2 = 0;
-                 } else {
-                     rz_val1 = String(rz).substring(0, 4);
-                     rz_val2 = String(rz).length > 4 ? parseInt(String(rz)[4]) : 0;
-                 }
-             } else {
-                 rz_val1 = String(rz).substring(0, 3);
-                 rz_val2 = String(rz).length > 3 ? parseInt(String(rz)[3]) : 0;
-             }
-         } else {
-             rz_val1 = `${rz_check[0]}.0`;
-             rz_val2 = 0;
-         }
- 
-         let ltpv, rtpv;
-         if (rz >= 4.1) {
-             ltpv = 1;
-             rtpv = 0;
-         } else if (rz <= -4.1) {
-             ltpv = 0;
-             rtpv = 1;
-         } else {
-             ltpv = parseFloat((z_table[rz_val1]?.[rz_val2] || 0).toFixed(5));
-             rtpv = parseFloat((1 - ltpv).toFixed(5));
-         }
- 
-         const ttcl = ltpv - rtpv;
-         const ttpv = 1 - Math.abs(ttcl);
-         const z_url = getZUrl(rz);
- 
-         return [z_url, ltpv, rtpv, ttpv, ttcl, parseFloat(rz.toFixed(4))];
-     }
- 
-     // Helper function to get z_url based on rz value
-     function getZUrl(rz) {
-         const ranges = [
-             { min: -Infinity, max: -4.125, url: 'z_score_-4.25' },
-             { min: -4.125, max: -3.876, url: 'z_score_-4' },
-             { min: -3.876, max: -3.626, url: 'z_score_-3.75' },
-             { min: -3.626, max: -3.376, url: 'z_score_-3.5' },
-             { min: -3.376, max: -3.126, url: 'z_score_-3.25' },
-             { min: -3.126, max: -2.876, url: 'z_score_-3' },
-             { min: -2.876, max: -2.626, url: 'z_score_-2.75' },
-             { min: -2.626, max: -2.376, url: 'z_score_-2.5' },
-             { min: -2.376, max: -2.126, url: 'z_score_-2.25' },
-             { min: -2.126, max: -1.876, url: 'z_score_-2' },
-             { min: -1.876, max: -1.626, url: 'z_score_-1.75' },
-             { min: -1.626, max: -1.376, url: 'z_score_-1.5' },
-             { min: -1.376, max: -1.126, url: 'z_score_-1.25' },
-             { min: -1.126, max: -0.876, url: 'z_score_-1' },
-             { min: -0.876, max: -0.626, url: 'z_score_-0.75' },
-             { min: -0.626, max: -0.376, url: 'z_score_-0.5' },
-             { min: -0.376, max: -0.126, url: 'z_score_-0.25' },
-             { min: -0.126, max: 0.125, url: 'z_score_0' },
-             { min: 0.125, max: 0.375, url: 'z_score_0.25' },
-             { min: 0.375, max: 0.625, url: 'z_score_0.5' },
-             { min: 0.625, max: 0.875, url: 'z_score_0.75' },
-             { min: 0.875, max: 1.125, url: 'z_score_1' },
-             { min: 1.125, max: 1.375, url: 'z_score_1.25' },
-             { min: 1.375, max: 1.625, url: 'z_score_1.5' },
-             { min: 1.625, max: 1.875, url: 'z_score_1.75' },
-             { min: 1.875, max: 2.125, url: 'z_score_2' },
-             { min: 2.125, max: 2.375, url: 'z_score_2.25' },
-             { min: 2.375, max: 2.625, url: 'z_score_2.5' },
-             { min: 2.625, max: 2.875, url: 'z_score_2.75' },
-             { min: 2.875, max: 3.125, url: 'z_score_3' },
-             { min: 3.125, max: 3.375, url: 'z_score_3.25' },
-             { min: 3.375, max: 3.625, url: 'z_score_3.5' },
-             { min: 3.625, max: 3.875, url: 'z_score_3.75' },
-             { min: 3.875, max: 4.125, url: 'z_score_4' },
-             { min: 4.125, max: Infinity, url: 'z_score_4.25' }
-         ];
- 
-         for (const range of ranges) {
-             if (rz > range.min && rz < range.max) {
-                 return range.url;
-             }
-         }
-         return 'z_score_0';
-     }
- 
-     // Inverse normal distribution (zinv function)
-     function zinv(p) {
-         const a1 = -39.6968302866538;
-         const a2 = 220.946098424521;
-         const a3 = -275.928510446969;
-         const a4 = 138.357751867269;
-         const a5 = -30.6647980661472;
-         const a6 = 2.50662827745924;
-         const b1 = -54.4760987982241;
-         const b2 = 161.585836858041;
-         const b3 = -155.698979859887;
-         const b4 = 66.8013118877197;
-         const b5 = -13.2806815528857;
-         const c1 = -7.78489400243029E-03;
-         const c2 = -0.322396458041136;
-         const c3 = -2.40075827716184;
-         const c4 = -2.54973253934373;
-         const c5 = 4.37466414146497;
-         const c6 = 2.93816398269878;
-         const d1 = 7.78469570904146E-03;
-         const d2 = 0.32246712907004;
-         const d3 = 2.445134137143;
-         const d4 = 3.75440866190742;
-         const p_low = 0.02425;
-         const p_high = 1 - p_low;
- 
-         let retVal;
-         if (p < 0 || p > 1) {
-             retVal = 0;
-         } else if (p < p_low) {
-             const q = Math.sqrt(-2 * Math.log(p));
-             retVal = (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) / ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
-         } else if (p <= p_high) {
-             const q = p - 0.5;
-             const r = q * q;
-             retVal = (((((a1 * r + a2) * r + a3) * r + a4) * r + a5) * r + a6) * q / (((((b1 * r + b2) * r + b3) * r + b4) * r + b5) * r + 1);
-         } else {
-             const q = Math.sqrt(-2 * Math.log(1 - p));
-             retVal = -(((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) / ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
-         }
-         return retVal;
-     }
- 
-     // Main calculation logic
-     if (operations === "3") {
-         if (find_compare === "1") {
-             if (isNumeric(f_first) && isNumeric(f_second) && isNumeric(f_third)) {
-                 if (f_first > 0 && f_first < 1) {
-                     if (f_third > 0) {
-                         let x1 = zinv(f_first);
-                         x1 = (-1 * f_second) + f_third * x1;
-                         const ll = -1 * x1;
-                         const above = Math.round(10000000 * ll) / 10000000;
- 
-                         x1 = zinv(f_first);
-                         x1 = f_second + f_third * x1;
-                         const blow = Math.round(10000000 * x1) / 10000000;
- 
-                         const f_first2 = f_first / 2;
-                         x1 = zinv(0.5 - f_first2);
-                         const ll_val = Math.round((f_second + f_third * x1) * 100000000) / 100000000;
-                         const ul = Math.round((f_second + f_third * (-1 * x1)) * 100000000) / 100000000;
- 
-                         x1 = zinv(f_first2);
-                         const ll1 = Math.round((f_second + f_third * x1) * 100000000) / 100000000;
-                         const ul1 = Math.round((f_second + f_third * (-1 * x1)) * 100000000) / 100000000;
- 
-                         result.z_url = getZUrl(f_first);
-                         result.above_first = above;
-                         result.blow_first = blow;
-                         result.ll_first = ll_val;
-                         result.ul_first = ul;
-                         result.ll1_first = ll1;
-                         result.ul1_first = ul1;
-                         result.option1 = 1;
-                     } else {
-                         result.error = "The standard deviation must be greater than zero.";
-                         return result;
-                     }
-                 } else {
-                     result.error = "Probability must be between 0 and 1.";
-                     return result;
-                 }
-             } else {
-                 result.error = "Please! Check Your Input";
-                 return result;
-             }
-         } else if (find_compare === "2") {
-             if (isNumeric(f_first) && isNumeric(f_second) && isNumeric(f_third)) {
-                 if (f_third > 0) {
-                     const ms_first = f_first - f_second;
-                     const rz_first = (f_first - f_second) / f_third;
-                     const zaini_first = zain(rz_first);
- 
-                     result.z_url = getZUrl(Math.abs(zaini_first[1]));
-                     result.z_url_first = zaini_first[0];
-                     result.ltpv_first = Math.abs(zaini_first[1]);
-                     result.rtpv_first = Math.abs(zaini_first[2]);
-                     result.ttpv_first = Math.abs(zaini_first[3]);
-                     result.ttcl_first = Math.abs(zaini_first[4]);
-                     result.ms_first = ms_first;
-                     result.rz_first = Math.round(rz_first * 10000) / 10000;
-                     result.option2 = 2;
-                 } else {
-                     result.error = "The standard deviation must be greater than zero.";
-                     return result;
-                 }
-             } else {
-                 result.error = "Please! Check Your Input";
-                 return result;
-             }
-         }
-     } else if (operations === "4") {
-         // Handle 'a' parameter
-         if (isNumeric(a)) {
-             if (isNumeric(mean) && isNumeric(deviation) && isNumeric(a)) {
-                 if (deviation > 0) {
-                     const ms = a - mean;
-                     const rz = (a - mean) / deviation;
-                     const zaini = zain(rz);
- 
-                     result.z_url = getZUrl(Math.abs(zaini[1]));
-                     result.ltpv = Math.abs(zaini[1]);
-                     result.rtpv = Math.abs(zaini[2]);
-                     result.ttpv = Math.abs(zaini[3]);
-                     result.ttcl = Math.abs(zaini[4]);
-                     result.ms = ms;
-                     result.rz = Math.round(rz * 10000) / 10000;
-                     result.a = a;
-                 } else {
-                     result.error = "The standard deviation must be greater than zero.";
-                     return result;
-                 }
-             } else {
-                 result.error = "Please! Check Your Input";
-                 return result;
-             }
-         }
- 
-         // Handle 'b' parameter
-         if (isNumeric(b)) {
-             if (isNumeric(mean) && isNumeric(deviation) && isNumeric(b)) {
-                 if (deviation > 0) {
-                     const ms2 = b - mean;
-                     const rz2 = (b - mean) / deviation;
-                     const zaini2 = zain(rz2);
- 
-                     result.z_url2 = getZUrl(Math.abs(zaini2[2]));
-                     result.z_url_second = zaini2[0];
-                     result.ltpv2 = Math.abs(zaini2[1]);
-                     result.rtpv2 = Math.abs(zaini2[2]);
-                     result.ttpv2 = Math.abs(zaini2[3]);
-                     result.ttcl2 = Math.abs(zaini2[4]);
-                     result.ms2 = ms2;
-                     result.rz2 = Math.round(rz2 * 10000) / 10000;
-                     result.b = b;
-                 } else {
-                     result.error = "The standard deviation must be greater than zero.";
-                     return result;
-                 }
-             } else {
-                 result.error = "Please! Check Your Input";
-                 return result;
-             }
-         }
- 
-         // Handle 'c' parameter
-         if (isNumeric(c)) {
-             if (isNumeric(mean) && isNumeric(deviation) && isNumeric(c)) {
-                 if (deviation > 0) {
-                     if (c > 0 && c < 1) {
-                         let x1 = zinv(c);
-                         x1 = (-1 * mean) + deviation * x1;
-                         const ll = -1 * x1;
-                         const above = Math.round(10000000 * ll) / 10000000;
- 
-                         x1 = zinv(c);
-                         x1 = mean + deviation * x1;
-                         const blow = Math.round(10000000 * x1) / 10000000;
- 
-                         const c2 = c / 2;
-                         x1 = zinv(0.5 - c2);
-                         const ll_val = Math.round((mean + deviation * x1) * 100000000) / 100000000;
-                         const ul = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
- 
-                         x1 = zinv(c2);
-                         const ll1 = Math.round((mean + deviation * x1) * 100000000) / 100000000;
-                         const ul1 = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
- 
-                         result.z_urlc = getZUrl(c);
-                         result.above = above;
-                         result.blow = blow;
-                         result.ll = ll_val;
-                         result.ul = ul;
-                         result.ll1 = ll1;
-                         result.ul1 = ul1;
-                         result.c = c;
-                     } else {
-                         result.error = "Probability must be between 0 and 1.";
-                         return result;
-                     }
-                 } else {
-                     result.error = "The standard deviation must be greater than zero.";
-                     return result;
-                 }
-             } else {
-                 result.error = "Please! Check Your Input";
-                 return result;
-             }
-         }
- 
-         // Handle 'd' parameter
-         if (isNumeric(d)) {
-             if (isNumeric(mean) && isNumeric(deviation) && isNumeric(d)) {
-                 if (deviation > 0) {
-                     if (d > 0 && d < 1) {
-                         let x1 = zinv(d);
-                         x1 = (-1 * mean) + deviation * x1;
-                         const ll = -1 * x1;
-                         const above2 = Math.round(10000000 * ll) / 10000000;
- 
-                         x1 = zinv(d);
-                         x1 = mean + deviation * x1;
-                         const blow2 = Math.round(10000000 * x1) / 10000000;
- 
-                         const d2 = d / 2;
-                         x1 = zinv(0.5 - d2);
-                         const ll2 = Math.round((mean + deviation * x1) * 100000000) / 100000000;
-                         const ul2 = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
- 
-                         x1 = zinv(d2);
-                         const ll12 = Math.round((mean + deviation * x1) * 100000000) / 100000000;
-                         const ul12 = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
- 
-                         result.z_urld = getZUrl(d);
-                         result.above2 = above2;
-                         result.blow2 = blow2;
-                         result.ll2 = ll2;
-                         result.ul2 = ul2;
-                         result.ll12 = ll12;
-                         result.ul12 = ul12;
-                         result.d = d;
-                     } else {
-                         result.error = "Probability must be between 0 and 1.";
-                         return result;
-                     }
-                 } else {
-                     result.error = "The standard deviation must be greater than zero.";
-                     return result;
-                 }
-             } else {
-                 result.error = "Please! Check Your Input";
-                 return result;
-             }
-         }
- 
-         // Handle 'e1' and 'e2' parameters (interval)
-         if (isNumeric(e1) && isNumeric(e2)) {
-             if (e1 < e2) {
-                 const ms_e1 = e1 - mean;
-                 const rz_e1 = (e1 - mean) / deviation;
-                 const zaini_e1 = zain(rz_e1);
- 
-                 result.z_url_e1 = zaini_e1[0];
-                 result.ltpv_e1 = Math.abs(zaini_e1[1]);
-                 result.rtpv_e1 = Math.abs(zaini_e1[2]);
-                 result.ttpv_e1 = Math.abs(zaini_e1[3]);
-                 result.ttcl_e1 = Math.abs(zaini_e1[4]);
-                 result.ms_e1 = ms_e1;
-                 result.rz_e1 = Math.round(rz_e1 * 10000) / 10000;
- 
-                 const ms_e2 = e2 - mean;
-                 const rz_e2 = (e2 - mean) / deviation;
-                 const zaini_e2 = zain(rz_e2);
- 
-                 result.z_url_e2 = zaini_e2[0];
-                 result.ltpv_e2 = Math.abs(zaini_e2[1]);
-                 result.rtpv_e2 = Math.abs(zaini_e2[2]);
-                 result.ttpv_e2 = Math.abs(zaini_e2[3]);
-                 result.ttcl_e2 = Math.abs(zaini_e2[4]);
-                 result.ms_e2 = ms_e2;
-                 result.rz_e2 = Math.round(rz_e2 * 10000) / 10000;
-                 result.e1 = e1;
-                 result.e2 = e2;
- 
-                 const main_ans = Math.abs(zaini_e2[1]) - Math.abs(zaini_e1[1]);
-                 result.z_urle = getZUrl(main_ans);
-             } else {
-                 result.error = "The left side of the interval has to be lesser than the right side.";
-                 return result;
-             }
-         }
- 
-         // Handle 'f' parameter
-         if (isNumeric(f)) {
-             if (isNumeric(mean) && isNumeric(deviation) && isNumeric(f)) {
-                 if (deviation > 0) {
-                     if (f > 0 && f < 1) {
-                         let x1 = zinv(f);
-                         x1 = (-1 * mean) + deviation * x1;
-                         const ll = -1 * x1;
-                         const abovef = Math.round(10000000 * ll) / 10000000;
- 
-                         x1 = zinv(f);
-                         x1 = mean + deviation * x1;
-                         const blowf = Math.round(10000000 * x1) / 10000000;
- 
-                         const f2 = f / 2;
-                         x1 = zinv(0.5 - f2);
-                         const llf = Math.round((mean + deviation * x1) * 100000000) / 100000000;
-                         const ulf = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
- 
-                         x1 = zinv(f2);
-                         const ll1f = Math.round((mean + deviation * x1) * 100000000) / 100000000;
-                         const ul1f = Math.round((mean + deviation * (-1 * x1)) * 100000000) / 100000000;
- 
-                         result.z_urlf = getZUrl(f);
-                         result.abovef = abovef;
-                         result.blowf = blowf;
-                         result.llf = llf;
-                         result.ulf = ulf;
-                         result.ll1f = ll1f;
-                         result.ul1f = ul1f;
-                         result.f = f;
-                     } else {
-                         result.error = "Probability must be between 0 and 1.";
-                         return result;
-                     }
-                 } else {
-                     result.error = "The standard deviation must be greater than zero.";
-                     return result;
-                 }
-             } else {
-                 result.error = "Please! Check Your Input";
-                 return result;
-             }
-         }
-     }
- 
-     result.RESULT = 1;
-     return result;
- 
-     // Helper function to check if value is numeric
-     function isNumeric(value) {
-         return !isNaN(parseFloat(value)) && isFinite(value);
-     }
- }
+
+    // Helper function: zain
+    const zain = (rz) => {
+      const rzStr = String(rz);
+      const rz_check = rzStr.split('');
+      let rz_val1, rz_val2;
+
+      if (rz_check.length > 1) {
+        if (rz < 0) {
+          if (rz_check.length === 2) {
+            rz_val1 = `${rz_check[0]}${rz_check[1]}.0`;
+            rz_val2 = 0;
+          } else {
+            rz_val1 = rzStr.substring(0, 4);
+            rz_val2 = rzStr.length > 4 ? parseInt(rz_check[4]) : 0;
+          }
+        } else {
+          rz_val1 = rzStr.substring(0, 3);
+          rz_val2 = rzStr.length > 3 ? parseInt(rz_check[3]) : 0;
+        }
+      } else {
+        rz_val1 = `${rz_check[0]}.0`;
+        rz_val2 = 0;
+      }
+
+      let ltpv, rtpv;
+      if (rz >= 4.1) {
+        ltpv = 1;
+        rtpv = 0;
+      } else if (rz <= -4.1) {
+        ltpv = 0;
+        rtpv = 1;
+      } else {
+        ltpv = parseFloat(z_table[rz_val1]?.[rz_val2]?.toFixed(5) || 0);
+        rtpv = parseFloat((1 - ltpv).toFixed(5));
+      }
+
+      const ttcl = ltpv - rtpv;
+      const ttpv = 1 - Math.abs(ttcl);
+      
+      let z_url = getZUrl(rz);
+      rz = parseFloat(rz.toFixed(4));
+      return [z_url, ltpv, rtpv, ttpv, ttcl, rz];
+    };
+
+    // Helper function: getZUrl
+    const getZUrl = (rz) => {
+      rz = parseFloat(rz);
+      if (rz < -0.126 && rz > -0.376) return 'z_score_-0.25';
+      if (rz < -0.375 && rz > -0.626) return 'z_score_-0.5';
+      if (rz < -0.625 && rz > -0.876) return 'z_score_-0.75';
+      if (rz < -0.875 && rz > -1.126) return 'z_score_-1';
+      if (rz < -1.125 && rz > -1.376) return 'z_score_-1.25';
+      if (rz < -1.375 && rz > -1.626) return 'z_score_-1.5';
+      if (rz < -1.625 && rz > -1.876) return 'z_score_-1.75';
+      if (rz < -1.875 && rz > -2.126) return 'z_score_-2';
+      if (rz < -2.125 && rz > -2.376) return 'z_score_-2.25';
+      if (rz < -2.375 && rz > -2.626) return 'z_score_-2.5';
+      if (rz < -2.625 && rz > -2.876) return 'z_score_-2.75';
+      if (rz < -2.875 && rz > -3.126) return 'z_score_-3';
+      if (rz < -3.125 && rz > -3.376) return 'z_score_-3.25';
+      if (rz < -3.375 && rz > -3.626) return 'z_score_-3.5';
+      if (rz < -3.625 && rz > -3.876) return 'z_score_-3.75';
+      if (rz < -3.875 && rz > -4.126) return 'z_score_-4';
+      if (rz < -4.125) return 'z_score_-4.25';
+      if (rz > -0.126 && rz < 0.125) return 'z_score_0';
+      if (rz > 0.124 && rz < 0.375) return 'z_score_0.25';
+      if (rz > 0.374 && rz < 0.625) return 'z_score_0.5';
+      if (rz > 0.624 && rz < 0.875) return 'z_score_0.75';
+      if (rz > 0.874 && rz < 1.125) return 'z_score_1';
+      if (rz > 1.124 && rz < 1.375) return 'z_score_1.25';
+      if (rz > 1.374 && rz < 1.625) return 'z_score_1.5';
+      if (rz > 1.624 && rz < 1.875) return 'z_score_1.75';
+      if (rz > 1.874 && rz < 2.125) return 'z_score_2';
+      if (rz > 2.124 && rz < 2.375) return 'z_score_2.25';
+      if (rz > 2.374 && rz < 2.625) return 'z_score_2.5';
+      if (rz > 2.624 && rz < 2.875) return 'z_score_2.75';
+      if (rz > 2.874 && rz < 3.125) return 'z_score_3';
+      if (rz > 3.124 && rz < 3.375) return 'z_score_3.25';
+      if (rz > 3.374 && rz < 3.625) return 'z_score_3.5';
+      if (rz > 3.624 && rz < 3.875) return 'z_score_3.75';
+      if (rz > 3.874 && rz < 4.125) return 'z_score_4';
+      if (rz > 4.124) return 'z_score_4.25';
+      return 'z_score_';
+    };
+
+    // Helper function: zinv (inverse normal distribution)
+    const zinv = (p) => {
+      const a1 = -39.6968302866538;
+      const a2 = 220.946098424521;
+      const a3 = -275.928510446969;
+      const a4 = 138.357751867269;
+      const a5 = -30.6647980661472;
+      const a6 = 2.50662827745924;
+      const b1 = -54.4760987982241;
+      const b2 = 161.585836858041;
+      const b3 = -155.698979859887;
+      const b4 = 66.8013118877197;
+      const b5 = -13.2806815528857;
+      const c1 = -7.78489400243029e-3;
+      const c2 = -0.322396458041136;
+      const c3 = -2.40075827716184;
+      const c4 = -2.54973253934373;
+      const c5 = 4.37466414146497;
+      const c6 = 2.93816398269878;
+      const d1 = 7.78469570904146e-3;
+      const d2 = 0.32246712907004;
+      const d3 = 2.445134137143;
+      const d4 = 3.75440866190742;
+      const p_low = 0.02425;
+      const p_high = 1 - p_low;
+
+      if (p < 0 || p > 1) {
+        return 0;
+      } else if (p < p_low) {
+        const q = Math.sqrt(-2 * Math.log(p));
+        return (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) / ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
+      } else if (p <= p_high) {
+        const q = p - 0.5;
+        const r = q * q;
+        return (((((a1 * r + a2) * r + a3) * r + a4) * r + a5) * r + a6) * q / (((((b1 * r + b2) * r + b3) * r + b4) * r + b5) * r + 1);
+      } else {
+        const q = Math.sqrt(-2 * Math.log(1 - p));
+        return -(((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) / ((((d1 * q + d2) * q + d3) * q + d4) * q + 1);
+      }
+    };
+
+    // Check if value is numeric
+    const isNumeric = (val) => !isNaN(parseFloat(val)) && isFinite(val);
+
+    // Main logic
+    if (operations === "3") {
+      if (find_compare === "1") {
+        if (isNumeric(f_first) && isNumeric(f_second) && isNumeric(f_third)) {
+          if (Number(f_first) > 0 && Number(f_first) < 1) {
+            if (parseFloat(f_third) > 0) {
+              let x1 = zinv(parseFloat(f_first));
+              x1 = (-1 * parseFloat(f_second)) + parseFloat(f_third) * x1;
+              const ul = parseFloat(f_second) + 3.1 * parseFloat(f_third);
+              const ll = -1 * x1;
+              const above = Math.round(10000000 * ll) / 10000000;
+
+              x1 = zinv(parseFloat(f_first));
+              x1 = parseFloat(f_second) + parseFloat(f_third) * x1;
+              const blow = Math.round(10000000 * x1) / 10000000;
+
+              const f_first2 = parseFloat(f_first) / 2;
+              x1 = zinv(0.5 - f_first2);
+              const ll_val = Math.round((parseFloat(f_second) + parseFloat(f_third) * x1) * 100000000) / 100000000;
+              const ul_val = Math.round((parseFloat(f_second) + parseFloat(f_third) * (-1 * x1)) * 100000000) / 100000000;
+
+              const f_first3 = parseFloat(f_first) / 2;
+              x1 = zinv(f_first3);
+              const ll1_val = Math.round((parseFloat(f_second) + parseFloat(f_third) * x1) * 100000000) / 100000000;
+              const ul1_val = Math.round((parseFloat(f_second) + parseFloat(f_third) * (-1 * x1)) * 100000000) / 100000000;
+
+              param.z_url = getZUrl(parseFloat(f_first));
+              param.above_first = above;
+              param.blow_first = blow;
+              param.ll_first = ll_val;
+              param.ul_first = ul_val;
+              param.ll1_first = ll1_val;
+              param.ul1_first = ul1_val;
+              param.option1 = 1;
+            } else {
+              param.error = "The standard deviation must be greater than zero.";
+              return param;
+            }
+          } else {
+            param.error = "Probability must be between 0 and 1.";
+            return param;
+          }
+        } else {
+          param.error = "Please! Check Your Input";
+          return param;
+        }
+      } else if (find_compare === "2") {
+        if (isNumeric(f_first) && isNumeric(f_second) && isNumeric(f_third)) {
+          if (parseFloat(f_third) > 0) {
+            const ms_first = parseFloat(f_first) - parseFloat(f_second);
+            const rz_first = (parseFloat(f_first) - parseFloat(f_second)) / parseFloat(f_third);
+            const zaini_first = zain(rz_first);
+
+            param.z_url = getZUrl(Math.abs(zaini_first[1]));
+            param.z_url_first = zaini_first[0];
+            param.ltpv_first = Math.abs(zaini_first[1]);
+            param.rtpv_first = Math.abs(zaini_first[2]);
+            param.ttpv_first = Math.abs(zaini_first[3]);
+            param.ttcl_first = Math.abs(zaini_first[4]);
+            param.ms_first = ms_first;
+            param.rz_first = parseFloat(rz_first.toFixed(4));
+            param.option2 = 2;
+          } else {
+            param.error = "The standard deviation must be greater than zero.";
+            return param;
+          }
+        } else {
+          param.error = "Please! Check Your Input";
+          return param;
+        }
+      }
+    } else if (operations === "4") {
+      // Collect errors instead of returning immediately
+      const errors = [];
+      // Handle operation 4 - value 'a'
+      if (isNumeric(a)) {
+        if (isNumeric(mean) && isNumeric(deviation)) {
+          if (parseFloat(deviation) > 0) {
+            const ms = parseFloat(a) - parseFloat(mean);
+            const rzss = (parseFloat(a) - parseFloat(mean)) / parseFloat(deviation);
+            const zaini = zain(rzss);
+            const rz = Math.abs(zaini[1]);
+            param.tech_z_url = getZUrl(Math.abs(zaini[1]));
+            param.tech_ltpv = Math.abs(zaini[1]);
+            param.tech_rtpv = Math.abs(zaini[2]);
+            param.tech_ttpv = Math.abs(zaini[3]);
+            param.tech_ttcl = Math.abs(zaini[4]);
+            param.tech_ms = ms;
+            param.tech_rz = parseFloat(rz.toFixed(4));
+            param.tech_a = parseFloat(a);
+          } else {
+            errors.push("The standard deviation must be greater than zero.");
+          }
+        } else {
+          errors.push("Please! Check Your Input for field 'a'");
+        }
+      }
+
+      // Handle operation 4 - value 'b'
+      if (isNumeric(b)) {
+        if (isNumeric(mean) && isNumeric(deviation)) {
+          if (parseFloat(deviation) > 0) {
+            const ms2 = parseFloat(b) - parseFloat(mean);
+            const rz2 = (parseFloat(b) - parseFloat(mean)) / parseFloat(deviation);
+            const zaini2 = zain(rz2);
+
+            param.tech_z_url2 = getZUrl(Math.abs(zaini2[2]));
+            param.tech_ltpv2 = Math.abs(zaini2[1]);
+            param.tech_rtpv2 = Math.abs(zaini2[2]);
+            param.tech_ttpv2 = Math.abs(zaini2[3]);
+            param.tech_ttcl2 = Math.abs(zaini2[4]);
+            param.tech_ms2 = ms2;
+            param.tech_rz2 = parseFloat(rz2.toFixed(4));
+            param.tech_b = parseFloat(b);
+          } else {
+            // Don't add duplicate error
+            if (!errors.includes("The standard deviation must be greater than zero.")) {
+              errors.push("The standard deviation must be greater than zero.");
+            }
+          }
+        } else {
+          errors.push("Please! Check Your Input for field 'b'");
+        }
+      }
+
+      // Handle operation 4 - value 'c'
+      if (isNumeric(c)) {
+        if (isNumeric(mean) && isNumeric(deviation)) {
+          if (parseFloat(deviation) > 0) {
+            if (parseFloat(c) > 0 && parseFloat(c) < 1) {
+              let x1 = zinv(parseFloat(c));
+              x1 = (-1 * parseFloat(mean)) + parseFloat(deviation) * x1;
+              const ul = parseFloat(mean) + 3.1 * parseFloat(deviation);
+              const ll = -1 * x1;
+              const above = Math.round(10000000 * ll) / 10000000;
+
+              x1 = zinv(parseFloat(c));
+              x1 = parseFloat(mean) + parseFloat(deviation) * x1;
+              const blow = Math.round(10000000 * x1) / 10000000;
+
+              const c2 = parseFloat(c) / 2;
+              x1 = zinv(0.5 - c2);
+              const ll_val = Math.round((parseFloat(mean) + parseFloat(deviation) * x1) * 100000000) / 100000000;
+              const ul_val = Math.round((parseFloat(mean) + parseFloat(deviation) * (-1 * x1)) * 100000000) / 100000000;
+
+              const c3 = parseFloat(c) / 2;
+              x1 = zinv(c3);
+              const ll1_val = Math.round((parseFloat(mean) + parseFloat(deviation) * x1) * 100000000) / 100000000;
+              const ul1_val = Math.round((parseFloat(mean) + parseFloat(deviation) * (-1 * x1)) * 100000000) / 100000000;
+
+              param.tech_z_urlc = getZUrl(parseFloat(c));
+              param.tech_above = above;
+              param.tech_blow = blow;
+              param.tech_ll = ll_val;
+              param.tech_ul = ul_val;
+              param.tech_ll1 = ll1_val;
+              param.tech_ul1 = ul1_val;
+              param.tech_c = parseFloat(c);
+            } else {
+              errors.push("Probability must be between 0 and 1 for field 'c'");
+            }
+          } else {
+            // Don't add duplicate error
+            if (!errors.includes("The standard deviation must be greater than zero.")) {
+              errors.push("The standard deviation must be greater than zero.");
+            }
+          }
+        } else {
+          errors.push("Please! Check Your Input for field 'c'");
+        }
+      }
+
+      // Handle operation 4 - value 'd'
+      if (isNumeric(d)) {
+        if (isNumeric(mean) && isNumeric(deviation)) {
+          if (parseFloat(deviation) > 0) {
+            if (parseFloat(d) > 0 && parseFloat(d) < 1) {
+              let x1 = zinv(parseFloat(d));
+              x1 = (-1 * parseFloat(mean)) + parseFloat(deviation) * x1;
+              const ul = parseFloat(mean) + 3.1 * parseFloat(deviation);
+              const ll = -1 * x1;
+              const above = Math.round(10000000 * ll) / 10000000;
+
+              x1 = zinv(parseFloat(d));
+              x1 = parseFloat(mean) + parseFloat(deviation) * x1;
+              const blow = Math.round(10000000 * x1) / 10000000;
+
+              const d2 = parseFloat(d) / 2;
+              x1 = zinv(0.5 - d2);
+              const ll_val = Math.round((parseFloat(mean) + parseFloat(deviation) * x1) * 100000000) / 100000000;
+              const ul_val = Math.round((parseFloat(mean) + parseFloat(deviation) * (-1 * x1)) * 100000000) / 100000000;
+
+              const d3 = parseFloat(d) / 2;
+              x1 = zinv(d3);
+              const ll1_val = Math.round((parseFloat(mean) + parseFloat(deviation) * x1) * 100000000) / 100000000;
+              const ul1_val = Math.round((parseFloat(mean) + parseFloat(deviation) * (-1 * x1)) * 100000000) / 100000000;
+
+              param.tech_z_urld = getZUrl(parseFloat(d));
+              param.tech_above2 = above;
+              param.tech_blow2 = blow;
+              param.tech_ll2 = ll_val;
+              param.tech_ul2 = ul_val;
+              param.tech_ll12 = ll1_val;
+              param.tech_ul12 = ul1_val;
+              param.tech_d = parseFloat(d);
+            } else {
+              errors.push("Probability must be between 0 and 1 for field 'd'");
+            }
+          } else {
+            // Don't add duplicate error
+            if (!errors.includes("The standard deviation must be greater than zero.")) {
+              errors.push("The standard deviation must be greater than zero.");
+            }
+          }
+        } else {
+          errors.push("Please! Check Your Input for field 'd'");
+        }
+      }
+
+      // Handle operation 4 - interval e1 and e2
+      if (isNumeric(e1) && isNumeric(e2)) {
+        if (isNumeric(mean) && isNumeric(deviation)) {
+          if (parseFloat(deviation) > 0) {
+            if (parseFloat(e1) < parseFloat(e2)) {
+              const ms_e1 = parseFloat(e1) - parseFloat(mean);
+              const rz_e1 = (parseFloat(e1) - parseFloat(mean)) / parseFloat(deviation);
+              const zaini_e1 = zain(rz_e1);
+
+              param.tech_z_url_e1 = zaini_e1[0];
+              param.tech_ltpv_e1 = Math.abs(zaini_e1[1]);
+              param.tech_rtpv_e1 = Math.abs(zaini_e1[2]);
+              param.tech_ttpv_e1 = Math.abs(zaini_e1[3]);
+              param.tech_ttcl_e1 = Math.abs(zaini_e1[4]);
+              param.tech_ms_e1 = ms_e1;
+              param.tech_rz_e1 = parseFloat(rz_e1.toFixed(4));
+
+              const ms_e2 = parseFloat(e2) - parseFloat(mean);
+              const rz_e2 = (parseFloat(e2) - parseFloat(mean)) / parseFloat(deviation);
+              const zaini_e2 = zain(rz_e2);
+
+              param.tech_z_url_e2 = zaini_e2[0];
+              param.tech_ltpv_e2 = Math.abs(zaini_e2[1]);
+              param.tech_rtpv_e2 = Math.abs(zaini_e2[2]);
+              param.tech_ttpv_e2 = Math.abs(zaini_e2[3]);
+              param.tech_ttcl_e2 = Math.abs(zaini_e2[4]);
+              param.tech_ms_e2 = ms_e2;
+              param.tech_rz_e2 = parseFloat(rz_e2.toFixed(4));
+              param.tech_e1 = parseFloat(e1);
+              param.tech_e2 = parseFloat(e2);
+
+              const main_ans = Math.abs(zaini_e2[1]) - Math.abs(zaini_e1[1]);
+              param.tech_z_urle = getZUrl(main_ans);
+            } else {
+              errors.push("The left side of the interval has to be lesser than the right side.");
+            }
+          } else {
+            // Don't add duplicate error
+            if (!errors.includes("The standard deviation must be greater than zero.")) {
+              errors.push("The standard deviation must be greater than zero.");
+            }
+          }
+        } else {
+          errors.push("Please! Check Your Input for fields 'e1' and 'e2'");
+        }
+      }
+
+      // Handle operation 4 - value 'f'
+      if (isNumeric(f)) {
+        if (isNumeric(mean) && isNumeric(deviation)) {
+          if (parseFloat(deviation) > 0) {
+            if (parseFloat(f) > 0 && parseFloat(f) < 1) {
+              let x1 = zinv(parseFloat(f));
+              x1 = (-1 * parseFloat(mean)) + parseFloat(deviation) * x1;
+              const ul = parseFloat(mean) + 3.1 * parseFloat(deviation);
+              const ll = -1 * x1;
+              const above = Math.round(10000000 * ll) / 10000000;
+
+              x1 = zinv(parseFloat(f));
+              x1 = parseFloat(mean) + parseFloat(deviation) * x1;
+              const blow = Math.round(10000000 * x1) / 10000000;
+
+              const f2 = parseFloat(f) / 2;
+              x1 = zinv(0.5 - f2);
+              const ll_val = Math.round((parseFloat(mean) + parseFloat(deviation) * x1) * 100000000) / 100000000;
+              const ul_val = Math.round((parseFloat(mean) + parseFloat(deviation) * (-1 * x1)) * 100000000) / 100000000;
+
+              const f3 = parseFloat(f) / 2;
+              x1 = zinv(f3);
+              const ll1_val = Math.round((parseFloat(mean) + parseFloat(deviation) * x1) * 100000000) / 100000000;
+              const ul1_val = Math.round((parseFloat(mean) + parseFloat(deviation) * (-1 * x1)) * 100000000) / 100000000;
+
+              param.tech_z_urlf = getZUrl(parseFloat(f));
+              param.tech_abovef = above;
+              param.tech_blowf = blow;
+              param.tech_llf = ll_val;
+              param.tech_ulf = ul_val;
+              param.tech_ll1f = ll1_val;
+              param.tech_ul1f = ul1_val;
+              param.tech_f = parseFloat(f);
+            } else {
+              errors.push("Probability must be between 0 and 1 for field 'f'");
+            }
+          } else {
+            // Don't add duplicate error
+            if (!errors.includes("The standard deviation must be greater than zero.")) {
+              errors.push("The standard deviation must be greater than zero.");
+            }
+          }
+        } else {
+          errors.push("Please! Check Your Input for field 'f'");
+        }
+      }
+      // Add all errors to param if any exist
+      // if (errors.length > 0) {
+      //   param.errors = errors;
+      // }
+    }
+    return param;
+  }
 
  
 
