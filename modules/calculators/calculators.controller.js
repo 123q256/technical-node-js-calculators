@@ -16922,6 +16922,137 @@ router.post(
   })
 );
 
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/test-statistic-calculator
+ */
+
+router.post(
+  "/test-statistic-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationTestStatisticCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/pooled-variance-calculator
+ */
+
+router.post(
+  "/pooled-variance-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationPooledVarianceCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/sample-distribution-calculator
+ */
+
+router.post(
+  "/sample-distribution-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationSampleDistributionCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/normal-distribution-calculator
+ */
+
+router.post(
+  "/normal-distribution-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationNormalDistributionCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/critical-value-calculator
+ */
+
+router.post(
+  "/critical-value-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationNormalCriticalValueCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
 
 
 
