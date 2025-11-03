@@ -72516,14 +72516,14 @@ async getCalculationNormalCriticalValueCalculator(body) {
               const ll1_val = Math.round((parseFloat(f_second) + parseFloat(f_third) * x1) * 100000000) / 100000000;
               const ul1_val = Math.round((parseFloat(f_second) + parseFloat(f_third) * (-1 * x1)) * 100000000) / 100000000;
 
-              param.z_url = getZUrl(parseFloat(f_first));
-              param.above_first = above;
-              param.blow_first = blow;
-              param.ll_first = ll_val;
-              param.ul_first = ul_val;
-              param.ll1_first = ll1_val;
-              param.ul1_first = ul1_val;
-              param.option1 = 1;
+              param.tech_z_url = getZUrl(parseFloat(f_first));
+              param.tech_above_first = above;
+              param.tech_blow_first = blow;
+              param.tech_ll_first = ll_val;
+              param.tech_ul_first = ul_val;
+              param.tech_ll1_first = ll1_val;
+              param.tech_ul1_first = ul1_val;
+              param.tech_option1 = 1;
             } else {
               param.error = "The standard deviation must be greater than zero.";
               return param;
@@ -72543,15 +72543,15 @@ async getCalculationNormalCriticalValueCalculator(body) {
             const rz_first = (parseFloat(f_first) - parseFloat(f_second)) / parseFloat(f_third);
             const zaini_first = zain(rz_first);
 
-            param.z_url = getZUrl(Math.abs(zaini_first[1]));
-            param.z_url_first = zaini_first[0];
-            param.ltpv_first = Math.abs(zaini_first[1]);
-            param.rtpv_first = Math.abs(zaini_first[2]);
-            param.ttpv_first = Math.abs(zaini_first[3]);
-            param.ttcl_first = Math.abs(zaini_first[4]);
-            param.ms_first = ms_first;
-            param.rz_first = parseFloat(rz_first.toFixed(4));
-            param.option2 = 2;
+            param.tech_z_url = getZUrl(Math.abs(zaini_first[1]));
+            param.tech_z_url_first = zaini_first[0];
+            param.tech_ltpv_first = Math.abs(zaini_first[1]);
+            param.tech_rtpv_first = Math.abs(zaini_first[2]);
+            param.tech_ttpv_first = Math.abs(zaini_first[3]);
+            param.tech_ttcl_first = Math.abs(zaini_first[4]);
+            param.tech_ms_first = ms_first;
+            param.tech_rz_first = parseFloat(rz_first.toFixed(4));
+            param.tech_option2 = 2;
           } else {
             param.error = "The standard deviation must be greater than zero.";
             return param;
@@ -72810,10 +72810,9 @@ async getCalculationNormalCriticalValueCalculator(body) {
     return param;
   }
 
-
        /**
    * getCalculationNormalIdealGasLawCalculator: Service Method
-   * POST: /api/calculators-lol/normal-distribution-calculator
+   * POST: /api/calculators-lol/ideal-gas-law-calculator
    * @param {Object} body Having Properties for Creating New Roles
    * @returns Object with message property having success method
    */
@@ -72855,7 +72854,7 @@ async getCalculationNormalCriticalValueCalculator(body) {
               
               let amount = parseFloat(request.tech_y);
               // Amount unit conversions
-              console.log(request.tech_y_s_unit,amount); 
+              // console.log(request.tech_y_s_unit,amount); 
               if (request.tech_y_s_unit == "abc") {
                   amount = amount / 1e+6;
               }
@@ -73055,6 +73054,1873 @@ async getCalculationNormalCriticalValueCalculator(body) {
       }
       
   }
+
+  /**
+   * getCalculationMoleFractionCalculator: Service Method
+   * POST: /api/calculators-lol/mole-fraction-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+  async getCalculationMoleFractionCalculator(body) {
+    let x = body.tech_x;
+      let y = body.tech_y;
+      let z = body.tech_z;
+      let a = body.tech_a;
+
+      let unit_x = body.tech_unit_x;
+      let unit_y = body.tech_unit_y;
+      let unit_z = body.tech_unit_z;
+      let unit_a = body.tech_unit_a;
+
+      let divide_x = body.tech_divide_x;
+      let divide_y = body.tech_divide_y;
+      let divide_z = body.tech_divide_z;
+      let divide_a = body.tech_divide_a;
+
+    const param = {};
+
+    // Helper function to check if value is numeric
+    const isNumeric = (val) => val !== undefined && val !== null && val !== '' && !isNaN(val);
+
+    // Helper function to convert units to moles
+    const convertToMoles = (value, unit, divideBy) => {
+        let result = parseFloat(value);
+        if (unit == 'Gram') {
+            result = result / parseFloat(divideBy);
+        }
+        if (unit == 'Millimole') {
+            result = result / 1000;
+        }
+        if (unit == 'Kilomole') {
+            result = result * 1000;
+        }
+        if (unit == 'PoundMole') {
+            result = result * 9.223e+18;
+        }
+        
+        return result;
+    };
+
+    // Case 1: x and y provided
+    if (isNumeric(x) && isNumeric(y) && !isNumeric(z) && !isNumeric(a)) {
+        if (unit_x == 'Gram' && !isNumeric(divide_x)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+        if (unit_y == 'Gram' && !isNumeric(divide_y)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+
+        const Solute = convertToMoles(x, unit_x, divide_x);
+        const Solvent = convertToMoles(y, unit_y, divide_y);
+        const sol = parseFloat((Solute + Solvent).toFixed(5));
+        const mol = parseFloat((Solute / (Solute + Solvent)).toFixed(5));
+        // console.log(Solute,Solvent);
+       param.tech_Solute = Solute;
+        param.tech_Solvent = Solvent;
+        param.tech_sol = sol;
+        param.tech_mol = mol;
+
+        return param;
+    }
+    
+    // Case 2: x and z provided
+    else if (isNumeric(x) && isNumeric(z) && !isNumeric(y) && !isNumeric(a)) {
+        if (unit_z == 'Gram' && !isNumeric(divide_z)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+        if (unit_x == 'Gram' && !isNumeric(divide_x)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+
+        const Solute = convertToMoles(x, unit_x, divide_x);
+        const sol = convertToMoles(z, unit_z, divide_z);
+        const Solvent = sol - Solute;
+        const mol = parseFloat((Solute / (Solute + Solvent)).toFixed(5));
+
+       param.tech_Solute = Solute;
+        param.tech_Solvent = Solvent;
+        param.tech_sol = sol;
+        param.tech_mol = mol;
+
+        return param;
+    }
+    
+    // Case 3: x and a provided
+    else if (isNumeric(x) && isNumeric(a) && !isNumeric(y) && !isNumeric(z)) {
+        if (unit_x == 'Gram' && !isNumeric(divide_x)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+        if (unit_a == 'Gram' && !isNumeric(divide_a)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+        console.log(x,unit_x,divide_x);
+        const Solute = convertToMoles(x, unit_x, divide_x);
+        const mol = convertToMoles(a, unit_a, divide_a);
+        const Solvent = parseFloat(((Solute / mol) - Solute).toFixed(2));
+        const sol = parseFloat((Solute + Solvent).toFixed(2));
+        // console.log(Solute,mol);
+          param.tech_Solute = Solute;
+        param.tech_Solvent = Solvent;
+        param.tech_sol = sol;
+        param.tech_mol = mol;
+
+        return param;
+    }
+    
+    // Case 4: y and z provided
+    else if (isNumeric(y) && isNumeric(z) && !isNumeric(x) && !isNumeric(a)) {
+        if (unit_z == 'Gram' && !isNumeric(divide_z)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+        if (unit_y == 'Gram' && !isNumeric(divide_y)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+
+        const sol = convertToMoles(z, unit_z, divide_z);
+        const Solvent = convertToMoles(y, unit_y, divide_y);
+        const Solute = sol - Solvent;
+        const mol = parseFloat((Solute / (Solute + Solvent)).toFixed(5));
+
+         param.tech_Solute = Solute;
+        param.tech_Solvent = Solvent;
+        param.tech_sol = sol;
+        param.tech_mol = mol;
+
+        return param;
+    }
+    
+    // Case 5: y and a provided
+    else if (isNumeric(y) && isNumeric(a) && !isNumeric(x) && !isNumeric(z)) {
+        if (unit_a == 'Gram' && !isNumeric(divide_a)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+        if (unit_y == 'Gram' && !isNumeric(divide_y)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+
+        const Solvent = convertToMoles(y, unit_y, divide_y);
+        const mol = convertToMoles(a, unit_a, divide_a);
+        const Solute = parseFloat((((mol * Solvent) * (-1)) / (mol - 1)).toFixed(3));
+        const sol = Solute + Solvent;
+
+        param.tech_Solute = Solute;
+        param.tech_Solvent = Solvent;
+        param.tech_sol = sol;
+        param.tech_mol = mol;
+
+        return param;
+    }
+    
+    // Case 6: z and a provided
+    else if (isNumeric(z) && isNumeric(a) && !isNumeric(x) && !isNumeric(y)) {
+        if (unit_a == 'Gram' && !isNumeric(divide_a)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+        if (unit_z == 'Gram' && !isNumeric(divide_z)) {
+            param.error = 'Please enter gram value too.';
+            return param;
+        }
+
+        const mol = convertToMoles(a, unit_a, divide_a);
+        const sol = convertToMoles(z, unit_z, divide_z);
+        const Solute = parseFloat((sol * mol).toFixed(3));
+        const Solvent = sol - Solute;
+
+        param.tech_Solute = Solute;
+        param.tech_Solvent = Solvent;
+        param.tech_sol = sol;
+        param.tech_mol = mol;
+
+        return param;
+    }
+    
+    // Default case: error
+    else {
+        param.error = 'Please fill any two fields.';
+        return param;
+    }
+}
+
+
+  /**
+   * getCalculationCharlesLawCalculator: Service Method
+   * POST: /api/calculators-lol/charles-law-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+  async getCalculationCharlesLawCalculator(body) {
+        let find = body.tech_find;
+        let v1 = body.tech_v1;
+        let v1_unit = body.tech_v1_unit;
+        let t1 = body.tech_t1;
+        let t1_unit = body.tech_t1_unit;
+        let v2 = body.tech_v2;
+        let v2_unit = body.tech_v2_unit;
+        let t2 = body.tech_t2;
+        let t2_unit = body.tech_t2_unit;
+        let p = body.tech_p;
+        let n = body.tech_n;
+        let R = body.tech_R;
+        let p_unit = body.tech_p_unit;
+
+      const result = {};  
+      
+      // Check if all required values are numeric
+      if (
+        isNaN(parseFloat(v1)) || 
+        isNaN(parseFloat(t1)) || 
+        isNaN(parseFloat(v2)) || 
+        isNaN(parseFloat(t2)) || 
+        isNaN(parseFloat(p)) || 
+        isNaN(parseFloat(n)) || 
+        isNaN(parseFloat(R))
+      ) {
+        result.error = 'Please! Check Your Input.';
+        return result;
+      }
+      
+      // Convert to numbers
+      let v1_converted = parseFloat(v1);
+      let t1_converted = parseFloat(t1);
+      let v2_converted = parseFloat(v2);
+      let t2_converted = parseFloat(t2);
+      let p_converted = parseFloat(p);
+      let n_converted = parseFloat(n);
+      let R_converted = parseFloat(R);
+      
+      // Unit Conversion for V1
+      if (!isNaN(v1_converted)) {
+        if (v1_unit === 'mm³') {
+          v1_converted = v1_converted / 1000000000;
+        } else if (v1_unit === 'cm³' || v1_unit === 'ml') {
+          v1_converted = v1_converted / 1000000;
+        } else if (v1_unit === 'dm³' || v1_unit === 'liters') {
+          v1_converted = v1_converted / 1000;
+        } else if (v1_unit === 'cu in') {
+          v1_converted = v1_converted / 61024;
+        } else if (v1_unit === 'cu ft') {
+          v1_converted = v1_converted / 35.315;
+        } else if (v1_unit === 'cu yd') {
+          v1_converted = v1_converted / 1.308;
+        }
+      }
+      
+      // Unit Conversion for T1
+      if (!isNaN(t1_converted)) {
+        if (t1_unit === 'c' || t1_unit === '°C') {
+          t1_converted = t1_converted + 273.15;
+        } else if (t1_unit === 'f' || t1_unit === '°F') {
+          t1_converted = (t1_converted - 32) * (5 / 9) + 273.15;
+        }
+      }
+      
+      // Unit Conversion for V2
+      if (!isNaN(v2_converted)) {
+        if (v2_unit === 'mm³') {
+          v2_converted = v2_converted / 1000000000;
+        } else if (v2_unit === 'cm³' || v2_unit === 'ml') {
+          v2_converted = v2_converted / 1000000;
+        } else if (v2_unit === 'dm³' || v2_unit === 'liters') {
+          v2_converted = v2_converted / 1000;
+        } else if (v2_unit === 'cu in') {
+          v2_converted = v2_converted / 61024;
+        } else if (v2_unit === 'cu ft') {
+          v2_converted = v2_converted / 35.315;
+        } else if (v2_unit === 'cu yd') {
+          v2_converted = v2_converted / 1.308;
+        }
+      }
+      
+      // Unit Conversion for T2
+      if (!isNaN(t2_converted)) {
+        if (t2_unit === 'c' || t2_unit === '°C') {
+          t2_converted = t2_converted + 273.15;
+        } else if (t2_unit === 'f' || t2_unit === '°F') {
+          t2_converted = (t2_converted - 32) * (5 / 9) + 273.15;
+        }
+      }
+      
+      // Unit Conversion for P (pressure)
+      if (!isNaN(p_converted)) {
+        if (p_unit === 'bar') {
+          p_converted = p_converted / 0.00001;
+        } else if (p_unit === 'psi') {
+          p_converted = p_converted / 0.00014504;
+        } else if (p_unit === 'at') {
+          p_converted = p_converted / 0.000010197;
+        } else if (p_unit === 'atm') {
+          p_converted = p_converted / 0.00000987;
+        } else if (p_unit === 'Torr') {
+          p_converted = p_converted / 0.0075;
+        } else if (p_unit === 'hPa') {
+          p_converted = p_converted / 0.01;
+        } else if (p_unit === 'kPa') {
+          p_converted = p_converted / 0.001;
+        } else if (p_unit === 'MPa') {
+          p_converted = p_converted / 0.000001;
+        } else if (p_unit === 'GPa') {
+          p_converted = p_converted / 0.000000001;
+        } else if (p_unit === 'in Hg') {
+          p_converted = p_converted / 0.0002953;
+        } else if (p_unit === 'mmHg') {
+          p_converted = p_converted / 0.0075;
+        }
+      }
+      
+      // Calculations based on 'find' parameter
+      if (find === 'v1' && !isNaN(t1_converted) && !isNaN(v2_converted) && !isNaN(t2_converted)) {
+        const v1_result = (v2_converted / t2_converted) * t1_converted;
+        console.log(v2_converted,t2_converted,t1_converted);
+        const mm3 = v1_result * 1000000000;
+        const cm3 = v1_result * 1000000;
+        const dm3 = v1_result * 1000;
+        const cu_in = v1_result * 61024;
+        const cu_ft = v1_result * 35.315;
+        const cu_yd = v1_result * 1.308;
+        const p_val = 101325;
+        const n_val = (p_val * v1_result) / (R_converted * t1_converted);
+        
+        result.tech_v1 = Math.round(v1_result * 100000) / 100000;
+        result.tech_p = p_val;
+        result.tech_n = Math.round(n_val * 100000) / 100000;
+        result.tech_mm3 = mm3;
+        result.tech_cm3 = cm3;
+        result.tech_dm3 = dm3;
+        result.tech_cu_in = cu_in;
+        result.tech_cu_ft = cu_ft;
+        result.tech_cu_yd = cu_yd;
+        
+      } else if (find === 't1' && !isNaN(v1_converted) && !isNaN(v2_converted) && !isNaN(t2_converted)) {
+        const t1_result = (t2_converted / v2_converted) * v1_converted;
+        const c = t1_result - 273.15;
+        const f = (t1_result - 273.15) * (9 / 5) + 32;
+        const p_val = 101325;
+        const n_val = (p_val * v1_converted) / (R_converted * t1_result);
+        
+        result.tech_t1 = Math.round(t1_result * 100000) / 100000;
+        result.tech_p = p_val;
+        result.tech_n = Math.round(n_val * 100000) / 100000;
+        result.tech_c = c;
+        result.tech_f = f;
+        
+      } else if (find === 'v2' && !isNaN(v1_converted) && !isNaN(t1_converted) && !isNaN(t2_converted)) {
+        const v2_result = (v1_converted / t1_converted) * t2_converted;
+        const mm3 = v2_result * 1000000000;
+        const cm3 = v2_result * 1000000;
+        const dm3 = v2_result * 1000;
+        const cu_in = v2_result * 61024;
+        const cu_ft = v2_result * 35.315;
+        const cu_yd = v2_result * 1.308;
+        const p_val = 101325;
+        const n_val = (p_val * v1_converted) / (R_converted * t1_converted);
+        
+        result.tech_v2 = Math.round(v2_result * 100000) / 100000;
+        result.tech_p = p_val;
+        result.tech_n = Math.round(n_val * 100000) / 100000;
+        result.tech_mm3 = mm3;
+        result.tech_cm3 = cm3;
+        result.tech_dm3 = dm3;
+        result.tech_cu_in = cu_in;
+        result.tech_cu_ft = cu_ft;
+        result.tech_cu_yd = cu_yd;
+        
+      } else if (find === 't2' && !isNaN(v1_converted) && !isNaN(t1_converted) && !isNaN(v2_converted)) {
+        const t2_result = (t1_converted / v1_converted) * v2_converted;
+        const c = t2_result - 273.15;
+        const f = (t2_result - 273.15) * (9 / 5) + 32;
+        const p_val = 101325;
+        const n_val = (p_val * v1_converted) / (R_converted * t1_converted);
+        
+        result.tech_t2 = Math.round(t2_result * 100000) / 100000;
+        result.tech_p = p_val;
+        result.tech_n = Math.round(n_val * 100000) / 100000;
+        result.tech_c = c;
+        result.tech_f = f;
+        
+      } else if (find === 'p' && !isNaN(v1_converted) && !isNaN(t1_converted) && !isNaN(v2_converted) && !isNaN(t2_converted) && !isNaN(n_converted) && !isNaN(R_converted)) {
+        const p_result = (n_converted * R_converted * t1_converted) / v1_converted;
+        const bar = p_result * 0.00001;
+        const psi = p_result * 0.00014504;
+        const at = p_result * 0.000010197;
+        const atm = p_result * 0.00000987;
+        const torr = p_result * 0.0075;
+        const hpa = p_result * 0.01;
+        const kpa = p_result * 0.001;
+        const mpa = p_result * 0.000001;
+        const gpa = p_result * 0.000000001;
+        const in_hg = p_result * 0.0002953;
+        const mmhg = p_result * 0.0075;
+        
+        result.tech_p_val = Math.round(p_result * 100000) / 100000;
+        result.tech_bar = bar;
+        result.tech_psi = psi;
+        result.tech_at = at;
+        result.tech_atm = atm;
+        result.tech_torr = torr;
+        result.tech_hpa = hpa;
+        result.tech_kpa = kpa;
+        result.tech_mpa = mpa;
+        result.tech_gpa = gpa;
+        result.tech_in_hg = in_hg;
+        result.tech_mmhg = mmhg;
+        
+      } else if (find === 'n' && !isNaN(v1_converted) && !isNaN(t1_converted) && !isNaN(v2_converted) && !isNaN(t2_converted) && !isNaN(p_converted) && !isNaN(R_converted)) {
+        const n_result = (p_converted * v1_converted) / (R_converted * t1_converted);
+        result.n_val = Math.round(n_result * 100000) / 100000;
+        
+      } else {
+        result.error = 'Please! Fill All The Fields.';
+        return result;
+      }
+      
+      result.RESULT = 1;
+      return result;
+    }
+
+     /**
+   * getCalculationPartialPressureCalculator: Service Method
+   * POST: /api/calculators-lol/partial-pressure-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationPartialPressureCalculator(body) {
+          let formula = body.tech_formula;
+        let to_cal1 = body.tech_to_cal1;
+        let total = body.tech_total;
+        let total_unit = body.tech_total_unit;
+        let mole = body.tech_mole;
+        let partial = body.tech_partial;
+        let part_unit = body.tech_part_unit;
+        let to_cal2 = body.tech_to_cal2;
+        let amole = body.tech_amole;
+        let temp = body.tech_temp;
+        let temp_unit = body.tech_temp_unit;
+        let volume = body.tech_volume;
+        let vol_unit = body.tech_vol_unit;
+        let partial1 = body.tech_partial1;
+        let part_unit1 = body.tech_part_unit1;
+        let to_cal3 = body.tech_to_cal3;
+        let gas = body.tech_gas;
+        let cons = body.tech_cons;
+        let conc = body.tech_conc;
+        let conc_unit = body.tech_conc_unit;
+        let partial2 = body.tech_partial2;
+        let part_unit2 = body.tech_part_unit2;
+        let to_cal4 = body.tech_to_cal4;
+        let gas1 = body.tech_gas1;
+        let mole1 = body.tech_mole1;
+        let partial3 = body.tech_partial3;
+        let cons1 = body.tech_cons1;
+        let cons1_unit2 = body.tech_cons1_unit2;
+        let part_unit3 = body.tech_part_unit3;
+
+
+    const param = {};
+
+    try {
+      if (formula == '1') {
+        if (to_cal1 == '1') {
+          if (isNumeric(total) && isNumeric(mole)) {
+            if (mole > 1) {
+              param.error = "Mole fraction value can't be greater than 1.";
+              return param;
+            } else {
+              const ans = total * mole;
+              param.tech_mode = 1;
+              param.tech_ans = ans;
+              param.tech_unit = total_unit;
+              return param;
+            }
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        } else if (to_cal1 == '2') {
+          if (isNumeric(total) && isNumeric(partial)) {
+            let convertedPartial = parseFloat(partial);
+            let convertedTotal = parseFloat(total);
+
+            if (part_unit !== total_unit) {
+              convertedPartial = convertPressure(convertedPartial, part_unit, 'Pa');
+              convertedTotal = convertPressure(convertedTotal, total_unit, 'Pa');
+            }
+
+            const ans = convertedPartial / convertedTotal;
+            param.tech_mode = 2;
+            param.tech_ans = ans;
+            return param;
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        } else if (to_cal1 == '3') {
+          if (isNumeric(partial) && isNumeric(mole)) {
+            if (mole > 1) {
+              param.error = "Mole fraction value can't be greater than 1.";
+              return param;
+            } else {
+              const ans = partial / mole;
+              param.tech_mode = 3;
+              param.tech_ans = ans;
+              param.tech_unit = part_unit;
+              return param;
+            }
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        }
+      } else if (formula == '2') {
+        if (to_cal2 == '1') {
+          if (isNumeric(amole) && isNumeric(temp) && isNumeric(volume)) {
+            let convertedVolume = parseFloat(volume);
+            let convertedTemp = parseFloat(temp);
+
+            convertedVolume = convertVolume(convertedVolume, vol_unit, 'm³');
+            convertedTemp = convertTemperature(convertedTemp, temp_unit, 'K');
+
+            const ans = (amole * 8.3145 * convertedTemp) / convertedVolume;
+            param.tech_mode = 4;
+            param.tech_ans = ans;
+            return param;
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        } else if (to_cal2 == '2') {
+          if (isNumeric(amole) && isNumeric(temp) && isNumeric(partial1)) {
+            let convertedPartial1 = convertPressure(parseFloat(partial1), part_unit1, 'Pa');
+            let convertedTemp = convertTemperature(parseFloat(temp), temp_unit, 'K');
+
+            const ans = (amole * 8.3145 * convertedTemp) / convertedPartial1;
+            param.tech_mode = 5;
+            param.tech_ans = ans;
+            return param;
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        } else if (to_cal2 == '3') {
+          if (isNumeric(amole) && isNumeric(volume) && isNumeric(partial1)) {
+            let convertedVolume = convertVolume(parseFloat(volume), vol_unit, 'm³');
+            let convertedPartial1 = convertPressure(parseFloat(partial1), part_unit1, 'Pa');
+
+            const ans = (convertedVolume * convertedPartial1) / (amole * 8.3145);
+            param.tech_mode = 6;
+            param.tech_ans = ans;
+            return param;
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        } else if (to_cal2 == '4') {
+          if (isNumeric(temp) && isNumeric(volume) && isNumeric(partial1)) {
+            let convertedVolume = convertVolume(parseFloat(volume), vol_unit, 'm³');
+            let convertedPartial1 = convertPressure(parseFloat(partial1), part_unit1, 'Pa');
+            let convertedTemp = convertTemperature(parseFloat(temp), temp_unit, 'K');
+
+            const ans = (convertedVolume * convertedPartial1) / (convertedTemp * 8.3145);
+            param.tech_mode = 7;
+            param.tech_ans = ans;
+            return param;
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        }
+      } else if (formula == '3') {
+        let gasConstant;
+        
+        switch (gas) {
+          case '1': gasConstant = 77942230; break;
+          case '2': gasConstant = 129903716; break;
+          case '3': gasConstant = 2979968; break;
+          case '4': gasConstant = 166106126; break;
+          case '5': gasConstant = 273851078; break;
+          case '6': gasConstant = 225166442; break;
+          case '7': gasConstant = 72374421; break;
+          case '8': gasConstant = 106657735; break;
+          case '9':
+            if (!isNumeric(cons)) {
+              param.error = 'Please! Check Your Input.';
+              return param;
+            } else {
+              gasConstant = 101325 * cons;
+            }
+            break;
+          default:
+            param.error = 'Invalid gas selection';
+            return param;
+        }
+
+        if (to_cal3 == '1') {
+          if (isNumeric(gasConstant) && isNumeric(conc)) {
+            let convertedConc = convertConcentration(parseFloat(conc), conc_unit, 'M');
+            const ans = gasConstant * convertedConc;
+            param.tech_mode = 4;
+            param.tech_ans = ans;
+            return param;
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        } else if (to_cal3 == '2') {
+          if (isNumeric(gasConstant) && isNumeric(partial2)) {
+            let convertedPartial2 = convertPressure(parseFloat(partial2), part_unit2, 'Pa');
+            const ans = convertedPartial2 / gasConstant;
+            param.tech_mode = 8;
+            param.tech_ans = ans;
+            return param;
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        }
+      } else if (formula == '4') {
+        let gasConstant1;
+        
+        switch (gas1) {
+          case '1': gasConstant1 = 4315431750; break;
+          case '2': gasConstant1 = 7193061750; break;
+          case '3': gasConstant1 = 165159750; break;
+          case '4': gasConstant1 = 9197270250; break;
+          case '5': gasConstant1 = 15168352500; break;
+          case '6': gasConstant1 = 12462975000; break;
+          case '7': gasConstant1 = 4007403750; break;
+          case '8': gasConstant1 = 5905221000; break;
+          case '9':
+            if (!isNumeric(cons1)) {
+              param.error = 'Please! Check Your Input.';
+              return param;
+            } else {
+              gasConstant1 = convertPressure(parseFloat(cons1), cons1_unit2, 'Pa');
+            }
+            break;
+          default:
+            param.error = 'Invalid gas selection';
+            return param;
+        }
+
+        if (to_cal4 == '1') {
+          if (isNumeric(mole1) && isNumeric(gasConstant1)) {
+            if (mole1 > 1) {
+              param.error = "Mole fraction value can't be greater than 1.";
+              return param;
+            } else {
+              const ans = mole1 * gasConstant1;
+              param.tech_mode = 4;
+              param.tech_ans = ans;
+              return param;
+            }
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        } else if (to_cal4 == '2') {
+          if (isNumeric(partial3) && isNumeric(gasConstant1)) {
+            let convertedPartial3 = convertPressure(parseFloat(partial3), part_unit3, 'Pa');
+            const ans = convertedPartial3 / gasConstant1;
+            param.tech_mode = 2;
+            param.tech_ans = ans;
+            return param;
+          } else {
+            param.error = 'Please! Check Your Input.';
+            return param;
+          }
+        }
+      }
+
+      param.error = 'Invalid formula or calculation type';
+      return param;
+    } catch (error) {
+      param.error = 'Calculation error: ' + error.message;
+      return param;
+    }
+    
+    // Helper functions
+    function isNumeric(value) {
+      return !isNaN(parseFloat(value)) && isFinite(value);
+    }
+    
+    function convertPressure(value, fromUnit, toUnit = 'Pa') {
+      const conversionFactors = {
+        'Bar': 100000,
+        'Torr': 133.32,
+        'psi': 6895,
+        'atm': 101325,
+        'hPa': 100,
+        'MPa': 1000000,
+        'kPa': 1000,
+        'GPa': 1000000000,
+        'mmHg': 133.32,
+        'in Hg': 3386.4,
+        'Pa': 1
+      };
+    
+      if (conversionFactors[fromUnit]) {
+        return value * conversionFactors[fromUnit];
+      }
+      return value;
+    }
+    
+    function convertVolume(value, fromUnit, toUnit = 'm³') {
+      const conversionFactors = {
+        'cm³': 1e-6,
+        'mm³': 1e-9,
+        'dm³': 0.001,
+        'ft³': 0.0283168,
+        'yd³': 0.764555,
+        'in³': 1.63871e-5,
+        'litre': 0.001,
+        'm³': 1
+      };
+    
+      if (conversionFactors[fromUnit]) {
+        return value * conversionFactors[fromUnit];
+      }
+      return value;
+    }
+    
+    function convertTemperature(value, fromUnit, toUnit = 'K') {
+      if (fromUnit === '°C') {
+        return value + 273.15;
+      } else if (fromUnit === '°F') {
+        return (value - 32) * 5/9 + 273.15;
+      }
+      return value; // Assuming it's already in Kelvin
+    }
+    
+    function convertConcentration(value, fromUnit, toUnit = 'M') {
+      const conversionFactors = {
+        'mM': 0.001,
+        'μM': 1e-6,
+        'nM': 1e-9,
+        'pM': 1e-12,
+        'fM': 1e-15,
+        'aM': 1e-18,
+        'zM': 1e-21,
+        'yM': 1e-24,
+        'M': 1
+      };
+    
+      if (conversionFactors[fromUnit]) {
+        return value * conversionFactors[fromUnit];
+      }
+      return value;
+    }
+  }
+
+    /**
+   * getCalculationPhCalculator: Service Method
+   * POST: /api/calculators-lol/ph-calculator
+   * @param {Object} body Having Properties for Creating New Roles
+   * @returns Object with message property having success method
+   */
+
+    async getCalculationPhCalculator(body) {
+        let concentration = body.tech_concentration;
+      let con_units = body.tech_con_units;
+      let chemical_name = body.tech_chemical_name;
+      let chemical_selection = body.tech_chemical_selection;
+      let post_space = body.tech_post_space;
+      let po_units = body.tech_po_units;
+      let f_length = body.tech_f_length;
+      let fl_units = body.tech_fl_units;
+      let operation = body.tech_operation;
+      let second = body.tech_second;
+
+    const result = {};
+
+    // Helper function to convert concentration units to M (Molar)
+    function convertUnits(a, b) {
+      const conversions = {
+        'M': 1,
+        'mM': 0.001,
+        'µM': 0.000001,
+        'nM': 0.000000001,
+        'pM': 0.000000000001,
+        'fM': 0.000000000000001,
+        'aM': 0.000000000000000001,
+        'zM': 0.000000000000000000001
+      };
+      return a * (conversions[b] || 1);
+    }
+
+    // Helper function to convert weight units to grams
+    function convertWeight(c, d) {
+      const conversions = {
+        'ng': c / 1000000000,
+        'µg': c / 1000000,
+        'mg': c / 1000,
+        'g': c * 1,
+        'dag': c * 10,
+        'kg': c * 1000,
+        'gr': c / 15.432,
+        'dr': c * 3.41,
+        'lbs': c * 454,
+        'stones': c * 6350,
+        'oz t': c * 31.103,
+        'oz': c * 28.35,
+        't': c * 1000000
+      };
+      return conversions[d] || c;
+    }
+
+    // Helper function to convert volume units to liters
+    function convertVolume(x, y) {
+      const conversions = {
+        'mm³': x / 1000000,
+        'cm³': x / 1000,
+        'dm³': x * 1,
+        'm³': x * 1000,
+        'in³': x * 61.024,
+        'ft³': x * 28.317,
+        'ml': x / 1000,
+        'cl': x / 100,
+        'liters': x * 1,
+        'US gal': x * 3.785,
+        'UK gal': x * 4.546,
+        'US fl oz': x / 33.814,
+        'UK fl oz': x / 35.195
+      };
+      return conversions[y] || x;
+    }
+
+    try {
+      let pH, pho, OH, H, pka;
+      let chemicalValue;
+
+      if (chemical_selection === "1") {
+        if (concentration > 0) {
+          // Convert chemical_name to number
+          chemicalValue = parseFloat(chemical_name);
+          
+          const conc = convertUnits(parseFloat(concentration), con_units);
+          const res1 = chemicalValue * conc;
+          const res2 = Math.sqrt(res1);
+          const res3 = Math.log10(res2);
+          pH = res3 * -1;
+          H = Math.pow(10, -pH);
+          pho = 14 - pH;
+          OH = Math.pow(10, -pho);
+          const pk_a = Math.log10(chemicalValue);
+          pka = pk_a * -1;
+          
+          pH = pH.toFixed(4);
+          pho = pho.toFixed(2);
+          pka = pka.toFixed(3);
+        } else {
+          result.error = 'Please! Concentration greater than 0.';
+          return result;
+        }
+      } 
+      else if (chemical_selection === "2") {
+        if (concentration > 0) {
+          // Convert chemical_name to number
+          chemicalValue = parseFloat(chemical_name);
+          
+          const conc = convertUnits(parseFloat(concentration), con_units);
+          const res1 = chemicalValue * conc * 4;
+          const res2 = Math.sqrt(res1);
+          const re = (res2 - chemicalValue) / 2;
+          const ans1 = 0.00000000000001 / re;
+          const res3 = Math.log10(ans1);
+          pH = res3 * -1;
+          H = Math.pow(10, -pH);
+          pho = 14 - pH;
+          OH = Math.pow(10, -pho);
+          const pk_a = Math.log10(chemicalValue);
+          pka = pk_a * -1;
+          
+          pH = pH.toFixed(4);
+          pho = pho.toFixed(2);
+          pka = pka.toFixed(3);
+        } else {
+          result.error = 'Please! Concentration greater than 0.';
+          return result;
+        }
+      } 
+      else if (chemical_selection === "3") {
+        if (parseFloat(f_length) > 0 && parseFloat(post_space) > 0) {
+          const length = convertWeight(parseFloat(f_length), fl_units);
+          const volume = convertVolume(parseFloat(post_space), po_units);
+          
+          // Check if chemical_name contains '&'
+          let v, m;
+          if (chemical_name.includes('&')) {
+            [v, m] = chemical_name.split('&').map(parseFloat);
+          } else {
+            // If no '&', treat chemical_name as Ka value (v) with default molecular weight
+            v = parseFloat(chemical_name);
+            m = 1; // Default molecular weight
+          }
+          
+          const moles = m !== 0 ? length / m : 0;
+          const conc = volume !== 0 ? moles / volume : 0;
+          
+          // Check if calculation will result in valid numbers
+          if (conc <= 0 || v <= 0) {
+            result.error = 'Invalid calculation parameters';
+            return result;
+          }
+          
+          const res1 = v * conc;
+          const res2 = Math.sqrt(res1);
+          const res3 = Math.log10(res2);
+          pH = res3 * -1;
+          H = Math.pow(10, -pH);
+          pho = 14 - pH;
+          OH = Math.pow(10, -pho);
+          const pk_a = Math.log10(v);
+          pka = pk_a * -1;
+          
+          // Check for Infinity or NaN
+          if (!isFinite(pH) || !isFinite(pho)) {
+            pH = 'inf';
+            pho = 'inf';
+            OH = Infinity;
+          } else {
+            pH = pH.toFixed(4);
+            pho = pho.toFixed(2);
+          }
+          pka = pka.toFixed(3);
+        } else {
+          result.error = 'Please! Input greater than 0.';
+          return result;
+        }
+      } 
+      else if (chemical_selection === "4") {
+        if (parseFloat(f_length) > 0 && parseFloat(post_space) > 0) {
+          const length = convertWeight(parseFloat(f_length), fl_units);
+          const volume = convertVolume(parseFloat(post_space), po_units);
+          
+          // Check if chemical_name contains '&'
+          let v, m;
+          if (chemical_name.includes('&')) {
+            [v, m] = chemical_name.split('&').map(parseFloat);
+          } else {
+            // If no '&', treat chemical_name as Kb value (v) with default molecular weight
+            v = parseFloat(chemical_name);
+            m = 1; // Default molecular weight
+          }
+          
+          const moles = m !== 0 ? length / m : 0;
+          const conc = volume !== 0 ? moles / volume : 0;
+          
+          // Check if calculation will result in valid numbers
+          if (conc <= 0 || v <= 0) {
+            result.error = 'Invalid calculation parameters';
+            return result;
+          }
+          
+          const res3 = Math.log10(conc);
+          pho = res3 * -1;
+          pH = 14 - pho;
+          H = Math.pow(10, -pH);
+          OH = Math.pow(10, -pho);
+          const pk_a = Math.log10(v);
+          pka = pk_a * -1;
+          
+          // Check for Infinity or NaN
+          if (!isFinite(pH) || !isFinite(pho)) {
+            pH = 'inf';
+            pho = 'inf';
+          } else {
+            pH = pH.toFixed(4);
+            pho = pho.toFixed(2);
+          }
+          pka = pka.toFixed(3);
+        } else {
+          result.error = 'Please! Input greater than 0.';
+          return result;
+        }
+      } 
+      else if (chemical_selection === "5") {
+        if (operation === "1") {
+          if (parseFloat(concentration) > 0) {
+            const conc = convertUnits(parseFloat(concentration), con_units);
+            const res3 = Math.log10(conc);
+            pH = res3 * -1;
+            pho = 14 - pH;
+            OH = Math.pow(10, -pho);
+            
+            pH = pH.toFixed(4);
+            pho = pho.toFixed(4);
+          } else {
+            result.error = 'Please! Input greater than 0.';
+            return result;
+          }
+        } 
+        else if (operation === "2") {
+          if (!isNaN(second)) {
+            pH = 14 - parseFloat(second);
+            H = Math.pow(10, -pH);
+            OH = Math.pow(10, -parseFloat(second));
+          } else {
+            result.error = 'Please! Input greater than 0.';
+            return result;
+          }
+        } 
+        else if (operation === "3") {
+          if (parseFloat(concentration) > 0) {
+            const conc = convertUnits(parseFloat(concentration), con_units);
+            const res3 = Math.log10(conc);
+            pho = res3 * -1;
+            pH = 14 - pho;
+            H = Math.pow(10, -pH);
+          } else {
+            result.error = 'Please! Input greater than 0.';
+            return result;
+          }
+        }
+      }
+
+      // Add non-empty values to result
+      if (pH !== undefined) result.tech_pH = pH;
+      if (pho !== undefined) result.tech_pho = pho;
+      if (OH !== undefined) result.tech_OH = OH;
+      if (H !== undefined) result.tech_H = H;
+      if (pka !== undefined) result.tech_pka = pka;
+      
+      return result;
+    } catch (error) {
+      result.error = 'Calculation error: ' + error.message;
+      return result;
+    }
+  }
+
+  /**
+    * getCalculationBoylesLawCalculator: Service Method
+    * POST: /api/calculators-lol/boyles-law-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async getCalculationBoylesLawCalculator(body) {
+      let find = body.tech_find;
+      let v1 = body.tech_v1;
+      let v1_unit = body.tech_v1_unit;
+      let p1 = body.tech_p1;
+      let p1_unit = body.tech_p1_unit;
+      let v2 = body.tech_v2;
+      let v2_unit = body.tech_v2_unit;
+      let p2 = body.tech_p2;
+      let p2_unit = body.tech_p2_unit;
+      let R = body.tech_R;
+      let temp = body.tech_temp;
+      let temp_unit = body.tech_temp_unit;
+      let amount = body.tech_amount;
+
+    const result = {};
+
+    // Pressure conversion function
+    function convertPressure(unit, value) {
+        const conversions = {
+            'Pa': 1,
+            'Bar': 100000,
+            'psi': 6895,
+            'at': 98068,
+            'atm': 101325,
+            'Torr': 133.32,
+            'hPa': 100,
+            'kPa': 1000,
+            'MPa': 1000,
+            'GPa': 1000000000,
+            'in Hg': 3386.4,
+            'mmHg': 133.32
+        };
+        return value * (conversions[unit] || 1);
+    }
+
+    // Volume conversion function
+    function convertVolume(unit, value) {
+        const conversions = {
+            'mm³': 0.000000001,
+            'cm³': 0.000001,
+            'dm³': 0.001,
+            'm³': 1,
+            'in³': 0.000016387,
+            'ft³': 0.028317,
+            'yd³': 0.7646,
+            'ml': 0.000001,
+            'liters': 0.001
+        };
+        return value * (conversions[unit] || 1);
+    }
+
+    // Temperature conversion function
+    function convertTemp(unit, value) {
+        if (unit === '°C') {
+            return value + 273.15;
+        } else if (unit === '°F') {
+            return (value - 32) * (5/9) + 273.15;
+        } else if (unit === 'K') {
+            return value;
+        }
+        return value;
+    }
+
+    let method, formula, content;
+
+    if (find === "1") { // Find Volume V2
+        if (isNumeric(p1) && isNumeric(v1) && isNumeric(p2)) {
+            method = 1;
+            const pressure_one = convertPressure(p1_unit, p1);
+            const volume_one = convertVolume(v1_unit, v1);
+            const pressure_two = convertPressure(p2_unit, p2);
+            formula = (pressure_one * volume_one) / pressure_two;
+            content = "Final Volume (V₂)";
+        } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+        }
+    } else if (find === "2") { // Find Pressure P2
+        if (isNumeric(p1) && isNumeric(v1) && isNumeric(v2)) {
+            method = 2;
+            const pressure_one = convertPressure(p1_unit, p1);
+            const volume_one = convertVolume(v1_unit, v1);
+            const volume_two = convertVolume(v2_unit, v2);
+            formula = pressure_one * (volume_one / volume_two);
+            content = "Final Pressure (P₂)";
+        } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+        }
+    } else if (find === "3") { // Find Volume V1
+        if (isNumeric(p1) && isNumeric(p2) && isNumeric(v2)) {
+            method = 3;
+            const pressure_one = convertPressure(p1_unit, p1);
+            const pressure_two = convertPressure(p2_unit, p2);
+            const volume_two = convertVolume(v2_unit, v2);
+            formula = pressure_two * (volume_two / pressure_one);
+            content = "Initial Volume (V₁)";
+        } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+        }
+    } else if (find === "4") { // Find Pressure P1
+        if (isNumeric(v1) && isNumeric(v2) && isNumeric(p2)) {
+            method = 4;
+            const pressure_two = convertPressure(p2_unit, p2);
+            const volume_one = convertVolume(v1_unit, v1);
+            const volume_two = convertVolume(v2_unit, v2);
+            formula = pressure_two * (volume_two / volume_one);
+            content = "Initial Pressure (P₁)";
+        } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+        }
+    } else if (find === "5") { // Find Temperature
+        if (isNumeric(p1) && isNumeric(v1) && isNumeric(R) && isNumeric(amount)) {
+            method = 5;
+            const final = (p1 * v1) / (R * amount);
+            content = "Temperature";
+            result.tech_method = method;
+            result.tech_content = content;
+            result.tech_pooran = final;
+            return result;
+        }
+    } else if (find === "6") { // Find Amount of Gas
+        if (isNumeric(p1) && isNumeric(v1) && isNumeric(R) && isNumeric(temp)) {
+            method = 6;
+            const temp_value = convertTemp(temp_unit, temp);
+            const f = p1 * v1;
+            const s = R * temp_value;
+            const final = f / s;
+            content = "Amount of gas (n)";
+            result.tech_content = content;
+            result.tech_final = final;
+        } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+        }
+    }
+
+    const tempValue = 295;
+    const first = p1 * v1;
+    const second = R * tempValue;
+    const final = first / second;
+
+    result.tech_ans = formula;
+    result.tech_method = method;
+    result.tech_temp = tempValue;
+    result.tech_n = parseFloat(final.toFixed(3));
+    result.tech_content = content;
+
+    return result;
+    
+    // Helper function to check if value is numeric
+    function isNumeric(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+    }
+}
+
+
+    /**
+    * getCalculationCombinedGasLawCalculator: Service Method
+    * POST: /api/calculators-lol/combined-gas-law-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+      async getCalculationCombinedGasLawCalculator(body) {
+            let calculation = body.tech_calculation;
+          let pressure_one = body.tech_pressure_one;
+          let pressure_one_unit = body.tech_pressure_one_unit;
+          let pressure_two = body.tech_pressure_two;
+          let pressure_two_unit = body.tech_pressure_two_unit;
+          let volume_one = body.tech_volume_one;
+          let volume_one_unit = body.tech_volume_one_unit;
+          let volume_two = body.tech_volume_two;
+          let volume_two_unit = body.tech_volume_two_unit;
+          let temp_one = body.tech_temp_one;
+          let temp_one_unit = body.tech_temp_one_unit;
+          let temp_two = body.tech_temp_two;
+          let temp_two_unit = body.tech_temp_two_unit;
+
+        let val3;
+        // Helper function for pressure conversion to Pascal
+        const pre = (unit, value) => {
+            const conversions = {
+                'Pa': 1,
+                'kPa': 1000,
+                'Bar': 100000,
+                'atm': 101325,
+                'hPa': 100,
+                'mbar': 100,
+                'mmHg': 133.32
+            };
+            return value * (conversions[unit] || 1);
+        };
+
+        // Helper function for volume conversion to m³
+        const vol = (unit, value) => {
+            const conversions = {
+                'm³': 1,
+                'l': 0.001,
+                'ml': 0.000001,
+                'ft³': 0.0283168,
+                'in³': 1.63871e-5
+            };
+            return value * (conversions[unit] || 1);
+        };
+
+        // Helper function for temperature conversion to Kelvin
+
+        function temp(unit3,value3){
+          if(unit3=="°C"){
+            val3= Number(value3)+273.15;
+          }else if(unit3=="°F"){
+            val3=(Number(value3)-32)*(5/9)+273.15;
+          }else if(unit3=="K"){
+            val3=Number(value3)*1;
+          }
+          return val3; 
+        }
+
+
+        const result = {};
+        let method;
+
+        try {
+            switch(calculation) {
+                case "1": // Temperature Two
+                    if (isNumeric(pressure_one) && isNumeric(pressure_two) && 
+                        isNumeric(volume_one) && isNumeric(volume_two) && isNumeric(temp_one)) {
+                        method = 1;
+                        const pressure_two_value = pre(pressure_two_unit, pressure_two);
+                        const pressure_one_value = pre(pressure_one_unit, pressure_one);
+                        const volume_two_value = vol(volume_two_unit, volume_two);
+                        const volume_one_value = vol(volume_one_unit, volume_one);
+                        const temp_one_value = temp(temp_one_unit, temp_one);
+                          const tf = (pressure_two_value * volume_two_value * temp_one_value) /
+                          (pressure_one_value * volume_one_value);
+                        result.tech_temperature = tf;
+
+                    } else {
+                        result.error = 'Please! Check Your Input.';
+                        return result;
+                    }
+                    break;
+
+                case "2": // Volume One
+                    method = 2;
+                    if (isNumeric(pressure_one) && isNumeric(pressure_two) && 
+                        isNumeric(temp_two) && isNumeric(volume_two) && isNumeric(temp_one)) {
+                        const pressure_two_value = pre(pressure_two_unit, pressure_two);
+                        const pressure_one_value = pre(pressure_one_unit, pressure_one);
+                        const volume_two_value = vol(volume_two_unit, volume_two);
+                        const temp_two_value = temp(temp_two_unit, temp_two);
+                        const temp_one_value = temp(temp_one_unit, temp_one);
+                        const vi = Math.round(((pressure_two_value * volume_two_value * temp_one_value) / 
+                                  (temp_two_value * pressure_one_value)) * 100) / 100;
+                        result.tech_volume = vi;
+
+
+                    } else {
+                        result.error = 'Please! Check Your Input.';
+                        return result;
+                    }
+                    break;
+
+                case "3": // Pressure One
+                    method = 3;
+                    if (isNumeric(volume_one) && isNumeric(pressure_two) && 
+                        isNumeric(temp_two) && isNumeric(volume_two) && isNumeric(temp_one)) {
+                        const pressure_two_value = pre(pressure_two_unit, pressure_two);
+                        const volume_one_value = vol(volume_one_unit, volume_one);
+                        const volume_two_value = vol(volume_two_unit, volume_two);
+                        const temp_two_value = temp(temp_two_unit, temp_two);
+                        const temp_one_value = temp(temp_one_unit, temp_one);
+                        const pi = Math.round(((pressure_two_value * volume_two_value * temp_one_value) / 
+                                  (temp_two_value * volume_one_value)) * 100) / 100;
+                        result.tech_pressure = pi;
+
+
+                    } else {
+                        result.error = 'Please! Check Your Input.';
+                        return result;
+                    }
+                    break;
+
+                case "4": // Temperature One
+                    method = 4;
+                    if (isNumeric(volume_one) && isNumeric(pressure_two) && 
+                        isNumeric(temp_two) && isNumeric(volume_two) && isNumeric(pressure_one)) {
+                        const pressure_two_value = pre(pressure_two_unit, pressure_two);
+                        const volume_one_value = vol(volume_one_unit, volume_one);
+                        const volume_two_value = vol(volume_two_unit, volume_two);
+                        const temp_two_value = temp(temp_two_unit, temp_two);
+                        const pressure_one_value = pre(pressure_one_unit, pressure_one);
+                        const ti = Math.round(((pressure_one_value * volume_one_value * temp_two_value) / 
+                                  (pressure_two_value * volume_two_value)) * 100) / 100;
+                        result.tech_temperature = ti;
+
+                    } else {
+                        result.error = 'Please! Check Your Input.';
+                        return result;
+                    }
+                    break;
+
+                case "5": // Volume Two
+                    method = 5;
+                    if (isNumeric(volume_one) && isNumeric(pressure_two) && 
+                        isNumeric(temp_two) && isNumeric(temp_one) && isNumeric(pressure_one)) {
+                        const pressure_two_value = pre(pressure_two_unit, pressure_two);
+                        const volume_one_value = vol(volume_one_unit, volume_one);
+                        const temp_one_value = temp(temp_one_unit, temp_two);
+                        const temp_two_value = temp(temp_two_unit, temp_two);
+                        const pressure_one_value = pre(pressure_one_unit, pressure_one);
+                        const vf = Math.round(((temp_two_value * pressure_one_value * volume_one_value) / 
+                                  (temp_one_value * pressure_two_value)) * 100) / 100;
+                        result.tech_volume = vf;
+                        // console.log(pressure_two_value,volume_one_value,temp_one_value,temp_two_value,pressure_one_value)
+
+                    } else {
+                        result.error = 'Please! Check Your Input.';
+                        return result;
+                    }
+                    break;
+
+                case "6": // Pressure Two
+                    method = 6;
+                    if (isNumeric(volume_one) && isNumeric(pressure_one) && 
+                        isNumeric(temp_two) && isNumeric(volume_two) && isNumeric(temp_one)) {
+                        const pressure_one_value = pre(pressure_one_unit, pressure_one);
+                        const volume_one_value = vol(volume_one_unit, volume_one);
+                        const volume_two_value = vol(volume_two_unit, volume_two);
+                        const temp_two_value = temp(temp_two_unit, temp_two);
+                        const temp_one_value = temp(temp_one_unit, temp_one);
+                        // const pf = Math.round(((temp_two_value * pressure_one_value * volume_one_value) / 
+                        //            (temp_one_value * volume_two_value)) * 100) / 100;
+                        // result.pressure = pf;
+                        const pf = ((temp_two_value * pressure_one_value * volume_one_value) /
+                (temp_one_value * volume_two_value));
+                    if (Math.abs(pf) < 1e-4) {
+                        result.pressure = pf.toExponential();
+                    } else {
+                        result.pressure = Math.round(pf * 100) / 100;
+                    }
+
+
+                    } else {
+                        result.error = 'Please! Check Your Input.';
+                        return result;
+                    }
+                    break;
+
+                default:
+                    result.error = 'Invalid calculation type.';
+                    return result;
+            }
+
+            result.tech_method = method;
+            return result;
+
+        } catch (error) {
+            return {
+                error: 'Calculation error occurred.',
+                details: error.message
+            };
+        }
+
+        // Helper function to check if value is numeric
+        function isNumeric(value) {
+            return value !== null && value !== undefined && value !== '' && !isNaN(Number(value));
+        }
+    }
+
+
+    /**
+    * getCalculationGayLussacsLawCalculator: Service Method
+    * POST: /api/calculators-lol/gay-lussacs-law-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationGayLussacsLawCalculator(body) {
+    const result = {};
+
+    const selection = body.tech_selection;
+    const p1 = body.tech_p1;
+    const p1_unit = body.tech_p1_unit;
+    const t1 = body.tech_t1;
+    const t1_unit = body.tech_t1_unit;
+    const p2 = body.tech_p2;
+    const p2_unit = body.tech_p2_unit;
+    const t2 = body.tech_t2;
+    const t2_unit = body.tech_t2_unit;
+    const R = body.tech_R;
+    const amount = body.tech_amount;
+    const v1 = body.tech_v1;
+
+    // Pressure conversion
+    function pre(unit, value) {
+        switch (unit) {
+            case "Pa": return value * 1;
+            case "Bar": return value * 100000;
+            case "psi": return value * 6895;
+            case "at": return value * 98068;
+            case "atm": return value * 101325;
+            case "Torr": return value * 133.32;
+            case "hPa": return value * 100;
+            case "kPa": return value * 1000;
+            case "MPa": return value * 1000000;
+            case "GPa": return value * 1000000000;
+            case "inHg": return value * 3386.4;
+            case "mmHg": return value * 133.32;
+            default: return NaN;
+        }
+    }
+
+    // Volume conversion
+    function vol(unit2, value2) {
+        switch (unit2) {
+            case "mm³": return value2 * 0.000000001;
+            case "cm³": return value2 * 0.000001;
+            case "dm³": return value2 * 0.001;
+            case "m³": return value2 * 1;
+            case "in³": return value2 * 0.000016387;
+            case "ft³": return value2 * 0.028317;
+            case "yd³": return value2 * 0.7646;
+            case "ml": return value2 * 0.000001;
+            case "liters": return value2 * 0.001;
+            default: return NaN;
+        }
+    }
+
+    // Temperature conversion
+    function temp(unit3, value3) {
+          value3 =   Number(value3);
+        switch (unit3) {
+            case "°C": return value3 + 273.15;
+            case "°F": return (value3 - 32) * (5 / 9) + 273.15;
+            case "K": return value3 * 1;
+            default: return NaN;
+        }
+    }
+
+    let method, temp2;
+
+    // Selection logic
+    if (selection === "1") { // Final Temperature (T2)
+        method = 1;
+        if (!isNaN(p1) && !isNaN(p2) && !isNaN(t1)) {
+            const p1_value = pre(p1_unit, p1);
+            const p2_value = pre(p2_unit, p2);
+            const t1_value = temp(t1_unit, t1);
+            temp2 = (t1_value * p2_value) / p1_value;
+        } else {
+            result.error = "Please! Check Your Input.";
+            return result;
+        }
+    } 
+    else if (selection === "2") { // Final Pressure (P2)
+        method = 2;
+        if (!isNaN(t1) && !isNaN(t2) && !isNaN(p1)) {
+            const p1_value = pre(p1_unit, p1);
+            const t1_value = temp(t1_unit, t1);
+            const t2_value = temp(t2_unit, t2);
+            temp2 = (p1_value * t2_value) / t1_value;
+        } else {
+            result.error = "Please! Check Your Input.";
+            return result;
+        }
+    } 
+    else if (selection === "3") { // Initial Pressure (P1)
+        method = 3;
+        if (!isNaN(t1) && !isNaN(t2) && !isNaN(p2)) {
+            const p2_value = pre(p2_unit, p2);
+            const t1_value = temp(t1_unit, t1);
+            const t2_value = temp(t2_unit, t2);
+            temp2 = (t1_value * p2_value) / t2_value;
+        } else {
+            result.error = "Please! Check Your Input.";
+            return result;
+        }
+    } 
+    else if (selection === "4") { // Initial Temperature (T1)
+        method = 4;
+        if (!isNaN(p1) && !isNaN(p2) && !isNaN(t2)) {
+            const p1_value = pre(p1_unit, p1);
+            const p2_value = pre(p2_unit, p2);
+            const t2_value = temp(t2_unit, t2);
+            temp2 = (t2_value / p2_value) * p1_value;
+        } else {
+            result.error = "Please! Check Your Input.";
+            return result;
+        }
+    } 
+    else if (selection === "5") { // Volume Calculation
+        method = 5;
+        if (!isNaN(p1) && !isNaN(t1) && !isNaN(amount) && !isNaN(R)) {
+            const calculate_volume = (amount * R * t1) / p1;
+            result.tech_calculate_volume = calculate_volume;
+            result.tech_method = method;
+            return result;
+        } else {
+            result.error = "Please! Check Your Input.";
+            return result;
+        }
+    } 
+    else if (selection === "6") { // Amount of Gas (n)
+        method = 6;
+        if (!isNaN(p1) && !isNaN(t1) && !isNaN(v1) && !isNaN(R)) {
+            const n = (p1 * v1) / (R * t1);
+            result.tech_n = n;
+            result.tech_method = method;
+            return result;
+        } else {
+            result.error = "Please! Check Your Input.";
+            return result;
+        }
+    }
+
+    const amount_of_gas = 1;
+    const calculate_volume = (amount_of_gas * R * t1) / p1;
+
+    result.tech_volume = calculate_volume;
+    result.tech_amount_of_gas = amount_of_gas;
+    result.tech_method = method;
+    result.tech_temp = temp2;
+
+    return result;
+}
+
+      /**
+    * getCalculationMassPercentCalculator: Service Method
+    * POST: /api/calculators-lol/mass-percent-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationMassPercentCalculator(body) {
+      const {
+        find,
+        mass_solute,
+        mass_solute_unit,
+        mass_solvent,
+        mass_solvent_unit,
+        mass_percentage,
+        mass_chemical,
+        mass_chemical_unit,
+        total_mass_compound,
+        total_mass_compound_unit,
+        first_value,
+        first_value_unit,
+        second_value,
+        second_value_unit,
+        third_value,
+        third_value_unit,
+        four_value,
+        four_value_unit,
+        five_value,
+        five_value_unit,
+        six_value,
+        six_value_unit
+      } = body;
+
+      const result = {};
+
+      // Mass conversion function
+      function massConvert(unit, value) {
+        const conversions = {
+          'µg': 0.000000001,
+          'mg': 0.000001,
+          'g': 0.001,
+          'dag': 0.01,
+          'kg': 1,
+          't': 1000,
+          'oz': 0.02835,
+          'lbs': 0.4536
+        };
+        return conversions[unit] ? value * conversions[unit] : value;
+      }
+
+      // Find atomic mass function
+      function findAtomicMass(valueUnit, value) {
+        const atomicMasses = {
+          'Atomic mass amu': 12,
+          'H (Hydrogen)': 1.00784,
+          'He (Helium)': 4.002602,
+          'Li (Lithium)': 6.941,
+          'Be (Beryllium)': 9.0122,
+          'B (Boron)': 10.811,
+          'C (Carbon)': 12.011,
+          'N (Nitrogen)': 14.0067,
+          'O (Oxygen)': 15.9994,
+          'F (Fluorine)': 18.998403,
+          'Ne (Neon)': 20.179,
+          'Na (Sodium)': 22.98977,
+          'Mg (Magnesium)': 24.305,
+          'Al (Aluminium)': 26.98154,
+          'Si (Silicon)': 28.0855,
+          'P (Phosphorus)': 30.97376,
+          'S (Sulfur)': 32.06,
+          'Cl (Chlorine)': 35.453,
+          'Ar (Argon)': 39.0983,
+          'K (Potassium)': 39.948,
+          'Ca (Calcium)': 40.08,
+          'Sc (Scandium)': 44.9559,
+          'Ti (Titanium)': 47.90,
+          'V (Vanadium)': 50.9415,
+          'Cr (Chromium)': 51.996,
+          'Mn (Manganese)': 54.9380,
+          'Fe (Iron)': 55.847,
+          'Co ( Cobalt)': 58.9332,
+          'Ni (Nickel)': 58.70,
+          'Cu (Copper)': 63.546,
+          'Zn (Zinc)': 65.38
+        };
+
+        const atomicMass = atomicMasses[valueUnit];
+        if (valueUnit === 'Atomic mass amu') {
+          return [atomicMass, atomicMass];
+        }
+        return [atomicMass * value, atomicMass];
+      }
+
+      // Helper function to check if value is numeric
+      function isNumeric(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+      }
+
+      let method;
+
+      try {
+        if (find === "1") { // Mass Percentage
+          method = 1;
+          if (isNumeric(mass_solute) && isNumeric(mass_solvent)) {
+            const massSoluteValue = massConvert(mass_solute_unit, parseFloat(mass_solute));
+            const massSolventValue = massConvert(mass_solvent_unit, parseFloat(mass_solvent));
+            const massSolution = massSoluteValue + massSolventValue;
+            
+            const massPercent = massSolution !== 0 
+              ? (massSoluteValue / massSolution) * 100 
+              : 0;
+            
+            result.mass_solution = massSolution;
+            result.mass_percent = massPercent;
+            result.method = method;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } 
+        else if (find === "2") { // Mass Solute
+          method = 2;
+          if (isNumeric(mass_solvent) && isNumeric(mass_percentage)) {
+            const massSolventVal = parseFloat(mass_solvent);
+            const massPercentVal = parseFloat(mass_percentage);
+            const massSoluteCalc = massSolventVal * massPercentVal / 100 + (massSolventVal / massPercentVal);
+            const massSolution = massSolventVal + massSoluteCalc;
+            
+            result.mass_solution = massSolution;
+            result.mass_solute = massSoluteCalc;
+            result.method = method;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } 
+        else if (find === "3") { // Mass Solvent
+          method = 3;
+          if (isNumeric(mass_solute) && isNumeric(mass_percentage)) {
+            const massSoluteVal = parseFloat(mass_solute);
+            const massPercentVal = parseFloat(mass_percentage);
+            const massSolventCalc = massSoluteVal * 100 / massPercentVal - massSoluteVal;
+            const massSolution = massSoluteVal + massSolventCalc;
+            
+            result.mass_solution = massSolution;
+            result.mass_solvent = massSolventCalc;
+            result.method = method;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } 
+        else if (find === "4") { // Mass Percentage for a Chemical
+          method = 4;
+          if (isNumeric(mass_chemical) && isNumeric(total_mass_compound)) {
+            const massChemicalValue = massConvert(mass_chemical_unit, parseFloat(mass_chemical));
+            const massCompoundValue = massConvert(total_mass_compound_unit, parseFloat(total_mass_compound));
+            const massPercent = (massChemicalValue * 100) / massCompoundValue;
+            
+            result.mass_percent = massPercent;
+            result.method = method;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } 
+        else if (find === "5") { // Mass of chemical
+          method = 5;
+          if (isNumeric(total_mass_compound) && isNumeric(mass_percentage)) {
+            const massCompoundValue = massConvert(total_mass_compound_unit, parseFloat(total_mass_compound));
+            const massOfChemical = (parseFloat(mass_percentage) / 100) * massCompoundValue;
+            
+            result.mass_of_chemical = massOfChemical;
+            result.method = method;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } 
+        else if (find === "6") { // Total Mass of Compound
+          method = 6;
+          if (isNumeric(mass_chemical) && isNumeric(mass_percentage)) {
+            const massChemicalValue = massConvert(mass_chemical_unit, parseFloat(mass_chemical));
+            const totalMassCompound = (parseFloat(mass_percentage) / 100) * massChemicalValue;
+            
+            result.total_mass_compound = totalMassCompound;
+            result.method = method;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } 
+        else if (find === "7") { // Atomic Mass Calculation
+          method = 7;
+          if (first_value && isNumeric(first_value)) {
+            const call = [];
+            let value = 1;
+            
+            const root = findAtomicMass(first_value_unit, parseFloat(first_value));
+            call.push(root[0]);
+            result.punk = parseFloat(first_value);
+            result.punk1 = root[1];
+            result.value1 = value;
+            result.name1 = first_value_unit;
+            result.atomic1 = root;
+
+            if (isNumeric(second_value) && second_value) {
+              value = 2;
+              const root2 = findAtomicMass(second_value_unit, parseFloat(second_value));
+              call.push(root2[0]);
+              result.punk2 = parseFloat(second_value);
+              result.punk3 = root2[1];
+              result.value2 = value;
+              result.name2 = second_value_unit;
+              result.atomic2 = root2;
+            }
+
+            if (isNumeric(third_value) && third_value) {
+              value = 3;
+              const root3 = findAtomicMass(third_value_unit, parseFloat(third_value));
+              call.push(root3[0]);
+              result.punk4 = parseFloat(third_value);
+              result.punk5 = root3[1];
+              result.value3 = value;
+              result.name3 = third_value_unit;
+              result.atomic3 = root3;
+            }
+
+            if (isNumeric(four_value) && four_value) {
+              value = 4;
+              const root4 = findAtomicMass(four_value_unit, parseFloat(four_value));
+              call.push(root4[0]);
+              result.punk6 = parseFloat(four_value);
+              result.punk7 = root4[1];
+              result.value4 = value;
+              result.name4 = four_value_unit;
+              result.atomic4 = root4;
+            }
+
+            if (isNumeric(five_value) && five_value) {
+              value = 5;
+              const root5 = findAtomicMass(five_value_unit, parseFloat(five_value));
+              call.push(root5[0]);
+              result.punk8 = parseFloat(five_value);
+              result.punk9 = root5[1];
+              result.value5 = value;
+              result.name5 = five_value_unit;
+              result.atomic5 = root5;
+            }
+
+            if (isNumeric(six_value) && six_value) {
+              value = 6;
+              const root6 = findAtomicMass(six_value_unit, parseFloat(six_value));
+              call.push(root6[0]);
+              result.punk10 = parseFloat(six_value);
+              result.punk11 = root6[1];
+              result.value6 = value;
+              result.name6 = six_value_unit;
+              result.atomic6 = root6;
+            }
+
+            const totalMass = call.reduce((sum, val) => sum + val, 0);
+            result.call = totalMass;
+            result.method = method;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        }
+
+        result.RESULT = 1;
+        return result;
+
+      } catch (error) {
+        return {
+          error: 'An error occurred during calculation.',
+          details: error.message
+        };
+      }
+    }
 
 
 
