@@ -16,6 +16,7 @@ const localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat);
 
 const moment = require("moment");
+const momenttimezone = require('moment-timezone');
 const customParseFormat = require("dayjs/plugin/customParseFormat");
 const duration = require("dayjs/plugin/duration");
 dayjs.extend(customParseFormat);
@@ -74649,30 +74650,29 @@ async getCalculationNormalCriticalValueCalculator(body) {
     */
 
     async getCalculationMassPercentCalculator(body) {
-      const {
-        find,
-        mass_solute,
-        mass_solute_unit,
-        mass_solvent,
-        mass_solvent_unit,
-        mass_percentage,
-        mass_chemical,
-        mass_chemical_unit,
-        total_mass_compound,
-        total_mass_compound_unit,
-        first_value,
-        first_value_unit,
-        second_value,
-        second_value_unit,
-        third_value,
-        third_value_unit,
-        four_value,
-        four_value_unit,
-        five_value,
-        five_value_unit,
-        six_value,
-        six_value_unit
-      } = body;
+        let find = body.tech_find;
+        let mass_solute = body.tech_mass_solute;
+        let mass_solute_unit = body.tech_mass_solute_unit;
+        let mass_solvent = body.tech_mass_solvent;
+        let mass_solvent_unit = body.tech_mass_solvent_unit;
+        let mass_percentage = body.tech_mass_percentage;
+        let mass_chemical = body.tech_mass_chemical;
+        let mass_chemical_unit = body.tech_mass_chemical_unit;
+        let total_mass_compound = body.tech_total_mass_compound;
+        let total_mass_compound_unit = body.tech_total_mass_compound_unit;
+        let first_value = body.tech_first_value;
+        let first_value_unit = body.tech_first_value_unit;
+        let second_value = body.tech_second_value;
+        let second_value_unit = body.tech_second_value_unit;
+        let third_value = body.tech_third_value;
+        let third_value_unit = body.tech_third_value_unit;
+        let four_value = body.tech_four_value;
+        let four_value_unit = body.tech_four_value_unit;
+        let five_value = body.tech_five_value;
+        let five_value_unit = body.tech_five_value_unit;
+        let six_value = body.tech_six_value;
+        let six_value_unit = body.tech_six_value_unit;
+
 
       const result = {};
 
@@ -74693,6 +74693,7 @@ async getCalculationNormalCriticalValueCalculator(body) {
 
       // Find atomic mass function
       function findAtomicMass(valueUnit, value) {
+        console.log(valueUnit,value);
         const atomicMasses = {
           'Atomic mass amu': 12,
           'H (Hydrogen)': 1.00784,
@@ -74753,9 +74754,9 @@ async getCalculationNormalCriticalValueCalculator(body) {
               ? (massSoluteValue / massSolution) * 100 
               : 0;
             
-            result.mass_solution = massSolution;
-            result.mass_percent = massPercent;
-            result.method = method;
+            result.tech_mass_solution = massSolution;
+            result.tech_mass_percent = massPercent;
+            result.tech_method = method;
           } else {
             result.error = 'Please! Check Your Input.';
             return result;
@@ -74769,9 +74770,9 @@ async getCalculationNormalCriticalValueCalculator(body) {
             const massSoluteCalc = massSolventVal * massPercentVal / 100 + (massSolventVal / massPercentVal);
             const massSolution = massSolventVal + massSoluteCalc;
             
-            result.mass_solution = massSolution;
-            result.mass_solute = massSoluteCalc;
-            result.method = method;
+            result.tech_mass_solution = massSolution;
+            result.tech_mass_solute = massSoluteCalc;
+            result.tech_method = method;
           } else {
             result.error = 'Please! Check Your Input.';
             return result;
@@ -74785,9 +74786,9 @@ async getCalculationNormalCriticalValueCalculator(body) {
             const massSolventCalc = massSoluteVal * 100 / massPercentVal - massSoluteVal;
             const massSolution = massSoluteVal + massSolventCalc;
             
-            result.mass_solution = massSolution;
-            result.mass_solvent = massSolventCalc;
-            result.method = method;
+            result.tech_mass_solution = massSolution;
+            result.tech_mass_solvent = massSolventCalc;
+            result.tech_method = method;
           } else {
             result.error = 'Please! Check Your Input.';
             return result;
@@ -74800,8 +74801,8 @@ async getCalculationNormalCriticalValueCalculator(body) {
             const massCompoundValue = massConvert(total_mass_compound_unit, parseFloat(total_mass_compound));
             const massPercent = (massChemicalValue * 100) / massCompoundValue;
             
-            result.mass_percent = massPercent;
-            result.method = method;
+            result.tech_mass_percent = massPercent;
+            result.tech_method = method;
           } else {
             result.error = 'Please! Check Your Input.';
             return result;
@@ -74813,8 +74814,8 @@ async getCalculationNormalCriticalValueCalculator(body) {
             const massCompoundValue = massConvert(total_mass_compound_unit, parseFloat(total_mass_compound));
             const massOfChemical = (parseFloat(mass_percentage) / 100) * massCompoundValue;
             
-            result.mass_of_chemical = massOfChemical;
-            result.method = method;
+            result.tech_mass_of_chemical = massOfChemical;
+            result.tech_method = method;
           } else {
             result.error = 'Please! Check Your Input.';
             return result;
@@ -74826,8 +74827,8 @@ async getCalculationNormalCriticalValueCalculator(body) {
             const massChemicalValue = massConvert(mass_chemical_unit, parseFloat(mass_chemical));
             const totalMassCompound = (parseFloat(mass_percentage) / 100) * massChemicalValue;
             
-            result.total_mass_compound = totalMassCompound;
-            result.method = method;
+            result.tech_total_mass_compound = totalMassCompound;
+            result.tech_method = method;
           } else {
             result.error = 'Please! Check Your Input.';
             return result;
@@ -74840,78 +74841,77 @@ async getCalculationNormalCriticalValueCalculator(body) {
             let value = 1;
             
             const root = findAtomicMass(first_value_unit, parseFloat(first_value));
+            console.log(root);
             call.push(root[0]);
-            result.punk = parseFloat(first_value);
-            result.punk1 = root[1];
-            result.value1 = value;
-            result.name1 = first_value_unit;
-            result.atomic1 = root;
+            result.tech_punk = parseFloat(first_value);
+            result.tech_punk1 = root[1];
+            result.tech_value1 = value;
+            result.tech_name1 = first_value_unit;
+            result.tech_atomic1 = root;
 
             if (isNumeric(second_value) && second_value) {
               value = 2;
               const root2 = findAtomicMass(second_value_unit, parseFloat(second_value));
               call.push(root2[0]);
-              result.punk2 = parseFloat(second_value);
-              result.punk3 = root2[1];
-              result.value2 = value;
-              result.name2 = second_value_unit;
-              result.atomic2 = root2;
+              result.tech_punk2 = parseFloat(second_value);
+              result.tech_punk3 = root2[1];
+              result.tech_value2 = value;
+              result.tech_name2 = second_value_unit;
+              result.tech_atomic2 = root2;
             }
 
             if (isNumeric(third_value) && third_value) {
               value = 3;
               const root3 = findAtomicMass(third_value_unit, parseFloat(third_value));
               call.push(root3[0]);
-              result.punk4 = parseFloat(third_value);
-              result.punk5 = root3[1];
-              result.value3 = value;
-              result.name3 = third_value_unit;
-              result.atomic3 = root3;
+              result.tech_punk4 = parseFloat(third_value);
+              result.tech_punk5 = root3[1];
+              result.tech_value3 = value;
+              result.tech_name3 = third_value_unit;
+              result.tech_atomic3 = root3;
             }
 
             if (isNumeric(four_value) && four_value) {
               value = 4;
               const root4 = findAtomicMass(four_value_unit, parseFloat(four_value));
               call.push(root4[0]);
-              result.punk6 = parseFloat(four_value);
-              result.punk7 = root4[1];
-              result.value4 = value;
-              result.name4 = four_value_unit;
-              result.atomic4 = root4;
+              result.tech_punk6 = parseFloat(four_value);
+              result.tech_punk7 = root4[1];
+              result.tech_value4 = value;
+              result.tech_name4 = four_value_unit;
+              result.tech_atomic4 = root4;
             }
 
             if (isNumeric(five_value) && five_value) {
               value = 5;
               const root5 = findAtomicMass(five_value_unit, parseFloat(five_value));
               call.push(root5[0]);
-              result.punk8 = parseFloat(five_value);
-              result.punk9 = root5[1];
-              result.value5 = value;
-              result.name5 = five_value_unit;
-              result.atomic5 = root5;
+              result.tech_punk8 = parseFloat(five_value);
+              result.tech_punk9 = root5[1];
+              result.tech_value5 = value;
+              result.tech_name5 = five_value_unit;
+              result.tech_atomic5 = root5;
             }
 
             if (isNumeric(six_value) && six_value) {
               value = 6;
               const root6 = findAtomicMass(six_value_unit, parseFloat(six_value));
               call.push(root6[0]);
-              result.punk10 = parseFloat(six_value);
-              result.punk11 = root6[1];
-              result.value6 = value;
-              result.name6 = six_value_unit;
-              result.atomic6 = root6;
+              result.tech_punk10 = parseFloat(six_value);
+              result.tech_punk11 = root6[1];
+              result.tech_value6 = value;
+              result.tech_name6 = six_value_unit;
+              result.tech_atomic6 = root6;
             }
 
             const totalMass = call.reduce((sum, val) => sum + val, 0);
-            result.call = totalMass;
-            result.method = method;
+            result.tech_call = totalMass;
+            result.tech_method = method;
           } else {
             result.error = 'Please! Check Your Input.';
             return result;
           }
         }
-
-        result.RESULT = 1;
         return result;
 
       } catch (error) {
@@ -74922,7 +74922,8107 @@ async getCalculationNormalCriticalValueCalculator(body) {
       }
     }
 
+       /**
+    * getCalculationRateConstantCalculator: Service Method
+    * POST: /api/calculators-lol/rate-constant-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    async getCalculationRateConstantCalculator(body) {
+      const unit_x = body.tech_unit_x?.trim();
+      const module_x = body.tech_module_x?.trim();
+      const module_y = body.tech_module_y?.trim();
+      const module_z = body.tech_module_z?.trim();
+      let unit_a = body.tech_unit_a?.trim();
+      let unit_b = body.tech_unit_b?.trim();
+      let unit_c = body.tech_unit_c?.trim();
+      let time_a = body.tech_time_a?.trim();
+      let time_b = body.tech_time_b?.trim();
+      let time_c = body.tech_time_c?.trim();
+      const half_a = body.tech_half_a?.trim();
+      const half_b = body.tech_half_b?.trim();
+      const half_c = body.tech_half_c?.trim();
+      const con_a = body.tech_con_a?.trim();
+      const con_b = body.tech_con_b?.trim();
+      const con_c = body.tech_con_c?.trim();
 
+      // Unit A conversion
+      if (unit_a == 'M') {
+          unit_a = '0';
+      } else if (unit_a == 'mM') {
+          unit_a = '1';
+      } else if (unit_a == 'μM') {
+          unit_a = '2';
+      } else if (unit_a == 'nM') {
+          unit_a = '3';
+      }
+
+      // Time A conversion
+      if (time_a == 'μs') {
+          time_a = '0';
+      } else if (time_a == 'ms') {
+          time_a = '1';
+      } else if (time_a == 'sec') {
+          time_a = '2';
+      } else if (time_a == 'min') {
+          time_a = '3';
+      } else if (time_a == 'min/sec') {
+          time_a = '4';
+      } else if (time_a == 'hrs') {
+          time_a = '6';
+      }
+
+      // Unit B conversion
+      if (unit_b == 'M') {
+          unit_b = '0';
+      } else if (unit_b == 'mM') {
+          unit_b = '1';
+      } else if (unit_b == 'μM') {
+          unit_b = '2';
+      } else if (unit_b == 'nM') {
+          unit_b = '3';
+      }
+
+      // Time B conversion
+      if (time_b == 'μs') {
+          time_b = '0';
+      } else if (time_b == 'ms') {
+          time_b = '1';
+      } else if (time_b == 'sec') {
+          time_b = '2';
+      } else if (time_b == 'min') {
+          time_b = '3';
+      } else if (time_b == 'min/sec') {
+          time_b = '4';
+      } else if (time_b == 'hrs') {
+          time_b = '6';
+      }
+
+      // Unit C conversion
+      if (unit_c == 'M') {
+          unit_c = '0';
+      } else if (unit_c == 'mM') {
+          unit_c = '1';
+      } else if (unit_c == 'μM') {
+          unit_c = '2';
+      } else if (unit_c == 'nM') {
+          unit_c = '3';
+      }
+
+      // Time C conversion
+      if (time_c == 'μs') {
+          time_c = '0';
+      } else if (time_c == 'ms') {
+          time_c = '1';
+      } else if (time_c == 'sec') {
+          time_c = '2';
+      } else if (time_c == 'min') {
+          time_c = '3';
+      } else if (time_c == 'min/sec') {
+          time_c = '4';
+      } else if (time_c == 'hrs') {
+          time_c = '6';
+      }
+
+      // Helper function for concentration calculation
+      function calculate(a, b) {
+          let convert;
+          if (b == '0') {
+              convert = a * 1;
+          } else if (b == '1') {
+              convert = a * 0.001;
+          } else if (b == '2') {
+              convert = a * 0.000001;
+          } else if (b == '3') {
+              convert = a * 0.000000001;
+          }
+          return convert;
+      }
+
+      // Helper function for time calculation
+      function calculatet(a, b) {
+          let convert;
+          if (b == '0') {
+              convert = a * 0.000001;
+          } else if (b == '1') {
+              convert = a * 0.001;
+          } else if (b == '2') {
+              convert = a * 1;
+          } else if (b == '3') {
+              convert = a * 60;
+          } else if (b == '4') {
+              convert = a * 3600;
+          }
+          return convert;
+      }
+
+      let check = true;
+      let rate_res, k_res, b_res, c_res, a_res;
+      k_res = 0;
+      rate_res = 0;
+      if (unit_x == 'uni') {
+          if (module_x === '0') {
+              if (!isNaN(con_a) && !isNaN(half_a)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const htime = calculatet(parseFloat(half_a), time_a);
+                  k_res = conca / (2 * htime);
+                  rate_res = k_res;
+              } else {
+                  check = false;
+              }
+          } else if (module_x == '1') {
+              if (!isNaN(con_a) && !isNaN(half_a)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const htime = calculatet(parseFloat(half_a), time_a);
+                  k_res = 0.693 / htime;
+                  rate_res = k_res * conca;
+              } else {
+                  check = false;
+              }
+          } else {
+              if (!isNaN(con_a) && !isNaN(half_a)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const htime = calculatet(parseFloat(half_a), time_a);
+                  k_res = 1 / (htime * conca);
+                  rate_res = k_res * (conca * conca);
+              } else {
+                  check = false;
+              }
+          }
+      } else if (unit_x == 'bi') {
+          if (module_x == '1' && module_y == '1') {
+              if (!isNaN(con_a) && !isNaN(half_a)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const concb = calculate(parseFloat(con_b), unit_b);
+                  const htime = calculatet(parseFloat(half_a), time_b);
+                  k_res = 0.693 / htime;
+                  rate_res = k_res * conca * concb;
+                  rate_res = parseFloat(rate_res.toFixed(15));
+              } else {
+                  check = false;
+              }
+          } else if (module_x == '1' && module_y == '2') {
+              if (!isNaN(con_a) && !isNaN(half_a)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const concb = calculate(parseFloat(con_b), unit_b);
+                  const htime = calculatet(parseFloat(half_a), time_b);
+                  k_res = 0.693 / htime;
+                  b_res = 1 / (k_res * concb);
+                  b_res = Math.round(b_res);
+                  rate_res = k_res * conca * (concb * concb);
+                  rate_res = parseFloat(rate_res.toFixed(15));
+              } else {
+                  check = false;
+              }
+          } else if (module_x == '2' && module_y == '1') {
+              if (!isNaN(con_a) && !isNaN(half_a)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const concb = calculate(parseFloat(con_b), unit_b);
+                  const htime = calculatet(parseFloat(half_a), time_b);
+                  k_res = 1 / (conca * htime);
+                  b_res = 0.693 / k_res;
+                  b_res = parseFloat(b_res.toFixed(8));
+                  rate_res = k_res * concb * (conca * conca);
+                  rate_res = parseFloat(rate_res.toFixed(12));
+              } else {
+                  check = false;
+              }
+          }
+      } else {
+          if (module_x == '1' && module_y == '1' && module_z == '1') {
+              if ((!isNaN(con_a) && !isNaN(con_b)) || !isNaN(con_c) || (!isNaN(half_a) && !isNaN(half_b)) || !isNaN(half_c)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const concb = calculate(parseFloat(con_b), unit_b);
+                  const concd = calculate(parseFloat(con_c), unit_c);
+                  const htime = calculatet(parseFloat(half_a), time_a);
+                  k_res = 0.693 / htime;
+                  rate_res = k_res * conca * concb * concd;
+                  rate_res = parseFloat(rate_res.toFixed(15));
+              } else {
+                  check = false;
+              }
+          } else if (module_x == '1' && module_y == '2' && module_z == '1') {
+              if ((!isNaN(con_a) && !isNaN(con_b)) || !isNaN(con_c) || (!isNaN(half_a) && !isNaN(half_b)) || !isNaN(half_c)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const concb = calculate(parseFloat(con_b), unit_b);
+                  const concc = calculate(parseFloat(con_c), unit_c);
+                  const htime = calculatet(parseFloat(half_a), time_a);
+                  k_res = 0.693 / htime;
+                  b_res = 1 / (k_res * concb);
+                  b_res = parseFloat(b_res.toFixed(5));
+                  rate_res = k_res * conca * concb * concb * concc;
+                  rate_res = parseFloat(rate_res.toFixed(15));
+              } else {
+                  check = false;
+              }
+          } else if (module_x == '1' && module_y == '1' && module_z == '2') {
+              if ((!isNaN(con_a) && !isNaN(con_b)) || !isNaN(con_c) || (!isNaN(half_a) && !isNaN(half_b)) || !isNaN(half_c)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const concb = calculate(parseFloat(con_b), unit_b);
+                  const concc = calculate(parseFloat(con_c), unit_c);
+                  const htime = calculatet(parseFloat(half_a), time_a);
+                  k_res = 0.693 / htime;
+                  c_res = 1 / (k_res * concc);
+                  c_res = parseFloat(c_res.toFixed(5));
+                  rate_res = k_res * conca * concb * concc * concc;
+                  rate_res = parseFloat(rate_res.toFixed(15));
+              } else {
+                  check = false;
+              }
+          } else if (module_x == '2' && module_y == '1' && module_z == '1') {
+              if ((!isNaN(con_a) && !isNaN(con_b)) || !isNaN(con_c) || (!isNaN(half_a) && !isNaN(half_b)) || !isNaN(half_c)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const concb = calculate(parseFloat(con_b), unit_b);
+                  const concc = calculate(parseFloat(con_c), unit_c);
+                  const htime = calculatet(parseFloat(half_b), time_b);
+                  k_res = 0.693 / htime;
+                  c_res = 1 / (k_res * conca);
+                  c_res = parseFloat(c_res.toFixed(5));
+                  rate_res = k_res * conca * conca * concb * concc;
+                  rate_res = parseFloat(rate_res.toFixed(15));
+              } else {
+                  check = false;
+              }
+          } else if (module_x == '2' && module_y == '2' && module_z == '1') {
+              if ((!isNaN(con_a) && !isNaN(con_b)) || !isNaN(con_c) || (!isNaN(half_a) && !isNaN(half_b)) || !isNaN(half_c)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const concb = calculate(parseFloat(con_b), unit_b);
+                  const concc = calculate(parseFloat(con_c), unit_c);
+                  const htime = calculatet(parseFloat(half_c), time_c);
+                  k_res = 0.693 / htime;
+                  a_res = 1 / (k_res * conca);
+                  a_res = parseFloat(a_res.toFixed(5));
+                  b_res = 1 / (k_res * concb);
+                  b_res = parseFloat(b_res.toFixed(5));
+                  rate_res = k_res * conca * conca * concb * concb * concc;
+                  rate_res = parseFloat(rate_res.toFixed(15));
+              } else {
+                  check = false;
+              }
+          } else if (module_x == '1' && module_y == '2' && module_z == '2') {
+              if ((!isNaN(con_a) && !isNaN(con_b)) || !isNaN(con_c) || (!isNaN(half_a) && !isNaN(half_b)) || !isNaN(half_c)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const concb = calculate(parseFloat(con_b), unit_b);
+                  const concc = calculate(parseFloat(con_c), unit_c);
+                  const htime = calculatet(parseFloat(half_a), time_a);
+                  k_res = 0.693 / htime;
+                  c_res = 1 / (k_res * concc);
+                  c_res = parseFloat(c_res.toFixed(5));
+                  b_res = 1 / (k_res * concb);
+                  b_res = parseFloat(b_res.toFixed(5));
+                  rate_res = k_res * concc * concc * concb * concb * conca;
+                  rate_res = parseFloat(rate_res.toFixed(15));
+              } else {
+                  check = false;
+              }
+          } else if (module_x == '2' && module_y == '2' && module_z == '2') {
+              if ((!isNaN(con_a) && !isNaN(con_b)) || !isNaN(con_c) || (!isNaN(half_a) && !isNaN(half_b)) || !isNaN(half_c)) {
+                  const conca = calculate(parseFloat(con_a), unit_a);
+                  const concb = calculate(parseFloat(con_b), unit_b);
+                  const concc = calculate(parseFloat(con_c), unit_c);
+                  const htime = calculatet(parseFloat(half_a), time_a);
+                  k_res = 1 / (htime * conca);
+                  k_res = parseFloat(k_res.toFixed(5));
+                  b_res = 1 / (k_res * concb);
+                  b_res = parseFloat(b_res.toFixed(5));
+                  c_res = 1 / (k_res * concc);
+                  c_res = parseFloat(c_res.toFixed(5));
+                  rate_res = k_res * conca * conca * concb * concb * concc * concc;
+                  rate_res = parseFloat(rate_res.toFixed(15));
+              } else {
+                  check = false;
+              }
+          }
+      }
+      if (check === true) {
+          return {
+              tech_rate_res: rate_res,
+              tech_k_res: k_res
+          };
+      } else {
+          return {
+              error: 'Please! Check Your Input.'
+          };
+      }
+  }
+
+
+      /**
+    * getCalculationSalaryCalculator: Service Method
+    * POST: /api/calculators-lol/salary-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+      async getCalculationSalaryCalculator(body) {
+      let salary = body.tech_salary;
+      let hours = body.tech_hours;
+      let days = body.tech_days;
+      let per = body.tech_per;
+      let holidays = body.tech_holidays ?? 0;
+      let vacation = body.tech_vacation ?? 0;
+      let tax = body.tech_tax;
+      let are = body.tech_are;
+
+
+      // Validation
+      if (!isNumeric(salary) || !isNumeric(hours)) {
+        return { error: 'Please fill all fields.' };
+      }
+
+      const salaryNum = parseFloat(salary);
+      const weekHours = parseFloat(hours);
+      const weekDay = parseFloat(days);
+      const yearlyHours = weekHours * 52;
+      const dailyHours = weekHours / weekDay;
+      // console.log(salaryNum,weekHours,weekDay,dailyHours);
+      let hourly, daily, week, biWeek, yearly, monthly, semiMonth, quarterly;
+      let aHourly, aDaily, aWeek, aBiWeek, aYearly, aMonthly, aSemiMonth, aQuarterly;
+
+      // Calculate based on payment period
+      switch (per) {
+        case 'Hourly':
+          hourly = salaryNum;
+          daily = round(salaryNum * dailyHours, 2);
+          week = round(weekHours * salaryNum);
+          biWeek = round(week * 2);
+          yearly = round(yearlyHours * salaryNum);
+          monthly = round(yearly / 12);
+          semiMonth = round(monthly / 2);
+          quarterly = round(yearly / 4);
+          break;
+
+        case 'Daily':
+          daily = salaryNum;
+          hourly = round(salaryNum / dailyHours, 2);
+          week = round(weekHours * hourly);
+          biWeek = round(week * 2);
+          yearly = round(yearlyHours * hourly);
+          monthly = round(yearly / 12);
+          semiMonth = round(monthly / 2);
+          quarterly = round(yearly / 4);
+          break;
+
+        case 'Weekly':
+          aWeek = salaryNum;
+          aHourly = round(aWeek / weekHours, 2);
+          aDaily = round(aHourly * dailyHours, 2);
+          aBiWeek = round(aWeek * 2);
+          aYearly = round(yearlyHours * aHourly);
+          aMonthly = round(aYearly / 12);
+          aSemiMonth = round(aMonthly / 2);
+          aQuarterly = round(aYearly / 4);
+          break;
+
+        case 'Bi-Weekly':
+          aBiWeek = salaryNum;
+          aWeek = round(aBiWeek * 2);
+          aHourly = round(aWeek / weekHours, 2);
+          aDaily = round(aHourly * dailyHours, 2);
+          aYearly = round(yearlyHours * aHourly);
+          aMonthly = round(aYearly / 12);
+          aSemiMonth = round(aMonthly / 2);
+          aQuarterly = round(aYearly / 4);
+          console.log(aBiWeek,aWeek);
+          break;
+
+        case 'Semi-Monthly':
+          aSemiMonth = salaryNum;
+          aMonthly = round(aSemiMonth * 2);
+          aYearly = round(aMonthly * 12);
+          aQuarterly = round(aYearly / 4);
+          aHourly = round(aYearly / yearlyHours, 2);
+          aDaily = round(aHourly * dailyHours, 2);
+          aWeek = round(weekHours * aDaily);
+          aBiWeek = round(aWeek * 2);
+          break;
+
+        case 'Monthly':
+          aYearly = round(salaryNum * 12);
+          aQuarterly = round(aYearly / 4);
+          aSemiMonth = round(salaryNum / 2);
+          aHourly = round(aYearly / yearlyHours, 2);
+          aWeek = round(weekHours * aHourly);
+          aBiWeek = round(aWeek * 2);
+          aDaily = round(aHourly * dailyHours, 2);
+          aMonthly = salaryNum;
+          break;
+
+        case 'Quarterly':
+          aQuarterly = salaryNum;
+          aYearly = round(aQuarterly * 4);
+          aHourly = round(aYearly / yearlyHours, 2);
+          aDaily = round(aHourly * dailyHours, 2);
+          aWeek = round(weekHours * aDaily);
+          aBiWeek = round(aWeek * 2);
+          aMonthly = round(aYearly / 12);
+          aSemiMonth = round(aMonthly / 2);
+          break;
+
+        case 'Annual':
+          aYearly = salaryNum;
+          aHourly = round(aYearly / yearlyHours, 2);
+          aDaily = round(aHourly * dailyHours, 2);
+          aWeek = round(weekHours * aHourly);
+          aBiWeek = round(aWeek * 2);
+          aMonthly = round(aYearly / 12);
+          aSemiMonth = round(aMonthly / 2);
+          aQuarterly = round(aYearly / 4);
+          // console.log(aYearly,aHourly,aDaily,aWeek,aBiWeek,aMonthly,aSemiMonth,aQuarterly);
+          break;
+
+        default:
+          return { error: 'Invalid payment period.' };
+      }
+
+      // Handle holidays and vacation
+      const totalLeaves = (isNumeric(holidays) ? parseFloat(holidays) : 0) + 
+                          (isNumeric(vacation) ? parseFloat(vacation) : 0);
+      if (totalLeaves != 0) {
+    
+        if (per === 'Hourly' || per === 'Daily') {
+          const subSalary = daily * totalLeaves;
+          aYearly = round(yearly - subSalary);
+          aHourly = round(aYearly / yearlyHours, 2);
+          aQuarterly = round(aYearly / 4);
+          aMonthly = round(aYearly / 12);
+          aSemiMonth = round(aMonthly / 2);
+          aDaily = round(aHourly * dailyHours, 2);
+          aWeek = round(weekHours * aHourly);
+          aBiWeek = round(aWeek * 2);
+        } else {
+          const hh = (260 - totalLeaves) / 5;
+          hourly = aMonthly / ((hh / 12) * weekHours);
+          // console.log(hourly,hh,aMonthly,weekHours);
+          yearly = round(hourly * yearlyHours);
+          quarterly = round(yearly / 4);
+          monthly = round(yearly / 12);
+          semiMonth = round(monthly / 2);
+          daily = round(hourly * dailyHours, 2);
+          week = round(weekHours * hourly);
+          biWeek = round(week * 2);
+          // console.log(hh,hourly,yearly,quarterly,monthly,semiMonth,daily,week,biWeek);
+        }
+      } else {
+        if (per === 'Hourly' || per === 'Daily') {
+          aYearly = yearly;
+          aQuarterly = quarterly;
+          aMonthly = monthly;
+          aSemiMonth = semiMonth;
+          aBiWeek = biWeek;
+          aWeek = week;
+          aDaily = daily;
+          aHourly = hourly;
+        } else {
+          yearly = aYearly;
+          quarterly = aQuarterly;
+          monthly = aMonthly;
+          semiMonth = aSemiMonth;
+          biWeek = aBiWeek;
+          week = aWeek;
+          daily = aDaily;
+          hourly = aHourly;
+        }
+      }
+
+      // Prepare result
+      const result = {
+        tech_Hourly: round(hourly, 2),
+        tech_Daily: daily,
+        tech_Week: week,
+        tech_Bi_week: biWeek,
+        tech_Monthly: monthly,
+        tech_Sami_month: semiMonth,
+        tech_Quarterly: quarterly,
+        tech_Yearly: yearly,
+        tech_a_Hourly: round(aHourly, 2),
+        tech_a_Daily: aDaily,
+        tech_a_Week: aWeek,
+        tech_a_Bi_week: aBiWeek,
+        tech_a_Monthly: aMonthly,
+        tech_a_Sami_month: aSemiMonth,
+        tech_a_Quarterly: aQuarterly,
+        tech_a_Yearly: aYearly,
+      };
+
+      // Handle tax calculation
+      if (isNumeric(tax)) {
+        const taxNum = parseFloat(tax);
+        if (are == "1") {
+          result.tax = taxNum / 100;
+        } else {
+          result.tax = 1 - (taxNum / 100);
+        }
+      }
+
+      return result;
+      
+      // Helper functions
+      function isNumeric(value) {
+        return value !== null && value !== undefined && value !== '' && !isNaN(parseFloat(value)) && isFinite(value);
+      }
+      
+      function round(value, decimals = 0) {
+        return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+      }
+    }
+
+      /**
+    * getCalculationTaxCalculator: Service Method
+    * POST: /api/calculators-lol/salary-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+   async getCalculationTaxCalculator(body) {
+    const result = {};
+    
+        // Validate input
+        if (!this.isNumeric(body.tech_income) || !body.tech_f_state) {
+            result.error = 'Please! Check Your Input.';
+            return result;
+        }
+
+        let income = parseFloat(body.tech_income);
+        let s = 0;
+        let tax = 0;
+        let m_tax = 0;
+
+        // Deduct k_con if provided
+        if (this.isNumeric(body.tech_k_con)) {
+            income = income - parseFloat(body.tech_k_con);
+        }
+
+        // Deduct IRA if provided
+        if (this.isNumeric(body.tech_ira)) {
+            income = income - parseFloat(body.tech_ira);
+        }
+
+        // Handle itemized deductions
+        if (body.tech_ded == 'i') {
+            if (body.tech_item) {
+                income = income - parseFloat(body.tech_item);
+                s = parseFloat(body.tech_item);
+            } else {
+                result.error = 'Please Itemized Deductions.';
+                return result;
+            }
+        }
+
+        // Tax Year 2019
+        if (body.tech_tax_year == '2019') {
+            if (body.tech_ded == 's') {
+                if (body.tech_f_state == 's' || body.tech_f_state == 'm_s') {
+                    if (body.tech_age < 65) {
+                        income = income - 12200;
+                        s = 12200;
+                    } else {
+                        income = income - 13800;
+                        s = 13800;
+                    }
+                } else if (body.tech_f_state === 'm_j') {
+                    if (body.tech_age < 65) {
+                        income = income - 24400;
+                        s = 24400;
+                    } else {
+                        income = income - 25700;
+                        s = 25700;
+                    }
+                } else {
+                    if (body.tech_age < 65) {
+                        income = income - 18350;
+                        s = 18350;
+                    } else {
+                        income = income - 19950;
+                        s = 19950;
+                    }
+                }
+            }
+
+            // Handle negative income
+            if (income < 0) {
+                return this.handleNegativeIncome(body);
+            }
+
+            // Calculate tax based on filing status
+            if (body.tech_f_state == 's') {
+                tax = this.calculateTax2019Single(income);
+                m_tax = this.getMarginalTaxRate2019Single(income);
+            } else if (body.tech_f_state == 'm_j' || body.tech_f_state == 'w') {
+                tax = this.calculateTax2019MarriedJoint(income);
+                m_tax = this.getMarginalTaxRate2019MarriedJoint(income);
+            } else if (body.tech_f_state == 'm_s') {
+                tax = this.calculateTax2019MarriedSeparate(income);
+                m_tax = this.getMarginalTaxRate2019MarriedSeparate(income);
+            } else if (body.tech_f_state == 'h') {
+                tax = this.calculateTax2019HeadOfHousehold(income);
+                m_tax = this.getMarginalTaxRate2019HeadOfHousehold(income);
+            }
+        }
+        // Tax Year 2020
+        else if (body.tech_tax_year == '2020') {
+            if (body.tech_ded == 's') {
+                if (body.tech_f_state == 's' || body.tech_f_state == 'm_s') {
+                    income = income - 12400;
+                    s = 12400;
+                } else if (body.tech_f_state == 'm_j') {
+                    income = income - 24800;
+                    s = 24800;
+                } else {
+                    income = income - 18650;
+                    s = 18650;
+                }
+            }
+
+            // Handle negative income
+            if (income < 0) {
+                return this.handleNegativeIncome(body);
+            }
+
+            // Calculate tax based on filing status
+            if (body.tech_f_state == 's') {
+                tax = this.calculateTax2020Single(income);
+                m_tax = this.getMarginalTaxRate2020Single(income);
+            } else if (body.tech_f_state == 'm_j' || body.tech_f_state == 'w') {
+                tax = this.calculateTax2020MarriedJoint(income);
+                m_tax = this.getMarginalTaxRate2020MarriedJoint(income);
+            } else if (body.tech_f_state == 'm_s') {
+                tax = this.calculateTax2020MarriedSeparate(income);
+                m_tax = this.getMarginalTaxRate2020MarriedSeparate(income);
+            } else if (body.tech_f_state == 'h') {
+                tax = this.calculateTax2020HeadOfHousehold(income);
+                m_tax = this.getMarginalTaxRate2020HeadOfHousehold(income);
+            }
+        }
+
+        // Calculate final results
+        const a = income;
+        const b = Math.round((tax / body.tech_income) * 100 * 100) / 100;
+        const c = tax;
+        let d = 0;
+
+        if (this.isNumeric(body.tech_tax_with)) {
+            d = parseFloat(body.tech_tax_with);
+            tax = tax - d;
+        }
+
+        result.a = this.formatNumber(a);
+        result.b = b;
+        result.s = s;
+        result.m_tax = m_tax;
+        result.c = this.formatNumber(c);
+        result.d = this.formatNumber(d);
+
+        if (tax > 0) {
+            result.e = this.formatNumber(tax);
+        }
+        if (tax < 0) {
+            result.f = this.formatNumber(Math.abs(tax));
+        }
+
+        result.RESULT = 1;
+        return result;
+    }
+
+    // Helper method for numeric check
+    isNumeric(value) {
+        return value !== null && value !== undefined && value !== '' && !isNaN(parseFloat(value));
+    }
+
+    // Helper method to format numbers
+    formatNumber(num) {
+        return parseFloat(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // Handle negative income
+    handleNegativeIncome(body) {
+        const result = {
+            a: 0,
+            b: 0,
+            c: 0,
+            d: 0,
+            f: 0,
+        };
+
+        if (this.isNumeric(body.tech_tax_with)) {
+            result.d = parseFloat(body.tech_tax_with);
+            result.f = result.f + parseFloat(body.tech_tax_with);
+        }
+
+        return result;
+    }
+
+    // 2019 Single Tax Calculation
+    calculateTax2019Single(income) {
+        let tax = 0;
+
+        if (income <= 9700) {
+            tax = income * 0.10;
+        } else if (income <= 39475) {
+            tax = 970 + (income - 9700) * 0.12;
+        } else if (income <= 84200) {
+            tax = 970 + 3573 + (income - 39475) * 0.22;
+        } else if (income <= 160725) {
+            tax = 970 + 3573 + 9839.5 + (income - 84200) * 0.24;
+        } else if (income <= 204100) {
+            tax = 970 + 3573 + 9839.5 + 18366 + (income - 160725) * 0.32;
+        } else if (income <= 510300) {
+            tax = 970 + 3573 + 9839.5 + 18366 + 13880 + (income - 204100) * 0.35;
+        } else {
+            tax = 970 + 3573 + 9839.5 + 18366 + 13880 + 107170 + (income - 510300) * 0.37;
+        }
+
+        return tax;
+    }
+
+    getMarginalTaxRate2019Single(income) {
+        if (income <= 9700) return 10;
+        if (income <= 39475) return 12;
+        if (income <= 84200) return 22;
+        if (income <= 160725) return 24;
+        if (income <= 204100) return 32;
+        if (income <= 510300) return 35;
+        return 37;
+    }
+
+    // 2019 Married Joint/Widow Tax Calculation
+    calculateTax2019MarriedJoint(income) {
+        let tax = 0;
+
+        if (income <= 19400) {
+            tax = income * 0.10;
+        } else if (income <= 78950) {
+            tax = 1940 + (income - 19400) * 0.12;
+        } else if (income <= 168400) {
+            tax = 9086 + (income - 78950) * 0.22;
+        } else if (income <= 321450) {
+            tax = 28765 + (income - 168400) * 0.24;
+        } else if (income <= 408200) {
+            tax = 65497 + (income - 321450) * 0.32;
+        } else if (income <= 612350) {
+            tax = 93257 + (income - 408200) * 0.35;
+        } else {
+            tax = 164709.50 + (income - 612350) * 0.37;
+        }
+
+        return tax;
+    }
+
+    getMarginalTaxRate2019MarriedJoint(income) {
+        if (income <= 19400) return 10;
+        if (income <= 78950) return 12;
+        if (income <= 168400) return 22;
+        if (income <= 321450) return 24;
+        if (income <= 408200) return 32;
+        if (income <= 612350) return 35;
+        return 37;
+    }
+
+    // 2019 Married Separate Tax Calculation
+    calculateTax2019MarriedSeparate(income) {
+        let tax = 0;
+
+        if (income <= 9700) {
+            tax = income * 0.10;
+        } else if (income <= 39475) {
+            tax = 970 + (income - 9700) * 0.12;
+        } else if (income <= 84200) {
+            tax = 4543 + (income - 39475) * 0.22;
+        } else if (income <= 160725) {
+            tax = 14382.50 + (income - 84200) * 0.24;
+        } else if (income <= 204100) {
+            tax = 32748.50 + (income - 160725) * 0.32;
+        } else if (income <= 306175) {
+            tax = 46628.50 + (income - 204100) * 0.35;
+        } else {
+            tax = 82354.75 + (income - 306175) * 0.37;
+        }
+
+        return tax;
+    }
+
+    getMarginalTaxRate2019MarriedSeparate(income) {
+        if (income <= 9700) return 10;
+        if (income <= 39475) return 12;
+        if (income <= 84200) return 22;
+        if (income <= 160725) return 24;
+        if (income <= 204100) return 32;
+        if (income <= 306175) return 35;
+        return 37;
+    }
+
+    // 2019 Head of Household Tax Calculation
+    calculateTax2019HeadOfHousehold(income) {
+        let tax = 0;
+
+        if (income <= 13850) {
+            tax = income * 0.10;
+        } else if (income <= 52850) {
+            tax = 1385 + (income - 13850) * 0.12;
+        } else if (income <= 84200) {
+            tax = 6065 + (income - 52850) * 0.22;
+        } else if (income <= 160700) {
+            tax = 12962 + (income - 84200) * 0.24;
+        } else if (income <= 204100) {
+            tax = 31322 + (income - 160700) * 0.32;
+        } else if (income <= 510300) {
+            tax = 45210 + (income - 204100) * 0.35;
+        } else {
+            tax = 152380 + (income - 510300) * 0.37;
+        }
+
+        return tax;
+    }
+
+    getMarginalTaxRate2019HeadOfHousehold(income) {
+        if (income <= 13850) return 10;
+        if (income <= 52850) return 12;
+        if (income <= 84200) return 22;
+        if (income <= 160700) return 24;
+        if (income <= 204100) return 32;
+        if (income <= 510300) return 35;
+        return 37;
+    }
+
+    // 2020 Single Tax Calculation
+    calculateTax2020Single(income) {
+        let tax = 0;
+
+        if (income <= 9875) {
+            tax = income * 0.10;
+        } else if (income <= 40125) {
+            tax = 987.5 + (income - 9875) * 0.12;
+        } else if (income <= 85525) {
+            tax = 987.5 + 3630 + (income - 40125) * 0.22;
+        } else if (income <= 163300) {
+            tax = 987.5 + 3630 + 9988 + (income - 85525) * 0.24;
+        } else if (income <= 207350) {
+            tax = 987.5 + 3630 + 9988 + 18666 + (income - 163300) * 0.32;
+        } else if (income <= 518400) {
+            tax = 987.5 + 3630 + 9988 + 18666 + 14096 + (income - 207350) * 0.35;
+        } else {
+            tax = 987.5 + 3630 + 9988 + 18666 + 14096 + 108567.5 + (income - 518400) * 0.37;
+        }
+
+        return tax;
+    }
+
+    getMarginalTaxRate2020Single(income) {
+        if (income <= 9875) return 10;
+        if (income <= 40125) return 12;
+        if (income <= 85525) return 22;
+        if (income <= 163300) return 24;
+        if (income <= 207350) return 32;
+        if (income <= 518400) return 35;
+        return 37;
+    }
+
+    // 2020 Married Joint/Widow Tax Calculation
+    calculateTax2020MarriedJoint(income) {
+        let tax = 0;
+
+        if (income <= 19750) {
+            tax = income * 0.10;
+        } else if (income <= 80250) {
+            tax = 1975 + (income - 19750) * 0.12;
+        } else if (income <= 171050) {
+            tax = 1975 + 7260 + (income - 80250) * 0.22;
+        } else if (income <= 326600) {
+            tax = 1975 + 7260 + 19976 + (income - 171050) * 0.24;
+        } else if (income <= 414700) {
+            tax = 1975 + 7260 + 19976 + 37332 + (income - 326600) * 0.32;
+        } else if (income <= 622050) {
+            tax = 1975 + 7260 + 19976 + 37332 + 28192 + (income - 414700) * 0.35;
+        } else {
+            tax = 1975 + 7260 + 19976 + 37332 + 28192 + 72872.5 + (income - 622050) * 0.37;
+        }
+
+        return tax;
+    }
+
+    getMarginalTaxRate2020MarriedJoint(income) {
+        if (income <= 19750) return 10;
+        if (income <= 80250) return 12;
+        if (income <= 171050) return 22;
+        if (income <= 326600) return 24;
+        if (income <= 414700) return 32;
+        if (income <= 622050) return 35;
+        return 37;
+    }
+
+    // 2020 Married Separate Tax Calculation
+    calculateTax2020MarriedSeparate(income) {
+        let tax = 0;
+
+        if (income <= 9875) {
+            tax = income * 0.10;
+        } else if (income <= 40125) {
+            tax = 987.5 + (income - 9875) * 0.12;
+        } else if (income <= 85525) {
+            tax = 987.5 + 3630 + (income - 40125) * 0.22;
+        } else if (income <= 163300) {
+            tax = 987.5 + 3630 + 9988 + (income - 85525) * 0.24;
+        } else if (income <= 207350) {
+            tax = 987.5 + 3630 + 9988 + 18666 + (income - 163300) * 0.32;
+        } else if (income <= 311025) {
+            tax = 987.5 + 3630 + 9988 + 18666 + 14096 + (income - 207350) * 0.35;
+        } else {
+            tax = 987.5 + 3630 + 9988 + 18666 + 14096 + 36286.25 + (income - 311025) * 0.37;
+        }
+
+        return tax;
+    }
+
+    getMarginalTaxRate2020MarriedSeparate(income) {
+        if (income <= 9875) return 10;
+        if (income <= 40125) return 12;
+        if (income <= 85525) return 22;
+        if (income <= 163300) return 24;
+        if (income <= 207350) return 32;
+        if (income <= 311025) return 35;
+        return 37;
+    }
+
+    // 2020 Head of Household Tax Calculation
+    calculateTax2020HeadOfHousehold(income) {
+        let tax = 0;
+
+        if (income <= 14100) {
+            tax = income * 0.10;
+        } else if (income <= 53700) {
+            tax = 1410 + (income - 14100) * 0.12;
+        } else if (income <= 85500) {
+            tax = 1410 + 4752 + (income - 53700) * 0.22;
+        } else if (income <= 163300) {
+            tax = 1410 + 4752 + 6996 + (income - 85500) * 0.24;
+        } else if (income <= 207350) {
+            tax = 1410 + 4752 + 6996 + 18672 + (income - 163300) * 0.32;
+        } else if (income <= 518400) {
+            tax = 1410 + 4752 + 6996 + 18672 + 14096 + (income - 207350) * 0.35;
+        } else {
+            tax = 1410 + 4752 + 6996 + 18672 + 14096 + 108867.5 + (income - 518400) * 0.37;
+        }
+
+        return tax;
+    }
+
+    getMarginalTaxRate2020HeadOfHousehold(income) {
+        if (income <= 14100) return 10;
+        if (income <= 53700) return 12;
+        if (income <= 85500) return 22;
+        if (income <= 163300) return 24;
+        if (income <= 207350) return 32;
+        if (income <= 518400) return 35;
+        return 37;
+    }
+
+
+
+    /**
+    * getCalculationDiscountCalculator: Service Method
+    * POST: /api/calculators-lol/discount-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationDiscountCalculator(request) {
+    const param = {};
+    // console.log(request);
+    var amount = parseFloat(request.amount) || 0;
+    const off = parseFloat(request.off) || 0;
+    const pay = parseFloat(request.pay) || 0;
+    const saving = parseFloat(request.saving) || 0;
+    const myLang = request.lang; 
+  
+      if (myLang == 'ar') {    
+        if (request.form_a) {
+          if (request.form_a == 'first1') {
+            if (!isNaN(request.first1) && !isNaN(request.thir)) {
+              const first = parseFloat(request.first1);
+              const sec = parseFloat(request.thir);
+              const third = Math.round((sec / 100) * first * 100) / 100;
+              const dis = first - third;
+
+              param.third = third;
+              param.arabic = third;
+              param.dis = dis;
+              param.RESULT = 1;
+              return param;
+            } else {
+              param.error = 'Please! Check Your Input.';
+              return param;
+            }
+          } else if (request.form_a == 'sec') {
+            if (!isNaN(request.sec) && !isNaN(request.thir)) {
+              const sec = parseFloat(request.sec);
+              const thir = parseFloat(request.thir);
+              const first = Math.round((sec / (1 - thir / 100)) * 100) / 100;
+              const dis = first - sec;
+
+              param.first = first;
+              param.arabic = first;
+              param.dis = dis;
+              param.RESULT = 1;
+              return param;
+            } else {
+              param.error = 'Please! Check Your Input.';
+              return param;
+            }
+          } else if (request.form_a == 'thir') {
+            if (!isNaN(request.sec) && !isNaN(request.first1)) {
+              const first = parseFloat(request.first1);
+              const sec = parseFloat(request.sec);
+              const dis = first - sec;
+              const thirl = Math.round(((dis / first) * 100) * 100) / 100;
+
+              param.thirl = thirl;
+              param.arabic = thirl;
+              param.dis = dis;
+              param.RESULT = 1;
+              return param;
+            } else {
+              param.error = 'Please! Check Your Input.';
+              return param;
+            }
+          }
+        }
+
+      } else if (myLang == 'id') {
+            if (!isNaN(request.id_rp) && !isNaN(request.id_p)) {
+              const id_rp = parseFloat(request.id_rp);
+              const id_p = parseFloat(request.id_p);
+              const discount_id = Math.round(id_rp * (id_p / 100) * 100) / 100;
+
+              param.discount_id = discount_id;
+              param.RESULT = 1;
+              return param;
+            } else {
+              param.error = 'Harga Awal & Diskon tidak boleh kosong.';
+              return param;
+            }
+
+        } else if (myLang == 'tr') {
+            const type = request.typet;
+
+            if (!isNaN(request.tx) && !isNaN(request.ty)) {
+              let nor, ora, mik, ind;
+
+              const tx = parseFloat(request.tx);
+              const ty = parseFloat(request.ty);
+
+              if (type == "1") {
+                nor = tx;
+                ora = ty;
+                mik = Math.round((ora / 100) * nor * 100) / 100;
+                ind = nor - mik;
+              } else if (type == "2") {
+                nor = tx;
+                ind = ty;
+                mik = nor - ind;
+                ora = Math.round((mik / nor) * 100 * 100) / 100;
+              } else if (type == "3") {
+                nor = tx;
+                mik = ty;
+                ind = nor - mik;
+                ora = Math.round((mik / nor) * 100 * 100) / 100;
+              } else if (type == "4") {
+                ind = tx;
+                ora = ty;
+                nor = Math.round((ind / (1 - ora / 100)) * 100) / 100;
+                mik = nor - ind;
+              } else if (type == "5") {
+                ind = tx;
+                mik = ty;
+                nor = ind + mik;
+                ora = Math.round((mik / nor) * 100 * 100) / 100;
+              }
+
+              param.nor = nor;
+              param.ind = ind;
+              param.mik = mik;
+              param.ora = ora;
+              return param;
+            } else {
+              param.error = 'Lütfen tüm alanları doldurun.';
+              return param;
+            }
+
+        } else {
+      if (request.type === '1') {
+          if (isNaN(amount) && isNaN(off) && isNaN(pay) && isNaN(saving)) {
+              param.error = 'Please fill the fields.';
+              return param;
+          }
+
+          let ans, payt, tax, taxt;
+
+          if (request.tax === 'no') {
+              if (!request.sale || isNaN(parseFloat(request.sale))) {
+                  param.error = 'Please fill Tax field.';
+                  return param;
+              }
+
+              if (!pay && !saving) {
+                  ans = (amount / 100) * off;
+                  // console.log(ans,amount,off);
+                  payt = amount - ans;
+                  tax = Math.round((parseFloat(request.sale) / 100) * amount);
+                  taxt = tax - ((tax / 100) * off);
+                  param.tax = tax;
+                  param.taxt = taxt;
+                  var amount = amount + tax;
+                  ans = (amount / 100) * off;
+                  param.pay = amount - ans;
+              } else if (!pay && !off) {
+                  tax = parseFloat(request.sale) / 100;
+                  tax = 100 * (1 + tax);
+                  ans = (saving / tax) * 100;
+                  ans = ans.toFixed(3) + "%";
+                  param.pay = amount - saving;
+              } else if (!off && !saving) {
+                  tax = parseFloat(request.sale) / 100;
+                  tax = amount * (1 + tax);
+                  ans = (parseFloat(request.sale) / tax) * 100;
+                  ans = ans.toFixed(4) + " %";
+                  param.pay = amount - pay;
+              } else if (!amount && !saving) {
+                  tax = parseFloat(request.sale) / 100;
+                  tax = 100 * (1 + tax);
+                  const percent = off / 100;
+                  const original_pr = tax / (1 - percent);
+                  param.pay = original_pr - tax;
+                  ans = original_pr;
+              } else if (!amount && !off) {
+                  tax = parseFloat(request.sale) / 100;
+                  tax = 100 * (1 + tax);
+                  param.pay = tax + saving;
+                  ans = (saving / param.pay) * 100;
+                  ans = ans.toFixed(3);
+              }
+          } else {
+              if (!pay && !saving) {
+                  ans = (amount / 100) * off;
+                  param.pay = amount - ans;
+                  payt = amount - ans;
+              } else if (!pay && !off) {
+                  ans = (saving / amount) * 100 + "%";
+                  param.pay = amount - saving;
+                  payt = amount - ans;
+              } else if (!amount && !pay) {
+                  ans = (saving / 100) * off;
+                  param.pay = saving - ans;
+                  payt = saving - ans;
+              } else if (!amount && !saving) {
+                  const percent = off / 100;
+                  const original_pr = pay / (1 - percent);
+                  ans = (original_pr - pay).toFixed(4);
+                  param.pay = original_pr.toFixed(4);
+              } else if (!off && !saving) {
+                  ans = amount - pay;
+                  param.pay = ans;
+                  payt = ans;
+              } else if (!amount && !off) {
+                  param.pay = saving + pay;
+                  ans = (saving / param.pay) * 100;
+                  ans = ans.toFixed(3);
+                  payt = saving - ans;
+              }
+          }
+          // console.log(amount);
+          param.amount = amount;
+          param.Ans = ans;
+          param.off = off;
+          if (!param.pay) param.pay = pay;
+          param.payt = payt;
+          param.RESULT = 1;
+          // console.log(param);
+          return param;
+      } else if (request.type === '2') {
+          const p1 = parseFloat(request.p1);
+          const p2 = parseFloat(request.p2);
+          const off = parseFloat(request.off);
+
+          if (isNaN(p1) || isNaN(p2) || isNaN(off)) {
+              param.error = 'Please fill All fields.';
+              return param;
+          }
+
+          let ans, pay, payt, tax, taxt, total;
+
+          if (request.tax === 'no') {
+              if (isNaN(parseFloat(request.sale))) {
+                  param.error = 'Please fill All fields.';
+                  return param;
+              }
+
+              if (p1 <= p2) {
+                  ans = (p1 / 100) * off;
+                  payt = (p1 - ans) + p2;
+                  tax = (p1 / 100) * parseFloat(request.sale);
+                  let newP1 = p1 + tax;
+                  ans = (newP1 / 100) * off;
+                  const tax2 = (p2 / 100) * parseFloat(request.sale);
+                  const newP2 = tax2 + p2;
+                  pay = newP1 - ans + newP2;
+                  tax = tax + tax2;
+                  taxt = pay - payt;
+              } else {
+                  ans = (p2 / 100) * off;
+                  payt = (p2 - ans) + p1;
+                  tax = (p2 / 100) * parseFloat(request.sale);
+                  let newP2 = p2 + tax;
+                  ans = (newP2 / 100) * off;
+                  const tax2 = (p1 / 100) * parseFloat(request.sale);
+                  const newP1 = tax2 + p1;
+                  pay = newP2 - ans + newP1;
+                  tax = tax + tax2;
+                  taxt = pay - payt;
+              }
+              total = parseFloat(request.p1) + parseFloat(request.p2) + parseFloat(tax);
+              param.tax = tax;
+              param.taxt = taxt;
+          } else {
+              if (p1 <= p2) {
+                  ans = (p1 / 100) * off;
+                  pay = (p1 - ans) + p2;
+                  payt = (p1 - ans) + p2;
+              } else {
+                  ans = (p2 / 100) * off;
+                  pay = (p2 - ans) + p1;
+                  payt = (p2 - ans) + p1;
+              }
+              total = parseFloat(p1) +parseFloat(p2);
+          }
+
+          const ave = parseFloat((pay / 2).toFixed(2));
+          const stand = 2;
+
+          param.amount = parseFloat(request.p1) + parseFloat(request.p2);
+          param.Ans = ans;
+          param.ave = ave;
+          param.per = parseFloat(((ans / total) * 100).toFixed(1));
+          param.stand = stand;
+          param.pay = pay;
+          param.payt = payt;
+          param.RESULT = 1;
+          // console.log(ans,total);
+          return param;
+
+      } else if (request.type === '3') {
+          const p1 = parseFloat(request.p1);
+          const p2 = parseFloat(request.p2);
+          const p3 = parseFloat(request.p3);
+          const off = parseFloat(request.off);
+
+          if (isNaN(p1) || isNaN(p2) || isNaN(p3) || isNaN(off)) {
+              param.error = 'Please fill All fields.';
+              return param;
+          }
+
+          let ans, pay, payt, tax, taxt, total;
+
+          if (request.tax === 'no') {
+              if (isNaN(parseFloat(request.sale))) {
+                  param.error = 'Please fill All fields.';
+                  return false;
+              }
+
+              let minPrice = Math.min(p1, p2, p3);
+              ans = (minPrice / 100) * off;
+              payt = minPrice - ans + (p1 === minPrice ? p2 + p3 : p2 === minPrice ? p1 + p3 : p1 + p2);
+              
+              const tax1 = (p1 / 100) * parseFloat(request.sale);
+              const tax2 = (p2 / 100) * parseFloat(request.sale);
+              const tax3 = (p3 / 100) * parseFloat(request.sale);
+              
+              const newP1 = p1 + tax1;
+              const newP2 = p2 + tax2;
+              const newP3 = p3 + tax3;
+              
+              minPrice = Math.min(newP1, newP2, newP3);
+              ans = (minPrice / 100) * off;
+              pay = minPrice - ans + (newP1 === minPrice ? newP2 + newP3 : newP2 === minPrice ? newP1 + newP3 : newP1 + newP2);
+              
+              tax = tax1 + tax2 + tax3;
+              taxt = pay - payt;
+              total = parseFloat(request.p1) + parseFloat(request.p2) + parseFloat(request.p3) + parseFloat(tax);
+              param.tax = tax;
+              param.taxt = taxt;
+          } else {
+              const minPrice = Math.min(p1, p2, p3);
+              ans = (minPrice / 100) * off;
+              pay = minPrice - ans + (p1 === minPrice ? p2 + p3 : p2 === minPrice ? p1 + p3 : p1 + p2);
+              payt = pay;
+              total = p1 + p2 + p3;
+          }
+
+          const ave = parseFloat((pay / 3).toFixed(2));
+          const stand = 3;
+
+          param.amount = parseFloat(request.p1) + parseFloat(request.p2) + parseFloat(request.p3);
+          param.Ans = ans;
+          param.ave = ave;
+          param.per = parseFloat(((ans / total) * 100).toFixed(1));
+          param.stand = stand;
+          param.pay = pay;
+          param.payt = payt;
+          param.RESULT = 1;
+          console.log(param);
+          return param;
+
+      } else if (request.type === '4') {
+          // Type 4 is identical to Type 1
+          return this.getCalculationDiscountCalculator({...request, type: '1'});
+
+      } else if (request.type === '5') {
+          const p1 = parseFloat(request.p1);
+          const p2 = parseFloat(request.p2);
+
+          if (isNaN(p1) || isNaN(p2)) {
+              param.error = 'Please fill All fields.';
+              return param;
+          }
+
+          let ans, pay, payt, tax, taxt, total;
+
+          if (request.tax === 'no') {
+              if (isNaN(parseFloat(request.sale))) {
+                  param.error = 'Please fill All fields.';
+                  return param;
+              }
+
+              if (p1 <= p2) {
+                  ans = p1;
+                  payt = (p1 - ans) + p2;
+                  tax = (p1 / 100) * parseFloat(request.sale);
+                  const newP1 = p1 + tax;
+                  ans = newP1;
+                  const tax2 = (p2 / 100) * parseFloat(request.sale);
+                  const newP2 = tax2 + p2;
+                  pay = newP1 - ans + newP2;
+                  tax = tax + tax2;
+                  taxt = pay - payt;
+              } else {
+                  ans = p2;
+                  payt = (p2 - ans) + p1;
+                  tax = (p2 / 100) * parseFloat(request.sale);
+                  const newP2 = p2 + tax;
+                  ans = newP2;
+                  const tax2 = (p1 / 100) * parseFloat(request.sale);
+                  const newP1 = tax2 + p1;
+                  pay = newP2 - ans + newP1;
+                  tax = tax + tax2;
+                  taxt = pay - payt;
+              }
+              total = parseFloat(request.p1) + parseFloat(request.p2) + parseFloat(tax);
+              param.tax = tax;
+              param.taxt = taxt;
+          } else {
+              if (p1 <= p2) {
+                  ans = p1;
+                  pay = (p1 - ans) + p2;
+                  payt = (p1 - ans) + p2;
+              } else {
+                  ans = p2;
+                  pay = (p2 - ans) + p1;
+                  payt = (p2 - ans) + p1;
+              }
+              total = p1 + p2;
+          }
+
+          const ave = parseFloat((pay / 2).toFixed(2));
+          const stand = 2;
+
+          param.amount = parseFloat(request.p1) + parseFloat(request.p2);
+          param.Ans = ans;
+          param.ave = ave;
+          param.per = parseFloat(((ans / total) * 100).toFixed(1));
+          param.stand = stand;
+          param.pay = pay;
+          param.payt = payt;
+          param.RESULT = 1;
+          // console.log(param);
+          return param;
+
+      } else if (request.type === '6') {
+          const p1 = parseFloat(request.p1);
+          const p2 = parseFloat(request.p2);
+          const p3 = parseFloat(request.p3);
+
+          if (isNaN(p1) || isNaN(p2) || isNaN(p3)) {
+              param.error = 'Please fill All fields.';
+              return param;
+          }
+
+          let ans, pay, payt, tax, taxt, total;
+          const minPrice = Math.min(p1, p2, p3);
+
+          if (request.tax === 'no') {
+              if (isNaN(parseFloat(request.sale))) {
+                  param.error = 'Please fill All fields.';
+                  return param;
+              }
+
+              ans = minPrice;
+              payt = minPrice - ans + (p1 === minPrice ? p2 + p3 : p2 === minPrice ? p1 + p3 : p1 + p2);
+              
+              const tax1 = (p1 / 100) * parseFloat(request.sale);
+              const tax2 = (p2 / 100) * parseFloat(request.sale);
+              const tax3 = (p3 / 100) * parseFloat(request.sale);
+              
+              const newP1 = p1 + tax1;
+              const newP2 = p2 + tax2;
+              const newP3 = p3 + tax3;
+              
+              const newMinPrice = Math.min(newP1, newP2, newP3);
+              ans = newMinPrice;
+              pay = newMinPrice - ans + (newP1 === newMinPrice ? newP2 + newP3 : newP2 === newMinPrice ? newP1 + newP3 : newP1 + newP2);
+              
+              tax = tax1 + tax2 + tax3;
+              taxt = pay - payt;
+              total = parseFloat(request.p1) + parseFloat(request.p2) + parseFloat(request.p3) + parseFloat(tax);
+              param.tax = tax;
+              param.taxt = taxt;
+          } else {
+              ans = minPrice;
+              pay = minPrice - ans + (p1 === minPrice ? p2 + p3 : p2 === minPrice ? p1 + p3 : p1 + p2);
+              payt = pay;
+              total = p1 + p2 + p3;
+          }
+
+          const ave = parseFloat((pay / 3).toFixed(2));
+          const stand = 3;
+
+          param.amount = parseFloat(request.p1) + parseFloat(request.p2) + parseFloat(request.p3);
+          param.Ans = ans;
+          param.ave = ave;
+          param.per = parseFloat(((ans / total) * 100).toFixed(1));
+          param.stand = stand;
+          param.pay = pay;
+          param.payt = payt;
+          param.RESULT = 1;
+          // console.log(param);
+          return param;
+
+      } else if (request.type === '7') {
+          const p1 = parseFloat(request.p1);
+          const p2 = parseFloat(request.p2);
+          const p3 = parseFloat(request.p3);
+          const p4 = parseFloat(request.p4);
+
+          if (isNaN(p1) || isNaN(p2) || isNaN(p3) || isNaN(p4)) {
+              param.error = 'Please fill All fields.';
+              return param;
+          }
+
+          let ans, pay, payt, tax, taxt, total, per;
+          const minPrice = Math.min(p1, p2, p3, p4);
+
+          if (request.tax === 'no') {
+              if (isNaN(parseFloat(request.sale))) {
+                  param.error = 'Please fill All fields.';
+                  return param;
+              }
+
+              ans = minPrice;
+              const others = [p1, p2, p3, p4].filter(p => p !== minPrice).reduce((a, b) => a + b, 0);
+              payt = minPrice - ans + others;
+              
+              const tax1 = (p1 / 100) * parseFloat(request.sale);
+              const tax2 = (p2 / 100) * parseFloat(request.sale);
+              const tax3 = (p3 / 100) * parseFloat(request.sale);
+              const tax4 = (p4 / 100) * parseFloat(request.sale);
+              
+              const newP1 = p1 + tax1;
+              const newP2 = p2 + tax2;
+              const newP3 = p3 + tax3;
+              const newP4 = p4 + tax4;
+              
+              const newMinPrice = Math.min(newP1, newP2, newP3, newP4);
+              ans = newMinPrice;
+              const newOthers = [newP1, newP2, newP3, newP4].filter(p => p !== newMinPrice).reduce((a, b) => a + b, 0);
+              pay = newMinPrice - ans + newOthers;
+              
+              tax = tax1 + tax2 + tax3 + tax4;
+              taxt = pay - payt;
+              total = parseFloat(request.p1) + parseFloat(request.p2) + parseFloat(request.p3) + parseFloat(request.p4) + parseFloat(tax);
+              per = parseFloat(((ans / total) * 100).toFixed(1));
+              param.tax = tax;
+              param.taxt = taxt;
+          } else {
+              ans = minPrice;
+              const others = [p1, p2, p3, p4].filter(p => p !== minPrice).reduce((a, b) => a + b, 0);
+              pay = minPrice - ans + others;
+              payt = pay;
+              total = p1 + p2 + p3 + p4;
+              per = parseFloat(((ans / total) * 100).toFixed(1));
+              
+              if (per > 25) {
+                  per = 25;
+                  total = p1 + p2 + p3;
+                  const save = parseFloat((total * 0.25).toFixed(2));
+                  pay = parseFloat((total - save).toFixed(2));
+                  payt = parseFloat((total - save).toFixed(2));
+              }
+          }
+
+          const ave = parseFloat((pay / 4).toFixed(2));
+          const stand = 4;
+
+          param.amount = parseFloat(request.p1) + parseFloat(request.p2) + parseFloat(request.p3) + parseFloat(request.p4);
+          param.Ans = ans;
+          param.ave = ave;
+          param.per = per;
+          param.stand = stand;
+          param.pay = pay;
+          param.payt = payt;
+          param.RESULT = 1;
+          // console.log(param);
+          return param;
+
+      } else if (request.type === '8') {
+          const amount = parseFloat(request.amount);
+          const off = parseFloat(request.off);
+          const off2 = parseFloat(request.off2);
+
+          if (isNaN(amount) || isNaN(off) || isNaN(off2)) {
+              param.error = 'Please fill All fields.';
+              return param;
+          }
+
+          let ans, pay, payt, tax, taxt, effect;
+
+          if (request.tax === 'no') {
+              if (isNaN(parseFloat(request.sale))) {
+                  param.error = 'Please fill All fields.';
+                  return param;
+              }
+
+              const off1 = parseFloat(((amount / 100) * off).toFixed(2));
+              const off_2 = parseFloat((((amount - off1) / 100) * off2).toFixed(2));
+              ans = off1 + off_2;
+              payt = amount - ans;
+              tax = parseFloat(((parseFloat(request.sale) / 100) * amount).toFixed(2));
+              const newAmount = amount + tax;
+              const newOff1 = parseFloat(((newAmount / 100) * off).toFixed(2));
+              const newOff2 = parseFloat((((newAmount - newOff1) / 100) * off2).toFixed(2));
+              ans = newOff1 + newOff2;
+              pay = newAmount - ans;
+              taxt = pay - payt;
+              effect = parseFloat(((ans / newAmount) * 100).toFixed(2));
+              param.tax = tax;
+              param.taxt = taxt;
+          } else {
+              const off1 = parseFloat(((amount / 100) * off).toFixed(2));
+              const off_2 = parseFloat((((amount - off1) / 100) * off2).toFixed(2));
+              ans = off1 + off_2;
+              pay = amount - ans;
+              payt = amount - ans;
+              effect = parseFloat(((ans / parseFloat(request.amount)) * 100).toFixed(2));
+          }
+
+          param.amount = parseFloat(request.amount);
+          param.Ans = ans;
+          param.pay = pay;
+          param.effect = effect;
+          param.sum = `${parseFloat(request.off) + parseFloat(request.off2)}% (${parseFloat(request.off)}% + ${parseFloat(request.off2)}%)`;
+          param.payt = payt;
+          param.RESULT = 1;
+          // console.log(param);
+          return param;
+
+      } else if (request.type === '9') {
+          const amount = parseFloat(request.amount);
+          const off = parseFloat(request.off);
+          const off2 = parseFloat(request.off2);
+          const off3 = parseFloat(request.off3);
+          const sale = parseFloat(request.sale);
+            // console.log(sale);
+          if (isNaN(amount) || isNaN(off) || isNaN(off2) || isNaN(off3)) {
+              param.error = 'Please fill All fields.';
+              return param;
+          }
+
+          let ans, pay, payt, tax, taxt, effect;
+
+          if (request.tax == 'no') {
+              if (isNaN(parseFloat(request.sale))) {
+                  param.error = 'Please fill All fields.';
+                  return param;
+              }
+
+              const off1 = parseFloat(((amount / 100) * off).toFixed(2));
+              const off_2 = parseFloat((((amount - off1) / 100) * off2).toFixed(2));
+              const off_3 = parseFloat((((amount - off1 - off_2) / 100) * off3).toFixed(2));
+              ans = off1 + off_2 + off_3;
+              payt = amount - ans;
+            
+               tax = Math.round((sale / 100) * amount);
+              // console.log(sale,amount,tax);
+              const newAmount = amount + tax;
+              const newOff1 = Math.round(((newAmount / 100) * off) * 100) / 100;
+                const newOff2 = Math.round((((newAmount - newOff1) / 100) * off2) * 100) / 100;
+                const newOff3 = Math.round((((newAmount - newOff1 - newOff2) / 100) * off3) * 100) / 100;
+
+              ans = newOff1 + newOff2 + newOff3;
+              pay = newAmount - ans;
+              taxt = pay - payt;
+              effect = parseFloat(((ans / newAmount) * 100).toFixed(2));
+              param.tax = tax;  // no
+              param.taxt = taxt;  // no
+          } else {
+              const off1 = parseFloat(((amount / 100) * off).toFixed(2));
+              const off_2 = parseFloat((((amount - off1) / 100) * off2).toFixed(2));
+              const off_3 = parseFloat((((amount - off1 - off_2) / 100) * off3).toFixed(2));
+              ans = off1 + off_2 + off_3;
+              pay = amount - ans;
+              payt = amount - ans;
+              effect = parseFloat(((ans / parseFloat(request.amount)) * 100).toFixed(2));
+          }
+
+          param.amount = parseFloat(request.amount);
+          param.Ans = ans;  // no
+          param.pay = pay;  ///no
+          param.effect = effect;
+          param.sum = `${parseFloat(request.off) + parseFloat(request.off2) + parseFloat(request.off3)}% (${parseFloat(request.off)}% + ${parseFloat(request.off2)}% + ${parseFloat(request.off3)}%)`;
+          param.payt = payt;
+          param.RESULT = 1;
+          // console.log(param);
+          return param;
+
+      } else if (request.type === '10') {
+          const nbr = parseFloat(request.nbr);
+          const up = parseFloat(request.up);
+          const fix = parseFloat(request.fix);
+
+          if (isNaN(nbr) || isNaN(up) || isNaN(fix)) {
+              param.error = 'Please fill All fields.';
+              return param;
+          }
+
+          let amount, ans, pay, payt, tax, taxt;
+
+          if (request.tax === 'no') {
+              if (isNaN(parseFloat(request.sale))) {
+                  param.error = 'Please fill All fields.';
+                  return param;
+              }
+
+              amount = nbr * up;
+              tax = parseFloat(((parseFloat(request.sale) / 100) * amount).toFixed(2));
+              taxt = parseFloat(((parseFloat(request.sale) / 100) * fix).toFixed(2));
+              payt = fix;
+              pay = fix + taxt;
+              const total = amount + tax;
+              ans = total - pay;
+              param.tax = tax;
+              param.taxt = taxt;
+          } else {
+              pay = fix;
+              payt = fix;
+              amount = nbr * up;
+              ans = amount - pay;
+          }
+
+          param.amount = amount;
+          param.Ans = ans;
+          param.pay = pay;
+          param.payt = payt;
+          param.RESULT = 1;
+          // console.log(param);
+          return param;
+      }
+
+    param.error = 'Invalid type';
+    return param;
+    }
+  }
+
+
+     /**
+    * getCalculationGrossIncomeCalculator: Service Method
+    * POST: /api/calculators-lol/gross-income-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationGrossIncomeCalculator(body) {
+      const pay_frequency = body.tech_pay_frequency;
+      const type = body.tech_type;
+      const pay_method = body.tech_pay_method;
+      const amount = parseFloat(body.tech_amount);
+      const filer_status = body.tech_filer_status;
+
+      const param = {};
+
+      if (
+        pay_frequency &&
+        type &&
+        filer_status &&
+        pay_method &&
+        !isNaN(amount)
+      ) {
+        let total_amount;
+
+        // ====== STEP 1: Calculate total yearly amount ======
+        if (type === "Bonus") {
+          total_amount = amount;
+        } else {
+          if (pay_method === "Per-Year") {
+            total_amount = amount;
+          } else {
+            if (pay_frequency === "Daily") {
+              total_amount = amount * (365 - 104);
+            } else if (pay_frequency === "Weekly") {
+              total_amount = amount * 52;
+            } else if (pay_frequency === "Bi-Weekly") {
+              total_amount = amount * 26;
+            } else if (pay_frequency === "Semi-Monthly") {
+              total_amount = amount * 24;
+            } else if (pay_frequency === "Monthly") {
+              total_amount = amount * 12;
+            } else if (pay_frequency === "Quarterly") {
+              total_amount = amount * 4;
+            } else {
+              total_amount = amount;
+            }
+          }
+        }
+
+        // ====== STEP 2: Per-frequency amount ======
+        let per_frequency;
+        if (pay_frequency === "Daily") {
+          per_frequency = Math.round((total_amount / (365 - 104)) * 100) / 100;
+        } else if (pay_frequency === "Weekly") {
+          per_frequency = Math.round((total_amount / 52) * 100) / 100;
+        } else if (pay_frequency === "Bi-Weekly") {
+          per_frequency = Math.round((total_amount / 26) * 100) / 100;
+        } else if (pay_frequency === "Semi-Monthly") {
+          per_frequency = Math.round((total_amount / 24) * 100) / 100;
+        } else if (pay_frequency === "Monthly") {
+          per_frequency = Math.round((total_amount / 12) * 100) / 100;
+        } else if (pay_frequency === "Quarterly") {
+          per_frequency = Math.round((total_amount / 4) * 100) / 100;
+        } else {
+          per_frequency = total_amount;
+        }
+
+        // ====== STEP 3: Security & Medicare deductions ======
+        const secrity_per = 6.2;
+        const medicare_per = 1.45;
+        const secrity_amount_frequency = per_frequency * 0.062;
+        const secrity_amount_yearly = total_amount * 0.062;
+        const medicare_amount_frequency = per_frequency * 0.0145;
+        const medicare_amount_yearly = total_amount * 0.0145;
+
+        // ====== STEP 4: Tax brackets ======
+        let tax_per = 0;
+        let tax_amount_frequency = 0;
+        let net_frequency_amount = 0;
+        let tax_amount_yearly = 0;
+        let yearly_net_income = 0;
+
+        function setTax(percent) {
+          tax_per = percent;
+          tax_amount_frequency = per_frequency * (percent / 100);
+          net_frequency_amount = Math.round(
+            (per_frequency -
+              tax_amount_frequency -
+              secrity_amount_frequency -
+              medicare_amount_frequency) * 100
+          ) / 100;
+          tax_amount_yearly = total_amount * (percent / 100);
+          yearly_net_income = Math.round(
+            (total_amount -
+              tax_amount_yearly -
+              secrity_amount_yearly -
+              medicare_amount_yearly) * 100
+          ) / 100;
+        }
+
+        // ====== STEP 5: Apply tax based on filer status ======
+        if (filer_status === "single") {
+          if (total_amount <= 10275) setTax(10);
+          else if (total_amount <= 41775) setTax(12);
+          else if (total_amount <= 89075) setTax(22);
+          else if (total_amount <= 170050) setTax(24);
+          else if (total_amount <= 215950) setTax(32);
+          else if (total_amount <= 539900) setTax(35);
+          else setTax(37);
+        } else if (filer_status === "married-jointly") {
+          if (total_amount <= 20550) setTax(10);
+          else if (total_amount <= 83550) setTax(12);
+          else if (total_amount <= 178150) setTax(22);
+          else if (total_amount <= 340100) setTax(24);
+          else if (total_amount <= 431900) setTax(32);
+          else if (total_amount <= 647850) setTax(35);
+          else setTax(37);
+        } else if (filer_status === "married-separately") {
+          if (total_amount <= 10275) setTax(10);
+          else if (total_amount <= 41775) setTax(12);
+          else if (total_amount <= 89075) setTax(22);
+          else if (total_amount <= 170050) setTax(24);
+          else if (total_amount <= 215950) setTax(32);
+          else if (total_amount <= 323925) setTax(35);
+          else setTax(37);
+        } else if (filer_status === "head") {
+          if (total_amount <= 14650) setTax(10);
+          else if (total_amount <= 55900) setTax(12);
+          else if (total_amount <= 89050) setTax(22);
+          else if (total_amount <= 170050) setTax(24);
+          else if (total_amount <= 215950) setTax(32);
+          else if (total_amount <= 539900) setTax(35);
+          else setTax(37);
+        }
+
+        // ====== STEP 6: Percent summaries ======
+        const net_income_per = (yearly_net_income * 100) / total_amount;
+        const net_tax_per =
+          ((secrity_amount_yearly + medicare_amount_yearly + tax_amount_yearly) *
+            100) /
+          total_amount;
+
+        // ====== STEP 7: Prepare result ======
+        param.tech_total_amount = Math.round(total_amount).toLocaleString('en-US');
+        param.tech_yearly_net_income = Math.round(yearly_net_income).toLocaleString('en-US');
+        param.tech_secrity_amount_yearly = Math.round(secrity_amount_yearly).toLocaleString('en-US');
+        param.tech_medicare_amount_yearly = Math.round(medicare_amount_yearly).toLocaleString('en-US');
+        param.tech_tax_amount_yearly = Math.round(tax_amount_yearly).toLocaleString('en-US');
+        param.tech_secrity_per = secrity_per;
+        param.tech_medicare_per = medicare_per;
+        param.tech_tax_per = tax_per;
+        param.tech_per_frequency = Math.round(per_frequency).toLocaleString('en-US');
+        param.tech_net_frequency_amount = Math.round(net_frequency_amount).toLocaleString('en-US');
+        param.tech_tax_amount_frequency = Math.round(tax_amount_frequency).toLocaleString('en-US');
+        param.tech_secrity_amount_frequency = Math.round(secrity_amount_frequency).toLocaleString('en-US');
+        param.tech_medicare_amount_frequency = Math.round(medicare_amount_frequency).toLocaleString('en-US');
+        param.tech_net_income_per = net_income_per;
+        param.tech_net_tax_per = net_tax_per;
+        param.tech_pay_frequency = pay_frequency;
+        param.tech_filer_status = filer_status;
+        param.tech_type = type;
+        return param;
+      } else {
+        return { error: "Please fill all fields." };
+      }
+    }
+
+
+     /**
+    * getCalculationMonthlyIncomeCalculator: Service Method
+    * POST: /api/calculators-lol/monthly-income-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationMonthlyIncomeCalculator(body) {
+        const param = {};
+        const pay = body.tech_pay;
+        const first = parseFloat(body.tech_first);
+        const second = parseFloat(body.tech_second);
+
+        let hourly_income, daily_income, weekly_income, bi_weekly_income,
+            sami_monthly_income, monthly_income, quarterly_income, annual_income;
+
+        if (pay == "1") {
+          if (!isNaN(first) && !isNaN(second)) {
+            annual_income = first * second * 52;
+            monthly_income = Math.round(annual_income / 12);
+            sami_monthly_income = Math.round((monthly_income / 2) * 100) / 100;
+            daily_income = first * 8;
+            weekly_income = first * second;
+            bi_weekly_income = Math.round(weekly_income * 2);
+            hourly_income = first;
+            quarterly_income = Math.round((annual_income / 4) * 100) / 100;
+          } else {
+            param.error = "Please! Check Your Input.";
+            return param;
+          }
+        } else if (pay == "2") {
+          if (!isNaN(first) && !isNaN(second)) {
+            daily_income = first;
+            weekly_income = first * second;
+            hourly_income = Math.round((first / 8) * 100) / 100;
+            annual_income = hourly_income * 40 * 52;
+            monthly_income = Math.round(annual_income / 12);
+            sami_monthly_income = Math.round((monthly_income / 2) * 100) / 100;
+            bi_weekly_income = Math.round(weekly_income * 2);
+            quarterly_income = Math.round((annual_income / 4) * 100) / 100;
+          } else {
+            param.error = "Please! Check Your Input.";
+            return param;
+          }
+        } else if (pay == "3") {
+          if (!isNaN(first)) {
+            daily_income = Math.round((first / 5) * 100) / 100;
+            weekly_income = first;
+            hourly_income = Math.round((first / 40) * 100) / 100;
+            annual_income = hourly_income * 40 * 52;
+            monthly_income = Math.round((annual_income / 12) * 100) / 100;
+            sami_monthly_income = Math.round((monthly_income / 2) * 100) / 100;
+            bi_weekly_income = Math.round(weekly_income * 2);
+            quarterly_income = Math.round((annual_income / 4) * 100) / 100;
+          } else {
+            param.error = "Please! Check Your Input.";
+            return param;
+          }
+        } else if (pay == "4") {
+          if (!isNaN(first)) {
+            weekly_income = Math.round((first / 2) * 100) / 100;
+            daily_income = Math.round((weekly_income / 5) * 100) / 100;
+            hourly_income = Math.round((daily_income / 8) * 100) / 100;
+            annual_income = hourly_income * 40 * 52;
+            monthly_income = Math.round((annual_income / 12) * 100) / 100;
+            sami_monthly_income = Math.round((monthly_income / 2) * 100) / 100;
+            bi_weekly_income = first;
+            quarterly_income = Math.round((annual_income / 4) * 100) / 100;
+          } else {
+            param.error = "Please! Check Your Input.";
+            return param;
+          }
+        } else if (pay == "5") {
+          if (!isNaN(first)) {
+            sami_monthly_income = first;
+            monthly_income = Math.round(sami_monthly_income * 2);
+            annual_income = monthly_income * 12;
+            weekly_income = Math.round((annual_income / 52) * 100) / 100;
+            daily_income = Math.round((weekly_income / 5) * 100) / 100;
+            hourly_income = Math.round((daily_income / 8) * 100) / 100;
+            bi_weekly_income = weekly_income * 2;
+            quarterly_income = Math.round((annual_income / 4) * 100) / 100;
+          } else {
+            param.error = "Please! Check Your Input.";
+            return param;
+          }
+        } else if (pay == "6") {
+          if (!isNaN(first)) {
+            quarterly_income = first;
+            annual_income = first * 4;
+            weekly_income = Math.round((annual_income / 52) * 100) / 100;
+            monthly_income = Math.round((annual_income / 12) * 100) / 100;
+            sami_monthly_income = Math.round((monthly_income / 2) * 100) / 100;
+            daily_income = Math.round((weekly_income / 5) * 100) / 100;
+            hourly_income = Math.round((daily_income / 8) * 100) / 100;
+            bi_weekly_income = weekly_income * 2;
+          } else {
+            param.error = "Please! Check Your Input.";
+            return param;
+          }
+        } else {
+          if (!isNaN(first)) {
+            weekly_income = Math.round((first / 52) * 100) / 100;
+            daily_income = Math.round((weekly_income / 5) * 100) / 100;
+            hourly_income = Math.round((daily_income / 8) * 100) / 100;
+            annual_income = first;
+            monthly_income = Math.round((annual_income / 12) * 100) / 100;
+            bi_weekly_income = weekly_income * 2;
+            sami_monthly_income = Math.round((monthly_income / 2) * 100) / 100;
+            quarterly_income = Math.round((annual_income / 4) * 100) / 100;
+          } else {
+            param.error = "Please! Check Your Input.";
+            return param;
+          }
+        }
+
+        param.tech_hourly_income = hourly_income;
+        param.tech_daily_income = daily_income;
+        param.tech_weekly_income = weekly_income;
+        param.tech_bi_weekly_income = bi_weekly_income;
+        param.tech_sami_monthly_income = sami_monthly_income;
+        param.tech_monthly_income = monthly_income;
+        param.tech_quarterly_income = quarterly_income;
+        param.tech_annual_income = annual_income;
+
+        return param;
+      }
+
+
+     /**
+    * getCalculationMoneyCounterCalculator: Service Method
+    * POST: /api/calculators-lol/money-counter-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    
+
+      async  getCalculationMoneyCounterCalculator(body) {
+    const param = {};
+        
+        // Extract parameters from body
+        const currency = body.tech_currency;
+        const checkbox1 = body.tech_checkbox1 || false;
+        const checkbox2 = body.tech_checkbox2 || false;
+        const checkbox3 = body.tech_checkbox3 || false;
+        const bank_notes = body.tech_bank_notes || false;
+        const coins = body.tech_coins || false;
+        const rolls = body.tech_rolls || false;
+
+        // Initialize arrays
+        let note_total = [];
+        let note_quantity = [];
+        let note_input = [];
+        let coins_total = [];
+        let coins_quantity = [];
+        let coins_input = [];
+        let rolls_total = [];
+        let rolls_quantity = [];
+        let rolls_input = [];
+        let rolls_count_ans = [];
+
+        // Define currency configurations
+        let note_values, coins_values, rolls_values, rolls_count, ans_currency;
+
+        switch (currency) {
+            case "USD":
+                note_values = ["1", "2", "5", "10", "20", "50", "100"];
+                coins_values = ["0.01", "0.05", "0.10", "0.25", "0.50", "1.00"];
+                rolls_values = ["0.01", "0.05", "0.10", "0.25", "0.50", "1.00"];
+                rolls_count = ["50", "40", "50", "40", "20", "25"];
+                ans_currency = "$";
+                break;
+            case "EUR":
+                note_values = ["5", "10", "20", "50", "100", "200", "500"];
+                coins_values = ["0.01", "0.02", "0.05", "0.10", "0.20", "0.50", "1.00", "2.00"];
+                rolls_values = ["0.01", "0.02", "0.05", "0.10", "0.20", "0.50", "1.00", "2.00"];
+                rolls_count = ["50", "50", "50", "40", "40", "40", "25", "25"];
+                ans_currency = "€";
+                break;
+            case "JPY":
+                note_values = ["1000", "2000", "5000", "10000"];
+                coins_values = ["1.00", "5.00", "10.00", "50.00", "100.00", "500.00"];
+                rolls_values = ["1.00", "5.00", "10.00", "50.00", "100.00", "500.00"];
+                rolls_count = ["50", "50", "50", "50", "50", "50"];
+                ans_currency = "¥";
+                break;
+            case "GBP":
+                note_values = ["5", "10", "20", "50"];
+                coins_values = ["0.01", "0.02", "0.05", "0.10", "0.20", "0.50", "1.00", "2.00"];
+                rolls_values = ["0.01", "0.02", "0.05", "0.10", "0.20", "0.50", "1.00", "2.00"];
+                rolls_count = ["100", "50", "100", "50", "50", "20", "20", "10"];
+                ans_currency = "£";
+                break;
+            case "AUD":
+                note_values = ["5", "10", "20", "50", "100"];
+                coins_values = ["0.05", "0.10", "0.20", "0.50", "2.00"];
+                rolls_values = ["0.05", "0.10", "0.20", "0.50", "1.00", "2.00"];
+                rolls_count = ["40", "40", "20", "20", "20", "25"];
+                ans_currency = "$";
+                break;
+            case "CAD":
+                note_values = ["1", "5", "10", "20", "50", "100"];
+                coins_values = ["0.01", "0.05", "0.10", "0.25", "0.50", "1.00", "2.00"];
+                rolls_values = ["0.01", "0.05", "0.10", "0.25", "0.50", "1.00", "2.00"];
+                rolls_count = ["50", "40", "50", "40", "25", "25", "25"];
+                ans_currency = "$";
+                break;
+            case "CHF":
+                note_values = ["10", "20", "50", "100", "200", "1000"];
+                coins_values = ["0.05", "0.10", "0.20", "0.50", "1.00", "2.00", "5.00"];
+                rolls_values = ["0.05", "0.10", "0.20", "0.50", "1.00", "2.00", "5.00"];
+                rolls_count = ["50", "50", "50", "50", "50", "50", "50"];
+                ans_currency = "fr";
+                break;
+            case "SEK":
+                note_values = ["20", "50", "100", "200", "500", "1000"];
+                coins_values = ["1.00", "2.00", "5.00", "10.00"];
+                rolls_values = ["1.00", "2.00", "5.00", "10.00"];
+                rolls_count = ["50", "50", "40", "25"];
+                ans_currency = "kr";
+                break;
+            case "MXN":
+                note_values = ["20", "50", "100", "200", "500", "1000"];
+                coins_values = ["0.05", "0.10", "0.20", "0.50", "1.00", "2.00", "5.00", "10.00", "20.00"];
+                ans_currency = "$";
+                break;
+            case "NZD":
+                note_values = ["10", "20", "50", "100"];
+                coins_values = ["0.10", "0.20", "0.50", "1.00", "2.00"];
+                rolls_values = ["0.10", "0.20", "0.50", "1.00", "2.00"];
+                rolls_count = ["50", "25", "20", "25", "25"];
+                ans_currency = "$";
+                break;
+            case "INR":
+                note_values = ["2", "5", "10", "20", "50", "100", "200", "500", "2000"];
+                coins_values = ["0.50", "1.00", "2.00", "5.00", "10.00", "20.00"];
+                rolls_values = ["0.50", "1.00", "2.00", "5.00", "10.00", "20.00"];
+                rolls_count = ["100", "100", "100", "100", "100", "100"];
+                ans_currency = "₹";
+                break;
+            default:
+                note_values = ["20", "50", "100", "200", "500", "1000"];
+                coins_values = ["0.01", "0.05", "0.10", "0.25", "1.00", "5.00", "10.00", "20.00"];
+                ans_currency = "₱";
+        }
+
+        // Process bank notes - ONLY if checkbox1 is true
+        if (checkbox1 != false && checkbox1 != 'false') {
+            const noteOneNotEmpty = bank_notes && bank_notes.some(element => element !== '' && element != null);
+            if (!noteOneNotEmpty) {
+                param.error = 'Please fill all fields.';
+                return param;
+            }
+
+            // Calculate bank notes totals
+            note_values.forEach((value, key) => {
+                if (bank_notes && bank_notes[key] && !isNaN(bank_notes[key])) {
+                    note_total.push(parseFloat(value) * parseFloat(bank_notes[key]));
+                    note_quantity.push(value);
+                    note_input.push(bank_notes[key]);
+                }
+            });
+        } else {
+            // If checkbox1 is false, skip bank notes calculations
+            note_total = [];
+            note_quantity = [];
+            note_input = [];
+        }
+
+        // Process coins - ONLY if checkbox2 is true
+        if (checkbox2 != false && checkbox2 != 'false') {
+            const coinsOneNotEmpty = coins && coins.some(element => element !== '' && element != null);
+            if (!coinsOneNotEmpty) {
+                param.error = 'Please fill all fields.';
+                return param;
+            }
+
+            // Calculate coins totals
+            coins_values.forEach((value, key) => {
+                if (coins && coins[key] && !isNaN(coins[key])) {
+                    coins_total.push(parseFloat(value) * parseFloat(coins[key]));
+                    coins_quantity.push(value);
+                    coins_input.push(coins[key]);
+                }
+            });
+        } else {
+            // If checkbox2 is false, skip coins calculations
+            coins_total = [];
+            coins_quantity = [];
+            coins_input = [];
+        }
+
+        // Process rolls for supported currencies ONLY if checkbox3 is true
+        const supportedCurrencies = ["USD", "EUR", "JPY", "GBP", "AUD", "CAD", "CHF", "SEK", "NZD", "INR"];
+        
+        if (supportedCurrencies.includes(currency) && (checkbox3 !== false && checkbox3 !== 'false')) {
+            const rollsOneNotEmpty = rolls && rolls.some(element => element !== '' && element != null);
+            if (!rollsOneNotEmpty) {
+                param.error = 'Please fill all fields.';
+                return param;
+            }
+
+            if (rolls_values) {
+                rolls_values.forEach((value, key) => {
+                    if (rolls && rolls[key] && !isNaN(rolls[key])) {
+                        rolls_total.push(parseFloat(value) * parseFloat(rolls[key]) * parseFloat(rolls_count[key]));
+                        rolls_quantity.push(value);
+                        rolls_input.push(rolls[key]);
+                        rolls_count_ans.push(rolls_count[key]);
+                    }
+                });
+            }
+
+            param.tech_rolls_total = rolls_total;
+            param.tech_rolls_quantity = rolls_quantity;
+            param.tech_rolls_input = rolls_input;
+            if (rolls_count_ans.length > 0) {
+                param.rolls_count_ans = rolls_count_ans;
+            }
+        } else {
+            // If checkbox3 is false or currency not supported, set empty arrays
+            param.tech_rolls_total = [];
+            param.tech_rolls_quantity = [];
+            param.tech_rolls_input = [];
+        }
+
+        // Calculate total money
+        const total_money = coins_total.reduce((a, b) => a + b, 0) + 
+                          note_total.reduce((a, b) => a + b, 0) + 
+                          rolls_total.reduce((a, b) => a + b, 0);
+
+        // Set response parameterstech_
+        param.tech_total_money = Math.round(total_money * 100) / 100;
+        param.tech_note_total = note_total;
+        param.tech_note_quantity = note_quantity;
+        param.tech_note_input = note_input;
+        param.tech_coins_total = coins_total;
+        param.tech_coins_quantity = coins_quantity;
+        param.tech_coins_input = coins_input;
+        param.tech_ans_currency = ans_currency;
+        
+        // Convert checkbox values to match Laravel format
+        param.tech_checkbox1 = checkbox1 == true || checkbox1 == 'true' || checkbox1 == '1' ? '1' : false;
+        param.tech_checkbox2 = checkbox2 == true || checkbox2 == 'true' || checkbox2 == '1' ? '1' : false;
+        param.tech_checkbox3 = checkbox3 == true || checkbox3 == 'true' || checkbox3 == '1' ? '1' : false;
+        
+        param.tech_currency = currency;
+
+        return param;
+    }
+
+      /**
+    * getCalculationdisCountedCashFlowCalculator: Service Method
+    * POST: /api/calculators-lol/discounted-cash-flow-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    
+
+     async  getCalculationdisCountedCashFlowCalculator(body) {
+        const param = {};
+        
+        // Extract parameters from body
+        const main_unit = body.tech_main_unit?.trim();
+        const input = body.tech_input || [];
+        const cash = parseFloat(body.tech_cash?.trim()) || 0;
+        const outstanding = parseFloat(body.tech_outstanding?.trim()) || 0;
+        const perpetual = parseFloat(body.tech_perpetual?.trim()) || 0;
+        const wacc = parseFloat(body.tech_wacc?.trim()) || 0;
+        const shares = parseFloat(body.tech_shares?.trim()) || 0;
+        const price = parseFloat(body.tech_price?.trim()) || 0;
+        const earnings = parseFloat(body.tech_earnings?.trim()) || 0;
+        const discount = parseFloat(body.tech_discount?.trim()) || 0;
+        const growth = parseFloat(body.tech_growth?.trim()) || 0;
+        const growth_time = parseFloat(body.tech_growth_time?.trim()) || 0;
+        const growth_time_one = parseFloat(body.tech_growth_time_one?.trim()) || 0;
+        const growth_time_sec = parseFloat(body.tech_growth_time_sec?.trim()) || 0;
+        const growth_unit = body.tech_growth_unit?.trim();
+        const terminal = parseFloat(body.tech_terminal?.trim()) || 0;
+        const terminal_time = parseFloat(body.tech_terminal_time?.trim()) || 0;
+        const terminal_one = parseFloat(body.tech_terminal_one?.trim()) || 0;
+        const terminal_sec = parseFloat(body.tech_terminal_sec?.trim()) || 0;
+        const terminal_unit = body.tech_terminal_unit?.trim();
+
+        if (main_unit == "Earnings per share (EPS)") {
+            // Validation for EPS calculations
+            if ((!growth_time_one && !growth_time_sec) || (!terminal_one && !terminal_sec)) {
+                param.error = 'Please! Enter Input.';
+                return param;
+            }
+
+            let growth_time_final = growth_time_one || 0;
+            let terminal_time_final = terminal_one || 0;
+
+            // Handle growth time conversion
+            if (growth_unit == "yrs/mos") {
+                growth_time_final = (growth_time_one || 0) + ((growth_time_sec || 0) / 12);
+            } else if (growth_unit == "mos") {
+                growth_time_final = (growth_time || 0) / 12;
+            } else {
+                growth_time_final = growth_time || 0;
+            }
+
+            // Handle terminal time conversion
+            if (terminal_unit == "yrs/mos") {
+                terminal_time_final = (terminal_one || 0) + ((terminal_sec || 0) / 12);
+            } else if (terminal_unit == "mos") {
+                terminal_time_final = (terminal_time || 0) / 12;
+            } else {
+                terminal_time_final = terminal_time || 0;
+            }
+
+            // Validate numeric inputs
+            if (!isNaN(earnings) && !isNaN(discount) && !isNaN(growth) && !isNaN(growth_time_final) && 
+                !isNaN(terminal) && !isNaN(terminal_time_final)) {
+                
+                if (discount == 0) {
+                    param.error = 'discount rate Value is greater than or not equal to.';
+                    return param;
+                }
+
+                // Calculate coefficient
+                const coefficient = (1 + (growth / 100)) / (1 + (discount / 100));
+
+                // Growth value calculation
+                const groeth_answer = earnings * coefficient * (1 - Math.pow(coefficient, growth_time_final)) / (1 - coefficient);
+
+                // Terminal value calculation
+                const coefficient_b = (1 + (terminal / 100)) / (1 + (discount / 100));
+                const terminal_answer = (earnings * Math.pow(coefficient, growth_time_final) * coefficient_b * 
+                    (1 - Math.pow(coefficient_b, terminal_time_final))) / (1 - coefficient_b);
+
+                // Total intrinsic value
+                const Total_intrinsic_answer = groeth_answer + terminal_answer;
+
+                // Set response parameters
+                param.tech_groeth_answer = groeth_answer;
+                param.tech_terminal_answer = terminal_answer;
+                param.tech_Total_intrinsic_answer = Total_intrinsic_answer;
+                param.tech_main_unit = main_unit;
+                param.tech_growth_unit = growth_unit;
+                param.tech_terminal_unit = terminal_unit;
+                param.tech_input = input;
+                param.tech_length = input.length + 1;
+
+                return param;
+            } else {
+                param.error = 'Please! Check Your Input.';
+                return param;
+            }
+        } else {
+            // FCFF (Free Cash Flow to Firm) calculations
+            if (!isNaN(cash) && !isNaN(outstanding) && !isNaN(perpetual) && !isNaN(wacc) && 
+                !isNaN(shares) && !isNaN(price) && !isNaN(growth_time_one) && !isNaN(growth_time_sec) && 
+                !isNaN(terminal_one) && !isNaN(terminal_sec) && terminal_unit && growth_unit) {
+                
+                // Process input array
+                const nawi_array = [];
+                for (let i = 0; i < input.length; i++) {
+                    if (!isNaN(parseFloat(input[i]))) {
+                        nawi_array[i + 1] = parseFloat(input[i]);
+                    }
+                }
+
+                if (nawi_array.length < 1) {
+                    param.error = 'Please! Check Your Input.';
+                    return param;
+                }
+
+                const fcff_last = nawi_array[nawi_array.length - 1];
+
+                // Validate WACC
+                if (wacc == 0) {
+                    param.error = 'wacc value is greater than or not equal to.';
+                    return param;
+                }
+
+                // Calculate terminal value
+                const terminal_value = fcff_last * (1 + (perpetual / 100)) / ((wacc / 100) - (perpetual / 100));
+
+                // Calculate firm value function
+                const calculateFirmValue = (fcffArray, wacc) => {
+                    let firmValue = 0;
+                    for (const [t, fcff] of Object.entries(fcffArray)) {
+                        const discountFactor = Math.pow(1 + (wacc / 100), parseInt(t));
+                        firmValue += fcff / discountFactor;
+                    }
+                    return firmValue;
+                };
+
+                const result = calculateFirmValue(nawi_array, wacc);
+                const nz = Object.keys(nawi_array).length;
+                const value_firm = Math.pow((1 + (wacc / 100)), nz);
+                const ans_sec = terminal_value / value_firm;
+                
+                // Final calculations
+                const answer_sec = result + ans_sec;
+                const net_debt = outstanding - cash;
+                const equdiry = answer_sec - net_debt;
+
+                // Validate shares
+                if (shares == 0) {
+                    param.error = 'Outstanding Shares value is greater than or not equal to.';
+                    return param;
+                }
+
+                const fair_val = equdiry / shares;
+
+                if (fair_val == 0) {
+                    param.error = 'fair value is greater than or not equal to.';
+                    return param;
+                }
+
+                const percentage = ((price - fair_val) * 100) / fair_val;
+
+                // Set response parameters
+                param.tech_terminal_value = terminal_value;
+                param.tech_answer_sec = answer_sec;
+                param.tech_equdiry = equdiry;
+                param.tech_fair_val = fair_val;
+                param.tech_percentage = percentage;
+                param.tech_main_unit = main_unit;
+                param.tech_input = input;
+                param.tech_growth_unit = growth_unit;
+                param.tech_terminal_unit = terminal_unit;
+                param.tech_length = input.length + 1;
+
+                return param;
+            } else {
+                param.error = 'Please! Check Your Input.';
+                return param;
+            }
+        }
+    }
+
+
+      /**
+    * getCalculationVaDisdisabilityCalculator: Service Method
+    * POST: /api/calculators-lol/va-disability-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    
+      async  getCalculationVaDisdisabilityCalculator(body) {
+        const param = {};
+        
+        // Extract parameters from body
+        const right_arm = parseFloat(body.tech_right_arm?.trim()) || 0;
+        const left_arm = parseFloat(body.tech_left_arm?.trim()) || 0;
+        const right_leg = parseFloat(body.tech_right_leg?.trim()) || 0;
+        const left_leg = parseFloat(body.tech_left_leg?.trim()) || 0;
+        const right_foot = parseFloat(body.tech_right_foot?.trim()) || 0;
+        const left_foot = parseFloat(body.tech_left_foot?.trim()) || 0;
+        const back = parseFloat(body.tech_back?.trim()) || 0;
+        const ssd = parseFloat(body.tech_ssd?.trim()) || 0;
+        const ptsd = parseFloat(body.tech_ptsd?.trim()) || 0;
+        const tinnitus = parseFloat(body.tech_tinnitus?.trim()) || 0;
+        const migraines = parseFloat(body.tech_migraines?.trim()) || 0;
+        const sleep_apnea = parseFloat(body.tech_sleep_apnea?.trim()) || 0;
+        const bilateral_upper = parseFloat(body.tech_bilateral_upper?.trim()) || 0;
+        const bilateral_lower = parseFloat(body.tech_bilateral_lower?.trim()) || 0;
+        const others = parseFloat(body.tech_others?.trim()) || 0;
+        const status = body.tech_status?.trim();
+        const attendance = body.tech_attendance?.trim();
+        const under_age = body.tech_under_age?.trim();
+        const over_age = body.tech_over_age?.trim();
+        const parent = body.tech_parent?.trim();
+
+        // Create disabilities array and filter out zeros
+        const disabilities = [
+            right_arm, left_arm, right_leg, left_leg, right_foot, left_foot, 
+            back, ssd, ptsd, tinnitus, migraines, sleep_apnea, 
+            bilateral_upper, bilateral_lower, others
+        ];
+
+        const filteredDisabilities = disabilities.filter(value => value !== 0);
+        const newDisabilitiesArray = filteredDisabilities;
+        const arraytotal = newDisabilitiesArray.length;
+
+        // Sort in descending order
+        newDisabilitiesArray.sort((a, b) => b - a);
+
+        let total_cumulative = 0;
+
+        // Calculate cumulative disability
+        if (arraytotal == 0) {
+            param.error = 'Please! select disability';
+            return param;
+        } else if (arraytotal === 1) {
+            total_cumulative = newDisabilitiesArray[0];
+        } else if (arraytotal === 2) {
+            const val_first = newDisabilitiesArray[0];
+            const val_sec = newDisabilitiesArray[1];
+
+            const a = ((100 - val_first) * val_sec) / 100;
+            const cdis = Math.round(val_first + a);
+            total_cumulative = cdis;
+        } else {
+            const answers = [];
+            let cdis = 0;
+
+            for (let i = 0; i < (arraytotal - 1); i++) {
+                if (i == 0) {
+                    const a = ((100 - newDisabilitiesArray[i]) * newDisabilitiesArray[i + 1]) / 100;
+                    cdis = Math.round(newDisabilitiesArray[i] + a);
+                }
+                if (i != 0) {
+                    const jawab = ((100 - cdis) * newDisabilitiesArray[i + 1]) / 100;
+                    cdis = cdis + jawab;
+                    answers.push(Math.round(cdis));
+                }
+            }
+            total_cumulative = answers.length > 0 ? answers[answers.length - 1] : cdis;
+        }
+
+        // Determine total combined rating and index
+        let total_combined = 0;
+        let total_combined_index = 0;
+
+        if (total_cumulative < 15) {
+            total_combined = 10;
+            total_combined_index = 0;
+        } else if (total_cumulative < 25) {
+            total_combined = 20;
+            total_combined_index = 1;
+        } else if (total_cumulative < 35) {
+            total_combined = 30;
+            total_combined_index = 2;
+        } else if (total_cumulative < 45) {
+            total_combined = 40;
+            total_combined_index = 3;
+        } else if (total_cumulative < 55) {
+            total_combined = 50;
+            total_combined_index = 4;
+        } else if (total_cumulative < 65) {
+            total_combined = 60;
+            total_combined_index = 5;
+        } else if (total_cumulative < 75) {
+            total_combined = 70;
+            total_combined_index = 6;
+        } else if (total_cumulative < 85) {
+            total_combined = 80;
+            total_combined_index = 7;
+        } else if (total_cumulative < 95) {
+            total_combined = 90;
+            total_combined_index = 8;
+        } else {
+            total_combined = 100;
+            total_combined_index = 9;
+        }
+
+        // VA compensation model
+        const model = {
+            'alone': [171.23, 338.49, 524.31, 755.28, 1075.16, 1361.88, 1716.28, 1995.01, 2241.91, 3737.85],
+            'VeteranChild': [171.23, 338.49, 565.31, 810.28, 1144.16, 1444.88, 1813.29, 2106.01, 2366.91, 3877.22],
+            'veteranparent': [171.23, 338.49, 574.31, 821.28, 1158.16, 1461.88, 1833.28, 2128.01, 2391.91, 3905.11],
+            'VeteranSpouse': [171.23, 338.49, 586.31, 838.28, 1179.16, 1486.88, 1861.28, 2161.01, 2428.91, 3946.25],
+            'VeteranParentChild': [171.23, 338.49, 615.31, 876.28, 1227.16, 1544.88, 1930.28, 2239.01, 2516.91, 4044.48],
+            'VeterantwoParents': [171.23, 338.49, 624.31, 887.28, 1241.16, 1561.88, 1950.28, 2261.01, 2541.91, 4072.37],
+            'VeteranSpouseChild': [171.23, 338.49, 632.31, 899.28, 1255.16, 1577.88, 1968.28, 2283.01, 2565.91, 4098.87],
+            'VeteranspouseoneParent': [171.23, 338.49, 636.31, 904.28, 1262.16, 1586.88, 1978.28, 2294.01, 2578.91, 4113.51],
+            'VeterantwoParentsChild': [171.23, 338.49, 665.31, 942.28, 1310.16, 1644.88, 2047.28, 2372.01, 2666.91, 4211.74],
+            'VeteranspouseoneParentoneChild': [171.23, 338.49, 682.31, 965.28, 1338.16, 1677.88, 2085.28, 2416.01, 2715.91, 4266.13],
+            'VeteranSpousetwoParents': [171.23, 338.49, 688.31, 970.28, 1345.16, 1686.88, 2095.28, 2427.01, 2727.91, 4280.77],
+            'VeteranSpousetwoParentsoneChild': [171.23, 338.49, 732.31, 1031.28, 1421.16, 1777.88, 2202.28, 2549.01, 2865.91, 4433.39],
+            'additionalchildrenunderage': [0.00, 0.00, 31.00, 41.00, 51.00, 62.00, 72.00, 82.00, 93.00, 103.55],
+            'overagechildren': [0.00, 0.00, 100.00, 133.00, 167.00, 200.00, 234.00, 267.00, 301.00, 334.49],
+            'aidandattendance': [0.00, 0.00, 57.00, 76.00, 95.00, 114.00, 134.00, 153.00, 172.00, 191.14],
+        };
+
+        let rate = 0;
+
+        // Determine base rate based on status and dependencies
+        if (status == "Single") {
+            rate = model['alone'][total_combined_index];
+        }
+        
+        if (status == "Single" && (under_age == '1' || over_age == '1')) {
+            rate = model['VeteranChild'][total_combined_index];
+        }
+        
+        if (status == "Single" && parent == '1') {
+            rate = model['veteranparent'][total_combined_index];
+        }
+        
+        if (status == "Single" && parent == '2') {
+            rate = model['VeterantwoParents'][total_combined_index];
+        }
+        
+        if (status == "Single" && parent == '1' && (under_age == '1' || over_age == '1')) {
+            rate = model['VeteranParentChild'][total_combined_index];
+        }
+        
+        if (status == "Single" && parent == '2' && (under_age == '1' || over_age == '1')) {
+            rate = model['VeterantwoParentsChild'][total_combined_index];
+        }
+        
+        if (status == "Married") {
+            rate = model['VeteranSpouse'][total_combined_index];
+        }
+        
+        if (status == "Married" && (under_age == '1' || over_age == '1')) {
+            rate = model['VeteranSpouseChild'][total_combined_index];
+        }
+        
+        if (status == "Married" && parent == '1') {
+            rate = model['VeteranspouseoneParent'][total_combined_index];
+        }
+        
+        if (status == "Married" && parent == '1' && (under_age == '1' || over_age == '1')) {
+            rate = model['VeteranspouseoneParentoneChild'][total_combined_index];
+        }
+        
+        if (status == "Married" && parent == '2') {
+            rate = model['VeteranSpousetwoParents'][total_combined_index];
+        }
+        
+        if (status == "Married" && parent == '2' && (under_age == '1' || over_age == '1')) {
+            rate = model['VeteranSpousetwoParentsoneChild'][total_combined_index];
+        }
+
+        // Add aid and attendance if applicable
+        if (attendance == 'Yes') {
+            rate += model['aidandattendance'][total_combined_index];
+        }
+
+        // Add additional children under age
+        if (under_age != '1' && under_age) {
+            const underAgeCount = parseInt(under_age) || 0;
+            rate += (underAgeCount * model['additionalchildrenunderage'][total_combined_index]);
+        }
+
+        // Add additional children over age
+        if (over_age != '1' && over_age) {
+            const overAgeCount = parseInt(over_age) || 0;
+            rate += (overAgeCount * model['overagechildren'][total_combined_index]);
+        }
+
+        // Set response parameters
+        param.tech_total_cumulative = total_cumulative;
+        param.tech_total_combined = total_combined;
+        param.tech_rate = rate;
+        param.tech_status = status;
+
+        return param;
+    }
+
+    
+      /**
+    * getCalculationCagrCalculator: Service Method
+    * POST: /api/calculators-lol/cagr-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+     async  getCalculationCagrCalculator(body) {
+        const param = {};
+    
+          // Extract parameters from body
+          const units = body.tech_unit_type?.trim();
+          const starting_first = parseFloat(body.tech_starting_first?.trim()) || 0;
+          const ending_first = parseFloat(body.tech_ending_first?.trim()) || 0;
+          const years_first = parseFloat(body.tech_years_first?.trim()) || 0;
+          const months_first = parseFloat(body.tech_months_first?.trim()) || 0;
+          const days_first = parseFloat(body.tech_days_first?.trim()) || 0;
+          const starting_sec = parseFloat(body.tech_starting_sec?.trim()) || 0;
+          const ending_sec = parseFloat(body.tech_ending_sec?.trim()) || 0;
+          const start_date = body.tech_start_date?.trim();
+          const ending_date = body.tech_ending_date?.trim();
+          const starting_third = parseFloat(body.tech_starting_third?.trim()) || 0;
+          const cagr = parseFloat(body.tech_cagr?.trim()) || 0;
+          const years_third = parseFloat(body.tech_years_third?.trim()) || 0;
+          const months_third = parseFloat(body.tech_months_third?.trim()) || 0;
+          const days_third = parseFloat(body.tech_days_third?.trim()) || 0;
+
+          // Helper function to calculate total days
+        
+          	function calculateTotalDays(years, months, days)
+            {
+             let total_dayse = years * 365 + months * 30 + days;
+              return total_dayse;
+            }
+
+
+          // Helper function to calculate date difference in days
+          const calculateDateDifference = (startDate, endDate) => {
+              const start = new Date(startDate);
+              const end = new Date(endDate);
+              const timeDiff = end.getTime() - start.getTime();
+              return Math.floor(timeDiff / (1000 * 3600 * 24));
+          };
+
+          // Validation checks
+          if (units == 'one' && starting_first >= ending_first) {
+              param.error = 'ending value is greater than or not equal to starting value.';
+              return param;
+          }
+
+          if (units == 'two' && starting_sec >= ending_sec) {
+              param.error = 'ending value is greater than or not equal to starting value.';
+              return param;
+          }
+
+          if (units == 'one' && !years_first && !months_first && !days_first) {
+              param.error = 'Please! Check Enter Input.';
+              return param;
+          }
+
+          if (units === 'three' && !years_third && !months_third && !days_third) {
+              param.error = 'Please! Check Enter Input.';
+              return param;
+          }
+
+          if (units == 'two') {
+              if (!start_date) {
+                  param.error = 'Please! Check Start Date Input.';
+                  return param;
+              }
+              if (!ending_date) {
+                  param.error = 'Please! Check Ending Date Input.';
+                  return param;
+              }
+          }
+
+          // Process based on unit type
+          if (units == 'one') {
+              if (!isNaN(starting_first) && !isNaN(ending_first)) {
+                  const total_days = calculateTotalDays(years_first, months_first, days_first);
+                  
+                  if (total_days <= 0) {
+                      param.error = 'Please! add at least one day';
+                      return param;
+                  }
+
+                  // Calculate CAGR
+                  const cagr_value = Math.pow(ending_first / starting_first, 365 / total_days) - 1;
+                  
+                  // Calculate doubling time
+                  const double = Math.log(2) / Math.log(1 + cagr_value);
+                  const yearx = Math.floor(double);
+                  const fractional_part = double - yearx;
+                  const total_dayz = fractional_part * 365;
+                  const monthz = Math.floor(total_dayz / 30);
+                  // const dayz = Math.round(total_dayz % 30);
+                  const dayz = Math.floor(total_dayz % 30);
+
+                  const table_year = total_days / 365;
+                  const cagr_percentage = cagr_value * 100;
+
+                  // Format time strings
+                  const year = years_first <= 1 ? `${years_first} year` : `${years_first} years`;
+                  const months = months_first <= 1 ? `${months_first} month` : `${months_first} months`;
+                  const days = days_first <= 1 ? `${days_first} day` : `${days_first} days`;
+
+                  // Set response parameters
+                  param.tech_total_days = total_days;
+                  param.tech_cagr_percentage = cagr_percentage;
+                  param.tech_year = year;
+                  param.tech_months = months;
+                  param.tech_days = days;
+                  param.tech_dayz = dayz;
+                  param.tech_monthz = monthz;
+                  param.tech_yearx = yearx;
+                  param.tech_table_year = table_year;
+              } else {
+                  param.error = 'Please! Check Your Input';
+                  return param;
+              }
+          } else if (units == 'two') {
+              if (!isNaN(starting_sec) && !isNaN(ending_sec)) {
+                  const total_days = calculateDateDifference(start_date, ending_date);
+                  
+                  if (total_days <= 0) {
+                      param.error = 'Please! add at least one day.';
+                      return param;
+                  }
+
+                  // Calculate CAGR
+                  const cagr_value = Math.pow(ending_sec / starting_sec, 365 / total_days) - 1;
+                  
+                  // Calculate doubling time
+                  const double = Math.log(2) / Math.log(1 + cagr_value);
+                  const yearx = Math.floor(double);
+                  const fractional_part = double - yearx;
+                  const total_dayz = fractional_part * 365;
+                  const monthz = Math.floor(total_dayz / 30);
+                  // const dayz = Math.round(total_dayz % 30);
+                  const dayz = Math.floor(total_dayz % 30);
+                  const table_year = Math.round(total_days / 365);
+                  const cagr_percentage = cagr_value * 100;
+
+                  // Set response parameters
+                  param.tech_total_days = total_days;
+                  param.tech_cagr_percentage = cagr_percentage;
+                  param.tech_dayz = dayz;
+                  param.tech_monthz = monthz;
+                  param.tech_yearx = yearx;
+                  param.tech_table_year = table_year;
+              } else {
+                  param.error = 'Please fill all fields.';
+                  return param;
+              }
+          } else if (units == 'three') {
+              if (!isNaN(starting_third) && !isNaN(cagr)) {
+                  const total_days_years = calculateTotalDays(years_third, months_third, days_third) / 365;
+                    // console.log(total_days_years);
+                  if (total_days_years <= 0) {
+                      param.error = 'Please! add at least one day.';
+                      return param;
+                  }
+
+                  if (cagr <= 0) {
+                      param.error = 'Please! Check Your CAGR Input.';
+                      return param;
+                  }
+
+                  // Calculate future value
+                  const cagr_percentage = starting_third * Math.pow((1 + cagr / 100), total_days_years);
+                  
+                  // Calculate doubling time
+                  // const cagr_decimal = cagr / 100;
+                  const double = Math.log(2) / Math.log(1 + cagr);
+                  const yearx = Math.floor(double);
+                  const fractional_part = double - yearx;
+                  const total_dayz = fractional_part * 365;
+                  const monthz = Math.floor(total_dayz / 30);
+                  // const dayz = Math.round(total_dayz % 30);
+                    const dayz = Math.floor(total_dayz % 30);
+                  // Format time strings
+                  const year = years_third <= 1 ? `${years_third} year` : `${years_third} years`;
+                  const months = months_third <= 1 ? `${months_third} month` : `${months_third} months`;
+                  const days = days_third <= 1 ? `${days_third} day` : `${days_third} days`;
+
+                  // Set response parameters
+                  param.tech_cagr_percentage = cagr_percentage;
+                  param.tech_dayz = dayz; // no
+                  param.tech_monthz = monthz;
+                  param.tech_yearx = yearx; // no
+                  param.tech_total_days = total_days_years;
+                  param.tech_year = year;
+                  param.tech_months = months;
+                  param.tech_days = days;
+              } else {
+                  param.error = 'Please fill all fields.';
+                  return param;
+              }
+          } else {
+              param.error = 'Please fill all fields.';
+              return param;
+          }
+
+          return param;
+      }
+
+    /**
+    * getCalculationDepreciationCalculator: Service Method
+    * POST: /api/calculators-lol/depreciation-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+     async getCalculationDepreciationCalculator(request) {
+        try {
+          // Reset param
+          this.param = {};
+
+          // Set currency
+          const hiddenCurrency = request.hiddent_currency || '$';
+
+          // Validate method
+          if (!request.method) {
+            this.param.error = 'Please! Check Your Input';
+            return this.param;
+          }
+
+          // Route to appropriate method
+          switch (request.method) {
+            case 'Straight':
+              return this.calculateStraightLine(request, hiddenCurrency);
+            
+            case 'Declining':
+              return this.calculateDeclining(request, hiddenCurrency);
+            
+            case 'sum':
+              return this.calculateSumOfYears(request, hiddenCurrency);
+            
+            case 'Reducing':
+              return this.calculateReducing(request, hiddenCurrency);
+            
+            case 'unit_of_pro':
+              return this.calculateUnitOfProduction(request, hiddenCurrency);
+            
+            default:
+              this.param.error = 'Invalid depreciation method';
+              return this.param;
+          }
+        } catch (error) {
+          this.param.error = error.message || 'An error occurred';
+          return this.param;
+        }
+      }
+      // Straight Line Method
+      calculateStraightLine(request, hiddenCurrency) {
+        if (!this.validateInput(request, ['asset', 'salvage', 'year', 'date'])) {
+          this.param.error = 'Please! Check Your Input';
+          return this.param;
+        }
+
+        const { year, salvage, asset, date, conver, round } = request;
+        let asset1 = asset;
+        let depreciation = 0;
+        let cDepreciation = 0;
+        let table = '';
+        let des = '';
+        let bookDes = '';
+        let totalYears = '';
+        let totalBookValue = '';
+
+        const dateArray = date.split('-');
+        const startMonth = parseInt(dateArray[2]);
+        let startYear = parseInt(dateArray[1]);
+        
+        const rate = this.roundValue(100 / year, 2);
+
+        if (conver == '0') {
+          // Full year convention
+          for (let i = 0; i < Number(year); i++) {
+            startYear = parseInt(dateArray[2]) + i;
+            totalYears += startYear + ',';
+
+            depreciation = this.calculateDepreciation((asset - salvage) * (rate / 100), round);
+            cDepreciation = this.roundValue(cDepreciation + depreciation, round === 'yes' ? 0 : 2);
+            let endBookValue = this.roundValue(asset - cDepreciation, round === 'yes' ? 0 : 2);
+
+            // Check if end book value is less than salvage
+            if (endBookValue < salvage) {
+              endBookValue = salvage;
+              cDepreciation = cDepreciation - depreciation;
+              depreciation = asset1 - salvage;
+              cDepreciation = cDepreciation + depreciation;
+            }
+
+            totalBookValue += endBookValue + ',';
+            table += this.generateTableRow(startYear, asset1, rate, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+            des += depreciation + ',';
+            bookDes += asset1 + ',';
+            asset1 = asset - cDepreciation;
+          }
+        } else {
+          // Partial year convention
+          const months = this.calculateMonths(conver, startMonth);
+
+          for (let i = 0; i <= Number(year) - 1; i++) {
+            startYear = parseInt(dateArray[2]) + i;
+            totalYears += startYear + ',';
+
+            depreciation = this.calculateDepreciation((asset - salvage) * (rate / 100), round);
+            cDepreciation = this.roundValue(cDepreciation + depreciation, round == 'yes' ? 0 : 2);
+            let endBookValue = this.roundValue(asset - cDepreciation, round == 'yes' ? 0 : 2);
+
+            if (endBookValue < salvage) {
+              endBookValue = salvage;
+              depreciation = asset1 - salvage;
+              cDepreciation = cDepreciation + depreciation;
+            }
+
+            if (i == 0) {
+              // First year partial depreciation
+              const firstYearDep = 12 / months;
+              cDepreciation = cDepreciation - depreciation;
+              depreciation = this.calculateDepreciation(depreciation / firstYearDep, round);
+              cDepreciation = this.roundValue(cDepreciation + depreciation, round == 'yes' ? 0 : 2);
+              endBookValue = this.roundValue(asset - cDepreciation, round == 'yes' ? 0 : 2);
+              
+              const rate1 = this.roundValue((depreciation / (asset - salvage)) * 100, 2);
+              table += this.generateTableRow(startYear, asset1, rate1, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+              des += depreciation + ',';
+              bookDes += asset1 + ',';
+            } else {
+              table += this.generateTableRow(startYear, asset1, rate, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+              des += depreciation + ',';
+              bookDes += asset1 + ',';
+            }
+
+            totalBookValue += endBookValue + ',';
+            asset1 = asset - cDepreciation;
+          }
+        }
+
+        this.param.table = table;
+        this.param.des = des;
+        this.param.book_des = bookDes;
+        this.param.total_years = totalYears;
+        this.param.total_book_value = totalBookValue;
+        this.param.RESULT = 1;
+        return this.param;
+      }
+      // Declining Balance Method
+      calculateDeclining(request, hiddenCurrency) {
+        if (!this.validateInput(request, ['asset', 'salvage', 'year', 'Factor', 'date'])) {
+          this.param.error = 'Please! Check Your Input';
+          return this.param;
+        }
+
+        const { year, salvage, asset, Factor, date, conver, round } = request;
+        let asset1 = asset;
+        let depreciation = 0;
+        let cDepreciation = 0;
+        let table = '';
+        let des = '';
+        let bookDes = '';
+        let totalYears = '';
+        let totalBookValue = '';
+
+        const dateArray = date.split('-');
+        const startMonth = parseInt(dateArray[2]);
+        let startYear = parseInt(dateArray[1]);
+        
+        let rate = this.roundValue((1 / year * Factor) * 100, 2);
+          
+        if (conver == '0') {
+          for (let i = 0; i < Number(year); i++) {
+            startYear = parseInt(dateArray[2]) + i;
+            totalYears += startYear + ',';
+
+            depreciation = this.calculateDepreciation(asset1 * (rate / 100), round);
+            cDepreciation = this.roundValue(cDepreciation + depreciation, round == 'yes' ? 0 : 2);
+            let endBookValue = this.roundValue(asset - cDepreciation, round == 'yes' ? 0 : 2);
+
+            if (endBookValue < salvage) {
+              endBookValue = salvage;
+              cDepreciation = cDepreciation - depreciation;
+              depreciation = asset1 - salvage;
+              cDepreciation = cDepreciation + depreciation;
+              rate = this.roundValue((depreciation / asset1) * 100, 2);
+            }
+
+            if (i == Number(year) - 1 && endBookValue > salvage) {
+              endBookValue = salvage;
+              cDepreciation = cDepreciation - depreciation;
+              depreciation = asset1 - salvage;
+              cDepreciation = cDepreciation + depreciation;
+              rate = this.roundValue((depreciation / asset1) * 100, 2);
+            }
+
+            totalBookValue += endBookValue + ',';
+            table += this.generateTableRow(startYear, asset1, rate, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+            des += depreciation + ',';
+            bookDes += asset1 + ',';
+            asset1 = asset - cDepreciation;
+          }
+        } else {
+          const months = this.calculateMonths(conver, startMonth);
+
+          for (let i = 0; i < Number(year); i++) {
+            startYear = parseInt(dateArray[2]) + i;
+            totalYears += startYear + ',';
+
+            depreciation = this.calculateDepreciation(asset1 * (rate / 100), round);
+            cDepreciation = this.roundValue(cDepreciation + depreciation, round === 'yes' ? 0 : 2);
+            let endBookValue = this.roundValue(asset - cDepreciation, round === 'yes' ? 0 : 2);
+
+            if (endBookValue < salvage) {
+              endBookValue = salvage;
+              depreciation = asset1 - salvage;
+              cDepreciation = cDepreciation + depreciation;
+              rate = this.roundValue((depreciation / asset1) * 100, 2);
+            }
+
+            if (i == Number(year) - 1 && endBookValue > salvage) {
+              endBookValue = salvage;
+              cDepreciation = cDepreciation - depreciation;
+              depreciation = asset1 - salvage;
+              cDepreciation = cDepreciation + depreciation;
+              rate = this.roundValue((depreciation / asset1) * 100, 2);
+            }
+
+            if (i == 0) {
+              cDepreciation = 0;
+              const rate1 = this.roundValue((rate / 12) * months, 2);
+              depreciation = this.calculateDepreciation(asset1 * (rate1 / 100), round);
+              cDepreciation = this.roundValue(cDepreciation + depreciation, round === 'yes' ? 0 : 2);
+              endBookValue = this.roundValue(asset - cDepreciation, round === 'yes' ? 0 : 2);
+              table += this.generateTableRow(startYear, asset1, rate1, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+            } else {
+              table += this.generateTableRow(startYear, asset1, rate, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+            }
+
+            des += depreciation + ',';
+            bookDes += asset1 + ',';
+            totalBookValue += endBookValue + ',';
+            asset1 = asset - cDepreciation;
+          }
+        }
+
+        this.param.table = table;
+        this.param.des = des;
+        this.param.book_des = bookDes;
+        this.param.total_years = totalYears;
+        this.param.total_book_value = totalBookValue;
+        this.param.RESULT = 1;
+        return this.param;
+      }
+      // Sum of Years Digits Method
+      calculateSumOfYears(request, hiddenCurrency) {
+      if (!this.validateInput(request, ['asset', 'salvage', 'year', 'date'])) {
+        this.param.error = 'Please! Check Your Input';
+        return this.param;
+      }
+
+      const { year, salvage, asset, date, conver, round } = request;
+      let asset1 = asset;
+      let depreciation = 0;
+      let cDepreciation = 0;
+      let table = '';
+      let des = '';
+      let bookDes = '';
+      let totalYears = '';
+      let totalBookValue = '';
+
+      // Parse date - PHP format: MM-YYYY-DD or similar
+      // So index[1] = YYYY, index[2] = MM/DD depending on format
+      const dateArray = date.split('-');
+      let startYear = parseInt(dateArray[1]); // Year from index 1 (like PHP)
+      const startMonth = parseInt(dateArray[2]); // Month from index 2 (like PHP)
+      
+      // Calculate sum of years
+      let sum = 0;
+      for (let j = Number(year); j > 0; j--) {
+        sum += j;
+      }
+
+      if (conver == '0') {
+        for (let i = 0; i < year; i++) {
+          const rate = this.roundValue(((year - i) / sum) * 100, 2);
+          startYear = parseInt(dateArray[2]) + i; // Year calculation from dateArray[2]
+          totalYears += startYear + ',';
+
+          depreciation = this.calculateDepreciation((asset - salvage) * (rate / 100), round);
+          cDepreciation = this.roundValue(cDepreciation + depreciation, round == 'yes' ? 0 : 2);
+          let endBookValue = this.roundValue(asset - cDepreciation, round == 'yes' ? 0 : 2);
+
+          if (endBookValue < salvage) {
+            endBookValue = salvage;
+            cDepreciation = cDepreciation - depreciation;
+            depreciation = asset1 - salvage;
+            cDepreciation = cDepreciation + depreciation;
+            rate = this.roundValue((depreciation / (asset - salvage)) * 100, 2);
+          }
+
+          if (i == year - 1 && endBookValue > salvage) {
+            endBookValue = salvage;
+            cDepreciation = cDepreciation - depreciation;
+            depreciation = asset1 - salvage;
+            cDepreciation = cDepreciation + depreciation;
+            rate = this.roundValue((depreciation / (asset - salvage)) * 100, 2);
+          }
+
+          totalBookValue += endBookValue + ',';
+          table += this.generateTableRow(startYear, asset1, rate, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+          des += depreciation + ',';
+          bookDes += asset1 + ',';
+          asset1 = asset - cDepreciation;
+        }
+      } else {
+        const months = this.calculateMonths(conver, startMonth);
+        for (let i = 0; i <= year; i++) {
+          let rateCalc = ((year - i) / sum) * 100;
+          console.log(rateCalc);
+          let rate = this.roundValue(rateCalc, 2);
+          startYear = parseInt(dateArray[2]) + i; // Year calculation from dateArray[2]
+          totalYears += startYear + ',';
+
+          if (i == 0) {
+            // First year with partial depreciation
+            cDepreciation = 0;
+            rateCalc = ((year - i) / sum) * 100; // Recalculate without rounding
+            const rate1 = this.roundValue((rateCalc / 12) * months, 2);
+            depreciation = this.calculateDepreciation((asset - salvage) * (rate1 / 100), round);
+            cDepreciation = this.roundValue(cDepreciation + depreciation, round == 'yes' ? 0 : 2);
+            let endBookValue = this.roundValue(asset - cDepreciation, round == 'yes' ? 0 : 2);
+            
+            table += this.generateTableRow(startYear, asset1, rate1, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+            des += depreciation + ',';
+            bookDes += asset1 + ',';
+            totalBookValue += endBookValue + ',';
+            asset1 = asset - cDepreciation;
+          } else {
+            // Subsequent years - calculate fresh
+            depreciation = this.calculateDepreciation((asset - salvage) * (rate / 100), round);
+            cDepreciation = this.roundValue(cDepreciation + depreciation, round == 'yes' ? 0 : 2);
+            let endBookValue = this.roundValue(asset - cDepreciation, round == 'yes' ? 0 : 2);
+
+            if (endBookValue < salvage) {
+              endBookValue = salvage;
+              depreciation = asset1 - salvage;
+              cDepreciation = cDepreciation + depreciation;
+              rate = this.roundValue((depreciation / (asset - salvage)) * 100, 2);
+            }
+
+            if (i == year) {
+              if (endBookValue > salvage) {
+                endBookValue = salvage;
+                cDepreciation = cDepreciation - depreciation;
+                depreciation = asset1 - salvage;
+                cDepreciation = cDepreciation + depreciation;
+                rate = this.roundValue((depreciation / (asset - salvage)) * 100, 2);
+              }
+            }
+
+            table += this.generateTableRow(startYear, asset1, rate, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+            des += depreciation + ',';
+            bookDes += asset1 + ',';
+            totalBookValue += endBookValue + ',';
+            asset1 = asset - cDepreciation;
+          }
+        }
+      }
+
+      this.param.table = table;
+      this.param.des = des;
+      this.param.book_des = bookDes;
+      this.param.total_years = totalYears;
+      this.param.total_book_value = totalBookValue;
+      this.param.RESULT = 1;
+      return this.param;
+      }
+      // Reducing Balance Method
+      calculateReducing(request, hiddenCurrency) {
+        if (!this.validateInput(request, ['asset', 'salvage', 'year', 'date'])) {
+          this.param.error = 'Please! Check Your Input';
+          return this.param;
+        }
+
+        const { year, salvage: rate, asset, date, conver, round } = request;
+        let asset1 = asset;
+        let depreciation = 0;
+        let cDepreciation = 0;
+        let table = '';
+        let des = '';
+        let bookDes = '';
+        let totalYears = '';
+        let totalBookValue = '';
+
+        const dateArray = date.split('-');
+        const startMonth = parseInt(dateArray[2]);
+        let startYear = parseInt(dateArray[1]);
+
+        if (conver == '0') {
+          for (let i = 0; i < Number(year); i++) {
+            startYear = parseInt(dateArray[2]) + i;
+            totalYears += startYear + ',';
+
+            depreciation = this.calculateDepreciation(asset1 * (rate / 100), round);
+            cDepreciation = this.roundValue(cDepreciation + depreciation, round == 'yes' ? 0 : 2);
+            const endBookValue = this.roundValue(asset - cDepreciation, round == 'yes' ? 0 : 2);
+
+            totalBookValue += endBookValue + ',';
+            table += this.generateTableRow(startYear, asset1, rate, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+            des += depreciation + ',';
+            bookDes += asset1 + ',';
+            asset1 = asset - cDepreciation;
+          }
+        } else {
+          const months = this.calculateMonths(conver, startMonth);
+
+          for (let i = 0; i < Number(year); i++) {
+            startYear = parseInt(dateArray[2]) + i;
+            totalYears += startYear + ',';
+
+            depreciation = this.calculateDepreciation(asset1 * (rate / 100), round);
+            cDepreciation = this.roundValue(cDepreciation + depreciation, round == 'yes' ? 0 : 2);
+            let endBookValue = this.roundValue(asset - cDepreciation, round == 'yes' ? 0 : 2);
+
+            if (i == 0) {
+              cDepreciation = 0;
+              const rate1 = this.roundValue((rate / 12) * months, 2);
+              depreciation = this.calculateDepreciation(asset1 * (rate1 / 100), round);
+              cDepreciation = this.roundValue(cDepreciation + depreciation, round == 'yes' ? 0 : 2);
+              endBookValue = this.roundValue(asset - cDepreciation, round == 'yes' ? 0 : 2);
+              table += this.generateTableRow(startYear, asset1, rate1, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+            } else {
+              table += this.generateTableRow(startYear, asset1, rate, depreciation, cDepreciation, endBookValue, hiddenCurrency);
+            }
+
+            des += depreciation + ',';
+            bookDes += asset1 + ',';
+            totalBookValue += endBookValue + ',';
+            asset1 = asset - cDepreciation;
+          }
+        }
+
+        this.param.table = table;
+        this.param.des = des;
+        this.param.book_des = bookDes;
+        this.param.total_years = totalYears;
+        this.param.total_book_value = totalBookValue;
+        this.param.RESULT = 1;
+        return this.param;
+      }
+      // Unit of Production Method
+      calculateUnitOfProduction(request, hiddenCurrency) {
+        if (!this.validateInput(request, ['asset', 'salvage', 'u_of_p'])) {
+          this.param.error = 'Please! Check Your Input';
+          return this.param;
+        }
+
+        const { asset, salvage, year, u_of_p } = request;
+
+        const depreciableBase = asset - salvage;
+        const depreciationPerUnit = depreciableBase / Number(year);
+        const depreciationForPeriod = depreciationPerUnit * u_of_p;
+
+        this.param.Depreciable_Base = this.formatNumber(depreciableBase);
+        this.param.Depreciation_Per_Unit = this.formatNumber(depreciationPerUnit);
+        this.param.Depreciation_for_Period = this.formatNumber(depreciationForPeriod);
+        return this.param;
+      }
+      // Helper Methods
+      validateInput(request, requiredFields) {
+        for (const field of requiredFields) {
+          if (request[field] === undefined || request[field] === null || request[field] === '') {
+            return false;
+          }
+          // Check if numeric fields are actually numeric
+          if (['asset', 'salvage', 'year', 'Factor', 'u_of_p'].includes(field)) {
+            if (isNaN(parseFloat(request[field]))) {
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+      calculateMonths(conver, startMonth) {
+        if (conver === '3') {
+          return 12.5 - startMonth;
+        }
+        if (conver === '4') {
+          return 13 - startMonth;
+        }
+        if (conver === '1') {
+          if (startMonth <= 3) return 13 - 2.5;
+          if (startMonth > 3 && startMonth <= 6) return 13 - 5.5;
+          if (startMonth > 6 && startMonth <= 9) return 13 - 8.5;
+          if (startMonth > 9 && startMonth <= 12) return 13 - 10.5;
+        }
+        if (conver === '2') {
+          return 6;
+        }
+        return 12;
+      }
+      calculateDepreciation(value, round) {
+        return round === 'yes' ? Math.round(value) : this.roundValue(value, 2);
+      }
+      roundValue(value, decimals = 2) {
+        return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+      }
+      formatNumber(value) {
+        return value.toLocaleString('en-US', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2
+        });
+      }
+      generateTableRow(year, beginningValue, rate, depreciation, cumDepreciation, endingValue, currency) {
+        return `<tr>
+          <td class="py-2 border-b">${year}</td>
+          <td class="py-2 border-b">${currency} ${beginningValue}</td>
+          <td class="py-2 border-b">${rate}%</td>
+          <td class="py-2 border-b">${currency} ${depreciation}</td>
+          <td class="py-2 border-b">${currency} ${cumDepreciation}</td>
+          <td class="py-2 border-b">${currency} ${endingValue}</td>
+        </tr>`;
+      }
+
+    /**
+    * getCalculationAgeCalculator: Service Method
+    * POST: /api/calculators-lol/age-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async getCalculationAgeCalculator(body) {
+      try {
+        let day = body.tech_day;
+        let month = body.tech_month;
+        let year = body.tech_year;
+        let day_sec = body.tech_day_sec;
+        let month_sec = body.tech_month_sec;
+        let year_sec = body.tech_year_sec;
+        let submit = body.tech_submit;
+
+
+        // Format dates
+        const dob = `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const e_date = `${String(year_sec).padStart(4, '0')}-${String(month_sec).padStart(2, '0')}-${String(day_sec).padStart(2, '0')}`;
+
+        // Parse dates
+        const orderdob = dob.split('-');
+        const orderdate = e_date.split('-');
+        
+        const e_year = parseInt(orderdate[0]);
+        const e_month = parseInt(orderdate[1]);
+        const e_day = parseInt(orderdate[2]);
+        const dob_year = parseInt(orderdob[0]);
+        const dob_month = parseInt(orderdob[1]);
+        const dob_day = parseInt(orderdob[2]);
+
+        // Validate inputs
+        if (!Number.isInteger(dob_day) || !Number.isInteger(dob_month) || !Number.isInteger(dob_year) ||
+            !Number.isInteger(e_day) || !Number.isInteger(e_month) || !Number.isInteger(e_year)) {
+          return { error: 'Please check your input.' };
+        }
+
+        const result = {};
+        const dob_array = [`${String(dob_year).padStart(2, '0')}-${String(dob_month).padStart(2, '0')}-${String(dob_day).padStart(2, '0')}`];
+        const dates_array = [`${String(e_year).padStart(2, '0')}-${String(e_month).padStart(2, '0')}-${String(e_day).padStart(2, '0')}`];
+
+        // Initialize arrays
+        const all_dob = [];
+        const age_years = [];
+        const age_months = [];
+        const age_days = [];
+        const all_users_days = [];
+        const Total_years = [];
+        const Total_months = [];
+        const Total_weeks = [];
+        const Total_days = [];
+        const Total_hours = [];
+        const Total_minuts = [];
+        const Total_seconds = [];
+        const N_r_days = [];
+        const N_r_days_per = [];
+        const breath = [];
+        const heartBeats = [];
+        const sleeping = [];
+        const laughed = [];
+        const half_brdy = [];
+        const n_half_brdy_days = [];
+        const blinking_times = [];
+        const hair_length_mm = [];
+        const hair_length_m = [];
+        const nail_length_mm = [];
+        const nail_length_m = [];
+        const dog_age = [];
+        const cat_age = [];
+        const turtle_age = [];
+        const horse_age = [];
+        const cow_age = [];
+        const elephant_age = [];
+        const mercury_age = [];
+        const venus_age = [];
+        const mars_age = [];
+        const jupiter_age = [];
+        const saturn_age = [];
+
+        for (let i = 0; i < dob_array.length; i++) {
+          const dob_str = dob_array[i];
+          const dobDate = new Date(dob_str);
+          
+          // Format date of birth
+          all_dob.push(dobDate.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }));
+
+          const date_str = dates_array[i];
+          const endDate = new Date(date_str);
+          
+          // Calculate age difference
+          const diff = this.calculateDateDifferenceage(dobDate, endDate);
+          console.log(diff);
+          age_years.push(diff.years);
+          age_months.push(diff.months);
+          age_days.push(diff.days);
+          all_users_days.push(diff.totalDays);
+
+          // Current date calculations
+          const now = new Date();
+          const dob_timestamp = dobDate.getTime();
+          const end_timestamp = endDate.getTime();
+
+          // Validate date
+          if (end_timestamp - dob_timestamp <= 0) {
+            return { error: 'Invalid Date of Birth.' };
+          }
+
+          // Calculate totals
+          const diff_seconds = Math.floor((end_timestamp - dob_timestamp) / 1000);
+          const totalyears = Math.floor(diff_seconds / 31536000);
+          
+          Total_years.push(totalyears);
+          Total_months.push(Math.floor(diff_seconds / 2628000));
+          Total_weeks.push(Math.floor(diff_seconds / 604800));
+          
+          const total_days = Math.floor(diff_seconds / 86400);
+          Total_days.push(total_days);
+          Total_hours.push(Math.floor(diff_seconds / 3600));
+          
+          const total_minuts = Math.floor(diff_seconds / 60);
+          Total_minuts.push(total_minuts);
+          Total_seconds.push(diff_seconds);
+
+          // Next Birthday calculation
+          const current_year = now.getFullYear();
+          const current_month = now.getMonth() + 1;
+          const current_day = now.getDate();
+          
+          let next_birthday_year = current_year;
+          if (current_month > dob_month || (current_month === dob_month && current_day >= dob_day)) {
+            next_birthday_year = current_year + 1;
+          }
+
+          const next_birthday = new Date(next_birthday_year, dob_month - 1, dob_day);
+          const days_to_birthday = Math.floor((next_birthday - now) / (1000 * 60 * 60 * 24));
+          
+          N_r_days.push(days_to_birthday);
+          N_r_days_per.push(Math.round((days_to_birthday / 365) * 100));
+
+          // Health and life statistics
+          breath.push(Math.round(0.5 * 15 * total_minuts));
+          heartBeats.push(Math.round(72 * total_minuts));
+          sleeping.push(Math.round(totalyears * 365.25 * 8 / (365.25 * 24) * 10) / 10);
+          laughed.push(total_days * 10);
+
+          // Half Birthday calculation
+          const half_birthday_date = new Date(dobDate);
+          half_birthday_date.setMonth(half_birthday_date.getMonth() + 6);
+          
+          let half_bd_year = current_year;
+          const half_bd_month = half_birthday_date.getMonth() + 1;
+          const half_bd_day = half_birthday_date.getDate();
+          
+          if (current_month > half_bd_month || (current_month === half_bd_month && current_day > half_bd_day)) {
+            half_bd_year = current_year + 1;
+          }
+
+          const next_half_birthday = new Date(half_bd_year, half_bd_month - 1, half_bd_day);
+          half_brdy.push(next_half_birthday.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }));
+
+          const days_to_half_birthday = Math.floor((next_half_birthday - now) / (1000 * 60 * 60 * 24));
+          n_half_brdy_days.push(days_to_half_birthday * 100 / 365);
+
+          // Physical calculations
+          blinking_times.push(diff.totalDays * 16800);
+          hair_length_mm.push(diff.totalDays * 0.42);
+          hair_length_m.push((diff.totalDays * 0.42) / 1000);
+          nail_length_mm.push(diff.totalDays * 0.12);
+          nail_length_m.push((diff.totalDays * 0.12) / 1000);
+
+          // Animal age calculations
+          dog_age.push(parseFloat((diff.totalDays * 0.0004657534246575342).toFixed(2)));
+          cat_age.push(parseFloat((diff.totalDays * 0.0005753424657534247).toFixed(2)));
+          turtle_age.push(parseFloat((diff.totalDays * 0.0068219178082192).toFixed(2)));
+          horse_age.push(parseFloat((diff.totalDays * 0.001041095890411).toFixed(2)));
+          cow_age.push(parseFloat((diff.totalDays * 0.0007671232876712329).toFixed(2)));
+          elephant_age.push(parseFloat((diff.totalDays * 0.0018630136986301).toFixed(2)));
+
+          // Planet age calculations
+          mercury_age.push(parseFloat((diff.totalDays * 0.0113698630136986).toFixed(2)));
+          venus_age.push(parseFloat((diff.totalDays * 0.0044383561643836).toFixed(2)));
+          mars_age.push(parseFloat((diff.totalDays * 0.0014520547945205).toFixed(2)));
+          jupiter_age.push(parseFloat((diff.totalDays * 0.0002191780821917808).toFixed(2)));
+          saturn_age.push(parseFloat((diff.totalDays * 0.00008219178082191781).toFixed(2)));
+        }
+
+        // Combine years and days
+        const sum_users_days = all_users_days.reduce((a, b) => a + b, 0);
+        const combine_years = sum_users_days / 365.2425;
+        const combine_years_ans = Math.floor(combine_years);
+        const combine_days_ans = Math.floor(sum_users_days % 365.2425);
+
+        // Combine remaining days
+        const combine_r_days = Math.round((365 - combine_days_ans) / dob_array.length);
+        const today = new Date();
+        const next_combine_date = new Date(today);
+        next_combine_date.setDate(today.getDate() + combine_r_days);
+        const next_combine_brdy = next_combine_date.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        const combine_r_days_per = Math.round((combine_r_days / 365) * 100);
+
+        // Build result object
+        result.tech_dob_array = dob_array;
+        result.tech_dates_array = dates_array;
+        result.tech_all_dob = all_dob;
+        result.tech_N_r_days = N_r_days;
+        result.tech_N_r_days_per = N_r_days_per;
+        result.tech_combine_years_ans = combine_years_ans;
+        result.tech_combine_days_ans = combine_days_ans;
+        result.tech_combine_r_days = combine_r_days;
+        result.tech_combine_r_days_per = combine_r_days_per;
+        result.tech_next_combine_brdy = next_combine_brdy;
+        result.tech_age_years = age_years;
+        result.tech_age_months = age_months;
+        result.tech_age_days = age_days;
+        result.tech_half_brdy = half_brdy;
+        result.tech_Total_years = Total_years;
+        result.tech_Total_months = Total_months;
+        result.tech_Total_weeks = Total_weeks;
+        result.tech_Total_days = Total_days;
+        result.tech_Total_hours = Total_hours;
+        result.tech_Total_minuts = Total_minuts;
+        result.tech_Total_seconds = Total_seconds;
+        result.tech_breath = breath;
+        result.tech_heartBeats = heartBeats;
+        result.tech_sleeping = sleeping;
+        result.tech_laughed = laughed;
+        result.tech_blinking_times = blinking_times;
+        result.tech_hair_length_mm = hair_length_mm;
+        result.tech_hair_length_m = hair_length_m;
+        result.tech_nail_length_mm = nail_length_mm;
+        result.tech_nail_length_m = nail_length_m;
+        result.tech_dog_age = dog_age;
+        result.tech_cat_age = cat_age;
+        result.tech_turtle_age = turtle_age;
+        result.tech_horse_age = horse_age;
+        result.tech_cow_age = cow_age;
+        result.tech_elephant_age = elephant_age;
+        result.tech_mercury_age = mercury_age;
+        result.tech_venus_age = venus_age;
+        result.tech_mars_age = mars_age;
+        result.tech_jupiter_age = jupiter_age;
+        result.tech_saturn_age = saturn_age;
+        result.tech_submit = submit;
+
+        return result;
+      } catch (error) {
+        console.error('Error in age calculation:', error);
+        return { error: 'An error occurred during calculation.' };
+      }
+      // Helper function to calculate date difference
+    }
+     calculateDateDifferenceage(startDate, endDate) {
+       let years = endDate.getFullYear() - startDate.getFullYear();
+       let months = endDate.getMonth() - startDate.getMonth();
+       let days = endDate.getDate() - startDate.getDate();
+       
+      if (days < 0) {
+        months--;
+        const prevMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
+        days += prevMonth.getDate();
+      }
+
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      // Calculate total days
+      const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+
+      return { years, months, days, totalDays };
+    }
+
+
+
+     /**
+    * getCalculationPPICalculator: Service Method
+    * POST: /api/calculators-lol/ppl-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationPPICalculator(body) {
+      const vertical = body.tech_v;
+      const diagonal = body.tech_d;
+      const horizontal = body.tech_h;
+      const unit = body.tech_unit;
+
+      let fieldsDone = 0;
+      let numeric = 0;
+
+      // Check if all fields are filled
+      if (vertical && horizontal && diagonal) {
+          fieldsDone = 1;
+      }
+
+      // Check if all values are numeric
+      if (!isNaN(diagonal) && !isNaN(horizontal) && !isNaN(vertical)) {
+          numeric = 1;
+      }
+
+      // Validation
+      if (!fieldsDone) {
+          return {
+              error: 'Please! Fill all the Input Fields'
+          };
+      }
+
+      if (!numeric) {
+          return {
+              error: 'Please! Fill all the Input Fields'
+          };
+      }
+
+      // Convert diagonal based on unit
+      let diagonalValue = parseFloat(diagonal);
+      
+      if (unit == 'm') {
+          diagonalValue = diagonalValue * 39.37;
+      }
+      if (unit == 'cm') {
+          diagonalValue = diagonalValue / 2.54;
+      }
+      if (unit == 'ft') {
+          diagonalValue = diagonalValue * 12;
+      }
+      if (unit == 'yd') {
+          diagonalValue = diagonalValue * 36;
+      }
+
+      const verticalNum = parseFloat(vertical);
+      const horizontalNum = parseFloat(horizontal);
+
+      // Calculate diagonal from resolution
+      const dia = Math.round(Math.sqrt(Math.pow(verticalNum, 2) + Math.pow(horizontalNum, 2)) * 100) / 100;
+
+      // Calculate PPI
+      const ppi = Math.sqrt((horizontalNum * horizontalNum) + (verticalNum * verticalNum)) / diagonalValue;
+      const ppiRounded = Math.round(ppi * 100) / 100;
+
+      // Calculate PPI squared
+      const ppis = Math.round(ppi * ppi * 100) / 100;
+
+      // Calculate pixel size
+      const pixls = horizontalNum / ((Math.sqrt((horizontalNum * horizontalNum) + (verticalNum * verticalNum)) / (diagonalValue * 25.4))) / horizontalNum;
+      const pixlsRounded = Math.round(pixls * 10000) / 10000;
+
+      // Calculate megapixels
+      const mpx = verticalNum * horizontalNum / 1000000;
+
+      // GCD function
+      function gcd(a, b) {
+          if (a === 0 || b === 0) {
+              return Math.abs(Math.max(Math.abs(a), Math.abs(b)));
+          }
+          const r = a % b;
+          return (r !== 0) ? gcd(b, r) : Math.abs(b);
+      }
+
+      const gcdValue = gcd(horizontalNum, verticalNum);
+      const ratio = (horizontalNum / gcdValue) + ':' + (verticalNum / gcdValue);
+
+      // Calculate screen dimensions
+      const over = verticalNum / horizontalNum;
+      const xd = Math.round(Math.sqrt((Math.pow(diagonalValue, 2) / (1 + Math.pow(over, 2)))) * 100) / 100;
+      const yd = Math.round(xd * over * 100) / 100;
+      const xdcm = Math.round(xd * 2.54 * 100) / 100;
+      const ydcm = Math.round(yd * 2.54 * 100) / 100;
+      const screen_size = Math.round(xd * yd * 100) / 100;
+      const s_cm = Math.round(screen_size * 6.452 * 100) / 100;
+
+      const screen_in = xd + "'' x " + yd + "'' = " + screen_size + ' in²';
+      const screen_cm = Math.round(xd * 2.54 * 100) / 100 + " cm x " + Math.round(yd * 2.54 * 100) / 100 + " cm = " + s_cm + ' cm²';
+
+      // Return values
+      return {
+          tech_PPI: ppiRounded,
+          tech_dia: dia,
+          tech_screen_in: screen_in,
+          tech_screen_cm: screen_cm,
+          tech_screen_size: screen_size + ' in² ( ' + s_cm + ' cm² )',
+          tech_xd: xd + '" ( ' + xdcm + ' cm)',
+          tech_yd: yd + '" ( ' + ydcm + ' cm)',
+          tech_ratio: ratio,
+          tech_PPIS: ppis,
+          tech_Pixls: pixlsRounded,
+          tech_mpx: mpx,
+      };
+  }
+
+     /**
+    * getCalculationAgeDifferenceCalculator: Service Method
+    * POST: /api/calculators-lol/age-difference-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationAgeDifferenceCalculator(body) {
+      
+      const submit = body.tech_selection;
+      const dob_f = body.tech_dob_f;
+      const dob_s = body.tech_dob_s;
+      const year_1 = body.tech_year_1;
+      const year_2 = body.tech_year_2;
+      const age_1 = body.tech_age_1;
+      const age_2 = body.tech_age_2;
+      const current_date = body.tech_current_date || moment().format('YYYY-MM-DD'); // Request se current date lo
+
+      let result = {};
+
+    
+          function calculateAgeDifference(date1Str, date2Str) {
+          const start = moment(date1Str, 'YYYY-MM-DD');
+          const end = moment(date2Str, 'YYYY-MM-DD');
+
+          let from, to;
+          if (start.isAfter(end)) {
+              from = end.clone();
+              to = start.clone();
+          } else {
+              from = start.clone();
+              to = end.clone();
+          }
+
+          let years = to.year() - from.year();
+          let months = to.month() - from.month();
+          let days = to.date() - from.date();
+
+          if (days < 0) {
+              // borrow days from previous month
+              const prevMonth = to.clone().subtract(1, 'month');
+              days += prevMonth.daysInMonth();
+              months--;
+          }
+
+          if (months < 0) {
+              months += 12;
+              years--;
+          }
+
+          return { years, months, days };
+      }
+
+
+
+      if (submit == "1") {
+          if (dob_f && dob_s) {
+              const dobFirst = dob_f;
+              const dobSecond = dob_s;
+              const currentDate = current_date;
+
+              const ageDiff = calculateAgeDifference(dobFirst, dobSecond);
+              const age_diff_Year = ageDiff.years;
+              const age_diff_Month = ageDiff.months;
+              const age_diff_Day = ageDiff.days;
+              
+              const age_diff_in_days = Math.abs(
+                  moment(dobFirst, 'YYYY-MM-DD').diff(moment(dobSecond, 'YYYY-MM-DD'), 'days')
+              );
+              const age_diff_weeks = Math.floor(age_diff_in_days / 7);
+              const age_diff_remaining_days = age_diff_in_days % 7;
+
+              const ageFirst = calculateAgeDifference(currentDate, dobFirst);
+              const ageFYear = ageFirst.years;
+              const ageFMonth = ageFirst.months;
+              const ageFDay = ageFirst.days;
+
+              const ageSecond = calculateAgeDifference(currentDate, dobSecond);
+
+              const ageSYear = ageSecond.years;
+              const ageSMonth = ageSecond.months;
+              const ageSDay = ageSecond.days;
+
+              result = {
+                  tech_submit: submit,
+                  tech_age_diff_Day: age_diff_Day,
+                  tech_age_diff_Month: age_diff_Month,
+                  tech_age_diff_Year: age_diff_Year,
+                  tech_age_diff_in_days: age_diff_in_days,
+                  tech_age_diff_weeks: age_diff_weeks,
+                  tech_age_diff_remaining_days: age_diff_remaining_days,
+                  tech_ageFYear: ageFYear,
+                  tech_ageFMonth: ageFMonth,
+                  tech_ageFDay: ageFDay,
+                  tech_ageSYear: ageSYear,
+                  tech_ageSMonth: ageSMonth,
+                  tech_ageSDay: ageSDay,
+              };
+          } else {
+              return {
+                  error: 'Please! Select Correct Date'
+              };
+          }
+      } else if (submit == "2") {
+          if (year_1 && year_2) {
+              const dobFirst = `${year_1}-01-01`;
+              const dobSecond = `${year_2}-01-01`;
+
+              const ageDiff = calculateAgeDifference(dobFirst, dobSecond);
+              const age_diff_Year = ageDiff.years;
+              const age_diff_Month = ageDiff.months;
+              const age_diff_Day = ageDiff.days;
+              
+              const age_diff_in_days = Math.abs(
+                  moment(dobFirst, 'YYYY-MM-DD').diff(moment(dobSecond, 'YYYY-MM-DD'), 'days')
+              );
+              const age_diff_weeks = Math.floor(age_diff_in_days / 7);
+              const age_diff_remaining_days = age_diff_in_days % 7;
+
+              result = {
+                  tech_submit: submit,
+                  tech_age_diff_Day: age_diff_Day,
+                  tech_age_diff_Month: age_diff_Month,
+                  tech_age_diff_Year: age_diff_Year,
+                  tech_age_diff_in_days: age_diff_in_days,
+                  tech_age_diff_weeks: age_diff_weeks,
+                  tech_age_diff_remaining_days: age_diff_remaining_days,
+              };
+          } else {
+              return {
+                  error: 'Please! Select Correct Year'
+              };
+          }
+      } else {
+          if (!isNaN(age_1) && !isNaN(age_2)) {
+              const age_diff_Year = Math.abs(parseFloat(age_2) - parseFloat(age_1));
+              const age_diff_in_days = age_diff_Year * 365;
+
+              result = {
+                  tech_submit: submit,
+                  tech_age_diff_Year: age_diff_Year,
+                  tech_age_diff_in_days: age_diff_in_days,
+              };
+          } else {
+              return {
+                  error: 'Please! Check Your Input'
+              };
+          }
+      }
+
+      return result;
+  }
+   
+
+     /**
+    * getCalculationFreightClassCalculator: Service Method
+    * POST: /api/calculators-lol/freight-class-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+      async getCalculationFreightClassCalculator(body) {
+        let submit = body.tech_submit;
+          let length = body.tech_length;
+          let length_unit = body.tech_length_unit;
+          let width = body.tech_width;
+          let width_unit = body.tech_width_unit;
+          let height = body.tech_height;
+          let height_unit = body.tech_height_unit;
+          let weight = body.tech_weight;
+          let weight_unit = body.tech_weight_unit;
+          let pq = body.tech_pq;
+          let fr = body.tech_fr;
+          let fr_unit = body.tech_fr_unit;
+          let currancy = body.tech_currancy;
+
+
+    const result = {};
+    
+    // Check for empty required fields
+    if (!length || !width || !height || !weight || !pq) {
+      result.error = 'Please! Fill all the Input Fields';
+      return result;
+    }
+
+    if (!submit) {
+      result.error = 'Please! Fill all the Input Fields';
+      return result;
+    }
+
+    // Check pallet quantity
+    if (pq < 1) {
+      result.error = 'Pallet Quantity cannot be zero or less.';
+      return result;
+    }
+
+    // Significant figures function
+    function sigFig(value, digits) {
+      if (isNaN(value) || !isFinite(value)) return 0;
+
+      let decimalPlaces;
+      if (value === 0) {
+        decimalPlaces = digits - 1;
+      } else if (value < 0) {
+        decimalPlaces = digits - Math.floor(Math.log10(-value)) - 1;
+      } else {
+        decimalPlaces = digits - Math.floor(Math.log10(value)) - 1;
+      }
+
+      // ✅ Clamp between 0 and 100
+      decimalPlaces = Math.min(Math.max(decimalPlaces, 0), 100);
+
+      return Number(value.toFixed(decimalPlaces));
+    }
+
+    let lengthValue = parseFloat(length);
+    let widthValue = parseFloat(width);
+    let heightValue = parseFloat(height);
+    let weightValue = parseFloat(weight);
+    let frValue = fr ? parseFloat(fr) : null;
+    
+    // ✅ FIX: fr_unit ko properly handle karo
+    let frUnitValue = null;
+    if (fr_unit) {
+      // Agar fr_unit mein '/' hai toh uske baad ka part lo
+      if (fr_unit.includes('/')) {
+        frUnitValue = fr_unit.split('/').pop(); // Last part after '/'
+      } else {
+        frUnitValue = fr_unit;
+      }
+      
+      // Agar currancy bhi provide hai toh use remove karo
+      if (currancy && frUnitValue.startsWith(currancy)) {
+        frUnitValue = frUnitValue.replace(currancy, '');
+      }
+    }
+
+    // Convert length to inches
+    if (!isNaN(lengthValue)) {
+      const lengthConversions = {
+        'mm': 25.4,
+        'cm': 2.54,
+        'm': 0.0254,
+        'km': 0.0000254,
+        'ft': 0.08333,
+        'yd': 0.02778,
+        'mi': 0.000015783,
+        'nmi': 0.000013715
+      };
+      if (lengthConversions[length_unit]) {
+        lengthValue = lengthValue / lengthConversions[length_unit];
+      }
+    }
+
+    // Convert width to inches
+    if (!isNaN(widthValue)) {
+      const widthConversions = {
+        'mm': 25.4,
+        'cm': 2.54,
+        'm': 0.0254,
+        'km': 0.0000254,
+        'ft': 0.08333,
+        'yd': 0.02778,
+        'mi': 0.000015783,
+        'nmi': 0.000013715
+      };
+      if (widthConversions[width_unit]) {
+        widthValue = widthValue / widthConversions[width_unit];
+      }
+    }
+
+    // Convert height to inches
+    if (!isNaN(heightValue)) {
+      const heightConversions = {
+        'mm': 25.4,
+        'cm': 2.54,
+        'm': 0.0254,
+        'km': 0.0000254,
+        'ft': 0.08333,
+        'yd': 0.02778,
+        'mi': 0.000015783,
+        'nmi': 0.000013715
+      };
+      if (heightConversions[height_unit]) {
+        heightValue = heightValue / heightConversions[height_unit];
+      }
+    }
+
+    // Convert weight to pounds
+    if (!isNaN(weightValue)) {
+      const weightConversions = {
+        'ug': 453592370,
+        'mg': 453592,
+        'g': 453.6,
+        'dag': 45.36,
+        'kg': 0.4536,
+        't': 0.0004536,
+        'gr': 7000,
+        'dr': 256,
+        'oz': 16,
+        'stone': 0.07143,
+        'us_ton': 0.0005,
+        'long_ton': 0.0004464,
+        'oz t': 14.583
+      };
+      
+      if (weightConversions[weight_unit]) {
+        weightValue = weightValue / weightConversions[weight_unit];
+      } else if (weight_unit === 'earths') {
+        weightValue = weightValue * 13166006297680889120775995;
+      } else if (weight_unit === 'me') {
+        weightValue = weightValue / 497939698128157422761985444381;
+      } else if (weight_unit === 'u') {
+        weightValue = weightValue / 273159675507180000000000000;
+      }
+    }
+
+    // Convert freight rate to pounds
+    // console.log('frUnitValue:', frUnitValue);
+    
+    if (frValue && !isNaN(frValue) && frUnitValue) {
+      const frConversions = {
+        'ug': 453592370,
+        'mg': 453592,
+        'g': 453.6,
+        'dag': 45.36,
+        'kg': 0.4536,
+        't': 0.0004536,
+        'gr': 7000,
+        'dr': 256,
+        'oz': 16,
+        'stone': 0.07143,
+        'us_ton': 0.0005,
+        'long_ton': 0.0004464,
+        'oz t': 14.583
+      };
+    
+      if (frConversions[frUnitValue]) {
+        frValue = frValue / frConversions[frUnitValue];
+      } else if (frUnitValue === 'earths') {
+        frValue = frValue * 13166006297680889120775995;
+      } else if (frUnitValue === 'me') {
+        frValue = frValue / 497939698128157422761985444381;
+      } else if (frUnitValue === 'u') {
+        frValue = frValue / 273159675507180000000000000;
+      }
+    }
+
+    // Calculate volume and density
+    const total = lengthValue * widthValue * heightValue;
+    const volume = (total / 1728) * pq;
+    const density = weightValue / volume;
+    const weightPerPallet = weightValue / pq;
+
+    // Determine freight class
+    let f_cls;
+    if (density < 1) f_cls = 500;
+    else if (density < 2) f_cls = 400;
+    else if (density < 3) f_cls = 300;
+    else if (density < 4) f_cls = 250;
+    else if (density < 5) f_cls = 200;
+    else if (density < 6) f_cls = 175;
+    else if (density < 7) f_cls = 150;
+    else if (density < 8) f_cls = 125;
+    else if (density < 9) f_cls = 110;
+    else if (density < 10) f_cls = 100;
+    else if (density < 12) f_cls = 92.5;
+    else if (density < 13) f_cls = 85;
+    else if (density < 15) f_cls = 77.5;
+    else if (density < 22) f_cls = 70;
+    else if (density < 30) f_cls = 65;
+    else if (density < 35) f_cls = 60;
+    else if (density < 50) f_cls = 55;
+    else f_cls = 50;
+
+    // Calculate freight cost if freight rate provided
+    if (frValue && !isNaN(frValue)) {
+      const fc = frValue * 936.96;
+      result.tech_fc = fc;
+    }
+
+    result.tech_weight = sigFig(weightPerPallet, 4);
+    result.tech_volume = sigFig(volume, 4);
+    result.tech_density = sigFig(density, 4);
+    result.tech_f_cls = sigFig(f_cls, 4);
+
+    return result;
+  }
+
+    /**
+    * getCalculationSobrietyCalculator: Service Method
+    * POST: /api/calculators-lol/sobriety-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    async getCalculationSobrietyCalculator(body) {
+      let input = body.tech_input;
+      let input2 = body.tech_input2;
+      let submit = body.tech_submit;
+      const result = {};
+
+      if (!submit) {
+        result.error = 'Please! Check Your Input';
+        return result;
+      }
+
+      try {
+        // Detect date format and parse accordingly
+        let s_date, e_date;
+        
+        // Check if format is YYYY-MM-DD or DD-MM-YYYY
+        if (input.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          // Format: YYYY-MM-DD
+          s_date = input.split("-");
+          s_date = [s_date[2], s_date[1], s_date[0]]; // Convert to [DD, MM, YYYY]
+        } else {
+          // Format: DD-MM-YYYY
+          s_date = input.split("-");
+        }
+        
+        if (input2.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          // Format: YYYY-MM-DD
+          e_date = input2.split("-");
+          e_date = [e_date[2], e_date[1], e_date[0]]; // Convert to [DD, MM, YYYY]
+        } else {
+          // Format: DD-MM-YYYY
+          e_date = input2.split("-");
+        }
+
+        const s_hour = 0;
+        const s_min = 0;
+        const s_sec = 0;
+        const e_hour = 0;
+        const e_min = 0;
+        const e_sec = 0;
+
+        // Create Date objects
+        // s_date[0] = day, s_date[1] = month, s_date[2] = year
+        const fromDate = new Date(s_date[2], s_date[1] - 1, s_date[0]);
+        const toDate = new Date(e_date[2], e_date[1] - 1, e_date[0]);
+
+        // Determine which date is earlier
+        let startDate = fromDate <= toDate ? fromDate : toDate;
+        let endDate = fromDate <= toDate ? toDate : fromDate;
+
+        // Calculate difference in years, months, days
+        let years = endDate.getFullYear() - startDate.getFullYear();
+        let months = endDate.getMonth() - startDate.getMonth();
+        let days = endDate.getDate() - startDate.getDate();
+
+        // Adjust for negative days
+        if (days < 0) {
+          months--;
+          const prevMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
+          days += prevMonth.getDate();
+        }
+
+        // Adjust for negative months
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+
+        // Format dates
+        const formatDate = (dateStr) => {
+          let parts;
+          if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            parts = dateStr.split("-");
+            parts = [parts[2], parts[1], parts[0]]; // Convert to [DD, MM, YYYY]
+          } else {
+            parts = dateStr.split('-');
+          }
+          const date = new Date(parts[2], parts[1] - 1, parts[0]);
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          return `${monthNames[date.getMonth()]} ${String(date.getDate()).padStart(2, '0')}, ${date.getFullYear()}`;
+        };
+
+        let from = formatDate(input);
+        let to = formatDate(input2);
+
+        // Swap if needed to match original dates
+        if (fromDate > toDate) {
+          const temp = from;
+          from = to;
+          to = temp;
+        }
+
+        // Calculate timestamps
+        const d1 = Math.floor(new Date(s_date[2], s_date[1] - 1, s_date[0], s_hour, s_min, s_sec).getTime() / 1000);
+        const d2 = Math.floor(new Date(e_date[2], e_date[1] - 1, e_date[0], e_hour, e_min, e_sec).getTime() / 1000);
+        const diff = Math.abs(d2 - d1);
+
+        // Calculate hours, minutes, seconds (remaining after years, months, days)
+        const hours = Math.floor((diff - years * 365 * 60 * 60 * 24 - months * 30 * 60 * 60 * 24 - days * 60 * 60 * 24) / (60 * 60));
+        const minutes = Math.floor((diff - years * 365 * 60 * 60 * 24 - months * 30 * 60 * 60 * 24 - days * 60 * 60 * 24 - hours * 60 * 60) / 60);
+        const seconds = Math.floor((diff - years * 365 * 60 * 60 * 24 - months * 30 * 60 * 60 * 24 - days * 60 * 60 * 24 - hours * 60 * 60 - minutes * 60));
+
+        // Calculate days from months
+        const day1 = months * 30.417;
+        const d1_ans = parseFloat((day1 + days).toFixed(3));
+
+        // Calculate total months
+        const months1 = years * 12;
+        const mon_ans = months1 + months;
+
+        // Calculate total days between dates
+        const days_ans = Math.floor(diff / (60 * 60 * 24));
+
+        // Calculate total hours
+        const hours_ans = days_ans * 24;
+
+        // Calculate weeks
+        const weeks = Math.floor(days_ans / 7);
+        const w_days = weeks * 7;
+        const wd_ans = days_ans - w_days;
+
+        // Prepare result
+        result.tech_from = from;
+        result.tech_diff = diff;
+        result.tech_to = to;
+        result.tech_years = years;
+        result.tech_months = months;
+        result.tech_hours = parseFloat(hours.toFixed(1));
+        result.tech_days = days;
+        result.tech_d1_ans = d1_ans;
+        result.tech_mon_ans = mon_ans;
+        result.tech_days_ans = days_ans.toString();
+        result.tech_hours_ans = hours_ans;
+        result.tech_weeks = parseFloat(weeks.toFixed(1));
+        result.tech_wd_ans = parseFloat(wd_ans.toFixed(1));
+
+        return result;
+
+      } catch (error) {
+        console.error('Error in sobriety calculator:', error);
+        result.error = 'Please! Check Your Input';
+        return result;
+      }
+  }
+
+
+      /**
+    * getCalculationHouseAgeCalculator: Service Method
+    * POST: /api/calculators-lol/house-age-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+   async getCalculationHouseAgeCalculator(body) {
+      let build_date = body.tech_build_date;
+      let structure_type = body.tech_structure_type;
+
+      const result = {};
+
+      // Validate inputs
+      if (!structure_type || !build_date) {
+        result.error = 'Please! Check Your Input';
+        return result;
+      }
+
+      try {
+        // Parse build date
+        const date1 = new Date(build_date);
+        const date2 = new Date();
+
+        // Check if build date is in the past
+        if (date1 >= date2) {
+          result.error = 'Please! Check Your Input';
+          return result;
+        }
+
+        // Calculate age difference
+        let years = date2.getFullYear() - date1.getFullYear();
+        let months = date2.getMonth() - date1.getMonth();
+        let days = date2.getDate() - date1.getDate();
+
+        // Adjust for negative days
+        if (days < 0) {
+          months--;
+          const prevMonth = new Date(date2.getFullYear(), date2.getMonth(), 0);
+          days += prevMonth.getDate();
+        }
+
+        // Adjust for negative months
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+
+        // Determine predicted age based on structure type
+        let predicted_age;
+        
+        switch (structure_type) {
+          case 'concrete':
+            predicted_age = '50-60';
+            break;
+          case 'cement-bricks':
+            predicted_age = '75-100';
+            break;
+          case 'wooden':
+            predicted_age = '100-150';
+            break;
+          case 'stone':
+            predicted_age = '150-200';
+            break;
+          default:
+            result.error = 'Invalid structure type';
+            return result;
+        }
+
+        // Prepare result
+        result.tech_predicted_age = predicted_age;
+        result.tech_years = years;
+        result.tech_months = months;
+        result.tech_days = days;
+
+        return result;
+
+      } catch (error) {
+        console.error('Error in house age calculator:', error);
+        result.error = 'Please! Check Your Input';
+        return result;
+      }
+    }
+
+
+     /**
+    * getCalculationBirthdayCalculator: Service Method
+    * POST: /api/calculators-lol/birthday-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+  async getCalculationBirthdayCalculator(body) {
+      let next_birth = body.tech_next_birth;
+
+      const result = {};
+
+      if (!next_birth) {
+        result.error = 'Please Select Your Date of Birth.';
+        return result;
+      }
+
+      try {
+        const dob = next_birth; // yyyy-mm-dd format expected
+        const currentDate = new Date();
+        
+        // Parse DOB
+        const dob2 = dob.split("-");
+        const birth_month = dob2[1];
+        
+        // Create date objects for age calculation
+        const bdayDate = new Date(dob2[0], dob2[1] - 1, dob2[2]);
+        const today = new Date();
+        
+        // Check if DOB is valid (not in future)
+        if (bdayDate >= today) {
+          result.error = 'Invalid Date of Birth.';
+          return result;
+        }
+        
+        // Calculate age (years, months, days)
+        let age_years = today.getFullYear() - bdayDate.getFullYear();
+        let age_months = today.getMonth() - bdayDate.getMonth();
+        let age_days = today.getDate() - bdayDate.getDate();
+        
+        if (age_days < 0) {
+          age_months--;
+          const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+          age_days += prevMonth.getDate();
+        }
+        
+        if (age_months < 0) {
+          age_years--;
+          age_months += 12;
+        }
+        
+        // Current date details
+        const year = currentDate.getFullYear();
+        const mon = currentDate.getMonth() + 1;
+        const mday = currentDate.getDate();
+        const hour = currentDate.getHours();
+        const min = currentDate.getMinutes();
+        const sec = currentDate.getSeconds();
+        
+        // Calculate timestamps
+        const d1 = new Date(dob2[0], dob2[1] - 1, dob2[2], hour, min, sec).getTime() / 1000;
+        const d2 = new Date(year, mon - 1, mday, hour, min, sec).getTime() / 1000;
+        const diffSeconds = d2 - d1;
+        
+        if (diffSeconds <= 0) {
+          result.error = 'Invalid Date of Birth.';
+          return result;
+        }
+        
+        // Calculate totals
+        const Totalyears = Math.floor(diffSeconds / 31536000);
+        const Total_months = Math.floor(diffSeconds / 2628000);
+        const Total_weeks = Math.floor(diffSeconds / 604800);
+        const Total_days = Math.floor(diffSeconds / 86400);
+        const Total_hours = Math.floor(diffSeconds / 3600);
+        const Total_minuts = Math.floor(diffSeconds / 60);
+        const Total_seconds = diffSeconds;
+        
+        // Calculate which day of week birthdays fell on
+        const totalDays = [0, 0, 0, 0, 0, 0, 0];
+        const daysName = [];
+        
+        for (let i = 0; i < age_years; i++) {
+          const birthdayThisYear = new Date(bdayDate);
+          birthdayThisYear.setFullYear(bdayDate.getFullYear() + i);
+          const dayOfWeek = birthdayThisYear.getDay();
+          const dayName = birthdayThisYear.toLocaleDateString('en-US', { weekday: 'long' });
+          totalDays[dayOfWeek]++;
+          daysName.push(dayName);
+        }
+        
+        // Calculate next birthday
+        let nextBirthdayYear = year;
+        if (mon > parseInt(dob2[1]) || (mon === parseInt(dob2[1]) && mday >= parseInt(dob2[2]))) {
+          nextBirthdayYear = year + 1;
+        }
+        
+        const nextBirthdayDate = new Date(nextBirthdayYear, dob2[1] - 1, dob2[2]);
+        const todayDate = new Date(year, mon - 1, mday);
+        
+        // Calculate days until next birthday
+        const timeDiff = nextBirthdayDate - todayDate;
+        const remDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        
+        // Calculate months and days until next birthday
+        let next_r_mon = nextBirthdayDate.getMonth() - todayDate.getMonth();
+        let next_r_day = nextBirthdayDate.getDate() - todayDate.getDate();
+        
+        if (next_r_day < 0) {
+          next_r_mon--;
+          const prevMonth = new Date(nextBirthdayDate.getFullYear(), nextBirthdayDate.getMonth(), 0);
+          next_r_day += prevMonth.getDate();
+        }
+        
+        if (next_r_mon < 0) {
+          next_r_mon += 12;
+        }
+        
+        // Format next birthday
+        const nextBirth = nextBirthdayDate.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        
+        const n_brdy_days_per = (remDays / 365) * 100;
+        
+        // Calculate half birthday (6 months after DOB)
+        const halfBirthdayDate = new Date(bdayDate);
+        halfBirthdayDate.setMonth(halfBirthdayDate.getMonth() + 6);
+        
+        let halfBirthdayYear = year;
+        const halfMonth = halfBirthdayDate.getMonth() + 1;
+        const halfDay = halfBirthdayDate.getDate();
+        
+        if (mon > halfMonth || (mon === halfMonth && mday >= halfDay)) {
+          halfBirthdayYear = year + 1;
+        }
+        
+        const nextHalfBirthdayDate = new Date(halfBirthdayYear, halfMonth - 1, halfDay);
+        const half_brdy = nextHalfBirthdayDate.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        
+        const halfTimeDiff = nextHalfBirthdayDate - todayDate;
+        const next_half_r_days = Math.floor(halfTimeDiff / (1000 * 60 * 60 * 24));
+        const n_half_brdy_days = Math.round((next_half_r_days / 365) * 100);
+        
+        // Prepare result
+        result.tech_Age = age_years;
+        result.tech_Age_months = age_months;
+        result.tech_Age_days = age_days;
+        result.tech_birth_month = birth_month;
+        result.tech_N_r_months = next_r_mon;
+        result.tech_N_r_days = next_r_day;
+        result.tech_Years = Totalyears;
+        result.tech_Months = Total_months;
+        result.tech_Weeks = Total_weeks;
+        result.tech_Days = Total_days;
+        result.tech_Hours = Total_hours;
+        result.tech_Min = Total_minuts;
+        result.tech_nextBirth = nextBirth;
+        result.tech_remDays = remDays;
+        result.tech_totalDays = totalDays;
+        result.tech_daysName = daysName;
+        result.tech_n_brdy_days_per = parseFloat(n_brdy_days_per.toFixed(2));
+        result.tech_half_brdy = half_brdy;
+        result.tech_next_half_r_days = next_half_r_days;
+        result.tech_n_half_brdy_days = n_half_brdy_days;
+        
+        return result;
+        
+      } catch (error) {
+        console.error('Error in birthday calculator:', error);
+        result.error = 'Please Select Your Date of Birth.';
+        return result;
+      }
+    }
+
+     /**
+    * getCalculationHalfBirthdayCalculator: Service Method
+    * POST: /api/calculators-lol/half-birthday-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+  async getCalculationHalfBirthdayCalculator(body) {
+      let day = body.tech_day;
+      let month = body.tech_month;
+      let year = body.tech_year;
+
+    const result = {};
+
+    // Validate and format DOB
+    if (!day || !month || !year) {
+      result.error = 'Please! Check Your Input';
+      return result;
+    }
+
+    try {
+      // Format DOB as YYYY-MM-DD
+      const dob = `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dobDate = new Date(year, month - 1, day);
+      const currentDate = new Date();
+      
+      // Check if DOB is valid (not in future)
+      if (dobDate > currentDate) {
+        result.error = 'Please! Check Your Input';
+        return result;
+      }
+
+      // Current date details
+      const current = {
+        year: currentDate.getFullYear(),
+        mon: currentDate.getMonth() + 1,
+        mday: currentDate.getDate()
+      };
+
+      // Calculate quarter and half birthdays
+      const dobDateObj = new Date(dob);
+      
+      // First quarter (3 months)
+      const first_q_date = new Date(dobDateObj);
+      first_q_date.setMonth(first_q_date.getMonth() + 3);
+      const Q1 = [
+        first_q_date.getFullYear(),
+        first_q_date.getMonth() + 1,
+        first_q_date.getDate()
+      ];
+
+      // Half birthday (6 months)
+      const half_date = new Date(dobDateObj);
+      half_date.setMonth(half_date.getMonth() + 6);
+      const Q2 = [
+        half_date.getFullYear(),
+        half_date.getMonth() + 1,
+        half_date.getDate()
+      ];
+
+      // Third quarter (9 months)
+      const third_q_date = new Date(dobDateObj);
+      third_q_date.setMonth(third_q_date.getMonth() + 9);
+      const Q3 = [
+        third_q_date.getFullYear(),
+        third_q_date.getMonth() + 1,
+        third_q_date.getDate()
+      ];
+
+      // Birthday
+      const bday = [year, month, day];
+
+      // Determine next occurrence years for each date
+      let year_q1, mon_q1, day_q1;
+      if (Q1[1] > current.mon || (Q1[1] === current.mon && Q1[2] > current.mday)) {
+        year_q1 = current.year;
+        mon_q1 = Q1[1];
+        day_q1 = Q1[2];
+      } else {
+        year_q1 = current.year + 1;
+        mon_q1 = Q1[1];
+        day_q1 = Q1[2];
+      }
+
+      let year_q2, mon_q2, day_q2;
+      if (Q2[1] > current.mon || (Q2[1] === current.mon && Q2[2] > current.mday)) {
+        year_q2 = current.year;
+        mon_q2 = Q2[1];
+        day_q2 = Q2[2];
+      } else {
+        year_q2 = current.year + 1;
+        mon_q2 = Q2[1];
+        day_q2 = Q2[2];
+      }
+
+      let year_q3, mon_q3, day_q3;
+      if (Q3[1] > current.mon || (Q3[1] === current.mon && Q3[2] > current.mday)) {
+        year_q3 = current.year;
+        mon_q3 = Q3[1];
+        day_q3 = Q3[2];
+      } else {
+        year_q3 = current.year + 1;
+        mon_q3 = Q3[1];
+        day_q3 = Q3[2];
+      }
+
+      let bd_year, bd_mon, bd_day;
+      if (bday[1] > current.mon || (bday[1] === current.mon && bday[2] > current.mday)) {
+        bd_year = current.year;
+        bd_mon = bday[1];
+        bd_day = bday[2];
+      } else {
+        bd_year = current.year + 1;
+        bd_mon = bday[1];
+        bd_day = bday[2];
+      }
+
+      // Format dates
+      const formatDate = (year, month, day) => {
+        const date = new Date(year, month - 1, day);
+        return date.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      };
+
+      const next_bday = formatDate(bd_year, bd_mon, bd_day);
+      const next_half = formatDate(year_q2, mon_q2, day_q2);
+      const first_Q = formatDate(year_q1, mon_q1, day_q1);
+      const third_Q = formatDate(year_q3, mon_q3, day_q3);
+
+      // Calculate days until each date
+      const today = new Date(current.year, current.mon - 1, current.mday);
+      
+      const nextHalfDate = new Date(year_q2, mon_q2 - 1, day_q2);
+      const q1Date = new Date(year_q1, mon_q1 - 1, day_q1);
+      const q3Date = new Date(year_q3, mon_q3 - 1, day_q3);
+
+      const next_half_days = Math.floor((nextHalfDate - today) / (1000 * 60 * 60 * 24));
+      const first_Q_days = Math.floor((q1Date - today) / (1000 * 60 * 60 * 24));
+      const third_Q_days = Math.floor((q3Date - today) / (1000 * 60 * 60 * 24));
+
+      const day_per = (next_half_days * 100) / 365;
+
+      // Prepare result
+      result.tech_next_half = next_half;
+      result.tech_day_per = parseFloat(day_per.toFixed(2));
+      result.tech_next_half_days = next_half_days;
+      result.tech_first_Q = first_Q;
+      result.tech_first_Q_days = first_Q_days;
+      result.tech_third_Q = third_Q;
+      result.tech_third_Q_days = third_Q_days;
+      result.tech_next_bday = next_bday;
+
+      return result;
+
+    } catch (error) {
+      console.error('Error in half birthday calculator:', error);
+      result.error = 'Please! Check Your Input';
+      return result;
+    }
+  }
+
+    /**
+    * getCalculationTravelTimeCalculator: Service Method
+    * POST: /api/calculators-lol/travel-time-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+  async getCalculationTravelTimeCalculator(body) {
+     let distance = body.tech_distance;
+    let distance_unit = body.tech_distance_unit;
+    let speed = body.tech_speed;
+    let speed_unit = body.tech_speed_unit;
+    let break_hrs = body.tech_break_hrs;
+    let break_min = body.tech_break_min;
+    let dep_time = body.tech_dep_time;
+    let fule_effi = body.tech_fule_effi;
+    let fule_effi_unit = body.tech_fule_effi_unit;
+    let price = body.tech_price;
+    let price_unit = body.tech_price_unit;
+    let currancy = body.tech_currancy;
+    let passenger = body.tech_passenger;
+
+
+      const result = {};
+
+      // Helper function: Convert distance to km
+      function convert_to_km(unit, value) {
+        if (unit == 'mi') {
+          return value * 1.609;
+        } else {
+          console.log(value);
+          return value;
+        }
+      }
+      // Helper function: Convert fuel efficiency to km/l
+      function convert_to_kmpl(unit, value) {
+        if (unit == 'mpg') {
+          return value / 2.352;
+        } else {
+          return value;
+        }
+      }
+
+      // Validate inputs
+      if (
+        !distance || !speed || break_hrs === undefined || break_min === undefined ||
+        !fule_effi || !price || !passenger || !dep_time
+      ) {
+        result.error = 'Please! Check Your Input';
+        return result;
+      }
+
+      // Check if all numeric values are valid
+      if (
+        isNaN(parseFloat(distance)) ||
+        isNaN(parseFloat(speed)) ||
+        isNaN(parseFloat(break_hrs)) ||
+        isNaN(parseFloat(break_min)) ||
+        isNaN(parseFloat(fule_effi)) ||
+        isNaN(parseFloat(price)) ||
+        isNaN(parseFloat(passenger))
+      ) {
+        result.error = 'Please! Check Your Input';
+        return result;
+      }
+
+      try {
+        // Remove currency symbol from price_unit
+        let price_unit_clean = price_unit ? price_unit.replace(currancy || '', '').trim() : 'liter';
+
+        // Convert values
+        const distance_f = convert_to_km(distance_unit, parseFloat(distance));
+        const fule_effi_f = convert_to_kmpl(fule_effi_unit, parseFloat(fule_effi));
+        const speed_f = convert_to_km(speed_unit, parseFloat(speed));
+          // console.log(distance_f,fule_effi_f,speed_f);
+        // Convert price to per liter if it's per gallon
+        const price_f = (price_unit_clean.includes('liter') || price_unit_clean.includes('litre')) 
+          ? parseFloat(price) 
+          : parseFloat(price) / 3.785;
+
+        // Calculate break time in hours
+        const break_hr = ((parseFloat(break_hrs) * 60) + parseFloat(break_min)) / 60;
+
+        // Calculate travel time
+        const travel_time = (distance_f / speed_f) + break_hr;
+        const hours = Math.floor(travel_time);
+        const mins = Math.round((travel_time - hours) * 60);
+
+        // Parse departure time
+        const depTime = new Date(dep_time);
+        
+        // Add hours and minutes to departure time
+        const arrivalTime = new Date(depTime);
+        arrivalTime.setHours(arrivalTime.getHours() + hours);
+        arrivalTime.setMinutes(arrivalTime.getMinutes() + mins);
+
+        // Format dates
+        const formatDate = (date) => {
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          const month = monthNames[date.getMonth()];
+          const day = String(date.getDate()).padStart(2, '0');
+          const year = date.getFullYear();
+          
+          let hours = date.getHours();
+          const minutes = String(date.getMinutes()).padStart(2, '0');
+          const seconds = String(date.getSeconds()).padStart(2, '0');
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          hours = hours % 12;
+          hours = hours ? hours : 12; // 0 should be 12
+          const hoursStr = String(hours).padStart(2, '0');
+          
+          return `${month} ${day}, ${year} ${hoursStr}:${minutes}:${seconds} ${ampm}`;
+        };
+
+        const depature = formatDate(depTime);
+        const arrival = formatDate(arrivalTime);
+
+        // Calculate fuel requirements
+        const fule_req = distance_f / fule_effi_f;
+        const fule_price = fule_req * price_f;
+        const per_person = fule_price / parseFloat(passenger);
+        // console.log(fule_price,fule_req,price_f);
+        // Format numbers
+        const formatNumber = (num, decimals = 2) => {
+          return num.toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        };
+
+        // Prepare result
+        result.tech_hours = hours;
+        result.tech_mins = mins;
+        result.tech_depature = depature;
+        result.tech_arrival = arrival;
+        result.tech_fule_price = formatNumber(fule_price, 2);
+        result.tech_per_person = formatNumber(per_person, 2);
+        return result;
+
+      } catch (error) {
+        console.error('Error in travel time calculator:', error);
+        result.error = 'Please! Check Your Input';
+        return result;
+      }
+    }
+
+     /**
+    * getCalculationSleepCalculator: Service Method
+    * POST: /api/calculators-lol/sleep-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+
+    async getCalculationSleepCalculator(body) {
+      let h = body.tech_h;
+      let stype = body.tech_stype;
+
+        const result = {};
+
+        if (stype == 'bedtime') {
+            // Bedtime calculation
+            // Current date ke sath time combine karo
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            const dateTimeString = `${today} ${h}`;
+            
+            const baseDate = new Date(dateTimeString);
+            const timestamp = Math.floor(baseDate.getTime() / 1000) + ((14 * 60) + 45) * 60;
+            const timestamp2 = timestamp + 90 * 60;
+            const timestamp3 = timestamp2 + 90 * 60;
+            const timestamp4 = timestamp3 + 90 * 60;
+            const timestamp5 = timestamp4 + 90 * 60;
+            const timestamp6 = timestamp5 + 90 * 60;
+
+            result.tech_time = this.formatTimesleep(timestamp);
+            result.tech_time2 = this.formatTimesleep(timestamp2);
+            result.tech_time3 = this.formatTimesleep(timestamp3);
+            result.tech_time4 = this.formatTimesleep(timestamp4);
+            result.tech_time5 = this.formatTimesleep(timestamp5);
+            result.tech_time6 = this.formatTimesleep(timestamp6);
+
+        } else if (stype == 'wkup') {
+            // Wake up calculation - current time se calculate karo
+            const now = new Date();
+            const currentTimestamp = Math.floor(now.getTime() / 1000);
+            const timestamp = currentTimestamp + (465 + 90) * 60;
+            const timestamp2 = timestamp - 90 * 60;
+            const timestamp3 = timestamp2 - 90 * 60;
+            const timestamp4 = timestamp3 - 90 * 60;
+            const timestamp5 = timestamp4 - 90 * 60;
+            const timestamp6 = timestamp5 - 90 * 60;
+
+            result.tech_time = this.formatTimesleep(timestamp);
+            result.tech_time2 = this.formatTimesleep(timestamp2);
+            result.tech_time3 = this.formatTimesleep(timestamp3);
+            result.tech_time4 = this.formatTimesleep(timestamp4);
+            result.tech_time5 = this.formatTimesleep(timestamp5);
+            result.tech_time6 = this.formatTimesleep(timestamp6);
+
+        } else {
+            result.error = 'Please! Check Your Inputs';
+            return result;
+        }
+
+        result.tech_stype = stype;
+        return result;
+    }
+
+    formatTimesleep(timestamp) {
+        const date = new Date(timestamp * 1000);
+        
+        let hours = date.getUTCHours() + 5; // Pakistan Standard Time (UTC+5)
+        const minutes = date.getUTCMinutes();
+        const seconds = date.getUTCSeconds();
+        
+        // Handle day overflow
+        if (hours >= 24) {
+            hours -= 24;
+        }
+        
+        const period = hours >= 12 ? 'pm' : 'am';
+        const displayHours = hours % 12 || 12; // Convert to 12-hour format
+        
+        const pad = (num) => String(num).padStart(2, '0');
+        
+        return `${pad(displayHours)}:${pad(minutes)}:${pad(seconds)}${period}`;
+    }
+
+     /**
+    * getCalculationPantSizeCalculator: Service Method
+    * POST: /api/calculators-lol/pant-size-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+
+    async getCalculationPantSizeCalculator(body) {
+      let submit = body.tech_submit;
+      let weist = body.tech_weist;
+      let length = body.tech_length;
+      let gender = body.tech_gender;
+      let measure = body.tech_measure;
+      let measure_in_weiat = body.tech_measure_in_weiat;
+      let measure_in_length = body.tech_measure_in_length;
+
+      const result = {};
+
+      // Measure conversion
+      let measureInWeist = measure_in_weiat;
+      let measureInLength = measure_in_length;
+
+      if (measure_in_weiat == 'cm') {
+          measureInWeist = 'centimeter_weist';
+      } else if (measure_in_weiat == 'dm') {
+          measureInWeist = 'decimeter_weist';
+      } else if (measure_in_weiat == 'in') {
+          measureInWeist = 'inches_weist';
+      }
+
+      if (measure_in_length == 'cm') {
+          measureInLength = 'centimeter_length';
+      } else if (measure_in_length == 'dm') {
+          measureInLength = 'decimeter_length';
+      } else if (measure_in_length == 'in') {
+          measureInLength = 'inches_length';
+      }
+
+      if (!submit) {
+          result.error = 'Please! Check Your Input';
+          return result;
+      }
+
+      // Women's table values
+      const waist_women = [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39];
+      const length_women = [32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32];
+      const inda_women = [26, 26, 28, 28, 30, 30, 32, 32, 34, 34, 36, 36, 38, 38, 40];
+      const usa_women = [
+          '25/32, 0, or XXS',
+          '26/32, 2, or XS',
+          '27/32, 4, or XS',
+          '28/32, 6, or S',
+          '29/32, 8, or S',
+          '30/32, 10, or M',
+          '31/32, 12, or M',
+          '32/32, 14, or L',
+          '33/32, 16, or L',
+          '34/32, 18, or XL',
+          '35/32, 20, or XL',
+          '36/32, 22, or XXL',
+          '37/32, 24, or XXL',
+          '38/32, 26, or XXXL',
+          '39/32, 28, or XXXL'
+      ];
+      const uk_women = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32];
+      const eu_women = [32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60];
+      const it_women = [36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64];
+      const ru_women = [38, '38/40', 40, '42/44', 46, 48, 50, 54, 58, '60/62', 64, '66/68', 70, 'Not Available', 'Not Available'];
+      const ja_women = [7, '7/9', 9, '9/11', 11, '11/13', 13, '13/15', '13/15', 15, '15/17', 17, 'Not Available', 'Not Available', 'Not Available'];
+
+      // Men's table values
+      const waist_men = [28, 29, 30, 32, 33, 34, 36, 38, 40, 42, 44];
+      const length_men = [30, 30, 32, 32, 32, 32, 34, 34, 34, 34, 34];
+      const inda_men = [28, 30, 30, 32, 34, 34, 36, 38, 40, 42, 44];
+      const usa_men = [
+          '28/30, 30, or XS',
+          '29/30, 32, or XS',
+          '30/32, 34, or S',
+          '32/32, 36, or S',
+          '33/32, 38, or M',
+          '34/32, 40, or M',
+          '36/34, 42, or L',
+          '38/34, 44, or L',
+          '40/34, 46, or XL',
+          '42/34, 48, or XL',
+          '44/34, 50, or XXL'
+      ];
+      const uk_men = [30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50];
+      const eu_men = [40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60];
+      const it_men = [30, 32, 34, 46, 48, 50, 52, 54, 56, 58, 60];
+
+      if (!weist || !length) {
+          result.error = 'Please! Check Your Input';
+          return result;
+      }
+
+      let waistValue = parseFloat(weist);
+      let lengthValue = parseFloat(length);
+
+      if (measure === 'pair') {
+          waistValue = waistValue * 2;
+      }
+
+      let result_weist = "";
+      let result_length = "";
+      let result_india = "";
+      let result_us = "";
+      let result_uk = "";
+      let result_eu = "";
+      let result_it = "";
+      let result_ru = "";
+      let result_ja = "";
+      let check_length = false;
+      let check_weist = false;
+
+      // Women Portion
+      if (gender == 'female') {
+          // Measure check waist
+          if (measureInWeist == "centimeter_weist") {
+              for (let i = 0; i < waist_women.length; i++) {
+                  waist_women[i] = waist_women[i] * 2.54;
+              }
+              if (waistValue < 7.5) {
+                  result.error = 'Waist should be greater then 7.5';
+                  return result;
+              } else {
+                  check_weist = true;
+              }
+          } else if (measureInWeist == "decimeter_weist") {
+              for (let i = 0; i < waist_women.length; i++) {
+                  waist_women[i] = waist_women[i] * 0.254;
+              }
+              if (waistValue < 7.5) {
+                  result.error = 'Waist should be greater then 7.5';
+                  return result;
+              } else {
+                  check_weist = true;
+              }
+          } else if (measureInWeist == "inches_weist") {
+              if (waistValue < 15) {
+                  result.error = 'Waist should be greater then 15';
+                  return result;
+              } else {
+                  check_weist = true;
+              }
+          }
+
+          // Measure check length
+          if (measureInLength == "centimeter_length") {
+              for (let i = 0; i < length_women.length; i++) {
+                  length_women[i] = length_women[i] * 2.54;
+              }
+              if (lengthValue < 7.5) {
+                  result.error = 'Length should be greater then 7.5';
+                  return result;
+              } else {
+                  check_length = true;
+              }
+          } else if (measureInLength === "decimeter_length") {
+              for (let i = 0; i < length_women.length; i++) {
+                  length_women[i] = length_women[i] * 0.254;
+              }
+              if (lengthValue < 7.5) {
+                  result.error = 'Length should be greater then 7.5';
+                  return result;
+              } else {
+                  check_length = true;
+              }
+          } else if (measureInLength == "inches_length") {
+              if (lengthValue < 15) {
+                  result.error = 'Length should be greater then 15';
+                  return result;
+              } else {
+                  check_length = true;
+              }
+          }
+
+          if (check_weist && check_length) {
+              for (let i = 0; i < waist_women.length; i++) {
+                  if (waistValue === waist_women[i] && lengthValue === length_women[i]) {
+                      result_weist = i;
+                      result_length = i;
+                      break;
+                  } else if (waistValue < waist_women[i] && lengthValue < length_women[i]) {
+                      result_weist = i;
+                      result_length = i;
+                      break;
+                  } else if (waistValue > waist_women[i]) {
+                      if (lengthValue > length_women[i]) {
+                          result_weist = "";
+                          result_length = "";
+                      } else if (lengthValue < length_women[i]) {
+                          result_weist = "";
+                          result_length = "";
+                      }
+                  } else {
+                      if (lengthValue === length_women[i]) {
+                          result_weist = i;
+                          result_length = i;
+                          break;
+                      }
+                      if (lengthValue < length_women[i]) {
+                          result_weist = i;
+                          result_length = i;
+                          break;
+                      } else {
+                          result_weist = "";
+                          result_length = "";
+                          break;
+                      }
+                  }
+              }
+
+              if (typeof result_weist == 'number' && typeof result_length == 'number') {
+                  result_india = inda_women[result_weist];
+                  result_us = usa_women[result_weist];
+                  result_uk = uk_women[result_weist];
+                  result_eu = eu_women[result_weist];
+                  result_it = it_women[result_weist];
+                  result_ru = ru_women[result_weist];
+                  result_ja = ja_women[result_weist];
+              } else {
+                  result.error = 'Please Enter Correct Values!';
+                  return result;
+              }
+          } else {
+              result.error = 'Please Enter Correct Values!';
+              return result;
+          }
+
+          result.tech_result_india = result_india;
+          result.tech_result_us = result_us;
+          result.tech_result_uk = result_uk;
+          result.tech_result_eu = result_eu;
+          result.tech_result_it = result_it;
+          result.tech_result_ru = result_ru;
+          result.tech_result_ja = result_ja;
+          return result;
+
+      } else if (gender === 'male') {
+          // Measure check waist
+          if (measureInWeist == "centimeter_weist") {
+              for (let i = 0; i < waist_men.length; i++) {
+                  waist_men[i] = waist_men[i] * 2.54;
+              }
+              if (waistValue < 7.5) {
+                  result.error = 'Waist should be greater then 7.5';
+                  return result;
+              } else {
+                  check_weist = true;
+              }
+          } else if (measureInWeist == "decimeter_weist") {
+              for (let i = 0; i < waist_men.length; i++) {
+                  waist_men[i] = waist_men[i] * 0.254;
+              }
+              if (waistValue < 7.5) {
+                  result.error = 'Waist should be greater then 7.5';
+                  return result;
+              } else {
+                  check_weist = true;
+              }
+          } else if (measureInWeist == "inches_weist") {
+              if (waistValue < 15) {
+                  result.error = 'Waist should be greater then 15';
+                  return result;
+              } else {
+                  check_weist = true;
+              }
+          }
+
+          // Measure check length
+          if (measureInLength == "centimeter_length") {
+              for (let i = 0; i < length_men.length; i++) {
+                  length_men[i] = length_men[i] * 2.54;
+              }
+              if (lengthValue < 7.5) {
+                  result.error = 'Length should be greater then 7.5';
+                  return result;
+              } else {
+                  check_length = true;
+              }
+          } else if (measureInLength == "decimeter_length") {
+              for (let i = 0; i < length_men.length; i++) {
+                  length_men[i] = length_men[i] * 0.254;
+              }
+              if (lengthValue < 7.5) {
+                  result.error = 'Length should be greater then 7.5';
+                  return result;
+              } else {
+                  check_length = true;
+              }
+          } else if (measureInLength == "inches_length") {
+              if (lengthValue < 15) {
+                  result.error = 'Length should be greater then 15';
+                  return result;
+              } else {
+                  check_length = true;
+              }
+          }
+
+          if (check_weist && check_length) {
+              for (let i = 0; i < waist_men.length; i++) {
+                  if (waistValue == waist_men[i] && lengthValue == length_men[i]) {
+                      result_weist = i;
+                      result_length = i;
+                      break;
+                  } else if (waistValue < waist_men[i] && lengthValue < length_men[i]) {
+                      result_weist = i;
+                      result_length = i;
+                      break;
+                  } else if (waistValue > waist_men[i]) {
+                      if (lengthValue > length_men[i]) {
+                          result_weist = "";
+                          result_length = "";
+                      } else if (lengthValue < length_men[i]) {
+                          result_weist = "";
+                          result_length = "";
+                      }
+                  } else {
+                      if (lengthValue === length_men[i]) {
+                          result_weist = i;
+                          result_length = i;
+                          break;
+                      }
+                      if (lengthValue < length_men[i]) {
+                          result_weist = i;
+                          result_length = i;
+                          break;
+                      } else {
+                          result_weist = "";
+                          result_length = "";
+                          break;
+                      }
+                  }
+              }
+
+              if (typeof result_weist == 'number' && typeof result_length == 'number') {
+                  result_india = inda_men[result_weist];
+                  result_us = usa_men[result_weist];
+                  result_uk = uk_men[result_weist];
+                  result_eu = eu_men[result_weist];
+                  result_it = it_men[result_weist];
+              } else {
+                  result.error = 'Please Enter Correct Values!';
+                  return result;
+              }
+          } else {
+              result.error = 'Please Enter Correct Values!';
+              return result;
+          }
+
+          result.tech_result_india = result_india;
+          result.tech_result_us = result_us;
+          result.tech_result_uk = result_uk;
+          result.tech_result_eu = result_eu;
+          result.tech_result_it = result_it;
+          result.tech_result_ru = result_ru;
+          result.tech_result_ja = result_ja;
+          return result;
+
+      } else {
+          result.error = 'Please! Check Your Input';
+          return result;
+      }
+  }
+
+
+    /**
+    * getCalculationDriveTimeCalculator: Service Method
+    * POST: /api/calculators-lol/drive-time-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationDriveTimeCalculator(body) {
+      let distance = body.tech_distance;
+      let distance_unit = body.tech_distance_unit;
+      let average_speed = body.tech_average_speed;
+      let average_speed_unit = body.tech_average_speed_unit;
+      let breaks = body.tech_breaks;
+      let breaks_unit = body.tech_breaks_unit;
+      let departure_time = body.tech_departure_time;
+      let fuel_e = body.tech_fuel_e;
+      let fuel_e_unit = body.tech_fuel_e_unit;
+      let fuel_p = body.tech_fuel_p;
+      let currancy = body.tech_currancy;
+      let fuel_p_unit = body.tech_fuel_p_unit;
+      let passengers = body.tech_passengers;
+
+
+        const result = {};
+
+        // Remove currency symbol from fuel price
+        let fuelPrice = fuel_p;
+        if (currancy && typeof fuel_p == 'string') {
+            fuelPrice = fuel_p.replace(currancy, '');
+        }
+
+        // Validate numeric inputs
+        if (
+            !this.isNumerictravel(distance) || 
+            !this.isNumerictravel(average_speed) || 
+            !this.isNumerictravel(passengers) || 
+            !this.isNumerictravel(fuelPrice)
+        ) {
+            result.error = 'Please ! Fill all the Input';
+            return result;
+        }
+
+        // Convert to numbers
+        let distanceValue = parseFloat(distance);
+        let averageSpeedValue = parseFloat(average_speed);
+        let breaksValue = parseFloat(breaks) || 0;
+        let fuelEfficiency = parseFloat(fuel_e) || 0;
+        let fuelPriceValue = parseFloat(fuelPrice);
+        const passengersValue = parseFloat(passengers);
+
+        // Convert breaks to minutes
+        if (breaks_unit) {
+            if (breaks_unit == 'sec') {
+                breaksValue = breaksValue / 60;
+            } else if (breaks_unit == 'hrs') {
+                breaksValue = breaksValue * 60;
+            } else if (breaks_unit == 'days') {
+                breaksValue = breaksValue * 24 * 60;
+            } else if (breaks_unit == 'wks') {
+                breaksValue = breaksValue * 10080;
+            }
+        }
+
+        // Convert distance to km
+        if (distance_unit) {
+            if (distance_unit == 'km') {
+                distanceValue = distanceValue;
+            } else if (distance_unit == 'm') {
+                distanceValue = distanceValue / 1000;
+            } else if (distance_unit == 'mi') {
+                distanceValue = Math.round(distanceValue * 1.609);
+            } else if (distance_unit == 'nmi') {
+                distanceValue = distanceValue * 1.852;
+            }
+        }
+
+        // Convert average speed to km/h
+        if (average_speed_unit) {
+            if (average_speed_unit == 'km/h') {
+                averageSpeedValue = averageSpeedValue;
+            } else if (average_speed_unit == 'm/s') {
+                averageSpeedValue = averageSpeedValue * 3.6;
+            } else if (average_speed_unit == 'mph') {
+                averageSpeedValue = averageSpeedValue * 1.609;
+            }
+        }
+
+        // Convert fuel efficiency to L/100km
+        if (fuel_e_unit) {
+            if (fuel_e_unit == 'L/100km') {
+                fuelEfficiency = fuelEfficiency;
+            } else if (fuel_e_unit == 'us mpg') {
+                fuelEfficiency = 235.215 / fuelEfficiency;
+            } else if (fuel_e_unit == 'uk mpg') {
+                fuelEfficiency = 282.5 / fuelEfficiency;
+            } else if (fuel_e_unit == 'km/L') {
+                fuelEfficiency = 100 / fuelEfficiency;
+            }
+        }
+
+        // Convert fuel price to per liter
+        if (fuel_p_unit) {
+            if (fuel_p_unit == '/L') {
+                fuelPriceValue = fuelPriceValue;
+            } else if (fuel_p_unit == '/us gal') {
+                fuelPriceValue = fuelPriceValue * 0.26;
+            } else if (fuel_p_unit == '/uk gal') {
+                fuelPriceValue = fuelPriceValue * 0.22;
+            }
+        }
+
+        // Calculate total drive time
+        const total_breaks_hours = breaksValue / 60;
+        const total_drive_hours = (distanceValue / averageSpeedValue) + total_breaks_hours;
+
+        // Calculate arrival time
+        if (departure_time) {
+            const departureDate = new Date(departure_time);
+            const arrivalTimestamp = departureDate.getTime() + (total_drive_hours * 3600 * 1000);
+            const arrivalDate = new Date(arrivalTimestamp);
+            
+            // Format: "05 November 2025, 02:30 PM"
+            const arrival_time = this.formatDateTimeTravel(arrivalDate);
+            result.tech_arrival_time = arrival_time;
+        }
+
+        // Calculate total drive cost
+        const total_drive_cost = (distanceValue / 100) * fuelEfficiency * fuelPriceValue;
+
+        // Calculate drive cost per person
+        const drive_cost_per_person = total_drive_cost / passengersValue;
+
+        result.tech_total_drive_hours = total_drive_hours;
+        result.tech_total_drive_cost = total_drive_cost;
+        result.tech_drive_cost_per_person = drive_cost_per_person;
+
+        return result;
+    }
+
+      // Helper function to check if value is numeric
+      isNumerictravel(value) {
+          if (value == null || value == undefined || value == '') {
+              return false;
+          }
+          return !isNaN(parseFloat(value)) && isFinite(value);
+      }
+
+      // Helper function to format date time
+      formatDateTimeTravel(date) {
+          const months = [
+              'January', 'February', 'March', 'April', 'May', 'June',
+              'July', 'August', 'September', 'October', 'November', 'December'
+          ];
+          
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = months[date.getMonth()];
+          const year = date.getFullYear();
+          
+          let hours = date.getHours();
+          const minutes = String(date.getMinutes()).padStart(2, '0');
+          const period = hours >= 12 ? 'PM' : 'AM';
+          
+          hours = hours % 12 || 12; // Convert to 12-hour format
+          hours = String(hours).padStart(2, '0');
+          
+          return `${day} ${month} ${year}, ${hours}:${minutes} ${period}`;
+      }
+
+      /**
+    * getCalculationAnniversaryCalculator: Service Method
+    * POST: /api/calculators-lol/anniversary-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationAnniversaryCalculator(body) {
+        let date = body.tech_date;
+        let current_date = body.tech_current_date;
+        let one = body.tech_one;
+
+        const result = {};
+
+        if (one == 'one' || one == 'two' || one == 'three') {
+            if (!date) {
+                result.error = 'Please! Enter the date';
+                return result;
+            }
+
+            // Parse dates
+            const marriageStartDate = new Date(date);
+            const currentDate = new Date(current_date);
+            const today = new Date();
+            
+            // Calculate next anniversary date
+            const currentYear = today.getFullYear();
+            const marriageYear = marriageStartDate.getFullYear();
+            const yearsElapsed = currentYear - marriageYear;
+            
+            // Create next anniversary date
+            let nextAnniversary = new Date(marriageStartDate);
+            nextAnniversary.setFullYear(marriageStartDate.getFullYear() + yearsElapsed);
+            
+            // Add 365 days to get the actual next anniversary
+            nextAnniversary.setDate(nextAnniversary.getDate() + 365);
+            
+            // Format anniversary date
+            const anniversaryDate = this.formatDateMonthDayYearanniversary(nextAnniversary);
+            
+            // Calculate days until anniversary
+            const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const anniversaryOnly = new Date(nextAnniversary.getFullYear(), nextAnniversary.getMonth(), nextAnniversary.getDate());
+            const daysUntilAnniversary = Math.floor((anniversaryOnly - todayOnly) / (1000 * 60 * 60 * 24));
+            
+            // Calculate marriage age
+            const marriageAge = this.calculateDateDifferenceanniversary(marriageStartDate, currentDate);
+            
+            const yearsMarried = marriageAge.years;
+            const monthsMarried = (yearsMarried * 12) + marriageAge.months;
+            const daysMarried = marriageAge.days;
+            const totalDays = marriageAge.totalDays;
+            
+            result.tech_anniversaryDate = anniversaryDate;
+            result.tech_daysUntilAnniversary = daysUntilAnniversary;
+            result.tech_yearsMarried = yearsMarried;
+            result.tech_monthsMarried = monthsMarried;
+            result.tech_daysMarried = daysMarried;
+            result.tech_marriage_age_weeks = Math.ceil(totalDays / 7);
+            result.tech_marriage_age_days = totalDays;
+            
+            return result;
+        } else {
+            result.error = 'Please! Enter the date';
+            return result;
+        }
+    }
+
+    // Helper function to format date as "MMM DD, YYYY" (e.g., "Nov 05, 2025")
+    formatDateMonthDayYearanniversary(date) {
+        const months = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ];
+        
+        const month = months[date.getMonth()];
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = date.getFullYear();
+        
+        return `${month} ${day}, ${year}`;
+    }
+
+    // Helper function to calculate difference between two dates (like Carbon diff)
+    calculateDateDifferenceanniversary(startDate, endDate) {
+        let years = endDate.getFullYear() - startDate.getFullYear();
+        let months = endDate.getMonth() - startDate.getMonth();
+        let days = endDate.getDate() - startDate.getDate();
+        
+        // Adjust for negative days
+        if (days < 0) {
+            months--;
+            const previousMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
+            days += previousMonth.getDate();
+        }
+        
+        // Adjust for negative months
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+        
+        // Calculate total days
+        const totalDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
+        
+        return {
+            years: years,
+            months: months,
+            days: days,
+            totalDays: totalDays
+        };
+    }
+
+     /**
+    * getCalculationPointBuyCalculator: Service Method
+    * POST: /api/calculators-lol/point-buy-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationPointBuyCalculator(body) {
+      let racial_choice = body.tech_racial_choice;
+      let strength = body.tech_strength;
+      let dexerity = body.tech_dexerity;
+      let intelligence = body.tech_intelligence;
+      let wisdom = body.tech_wisdom;
+      let charisma = body.tech_charisma;
+      let constitution = body.tech_constitution;
+      let choice = body.tech_choice;
+      let strength1 = body.tech_strength1;
+      let dexerity1 = body.tech_dexerity1;
+      let intelligence1 = body.tech_intelligence1;
+      let wisdom1 = body.tech_wisdom1;
+      let charisma1 = body.tech_charisma1;
+      let constitution1 = body.tech_constitution1;
+      let points_budget = body.tech_points_budget;
+      let smallest_score = body.tech_smallest_score;
+      let largest_score = body.tech_largest_score;
+      let s1 = body.tech_s1;
+      let s2 = body.tech_s2;
+      let s3 = body.tech_s3;
+      let s4 = body.tech_s4;
+      let s5 = body.tech_s5;
+      let s6 = body.tech_s6;
+      let s7 = body.tech_s7;
+      let s8 = body.tech_s8;
+      let s9 = body.tech_s9;
+      let s10 = body.tech_s10;
+      let s11 = body.tech_s11;
+      let x1 = body.tech_s12;
+      let x2 = body.tech_s13;
+      let x3 = body.tech_s14;
+      let x4 = body.tech_s15;
+      let x5 = body.tech_s16;
+
+    const result = {};
+
+    // Helper function: calculate_sum (for choice 1)
+    const calculateSum = (val1) => {
+        const scoreMap = {
+            '8': 0,
+            '9': 1,
+            '10': 2,
+            '11': 3,
+            '12': 4,
+            '13': 5,
+            '14': 7,
+            '15': 9
+        };
+        return scoreMap[String(val1)] || 0;
+    };
+
+    // Helper function: calculate_sum2 (for choice 2)
+    const calculateSum2 = (val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13, val14, val15, val16, val17) => {
+        const scoreMap = {
+            '3': val13,
+            '4': val14,
+            '5': val15,
+            '6': val16,
+            '7': val17,
+            '8': val3,
+            '9': val4,
+            '10': val5,
+            '11': val6,
+            '12': val7,
+            '13': val8,
+            '14': val9,
+            '15': val10,
+            '16': val11,
+            '17': val12,
+            '18': val13
+        };
+        return scoreMap[String(val2)] || 0;
+    };
+
+    // Helper function: calculate_sum2 for 8 parameters (simplified version)
+    const calculateSum2Simple = (val2, val3, val4, val5, val6, val7, val8, val9, val10) => {
+        const scoreMap = {
+            '8': val3,
+            '9': val4,
+            '10': val5,
+            '11': val6,
+            '12': val7,
+            '13': val8,
+            '14': val9,
+            '15': val10
+        };
+        return scoreMap[String(val2)] || 0;
+    };
+
+    // Choice 1: Standard Point Buy
+    if (choice == "1") {
+        // Racial choice 39 (custom)
+        if (racial_choice == "39") {
+            if (
+                !this.isNumericdnd(strength) || !this.isNumericdnd(dexerity) ||
+                !this.isNumericdnd(intelligence) || !this.isNumericdnd(wisdom) ||
+                !this.isNumericdnd(charisma) || !this.isNumericdnd(constitution) ||
+                !this.isNumericdnd(strength1) || !this.isNumericdnd(dexerity1) ||
+                !this.isNumericdnd(intelligence1) || !this.isNumericdnd(wisdom1) ||
+                !this.isNumericdnd(charisma1) || !this.isNumericdnd(constitution1)
+            ) {
+                result.error = 'Please! Check Your Input';
+                return result;
+            }
+
+            const str = parseFloat(strength);
+            const dex = parseFloat(dexerity);
+            const int = parseFloat(intelligence);
+            const wis = parseFloat(wisdom);
+            const cha = parseFloat(charisma);
+            const con = parseFloat(constitution);
+
+            if (
+                (str >= 3 && str <= 15) && (dex >= 3 && dex <= 15) &&
+                (int >= 3 && int <= 15) && (wis >= 3 && wis <= 15) &&
+                (cha >= 3 && cha <= 15) && (con >= 3 && con <= 15)
+            ) {
+                const strength_value = calculateSum(str);
+                const dexerity_value = calculateSum(dex);
+                const intelligence_value = calculateSum(int);
+                const wisdom_value = calculateSum(wis);
+                const charisma_value = calculateSum(cha);
+                const constitution_value = calculateSum(con);
+
+                const sum = strength_value + dexerity_value + intelligence_value + 
+                          wisdom_value + charisma_value + constitution_value;
+                const total_sum = sum - 27;
+
+                if (sum > 27) {
+                    result.error = `You are ${total_sum} points over budget`;
+                    return result;
+                }
+
+                result.tech_strength = str;
+                result.tech_dexerity = dex;
+                result.tech_constitution = con;
+                result.tech_intelligence = int;
+                result.tech_wisdom = wis;
+                result.tech_charisma = cha;
+                result.tech_strength_racial_bonus = parseFloat(strength1);
+                result.tech_charisma_racial_bonus = parseFloat(charisma1);
+                result.tech_dexerity_racial_bonus = parseFloat(dexerity1);
+                result.tech_constitution_racial_bonus = parseFloat(constitution1);
+                result.tech_intelligence_racial_bonus = parseFloat(intelligence1);
+                result.tech_wisdom_racial_bonus = parseFloat(wisdom1);
+                result.tech_strength_value = strength_value;
+                result.tech_dexerity_value = dexerity_value;
+                result.tech_intelligence_value = intelligence_value;
+                result.tech_wisdom_value = wisdom_value;
+                result.tech_charisma_value = charisma_value;
+                result.tech_constitution_value = constitution_value;
+                return result;
+            }
+        } else {
+            // Other racial choices
+            if (
+                !this.isNumericdnd(strength) || !this.isNumericdnd(dexerity) ||
+                !this.isNumericdnd(intelligence) || !this.isNumericdnd(wisdom) ||
+                !this.isNumericdnd(charisma) || !this.isNumericdnd(constitution)
+            ) {
+                result.error = 'Please! Check Your Input';
+                return result;
+            }
+
+            const str = parseFloat(strength);
+            const dex = parseFloat(dexerity);
+            const int = parseFloat(intelligence);
+            const wis = parseFloat(wisdom);
+            const cha = parseFloat(charisma);
+            const con = parseFloat(constitution);
+
+            if (
+                (str >= 3 && str <= 15) && (dex >= 3 && dex <= 15) &&
+                (int >= 3 && int <= 15) && (wis >= 3 && wis <= 15) &&
+                (cha >= 3 && cha <= 15) && (con >= 3 && con <= 15)
+            ) {
+                const strength_value = calculateSum(str);
+                const dexerity_value = calculateSum(dex);
+                const intelligence_value = calculateSum(int);
+                const wisdom_value = calculateSum(wis);
+                const charisma_value = calculateSum(cha);
+                const constitution_value = calculateSum(con);
+
+                const devillers = racial_choice.split('.');
+                const strength_racial_bonus = devillers[0];
+                const dexerity_racial_bonus = devillers[1];
+                const constitution_racial_bonus = devillers[2];
+                const intelligence_racial_bonus = devillers[3];
+                const wisdom_racial_bonus = devillers[4];
+                const charisma_racial_bonus = devillers[5];
+
+                const sum = strength_value + dexerity_value + intelligence_value + 
+                          wisdom_value + charisma_value + constitution_value;
+                const total_sum = sum - 27;
+
+                if (sum > 27) {
+                    result.error = `You are ${total_sum} points over budget`;
+                    return result;
+                }
+
+                result.tech_strength = str;
+                result.tech_dexerity = dex;
+                result.tech_constitution = con;
+                result.tech_intelligence = int;
+                result.tech_wisdom = wis;
+                result.tech_charisma = cha;
+                result.tech_strength_racial_bonus = strength_racial_bonus;
+                result.tech_charisma_racial_bonus = charisma_racial_bonus;
+                result.tech_dexerity_racial_bonus = dexerity_racial_bonus;
+                result.tech_constitution_racial_bonus = constitution_racial_bonus;
+                result.tech_intelligence_racial_bonus = intelligence_racial_bonus;
+                result.tech_wisdom_racial_bonus = wisdom_racial_bonus;
+                result.tech_strength_value = strength_value;
+                result.tech_dexerity_value = dexerity_value;
+                result.tech_intelligence_value = intelligence_value;
+                result.tech_wisdom_value = wisdom_value;
+                result.tech_charisma_value = charisma_value;
+                result.tech_constitution_value = constitution_value;
+                return result;
+            } else {
+                result.error = 'The score cannot be smaller than 3 and cannot larger than 18';
+                return result;
+            }
+        }
+    }
+    // Choice 2: Custom Point Buy
+    else if (choice == "2") {
+        // Racial choice 39 (custom)
+        if (racial_choice == "39") {
+            if (
+                !this.isNumericdnd(strength) || !this.isNumericdnd(dexerity) ||
+                !this.isNumericdnd(intelligence) || !this.isNumericdnd(wisdom) ||
+                !this.isNumericdnd(charisma) || !this.isNumericdnd(constitution) ||
+                !this.isNumericdnd(smallest_score) || !this.isNumericdnd(largest_score) ||
+                !this.isNumericdnd(points_budget) || !this.isNumericdnd(s1) ||
+                !this.isNumericdnd(s2) || !this.isNumericdnd(s3) || !this.isNumericdnd(s4) ||
+                !this.isNumericdnd(s5) || !this.isNumericdnd(s6) || !this.isNumericdnd(strength1) ||
+                !this.isNumericdnd(dexerity1) || !this.isNumericdnd(intelligence1) ||
+                !this.isNumericdnd(wisdom1) || !this.isNumericdnd(charisma1) ||
+                !this.isNumericdnd(constitution1) || !this.isNumericdnd(s7) ||
+                !this.isNumericdnd(s8) || !this.isNumericdnd(s9) || !this.isNumericdnd(s10) ||
+                !this.isNumericdnd(s11) || !this.isNumericdnd(x1) || !this.isNumericdnd(x2) ||
+                !this.isNumericdnd(x3) || !this.isNumericdnd(x4) || !this.isNumericdnd(x5)
+            ) {
+                result.error = 'Please! Check Your Input';
+                return result;
+            }
+
+            const smallScore = parseFloat(smallest_score);
+            const largeScore = parseFloat(largest_score);
+
+            if (!(smallScore >= 3 && smallScore <= 8 && largeScore >= 13 && largeScore <= 18)) {
+                result.error = 'The score cannot be smaller than 3 and cannot larger than 18';
+                return result;
+            }
+
+            const str = parseFloat(strength);
+            const dex = parseFloat(dexerity);
+            const int = parseFloat(intelligence);
+            const wis = parseFloat(wisdom);
+            const cha = parseFloat(charisma);
+            const con = parseFloat(constitution);
+
+            if (
+                (str >= 3 && str <= 18) && (dex >= 3 && dex <= 18) &&
+                (int >= 3 && int <= 18) && (wis >= 8 && wis <= 18) &&
+                (cha >= 8 && cha <= 18) && (con >= 8 && con <= 18)
+            ) {
+                const strength_value = calculateSum2(str, parseFloat(x1), parseFloat(x2), parseFloat(x3), 
+                    parseFloat(x4), parseFloat(x5), parseFloat(s1), parseFloat(s2), parseFloat(s3), 
+                    parseFloat(s4), parseFloat(s5), parseFloat(s6), parseFloat(s7), parseFloat(s8), 
+                    parseFloat(s9), parseFloat(s10), parseFloat(s11));
+                
+                const dexerity_value = calculateSum2(dex, parseFloat(x1), parseFloat(x2), parseFloat(x3), 
+                    parseFloat(x4), parseFloat(x5), parseFloat(s1), parseFloat(s2), parseFloat(s3), 
+                    parseFloat(s4), parseFloat(s5), parseFloat(s6), parseFloat(s7), parseFloat(s8), 
+                    parseFloat(s9), parseFloat(s10), parseFloat(s11));
+                
+                const intelligence_value = calculateSum2(int, parseFloat(x1), parseFloat(x2), parseFloat(x3), 
+                    parseFloat(x4), parseFloat(x5), parseFloat(s1), parseFloat(s2), parseFloat(s3), 
+                    parseFloat(s4), parseFloat(s5), parseFloat(s6), parseFloat(s7), parseFloat(s8), 
+                    parseFloat(s9), parseFloat(s10), parseFloat(s11));
+                
+                const wisdom_value = calculateSum2(wis, parseFloat(x1), parseFloat(x2), parseFloat(x3), 
+                    parseFloat(x4), parseFloat(x5), parseFloat(s1), parseFloat(s2), parseFloat(s3), 
+                    parseFloat(s4), parseFloat(s5), parseFloat(s6), parseFloat(s7), parseFloat(s8), 
+                    parseFloat(s9), parseFloat(s10), parseFloat(s11));
+                
+                const charisma_value = calculateSum2(cha, parseFloat(x1), parseFloat(x2), parseFloat(x3), 
+                    parseFloat(x4), parseFloat(x5), parseFloat(s1), parseFloat(s2), parseFloat(s3), 
+                    parseFloat(s4), parseFloat(s5), parseFloat(s6), parseFloat(s7), parseFloat(s8), 
+                    parseFloat(s9), parseFloat(s10), parseFloat(s11));
+                
+                const constitution_value = calculateSum2(con, parseFloat(x1), parseFloat(x2), parseFloat(x3), 
+                    parseFloat(x4), parseFloat(x5), parseFloat(s1), parseFloat(s2), parseFloat(s3), 
+                    parseFloat(s4), parseFloat(s5), parseFloat(s6), parseFloat(s7), parseFloat(s8), 
+                    parseFloat(s9), parseFloat(s10), parseFloat(s11));
+
+                const sum = strength_value + dexerity_value + intelligence_value + 
+                          wisdom_value + charisma_value + constitution_value;
+                const budget = parseFloat(points_budget);
+                const total_minus = sum - budget;
+
+                if (sum > budget) {
+                    result.error = `You are ${total_minus} points over budget`;
+                    return result;
+                }
+
+                result.tech_strength = str;
+                result.tech_dexerity = dex;
+                result.tech_constitution = con;
+                result.tech_intelligence = int;
+                result.tech_wisdom = wis;
+                result.tech_charisma = cha;
+                result.tech_strength_racial_bonus = parseFloat(strength1);
+                result.tech_charisma_racial_bonus = parseFloat(charisma1);
+                result.tech_dexerity_racial_bonus = parseFloat(dexerity1);
+                result.tech_constitution_racial_bonus = parseFloat(constitution1);
+                result.tech_intelligence_racial_bonus = parseFloat(intelligence1);
+                result.tech_wisdom_racial_bonus = parseFloat(wisdom1);
+                result.tech_strength_value = strength_value;
+                result.tech_dexerity_value = dexerity_value;
+                result.tech_intelligence_value = intelligence_value;
+                result.tech_wisdom_value = wisdom_value;
+                result.tech_charisma_value = charisma_value;
+                result.tech_constitution_value = constitution_value;
+                return result;
+            } else {
+                result.error = 'The base ability scores cannot be small than 8 and larger than 18';
+                return result;
+            }
+        } else {
+            // Other racial choices
+            if (
+                !this.isNumericdnd(strength) || !this.isNumericdnd(dexerity) ||
+                !this.isNumericdnd(intelligence) || !this.isNumericdnd(wisdom) ||
+                !this.isNumericdnd(charisma) || !this.isNumericdnd(constitution) ||
+                !this.isNumericdnd(smallest_score) || !this.isNumericdnd(largest_score) ||
+                !this.isNumericdnd(points_budget) || !this.isNumericdnd(s1) ||
+                !this.isNumericdnd(s2) || !this.isNumericdnd(s3) || !this.isNumericdnd(s4) ||
+                !this.isNumericdnd(s5) || !this.isNumericdnd(s6) || !this.isNumericdnd(s7) ||
+                !this.isNumericdnd(s8)
+            ) {
+                result.error = 'Please! Check Your Input11';
+                return result;
+            }
+
+            const smallScore = parseFloat(smallest_score);
+            const largeScore = parseFloat(largest_score);
+            const str = parseFloat(strength);
+            const dex = parseFloat(dexerity);
+            const int = parseFloat(intelligence);
+            const wis = parseFloat(wisdom);
+            const cha = parseFloat(charisma);
+            const con = parseFloat(constitution);
+
+            if (
+                smallScore <= str && smallScore <= dex && smallScore <= int &&
+                smallScore <= wis && smallScore <= con && smallScore <= cha &&
+                smallScore >= 3 && smallScore <= 18 && largeScore >= 3 && largeScore <= 18 &&
+                smallScore !== largeScore && largeScore > str && largeScore > dex &&
+                largeScore > cha && largeScore > wis && largeScore > int && largeScore > con
+            ) {
+                if (
+                    (str >= 8 && str <= 15) && (dex >= 8 && dex <= 15) &&
+                    (int >= 8 && int <= 15) && (wis >= 8 && wis <= 15) &&
+                    (cha >= 8 && cha <= 15) && (con >= 8 && con <= 15)
+                ) {
+                    const strength_value = calculateSum2Simple(str, parseFloat(s1), parseFloat(s2), 
+                        parseFloat(s3), parseFloat(s4), parseFloat(s5), parseFloat(s6), 
+                        parseFloat(s7), parseFloat(s8));
+                    
+                    const dexerity_value = calculateSum2Simple(dex, parseFloat(s1), parseFloat(s2), 
+                        parseFloat(s3), parseFloat(s4), parseFloat(s5), parseFloat(s6), 
+                        parseFloat(s7), parseFloat(s8));
+                    
+                    const intelligence_value = calculateSum2Simple(int, parseFloat(s1), parseFloat(s2), 
+                        parseFloat(s3), parseFloat(s4), parseFloat(s5), parseFloat(s6), 
+                        parseFloat(s7), parseFloat(s8));
+                    
+                    const wisdom_value = calculateSum2Simple(wis, parseFloat(s1), parseFloat(s2), 
+                        parseFloat(s3), parseFloat(s4), parseFloat(s5), parseFloat(s6), 
+                        parseFloat(s7), parseFloat(s8));
+                    
+                    const charisma_value = calculateSum2Simple(cha, parseFloat(s1), parseFloat(s2), 
+                        parseFloat(s3), parseFloat(s4), parseFloat(s5), parseFloat(s6), 
+                        parseFloat(s7), parseFloat(s8));
+                    
+                    const constitution_value = calculateSum2Simple(con, parseFloat(s1), parseFloat(s2), 
+                        parseFloat(s3), parseFloat(s4), parseFloat(s5), parseFloat(s6), 
+                        parseFloat(s7), parseFloat(s8));
+
+                    const sum = strength_value + dexerity_value + intelligence_value + 
+                              wisdom_value + charisma_value + constitution_value;
+
+                    const devillers = racial_choice.split('.');
+                    const strength_racial_bonus = devillers[0];
+                    const dexerity_racial_bonus = devillers[1];
+                    const constitution_racial_bonus = devillers[2];
+                    const intelligence_racial_bonus = devillers[3];
+                    const wisdom_racial_bonus = devillers[4];
+                    const charisma_racial_bonus = devillers[5];
+
+                    const budget = parseFloat(points_budget);
+                    const total_minus = sum - budget;
+
+                    if (sum > budget) {
+                        result.error = `You are ${total_minus} points over budget`;
+                        return result;
+                    }
+
+                    result.tech_strength = str;
+                    result.tech_dexerity = dex;
+                    result.tech_constitution = con;
+                    result.tech_intelligence = int;
+                    result.tech_wisdom = wis;
+                    result.tech_charisma = cha;
+                    result.tech_strength_racial_bonus = strength_racial_bonus;
+                    result.tech_charisma_racial_bonus = charisma_racial_bonus;
+                    result.tech_dexerity_racial_bonus = dexerity_racial_bonus;
+                    result.tech_constitution_racial_bonus = constitution_racial_bonus;
+                    result.tech_intelligence_racial_bonus = intelligence_racial_bonus;
+                    result.tech_wisdom_racial_bonus = wisdom_racial_bonus;
+                    result.tech_strength_value = strength_value;
+                    result.tech_dexerity_value = dexerity_value;
+                    result.tech_intelligence_value = intelligence_value;
+                    result.tech_wisdom_value = wisdom_value;
+                    result.tech_charisma_value = charisma_value;
+                    result.tech_constitution_value = constitution_value;
+                    return result;
+                } else {
+                    result.error = 'The base ability scores cannot be small than 8 and larger than 18';
+                    return result;
+                }
+            } else {
+                result.error = 'The score cannot be smaller than 3 and cannot larger than 18';
+                return result;
+            }
+        }
+    }
+
+    result.error = 'Please! Check Your Input';
+    return result;
+    }
+
+    // Helper function (reuse from previous code)
+    isNumericdnd(value) {
+        if (value === null || value === undefined || value === '') {
+            return false;
+        }
+        return !isNaN(parseFloat(value)) && isFinite(value);
+    }
+
+     /**
+    * getCalculationStairCalculator: Service Method
+    * POST: /api/calculators-lol/stair-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationStairCalculator(body) {
+      const stairInches = (a, b) => {
+          if (b == "ft") {
+              return a * 12;
+          } else if (b == "in") {
+              return a * 1;
+          } else if (b == "yd") {
+              return a * 36;
+          } else if (b == "cm") {
+              return a / 2.54;
+          } else if (b == "m") {
+              return a * 39.37;
+          }
+          return a;
+      };
+      const type = body.tech_type;
+      const f_input = parseFloat(body.tech_f_input) || 0;
+      const f_units = body.tech_f_units;
+      var s_input = parseFloat(body.tech_s_input) || 0;
+      const s_units = body.tech_s_units;
+      const rise = body.tech_rise;
+      const t_input = parseFloat(body.tech_t_input) || 0;
+      const t_units = body.tech_t_units;
+      const tread = body.tech_tread;
+      const tread_input = parseFloat(body.tech_tread_input) || 0;
+      const tread_units = body.tech_tread_units;
+      const headroom = body.tech_headroom;
+      const f_opening = parseFloat(body.tech_f_opening) || 0;
+      const fo_units = body.tech_fo_units;
+      const f_thickness = parseFloat(body.tech_f_thickness) || 0;
+      const ft_units = body.tech_ft_units;
+      const h_req = parseFloat(body.tech_h_req) || 0;
+      const hr_units = body.tech_hr_units;
+      const mount = body.tech_mount;
+
+      const result = {};
+
+      let inch, total_run_ans, run_ans, stair_ans, placement, mount_ans, step_ans, s_ans, str, angle_ans, answ;
+
+      if (type == "first") {
+          const f_input_in = stairInches(f_input, f_units);
+          var s_input = stairInches(s_input, s_units);
+          const t_input_in = stairInches(t_input, t_units);
+          const tread_input_in = stairInches(tread_input, tread_units);
+          if (f_input_in > 0 && s_input > 0) {
+              if (rise == "1") {
+                  if (t_input_in > 0) {
+                      inch = t_input_in;
+                      inch = Number(inch.toFixed(2));
+                      const no_stair = s_input / t_input_in;
+                      stair_ans = Math.round(no_stair);
+                      total_run_ans = f_input_in * (stair_ans - 1);
+                      total_run_ans = Number(total_run_ans.toFixed(2));
+                      run_ans = f_input_in;
+                      run_ans = Number(run_ans.toFixed(2));
+                      const first_step = s_input - t_input_in;
+                      
+                      if (first_step <= 0) {
+                          step_ans = s_input;
+                          step_ans = Number(step_ans.toFixed(2));
+                      } else if (first_step > 0) {
+                          step_ans = first_step;
+                          step_ans = Number(step_ans.toFixed(2));
+                      }
+                  } else {
+                      result.error = 'Please! Check Your Input';
+                      return result;
+                  }
+
+                  if (tread == "2") {
+                      if (tread_input_in > 0) {
+                          const f_step = s_input - t_input_in;
+                          if (f_step <= 0) {
+                              s_ans = s_input;
+                              s_ans = Number(s_ans.toFixed(2));
+                          } else if (f_step > 0) {
+                              s_ans = f_step;
+                              s_ans = Number(s_ans.toFixed(2));
+                          }
+                          placement = t_input_in + tread_input_in;
+                          placement = Number(placement.toFixed(2));
+                      } else {
+                          result.error = 'Please! Check Your Input';
+                          return result;
+                      }
+                  }
+              } else if (rise == "2") {
+                  if (t_input_in > 0) {
+                      inch = s_input / t_input_in;
+                      inch = Number(inch.toFixed(2));
+                      stair_ans = Math.round(t_input_in);
+                      total_run_ans = f_input_in * t_input_in;
+                      total_run_ans = Number(total_run_ans.toFixed(2));
+                      run_ans = f_input_in;
+                      run_ans = Number(run_ans.toFixed(2));
+                  } else {
+                      result.error = 'Please! Check Your Input';
+                      return result;
+                  }
+
+                  if (tread == "2") {
+                      if (tread_input_in > 0) {
+                          const f_step = s_input - t_input_in;
+                          if (f_step <= 0) {
+                              s_ans = s_input;
+                              s_ans = Number(s_ans.toFixed(2));
+                          } else if (f_step > 0) {
+                              s_ans = f_step;
+                              s_ans = Number(s_ans.toFixed(2));
+                          }
+                          placement = tread_input_in;
+                          placement = Number(placement.toFixed(2));
+                      } else {
+                          result.error = 'Please! Check Your Input';
+                          return result;
+                      }
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Your Input';
+              return result;
+          }
+      } else if (type == "second") {
+          const f_input_in = stairInches(f_input, f_units);
+          var s_input = stairInches(s_input, s_units);
+          const t_input_in = stairInches(t_input, t_units);
+          const tread_input_in = stairInches(tread_input, tread_units);
+
+          if (f_input_in > 0 && s_input > 0) {
+              if (rise == "1") {
+                  if (t_input_in > 0) {
+                      inch = t_input_in;
+                      inch = Number(inch.toFixed(2));
+                      const no_stair = s_input / t_input_in;
+                      stair_ans = Math.round(no_stair);
+                      total_run_ans = f_input_in;
+                      total_run_ans = Number(total_run_ans.toFixed(2));
+                      run_ans = f_input_in / stair_ans;
+                      run_ans = Number(run_ans.toFixed(2));
+                      const first_step = s_input - t_input_in;
+                      
+                      if (first_step <= 0) {
+                          step_ans = s_input;
+                          step_ans = Number(step_ans.toFixed(2));
+                      } else if (first_step > 0) {
+                          step_ans = first_step;
+                          step_ans = Number(step_ans.toFixed(2));
+                      }
+                  } else {
+                      result.error = 'Please! Check Your Input';
+                      return result;
+                  }
+
+                  if (tread == "2") {
+                      if (tread_input_in > 0) {
+                          const f_step = s_input - t_input_in;
+                          if (f_step <= 0) {
+                              s_ans = s_input;
+                              s_ans = Number(s_ans.toFixed(2));
+                          } else if (f_step > 0) {
+                              s_ans = f_step;
+                              s_ans = Number(s_ans.toFixed(2));
+                          }
+                          placement = t_input_in + tread_input_in;
+                          placement = Number(placement.toFixed(2));
+                      } else {
+                          result.error = 'Please! Check Your Input';
+                          return result;
+                      }
+                  }
+              } else if (rise == "2") {
+                  if (t_input_in > 0) {
+                      inch = s_input / t_input_in;
+                      inch = Number(inch.toFixed(2));
+                      stair_ans = Math.round(t_input_in);
+                      total_run_ans = f_input_in;
+                      total_run_ans = Number(total_run_ans.toFixed(2));
+                      run_ans = f_input_in / stair_ans;
+                      run_ans = Number(run_ans.toFixed(2));
+                  } else {
+                      result.error = 'Please! Check Your Input';
+                      return result;
+                  }
+
+                  if (tread == "2") {
+                      if (tread_input_in > 0) {
+                          const f_step = s_input - t_input_in;
+                          if (f_step <= 0) {
+                              s_ans = s_input;
+                              s_ans = Number(s_ans.toFixed(2));
+                          } else if (f_step > 0) {
+                              s_ans = f_step;
+                              s_ans = Number(s_ans.toFixed(2));
+                          }
+                          placement = tread_input_in;
+                          placement = Number(placement.toFixed(2));
+                      } else {
+                          result.error = 'Please! Check Your Input';
+                          return result;
+                      }
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Your Input';
+              return result;
+          }
+      }
+
+      if (mount == "1") {
+          mount_ans = s_input - t_input;
+          mount_ans = Number(mount_ans.toFixed(2));
+          
+          if (headroom == "2") {
+              if (f_opening && f_thickness && h_req) {
+                  const f_opening_in = stairInches(f_opening, fo_units);
+                  const f_thickness_in = stairInches(f_thickness, ft_units);
+                  const h_req_in = stairInches(h_req, hr_units);
+
+                  if (f_opening_in > 0) {
+                      if (f_opening_in > 0 && f_opening_in < 5) {
+                          answ = inch - f_thickness_in;
+                      } else {
+                          answ = inch - f_thickness_in;
+                          for (let i = 0; i <= f_opening_in; i++) {
+                              if (i % 5 === 0) {
+                                  answ += inch;
+                              }
+                          }
+                          if (f_opening_in < 5) {
+                              // answ remains the same
+                          } else if (f_opening_in > 5) {
+                              answ -= inch;
+                          }
+                      }
+                  } else if (f_opening_in < 0) {
+                      if (f_opening_in < -1 && f_opening_in > -5) {
+                          answ = f_thickness_in * -1;
+                      } else {
+                          answ = inch + f_thickness_in;
+                          for (let i = -1; i >= f_opening_in; i--) {
+                              if (i % 5 === 0) {
+                                  answ += inch;
+                              }
+                          }
+                          answ *= -1;
+                      }
+                      if (f_opening_in > -5) {
+                          // answ remains the same
+                      } else if (f_opening_in < -5) {
+                          answ += inch;
+                      }
+                  }
+              } else {
+                  result.error = 'Please! Check Your Input';
+                  return result;
+              }
+          }
+      } else if (mount == "2") {
+          mount_ans = s_input;
+          
+          if (headroom == "2") {
+              if (f_opening && f_thickness && h_req) {
+                  const f_opening_in = stairInches(f_opening, fo_units);
+                  const f_thickness_in = stairInches(f_thickness, ft_units);
+                  const h_req_in = stairInches(h_req, hr_units);
+
+                  if (f_opening_in > 0) {
+                      if (f_opening_in >= 0 && f_opening_in < 5) {
+                          answ = f_thickness_in * -1;
+                      } else {
+                          answ = inch - f_thickness_in;
+                          for (let i = 0; i < f_opening_in; i++) {
+                              if (i % 5 === 0) {
+                                  answ += inch;
+                              }
+                          }
+                          answ -= inch;
+                      }
+                  } else if (f_opening_in < 0) {
+                      if (f_opening_in < -1 && f_opening_in > -5) {
+                          answ = f_thickness_in + inch;
+                          answ *= -1;
+                      } else {
+                          answ = inch + f_thickness_in;
+                          for (let i = -1; i > f_opening_in; i--) {
+                              if (i % 5 === 0) {
+                                  answ += inch;
+                              }
+                          }
+                          answ *= -1;
+                      }
+                  }
+              } else {
+                  result.error = 'Please! Check Your Input';
+                  return result;
+              }
+          }
+      }
+      // console.log(mount_ans);
+      if (total_run_ans && mount_ans) {
+          str = Math.pow(total_run_ans, 2) + Math.pow(mount_ans, 2);
+          str = Math.sqrt(str);
+          str = Number(str.toFixed(2));
+
+          if (str && mount_ans) {
+              const angle = mount_ans / str;
+              angle_ans = Math.asin(angle);
+              angle_ans = angle_ans * (180 / Math.PI); // Convert radians to degrees
+              angle_ans = Number(angle_ans.toFixed(2));
+          }
+      }
+
+      // Add calculated values to result object
+      if (inch !== undefined) result.tech_inch = inch;
+      if (total_run_ans !== undefined) result.tech_total_run_ans = total_run_ans;
+      if (run_ans !== undefined) result.tech_run_ans = run_ans;
+      if (stair_ans !== undefined) result.tech_stair_ans = stair_ans;
+      if (placement !== undefined) result.tech_placement = placement;
+      if (mount_ans !== undefined) result.tech_mount_ans = mount_ans;
+      if (str !== undefined) result.tech_str = str;
+      if (step_ans !== undefined) result.tech_step_ans = step_ans;
+      if (s_ans !== undefined) result.tech_s_ans = s_ans;
+      if (angle_ans !== undefined) result.tech_angle_ans = angle_ans;
+      if (answ !== undefined) result.tech_answ = answ;
+
+      return result;
+  }
+
+
+       /**
+    * getCalculationBattingAverageCalculator: Service Method
+    * POST: /api/calculators-lol/batting-average-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationBattingAverageCalculator(body) {
+        const operations = body.tech_operations;
+        const first = parseFloat(body.tech_first) || 0;
+        const second = parseFloat(body.tech_second) || 0;
+        const third = parseFloat(body.tech_third) || 0;
+        const four = parseFloat(body.tech_four) || 0;
+        const five = parseFloat(body.tech_five) || 0;
+        const fiveb = parseFloat(body.tech_fiveb) || 0;
+        const seven = parseFloat(body.tech_seven) || 0;
+        const eight = parseFloat(body.tech_eight) || 0;
+        const nine = parseFloat(body.tech_nine) || 0;
+        const ten = parseFloat(body.tech_ten) || 0;
+        const quantity = parseFloat(body.tech_quantity) || 0;
+
+        const result = {};
+        let batting, heading;
+
+        if (operations == "3") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+                const a1 = second - third;
+                batting = first / a1;
+                heading = "Cricket Batting Average";
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "4") {
+            if (!isNaN(first) && !isNaN(second)) {
+                if (first != 0) {
+                    batting = second / first;
+                    heading = "Batting Average";
+                } else {
+                    result.error = 'At Bats cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "5") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four) && !isNaN(five)) {
+                const a1_ans = second + third + four;
+                const a2_ans = first + third + four + five;
+                if (a2_ans != 0) {
+                    batting = a1_ans / a2_ans;
+                    heading = "On Base Percentage";
+                } else {
+                    batting = 0;
+                    heading = "On Base Percentage";
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "6") {
+            if (!isNaN(second) && !isNaN(third) && !isNaN(four) && !isNaN(first)) {
+                if (first != 0) {
+                    const d2 = third * 2;
+                    const t3 = four * 3;
+                    const h4 = five * 4;
+                    const a1_ans = second + d2 + t3 + h4;
+                    batting = a1_ans / first;
+                    heading = "Slugging Percentage";
+                } else {
+                    result.error = 'At Bats cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "7") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four) && !isNaN(five) && 
+                !isNaN(fiveb) && !isNaN(quantity) && !isNaN(seven) && !isNaN(eight)) {
+                if (eight != 0) {
+                    const d2 = second * 2;
+                    const t3 = third * 3;
+                    const h4 = four * 4;
+                    const TB = first + d2 + t3 + h4;
+                    const SLG = TB / eight;
+                    const OBP_T = five + quantity + seven;
+                    const OBP_D = eight + quantity + fiveb + seven;
+                    const OBP = OBP_T / OBP_D;
+                    if (OBP_D !== 0) {
+                        batting = OBP + SLG;
+                        heading = "On-Base Plus Slugging";
+                    } else {
+                        batting = 0;
+                        heading = "On-Base Plus Slugging";
+                    }
+                } else {
+                    result.error = 'At Bats cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "8") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four) && !isNaN(five) && 
+                !isNaN(fiveb) && !isNaN(quantity) && !isNaN(seven)) {
+                if (first != 0) {
+                    const NIBB = second * 0.72;
+                    const HBP = third * 0.72;
+                    const B1 = four * 0.90;
+                    const RBOE = seven * 0.92;
+                    const B2 = five * 1.24;
+                    const B3 = quantity * 1.56;
+                    const HR = fiveb * 1.95;
+                    const top_part = NIBB + HBP + B1 + RBOE + B2 + B3 + HR;
+                    batting = top_part / first;
+                    heading = "Weighted On Base Average";
+                } else {
+                    result.error = 'Appearances cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "9") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four) && !isNaN(five)) {
+                const b_top = second - third;
+                const b_down = first - five - third + four;
+                if (b_down != 0) {
+                    batting = b_top / b_down;
+                    heading = "Batting Average on Balls in Play";
+                } else {
+                    batting = 0;
+                    heading = "Batting Average on Balls in Play";
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations === "10") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four)) {
+                if (first != 0) {
+                    const t2 = third * 2;
+                    const h3 = four * 3;
+                    const top_ans = second + t2 + h3;
+                    batting = top_ans / first;
+                    heading = "Isolated Power";
+                } else {
+                    result.error = 'At Bats cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "11") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four) && !isNaN(five) && 
+                !isNaN(quantity) && !isNaN(fiveb) && !isNaN(seven) && !isNaN(eight) && !isNaN(nine) && !isNaN(ten)) {
+                const f_part = second + third - ten + five - quantity;
+
+                const s2_part = third - fiveb + five;
+                const s3_part = 0.26 * s2_part;
+                const s_part = four + s3_part;
+
+                const t2_part = seven + eight + nine;
+                const t_part = 0.52 * t2_part;
+
+                const down_part = first + third + five + seven + eight;
+                const top_part = f_part * s_part + t_part;
+                if (down_part != 0) {
+                    batting = top_part / down_part;
+                    heading = "Runs Created";
+                } else {
+                    batting = 0;
+                    heading = "Runs Created";
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "12") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four) && !isNaN(five) && !isNaN(quantity)) {
+                if (quantity != 0) {
+                    const f_part = first - second;
+                    const l_part = four - five;
+                    const top_part = third + f_part + l_part;
+                    batting = top_part / quantity;
+                    heading = "Secondary Average";
+                } else {
+                    result.error = 'At Bats cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "13") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four)) {
+                const d2 = second * 2;
+                const t3 = third * 3;
+                const h4 = four * 4;
+                batting = first + d2 + t3 + h4;
+                heading = "Total Bases";
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "14") {
+            if (!isNaN(first) && !isNaN(second)) {
+                if (second != 0) {
+                    batting = first / second;
+                    heading = "At Bats per Home Run";
+                } else {
+                    result.error = 'Home Runs cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "15") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+                const top_part = first + second;
+                const down_part = first + second + third;
+                if (down_part != 0) {
+                    batting = top_part / down_part;
+                    heading = "Fielding Percentage";
+                } else {
+                    batting = 0;
+                    heading = "Fielding Percentage";
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "16") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+                if (first != 0) {
+                    const top_part = second + third;
+                    batting = top_part / first;
+                    heading = "Range Factor Per Games Played";
+                } else {
+                    result.error = 'Games Played cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "17") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+                if (first != 0) {
+                    const t_part = second + third;
+                    const top_part = 9 * t_part;
+                    batting = top_part / first;
+                    heading = "Range Factor Per 9 Innings";
+                } else {
+                    result.error = 'Innings Played cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "18") {
+            if (!isNaN(first) && !isNaN(second)) {
+                if (second != 0) {
+                    const top_part = 9 * first;
+                    batting = top_part / second;
+                    heading = "ERA";
+                } else {
+                    result.error = 'Innings Pitched cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "19") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+                if (third != 0) {
+                    const top_part = first + second;
+                    batting = top_part / third;
+                    heading = "WHIP";
+                } else {
+                    result.error = 'Innings Pitched cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "20") {
+            if (!isNaN(first) && !isNaN(second)) {
+                if (first != 0) {
+                    const top_part = second / first;
+                    batting = 9 * top_part;
+                    heading = "Hits Allowed Per 9 Innings";
+                } else {
+                    result.error = 'Innings Pitched cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "21") {
+            if (!isNaN(first) && !isNaN(second)) {
+                if (first != 0) {
+                    const top_part = second / first;
+                    batting = 9 * top_part;
+                    heading = "Home Runs Allowed Per 9 Innings";
+                } else {
+                    result.error = 'Innings Pitched cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "22") {
+            if (!isNaN(first) && !isNaN(second)) {
+                if (first != 0) {
+                    const top_part = second / first;
+                    batting = 9 * top_part;
+                    heading = "Strikeouts Per 9 Innings";
+                } else {
+                    result.error = 'Innings Pitched cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "23") {
+            if (!isNaN(first) && !isNaN(second)) {
+                if (first != 0) {
+                    const top_part = second / first;
+                    batting = 9 * top_part;
+                    heading = "Walks Per 9 Innings";
+                } else {
+                    result.error = 'Innings Pitched cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else if (operations == "24") {
+            if (!isNaN(first) && !isNaN(second)) {
+                if (second != 0) {
+                    batting = first / second;
+                    heading = "Strikeout-to-Walk Ratio";
+                } else {
+                    result.error = 'Walks cannot be zero';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+        } else {
+            result.error = 'Invalid operation';
+            return result;
+        }
+
+        // Format the result to 3 decimal places
+        batting = Number(batting.toFixed(3));
+        
+        result.tech_batting = batting;
+        result.tech_heading = heading;
+        return result;
+    }
+
+      /**
+    * getCalculationMpgCalculator: Service Method
+    * POST: /api/calculators-lol/mpg-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationMpgCalculator(body) {
+        const type = body.tech_type;
+        const operations = body.tech_operations;
+        const first = parseFloat(body.tech_first) || 0;
+        const units1 = body.tech_units1;
+        const second = parseFloat(body.tech_second) || 0;
+        const units2 = body.tech_units2;
+        const third = parseFloat(body.tech_third) || 0;
+        const units3 = body.tech_units3;
+        const four = parseFloat(body.tech_four) || 0;
+        const units4 = body.tech_units4;
+        const ad_first = parseFloat(body.tech_ad_first) || 0;
+        const ad_second = parseFloat(body.tech_ad_second) || 0;
+        const ad_third = parseFloat(body.tech_ad_third) || 0;
+        const ad_units3 = body.tech_ad_units3;
+        const ad_four = parseFloat(body.tech_ad_four) || 0;
+        const ad_units4 = body.tech_ad_units4;
+        const currancy = body.tech_currancy;
+
+        const result = {};
+
+        // Helper functions
+        const calculate1 = (a, b) => {
+            if (a == "1") {
+                return b / 1.609;
+            } else if (a == "2") {
+                return b * 1;
+            }
+            return b;
+        };
+
+        const calculate2 = (a, b) => {
+            if (a == "1") {
+                return b / 3.785;
+            } else if (a == "2") {
+                return b * 1;
+            } else if (a == "3") {
+                return b * 1.20095;
+            }
+            return b;
+        };
+
+        const calculate3 = (a, b) => {
+            if (a == "1") {
+                return b / 235.215;
+            } else if (a == "2") {
+                return b * 1;
+            } else if (a == "3") {
+                return b * 1.201;
+            } else if (a == "4") {
+                return b * 2.352145;
+            }
+            return b;
+        };
+
+        // Convert units to numeric codes
+        let units1Code, units2Code, units3Code, units4Code, adUnits3Code, adUnits4Code;
+
+        // Convert units1
+        if (units1 == 'km') {
+            units1Code = "1";
+        } else if (units1 == 'mi') {
+            units1Code = "2";
+        } else {
+            units1Code = units1;
+        }
+
+        // Convert units2
+        if (units2 == 'liters') {
+            units2Code = "1";
+        } else if (units2 == 'US gal') {
+            units2Code = "2";
+        } else if (units2 == 'UK gal') {
+            units2Code = "3";
+        } else {
+            units2Code = units2;
+        }
+
+        // Convert units3
+        if (units3 == 'L/100km') {
+            units3Code = "1";
+        } else if (units3 == 'US mpg') {
+            units3Code = "2";
+        } else if (units3 == 'UK mpg') {
+            units3Code = "3";
+        } else if (units3 == 'kmpl') {
+            units3Code = "4";
+        } else {
+            units3Code = units3;
+        }
+
+        // Convert units4
+        if (units4 == currancy + 'liters') {
+            units4Code = "1";
+        } else if (units4 == 'US gal') {
+            units4Code = "2";
+        } else if (units4 == 'UK gal') {
+            units4Code = "2";
+        } else {
+            units4Code = units4;
+        }
+
+        // Convert ad_units3
+        if (ad_units3 == 'liters') {
+            adUnits3Code = "1";
+        } else if (ad_units3 == 'US gal') {
+            adUnits3Code = "2";
+        } else if (ad_units3 == 'UK gal') {
+            adUnits3Code = "2";
+        } else {
+            adUnits3Code = ad_units3;
+        }
+
+        // Convert ad_units4
+        if (ad_units4 == currancy + 'liters') {
+            adUnits4Code = "1";
+        } else if (ad_units4 == currancy + 'US gal') {
+            adUnits4Code = "2";
+        } else if (ad_units4 == currancy + 'UK gal') {
+            adUnits4Code = "2";
+        } else {
+            adUnits4Code = ad_units4;
+        }
+
+        // Convert inputs
+        const convertedFirst = calculate1(units1Code, first);
+        const convertedSecond = calculate2(units2Code, second);
+        const convertedThird = calculate3(units3Code, third);
+        const convertedAdThird = calculate2(adUnits3Code, ad_third);
+
+        let jawab, petrol, cost, distance, km_dis, mi_jawab, km_jawab, ad_cost, ad_petrol;
+
+        if (type == "first") {
+            if (operations == "1") {
+                if (!isNaN(convertedSecond) && !isNaN(convertedThird)) {
+                    petrol = convertedSecond;
+                    jawab = convertedSecond * convertedThird;
+                } else {
+                    result.error = 'Please check your input';
+                    return result;
+                }
+            } else if (operations == "2") {
+                if (!isNaN(convertedFirst) && !isNaN(convertedThird)) {
+                    if (convertedThird != 0) {
+                        jawab = convertedFirst / convertedThird;
+                        petrol = jawab;
+                    } else {
+                        result.error = 'Fuel economy cannot be 0';
+                        return result;
+                    }
+                } else {
+                    result.error = 'Please check your input';
+                    return result;
+                }
+            } else if (operations == "3") {
+                if (!isNaN(convertedFirst) && !isNaN(convertedSecond)) {
+                    if (convertedSecond != 0) {
+                        jawab = convertedFirst / convertedSecond;
+                        petrol = convertedSecond;
+                    } else {
+                        result.error = 'Fuel used cannot be 0';
+                        return result;
+                    }
+                } else {
+                    result.error = 'Please check your input';
+                    return result;
+                }
+            } else {
+                result.error = 'Invalid operation';
+                return result;
+            }
+
+            // Calculate cost
+            if (!isNaN(four)) {
+                if (units4Code == "1") {
+                    const cost1 = petrol * 3.785;
+                    cost = cost1 * four;
+                } else if (units4Code == "2") {
+                    cost = petrol * four;
+                } else if (units4Code == "3") {
+                    const cost1 = petrol / 1.201;
+                    cost = cost1 * four;
+                } else {
+                    cost = 0;
+                }
+                cost = Number(cost.toFixed(3));
+                result.tech_cost = cost;
+            }
+
+            result.tech_jawab = jawab;
+
+        } else if (type == "second") {
+            if (!isNaN(ad_first) && !isNaN(ad_second) && !isNaN(convertedAdThird)) {
+                if (ad_second > ad_first) {
+                    if (convertedAdThird != 0) {
+                        ad_petrol = convertedAdThird;
+                        distance = ad_second - ad_first;
+                        mi_jawab = distance / convertedAdThird;
+                        km_dis = distance / 1.609;
+                        km_jawab = km_dis / convertedAdThird;
+                    } else {
+                        result.error = 'Fuel used cannot be 0';
+                        return result;
+                    }
+                } else {
+                    result.error = 'End Trip must be greater than Start Trip';
+                    return result;
+                }
+            } else {
+                result.error = 'Please check your input';
+                return result;
+            }
+
+            // Calculate additional cost
+            if (!isNaN(ad_four)) {
+                if (adUnits4Code == "1") {
+                    const ad_cost1 = ad_petrol * 3.785;
+                    ad_cost = ad_cost1 * ad_four;
+                } else if (adUnits4Code == "2") {
+                    ad_cost = ad_petrol * ad_four;
+                } else if (adUnits4Code == "3") {
+                    const ad_cost1 = ad_petrol / 1.201;
+                    ad_cost = ad_cost1 * ad_four;
+                } else {
+                    ad_cost = 0;
+                }
+                ad_cost = Number(ad_cost.toFixed(3));
+                result.tech_ad_cost = ad_cost;
+            }
+
+            result.tech_distance = distance;
+            result.tech_km_dis = km_dis;
+            result.tech_mi_jawab = mi_jawab;
+            result.tech_km_jawab = km_jawab;
+
+        } else {
+            result.error = 'Invalid type';
+            return result;
+        }
+
+        return result;
+    }
+
+      /**
+    * getCalculationAquariumCalculator: Service Method
+    * POST: /api/calculators-lol/aquarium-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationAquariumCalculator(body) {
+      const shape = body.tech_shape;
+      const length = parseFloat(body.tech_length) || 0;
+      const length_unit = body.tech_length_unit;
+      const width = parseFloat(body.tech_width) || 0;
+      const width_unit = body.tech_width_unit;
+      const height = parseFloat(body.tech_height) || 0;
+      const height_unit = body.tech_height_unit;
+      const fill_depth = parseFloat(body.tech_fill_depth) || 0;
+      const fill_depth_unit = body.tech_fill_depth_unit;
+      const front_pane = parseFloat(body.tech_front_pane) || 0;
+      const front_pane_unit = body.tech_front_pane_unit;
+      const end_pane = parseFloat(body.tech_end_pane) || 0;
+      const end_pane_unit = body.tech_end_pane_unit;
+      const radius = parseFloat(body.tech_radius) || 0;
+      const radius_unit = body.tech_radius_unit;
+      const radius_one = parseFloat(body.tech_radius_one) || 0;
+      const radius_one_unit = body.tech_radius_one_unit;
+      const radius_two = parseFloat(body.tech_radius_two) || 0;
+      const radius_two_unit = body.tech_radius_two_unit;
+      const long_side = parseFloat(body.tech_long_side) || 0;
+      const long_side_unit = body.tech_long_side_unit;
+      const short_side = parseFloat(body.tech_short_side) || 0;
+      const short_side_unit = body.tech_short_side_unit;
+      const len_one = parseFloat(body.tech_len_one) || 0;
+      const len_one_unit = body.tech_len_one_unit;
+      const len_two = parseFloat(body.tech_len_two) || 0;
+      const len_two_unit = body.tech_len_two_unit;
+      const wid_one = parseFloat(body.tech_wid_one) || 0;
+      const wid_one_unit = body.tech_wid_one_unit;
+      const wid_two = parseFloat(body.tech_wid_two) || 0;
+      const wid_two_unit = body.tech_wid_two_unit;
+      const full_width = parseFloat(body.tech_full_width) || 0;
+      const full_width_unit = body.tech_full_width_unit;
+
+      const result = {};
+
+      const convertCm = (value, unit) => {
+          if (unit == "cm") {
+              return value * 1;
+          } else if (unit == "m") {
+              return value * 100;
+          } else if (unit == "in") {
+              return value * 2.54;
+          } else if (unit == "ft") {
+              return value * 30.48;
+          } else if (unit == "yd") {
+              return value * 91.44;
+          }
+          return value;
+      };
+
+      let volume, filled_volume;
+
+      if (shape == "1") {
+          if (!isNaN(length) && !isNaN(width) && !isNaN(height)) {
+              const lv = convertCm(length, length_unit);
+              const wv = convertCm(width, width_unit);
+              const hv = convertCm(height, height_unit);
+              volume = lv * wv * hv;
+
+              if (fill_depth != "" && !isNaN(fill_depth)) {
+                  if (fill_depth > height) {
+                      result.error = 'The fill depth cannot be greater than the height of the aquarium.';
+                      return result;
+                  } else {
+                      const fv = convertCm(fill_depth, fill_depth_unit);
+                      filled_volume = lv * wv * fv;
+                      result.tech_filled_volume = filled_volume;
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Input';
+              return result;
+          }
+      } else if (shape == "2") {
+          if (!isNaN(length)) {
+              const lv = convertCm(length, length_unit);
+              volume = lv * lv * lv;
+
+              if (fill_depth != "" && !isNaN(fill_depth)) {
+                  if (fill_depth > length) {
+                      result.error = 'The fill depth cannot be greater than the length of the aquarium.';
+                      return result;
+                  } else {
+                      const fv = convertCm(fill_depth, fill_depth_unit);
+                      filled_volume = lv * lv * fv;
+                      result.tech_filled_volume = filled_volume;
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Input';
+              return result;
+          }
+      } else if (shape == "3") {
+          if (!isNaN(length) && !isNaN(width) && !isNaN(height) && !isNaN(front_pane)) {
+              const lv = convertCm(length, length_unit);
+              const wv = convertCm(width, width_unit);
+              const hv = convertCm(height, height_unit);
+              const fr_pane = convertCm(front_pane, front_pane_unit);
+              volume = ((wv * lv) - ((wv * (lv - fr_pane)) / 2)) * hv;
+
+              if (fill_depth != "" && !isNaN(fill_depth)) {
+                  if (fill_depth > height) {
+                      result.error = 'The fill depth cannot be greater than the height of the aquarium.';
+                      return result;
+                  } else {
+                      const fv = convertCm(fill_depth, fill_depth_unit);
+                      filled_volume = ((wv * lv) - ((wv * (lv - fr_pane)) / 2)) * fv;
+                      result.tech_filled_volume = filled_volume;
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Input';
+              return result;
+          }
+      } else if (shape == "4" || shape == "5") {
+          if (!isNaN(length) && !isNaN(width) && !isNaN(height) && !isNaN(front_pane) && !isNaN(end_pane)) {
+              const lv = convertCm(length, length_unit);
+              const wv = convertCm(width, width_unit);
+              const hv = convertCm(height, height_unit);
+              const fr_pane = convertCm(front_pane, front_pane_unit);
+              const en_pane = convertCm(end_pane, end_pane_unit);
+
+              if (shape == "4") {
+                  volume = ((wv * lv - (lv - fr_pane) * (wv - en_pane) / 2) * hv);
+              } else if (shape == "5") {
+                  volume = 0.5 * ((wv * lv) + (wv * fr_pane) + (en_pane * lv) - (fr_pane * en_pane)) * hv;
+              }
+
+              if (fill_depth != "" && !isNaN(fill_depth)) {
+                  if (fill_depth > height) {
+                      result.error = 'The fill depth cannot be greater than the height of the aquarium.';
+                      return result;
+                  } else {
+                      const fv = convertCm(fill_depth, fill_depth_unit);
+                      if (shape == "4") {
+                          filled_volume = ((wv * lv - (lv - fr_pane) * (wv - en_pane) / 2) * fv);
+                      } else if (shape == "5") {
+                          filled_volume = 0.5 * ((wv * lv) + (wv * fr_pane) + (en_pane * lv) - (fr_pane * en_pane)) * fv;
+                      }
+                      result.tech_filled_volume = filled_volume;
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Input';
+              return result;
+          }
+      } else if (shape == "6" || shape == "7" || shape == "8") {
+          if (!isNaN(height) && !isNaN(radius)) {
+              const hv = convertCm(height, height_unit);
+              const ra = convertCm(radius, radius_unit);
+
+              if (shape == "6") {
+                  volume = (Math.PI * ra * ra) * hv;
+              } else if (shape == "7") {
+                  volume = (Math.PI * ra * ra) * (hv / 2);
+              } else if (shape == "8") {
+                  volume = (Math.PI * ra * ra) * (hv / 4);
+              }
+
+              if (fill_depth != "" && !isNaN(fill_depth)) {
+                  if (fill_depth > height) {
+                      result.error = 'The fill depth cannot be greater than the height of the aquarium.';
+                      return result;
+                  } else {
+                      const fv = convertCm(fill_depth, fill_depth_unit);
+                      if (shape == "6") {
+                          filled_volume = (Math.PI * ra * ra) * fv;
+                      } else if (shape == "7") {
+                          filled_volume = (Math.PI * ra * ra) * (fv / 2);
+                      } else if (shape == "8") {
+                          filled_volume = (Math.PI * ra * ra) * (fv / 4);
+                      }
+                      result.tech_filled_volume = filled_volume;
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Input';
+              return result;
+          }
+      } else if (shape == "9") {
+          if (!isNaN(height) && !isNaN(radius_one) && !isNaN(radius_two)) {
+              const hv = convertCm(height, height_unit);
+              const r1 = convertCm(radius_one, radius_one_unit);
+              const r2 = convertCm(radius_two, radius_two_unit);
+              volume = (Math.PI * (hv * r1 * r2));
+
+              if (fill_depth != "" && !isNaN(fill_depth)) {
+                  if (fill_depth > height) {
+                      result.error = 'The fill depth cannot be greater than the height of the aquarium.';
+                      return result;
+                  } else {
+                      const fv = convertCm(fill_depth, fill_depth_unit);
+                      filled_volume = (Math.PI * (r1 * r2 * fv));
+                      result.tech_filled_volume = filled_volume;
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Input';
+              return result;
+          }
+      } else if (shape == "10") {
+          if (!isNaN(long_side) && !isNaN(short_side) && !isNaN(height)) {
+              const hv = convertCm(height, height_unit);
+              const l1 = convertCm(long_side, long_side_unit);
+              const l2 = convertCm(short_side, short_side_unit);
+              volume = 0.5 * (l1 * l1 + 2 * l2 * l1 - l2 * l2) * hv;
+
+              if (fill_depth != "" && !isNaN(fill_depth)) {
+                  if (fill_depth > height) {
+                      result.error = 'The fill depth cannot be greater than the height of the aquarium.';
+                      return result;
+                  } else {
+                      const fv = convertCm(fill_depth, fill_depth_unit);
+                      filled_volume = 0.5 * (l1 * l1 + 2 * l2 * l1 - l2 * l2) * fv;
+                      result.tech_filled_volume = filled_volume;
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Input';
+              return result;
+          }
+      } else if (shape == "11") {
+          if (!isNaN(len_one) && !isNaN(len_two) && !isNaN(wid_one) && !isNaN(wid_two) && !isNaN(height)) {
+              const hv = convertCm(height, height_unit);
+              const l1 = convertCm(len_one, len_one_unit);
+              const l2 = convertCm(len_two, len_two_unit);
+              const w1 = convertCm(wid_one, wid_one_unit);
+              const w2 = convertCm(wid_two, wid_two_unit);
+              volume = (((l1 - w2) * w1) + (l2 * w2)) * hv;
+
+              if (fill_depth != "" && !isNaN(fill_depth)) {
+                  if (fill_depth > height) {
+                      result.error = 'The fill depth cannot be greater than the height of the aquarium.';
+                      return result;
+                  } else {
+                      const fv = convertCm(fill_depth, fill_depth_unit);
+                      filled_volume = (((l1 - w2) * w1) + (l2 * w2)) * fv;
+                      result.tech_filled_volume = filled_volume;
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Input';
+              return result;
+          }
+      } else if (shape == "12") {
+          if (!isNaN(len_one) && !isNaN(len_two) && !isNaN(height)) {
+              const hv = convertCm(height, height_unit);
+              const l1 = convertCm(len_one, len_one_unit);
+              const l2 = convertCm(len_two, len_two_unit);
+              volume = 0.5 * ((l1 * l2) * hv);
+
+              if (fill_depth != "" && !isNaN(fill_depth)) {
+                  if (fill_depth > height) {
+                      result.error = 'The fill depth cannot be greater than the height of the aquarium.';
+                      return result;
+                  } else {
+                      const fv = convertCm(fill_depth, fill_depth_unit);
+                      filled_volume = 0.5 * ((l1 * l2) * fv);
+                      result.tech_filled_volume = filled_volume;
+                  }
+              }
+          } else {
+              result.error = 'Please! Check Input';
+              return result;
+          }
+      } else if (shape == "13") {
+          if (!isNaN(length) && !isNaN(width) && !isNaN(height) && !isNaN(full_width)) {
+              if (full_width > width) {
+                  const lv = convertCm(length, length_unit);
+                  const wv = convertCm(width, width_unit);
+                  const hv = convertCm(height, height_unit);
+                  const fw = convertCm(full_width, full_width_unit);
+                  const lvd = lv / 2;
+                  const diff = fw - wv;
+
+                  if (diff <= lvd) {
+                      volume = (((Math.PI * (lv / 2) * (fw - wv)) / 2) + (lv * wv)) * hv;
+                  } else {
+                      result.error = 'The difference between full width and width should be smaller or equal to half of aquarium length';
+                      return result;
+                  }
+              } else {
+                  result.error = 'The full width should be greater than width';
+                  return result;
+              }
+          } else {
+              result.error = 'Please! Check Input';
+              return result;
+          }
+      } else {
+          result.error = 'Invalid shape type';
+          return result;
+      }
+
+      result.tech_volume = volume;
+      return result;
+  }
+
+      /**
+    * getCalculationPlantSpacingCalculator: Service Method
+    * POST: /api/calculators-lol/plant-spacing
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationPlantSpacingCalculator(body) {
+      const bed = body.tech_bed;
+      const grid = body.tech_grid;
+      const hedgerows = parseFloat(body.tech_hedgerows) || 0;
+      const length = parseFloat(body.tech_length) || 0;
+      const length_unit = body.tech_length_unit;
+      const width = parseFloat(body.tech_width) || 0;
+      const width_unit = body.tech_width_unit;
+      const want = body.tech_want;
+      const border = parseFloat(body.tech_border) || 0;
+      const border_unit = body.tech_border_unit;
+      const plant_spacing = parseFloat(body.tech_plant_spacing) || 0;
+      const plant_spacing_unit = body.tech_plant_spacing_unit;
+      const row_spacing = parseFloat(body.tech_row_spacing) || 0;
+      const row_spacing_unit = body.tech_row_spacing_unit;
+      const hedge = parseFloat(body.tech_hedge) || 0;
+      const hedge_unit = body.tech_hedge_unit;
+      const total_plants = parseFloat(body.tech_total_plants) || 0;
+      const total_rows = parseFloat(body.tech_total_rows) || 0;
+      const no_of_plant = parseFloat(body.tech_no_of_plant) || 0;
+      const plant_price = parseFloat(body.tech_plant_price) || 0;
+
+      const result = {};
+
+      const convertToMeter = (unit, value) => {
+          if (unit == 'cm') {
+              return value / 100;
+          } else if (unit == 'm') {
+              return value;
+          } else if (unit == 'in') {
+              return value / 39.37;
+          } else if (unit == 'ft') {
+              return value / 3.281;
+          } else if (unit == 'yd') {
+              return value / 1.094;
+          } else if (unit == 'dm') {
+              return value / 10;
+          }
+          return value;
+      };
+
+      // Calculate total plant cost
+      if (!isNaN(no_of_plant) && !isNaN(plant_price)) {
+          const total_plant_cost = no_of_plant * plant_price;
+          result.tech_total_plant_cost = total_plant_cost;
+      } else {
+          result.error = 'Please! Check Your Input';
+          return result;
+      }
+
+      if (bed == 'grid') {
+          if (grid == 'square' || grid == 'rectangular' || grid == 'triangular') {
+              if (!isNaN(length) && !isNaN(width) && !isNaN(border)) {
+                  const length_m = convertToMeter(length_unit, length);
+                  const width_m = convertToMeter(width_unit, width);
+                  const border_m = convertToMeter(border_unit, border);
+                  const area = length_m * width_m;
+
+                  if (grid == 'square') {
+                      if (!isNaN(plant_spacing) && plant_spacing !== 0) {
+                          const plant_spacing_m = convertToMeter(plant_spacing_unit, plant_spacing);
+                          
+                          let plant_rows = 0;
+                          let plant_cols = 0;
+                          
+                          if (plant_spacing_m !== 0) {
+                              plant_rows = Math.ceil((length_m - (border_m * 2)) / plant_spacing_m);
+                              plant_cols = Math.ceil((width_m - (border_m * 2)) / plant_spacing_m);
+                          }
+                          
+                          const plants = plant_rows * plant_cols;
+
+                          result.tech_plant_rows = plant_rows;
+                          result.tech_plant_cols = plant_cols;
+                          result.tech_plants = plants;
+                          return result;
+                      } else {
+                          result.error = 'Please! Check Your Input';
+                          return result;
+                      }
+                  } else if (grid == 'triangular') {
+                      if (!isNaN(plant_spacing) && plant_spacing !== 0) {
+                          const plant_spacing_m = convertToMeter(plant_spacing_unit, plant_spacing);
+                          const row_spacing_calc = plant_spacing_m * 0.866;
+                          
+                          let odd_num_plant = 0;
+                          let evn_num_plant = 0;
+                          let total_rows_calc = 0;
+                          
+                          if (plant_spacing_m !== 0) {
+                              odd_num_plant = Math.floor((length_m - (border_m * 2)) / plant_spacing_m);
+                              evn_num_plant = Math.floor(((length_m - (border_m * 2)) - (plant_spacing_m * 0.5)) / plant_spacing_m);
+                          }
+                          
+                          if (row_spacing_calc !== 0) {
+                              total_rows_calc = Math.round((((width_m - (border_m * 2)) - plant_spacing_m) / row_spacing_calc) + 1);
+                          }
+                          
+                          const evn_rows = Math.floor(total_rows_calc / 2);
+                          const odd_rows = Math.floor(total_rows_calc - evn_rows);
+                          const total_plants_calc = (evn_num_plant * evn_rows) + (odd_num_plant * odd_rows);
+
+                          result.tech_total_plants = total_plants_calc;
+                          result.tech_total_rows = total_rows_calc;
+                          result.tech_row_spacing = Number(row_spacing_calc.toFixed(4));
+                          result.tech_plant_spacing_m = Number(plant_spacing_m.toFixed(4));
+                          result.tech_evn_rows = evn_rows;
+                          result.tech_odd_rows = odd_rows;
+                          result.tech_odd_num_plant = odd_num_plant;
+                          result.tech_evn_num_plant = evn_num_plant;
+                          return result;
+                      } else {
+                          result.error = 'Please! Check Your Input';
+                          return result;
+                      }
+                  } else if (grid == 'rectangular') {
+                      if (want == 'amount') {
+                          if (!isNaN(row_spacing) && !isNaN(plant_spacing) && plant_spacing !== 0) {
+                              const plant_spacing_m = convertToMeter(plant_spacing_unit, plant_spacing);
+                              const row_spacing_m = convertToMeter(row_spacing_unit, row_spacing);
+                              
+                              let plant_rows = 0;
+                              let plant_cols = 0;
+                              
+                              if (row_spacing_m !== 0) {
+                                  plant_rows = Math.ceil((length_m - (border_m * 2)) / row_spacing_m);
+                              }
+                              
+                              if (plant_spacing_m !== 0) {
+                                  plant_cols = Math.ceil((width_m - (border_m * 2)) / plant_spacing_m);
+                              }
+                              
+                              const plants = plant_rows * plant_cols;
+
+                              result.tech_plant_rows = plant_rows;
+                              result.tech_plant_cols = plant_cols;
+                              result.tech_plants = plants;
+                              return result;
+                          } else {
+                              result.error = 'Please! Check Your Input';
+                              return result;
+                          }
+                      } else if (want == 'arrange') {
+                          if (!isNaN(total_rows) && !isNaN(total_plants)) {
+                              const cols = total_plants / total_rows;
+                              const row_space = (length_m - (border_m * 2)) / total_rows;
+                              const plant_spacing_calc = (width_m - (border_m * 2)) / cols;
+
+                              result.tech_cols = cols;
+                              result.tech_row_space = Number(row_space.toFixed(4));
+                              result.tech_plant_spacing = Number(plant_spacing_calc.toFixed(4));
+                              return result;
+                          } else {
+                              result.error = 'Please! Check Your Input';
+                              return result;
+                          }
+                      }
+                  }
+              } else {
+                  result.error = 'Please! Check Your Input';
+                  return result;
+              }
+          }
+      } else {
+          if (want == 'amount') {
+              if (!isNaN(hedge) && !isNaN(plant_spacing) && !isNaN(hedgerows)) {
+                  const plant_spacing_m = convertToMeter(plant_spacing_unit, plant_spacing);
+                  const hedge_m = convertToMeter(hedge_unit, hedge);
+                  
+                  let plant_per_row = 0;
+                  if (plant_spacing_m !== 0) {
+                      plant_per_row = hedge_m / plant_spacing_m;
+                  }
+                  
+                  const total_plants_calc = Math.round(plant_per_row * hedgerows);
+
+                  result.tech_total_plants = total_plants_calc;
+                  return result;
+              } else {
+                  result.error = 'Please! Check Your Input';
+                  return result;
+              }
+          } else {
+              if (!isNaN(hedge) && !isNaN(total_plants) && !isNaN(hedgerows)) {
+                  const hedge_m = convertToMeter(hedge_unit, hedge);
+                  const plant_space = hedge_m / total_plants;
+                  const plant_per_row = Math.round(total_plants / hedgerows);
+
+                  result.tech_plant_space = plant_space;
+                  result.tech_plant_per_row = plant_per_row;
+                  return result;
+              } else {
+                  result.error = 'Please! Check Your Input';
+                  return result;
+              }
+          }
+      }
+
+      // If no condition matched
+      result.error = 'Invalid input parameters';
+      return result;
+  }
+
+    /**
+    * getCalculationGasCalculator: Service Method
+    * POST: /api/calculators-lol/gas-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationGasCalculator(body) {
+      const type = body.tech_type;
+      const week_day = parseFloat(body.tech_week_day) || 0;
+      const distance = parseFloat(body.tech_distance) || 0;
+      const distance_unit = body.tech_distance_unit;
+      const price = parseFloat(body.tech_price) || 0;
+      const price_unit = body.tech_price_unit;
+      const trip_type = parseFloat(body.tech_trip_type) || 0;
+      const peoples = parseFloat(body.tech_peoples) || 0;
+      const name_v1 = body.tech_name_v1;
+      const fule_effi_v1 = parseFloat(body.tech_fule_effi_v1) || 0;
+      const fule_effi_v1_unit = body.tech_fule_effi_v1_unit;
+      const name_v2 = body.tech_name_v2;
+      const fule_effi_v2 = parseFloat(body.tech_fule_effi_v2) || 0;
+      const fule_effi_v2_unit = body.tech_fule_effi_v2_unit;
+      const currancy = body.tech_currancy;
+
+      const result = {};
+
+      // Helper functions
+      const convertToMile = (unit, value) => {
+          if (unit == 'km') {
+              return value / 1.609;
+          } else {
+              return value;
+          }
+      };
+
+      const convertToKm = (unit, value) => {
+          if (unit == 'mi') {
+              return value * 1.609;
+          } else {
+              return value;
+          }
+      };
+
+      const convertToMpg = (unit, value) => {
+          if (unit == 'kmpl') {
+              return value * 2.352;
+          } else {
+              return value;
+          }
+      };
+
+      const convertToKmpl = (unit, value) => {
+          if (unit == 'mpg') {
+              return value / 2.352;
+          } else {
+              return value;
+          }
+      };
+
+      // Remove currency symbol from price_unit
+      const cleanPriceUnit = price_unit.replace(currancy, '');
+
+      // Validate required inputs
+      if (type && trip_type && name_v1 && !isNaN(fule_effi_v2) && name_v2 && 
+          !isNaN(distance) && !isNaN(week_day) && !isNaN(price) && !isNaN(fule_effi_v1)) {
+          
+          let distance_f, fule_effi_v1_f, fule_effi_v2_f, price_f;
+
+          if (distance_unit == 'km') {
+              distance_f = convertToKm(distance_unit, distance);
+              fule_effi_v1_f = convertToKmpl(fule_effi_v1_unit, fule_effi_v1);
+              fule_effi_v2_f = convertToKmpl(fule_effi_v2_unit, fule_effi_v2);
+              price_f = (cleanPriceUnit == " liter") ? price : price / 3.785;
+          } else {
+              distance_f = convertToMile(distance_unit, distance);
+              fule_effi_v1_f = convertToMpg(fule_effi_v1_unit, fule_effi_v1);
+              fule_effi_v2_f = convertToMpg(fule_effi_v2_unit, fule_effi_v2);
+              price_f = (cleanPriceUnit == " gallon") ? price : price * 3.785;
+          }
+
+          if (type == "first") {
+              const fule_req = Number((distance_f / fule_effi_v1_f).toFixed(2));
+              const fule_price_daily = Number((fule_req * price_f).toFixed(2));
+
+              const fule_req_weekly = Number((fule_req * week_day).toFixed(2));
+              const fule_price_weekly = Number((fule_price_daily * week_day).toFixed(2));
+
+              const fule_req_biweekly = Number((fule_req_weekly * 2).toFixed(2));
+              const fule_price_biweekly = Number((fule_price_weekly * 2).toFixed(2));
+
+              const fule_req_monthly = Number((fule_req_weekly * 4.345).toFixed(2));
+              const fule_price_monthly = Number((fule_price_weekly * 4.345).toFixed(2));
+
+              const fule_req_yearly = Number((fule_req_weekly * 52).toFixed(2));
+              const fule_price_yearly = Number((fule_price_weekly * 52).toFixed(2));
+
+              if (peoples && !isNaN(peoples)) {
+                  const each_pay = Number((fule_price_daily / peoples).toFixed(2));
+                  result.tech_each_pay = each_pay;
+              }
+
+              result.tech_fule_req = fule_req;
+              result.tech_fule_req_weekly = fule_req_weekly;
+              result.tech_fule_req_biweekly = fule_req_biweekly;
+              result.tech_fule_req_monthly = fule_req_monthly;
+              result.tech_fule_req_yearly = fule_req_yearly;
+              result.tech_fule_price_daily = fule_price_daily;
+              result.tech_fule_price_weekly = fule_price_weekly;
+              result.tech_fule_price_biweekly = fule_price_biweekly;
+              result.tech_fule_price_monthly = fule_price_monthly;
+              result.tech_fule_price_yearly = fule_price_yearly;
+              return result;
+
+          } else {
+              const fule_req_v1 = Number(((distance_f * trip_type) / fule_effi_v1_f).toFixed(2));
+              const price_price_v1 = Number((fule_req_v1 * price_f).toFixed(2));
+
+              const fule_req_v2 = Number(((distance_f * trip_type) / fule_effi_v2_f).toFixed(2));
+              const price_price_v2 = Number((fule_req_v2 * price_f).toFixed(2));
+
+              const diff = Math.abs(price_price_v1 - price_price_v2);
+              const weekly_saving = Number((diff * week_day).toFixed(2));
+              const monthly_saving = Number((weekly_saving * 4.345).toFixed(2));
+              const yearly_saving = Number((weekly_saving * 52).toFixed(2));
+
+              result.tech_fule_req_v1 = fule_req_v1;
+              result.tech_price_price_v1 = price_price_v1;
+              result.tech_fule_req_v2 = fule_req_v2;
+              result.tech_price_price_v2 = price_price_v2;
+              result.tech_diff = diff;
+              result.tech_weekly_saving = weekly_saving;
+              result.tech_monthly_saving = monthly_saving;
+              result.tech_yearly_saving = yearly_saving;
+              return result;
+          }
+      } else {
+          result.error = 'Please! Check Your Input';
+          return result;
+      }
+  }
+
+
+      /**
+    * getCalculationHowManyPagesCalculator: Service Method
+    * POST: /api/calculators-lol/how-many-pages-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationHowManyPagesCalculator(body) {
+        const page = parseFloat(body.tech_page) || 0;
+        const size = body.tech_size;
+        const font = body.tech_font;
+        const space = body.tech_space;
+        const page2 = parseFloat(body.tech_page2) || 0;
+        const title = body.tech_title;
+        const lang = body.tech_lang;
+        const main = parseInt(body.tech_main) || 0;
+
+        const result = {};
+
+        if (main == 1) {
+            const fontSize = body.tech_size;
+            const fontStyle = body.tech_font;
+            const spacing = body.tech_space;
+            const totalWords = parseFloat(body.tech_page) || 0;
+
+            const data = {
+                'Times': {
+                    '10': { 'single': 900, '1.5': 600, 'double': 400 },
+                    '11': { 'single': 650, '1.5': 440, 'double': 320 },
+                    '12': { 'single': 650, '1.5': 400, 'double': 300 },
+                    '13': { 'single': 470, '1.5': 320, 'double': 220 },
+                    '14': { 'single': 475, '1.5': 300, 'double': 230 }
+                },
+                'Calibri': {
+                    '10': { 'single': 900, '1.5': 560, 'double': 400 },
+                    '11': { 'single': 600, '1.5': 385, 'double': 280 },
+                    '12': { 'single': 650, '1.5': 400, 'double': 300 },
+                    '13': { 'single': 435, '1.5': 270, 'double': 210 },
+                    '14': { 'single': 430, '1.5': 300, 'double': 200 }
+                },
+                'Courier': {
+                    '10': { 'single': 650, '1.5': 450, 'double': 300 },
+                    '12': { 'single': 450, '1.5': 310, 'double': 250 },
+                    '13': { 'single': 325, '1.5': 210, 'double': 160 },
+                    '14': { 'single': 350, '1.5': 220, 'double': 170 }
+                },
+                'Garamond': {
+                    '10': { 'single': 1000, '1.5': 630, 'double': 480 },
+                    '11': { 'single': 680, '1.5': 460, 'double': 320 },
+                    '12': { 'single': 700, '1.5': 450, 'double': 310 },
+                    '13': { 'single': 500, '1.5': 320, 'double': 220 },
+                    '14': { 'single': 500, '1.5': 310, 'double': 240 }
+                },
+                'Verdana': {
+                    '10': { 'single': 750, '1.5': 480, 'double': 370 },
+                    '11': { 'single': 500, '1.5': 325, 'double': 220 },
+                    '12': { 'single': 500, '1.5': 310, 'double': 230 },
+                    '13': { 'single': 350, '1.5': 220, 'double': 170 },
+                    '14': { 'single': 370, '1.5': 240, 'double': 200 }
+                },
+                'Arial': {
+                    '10': { 'single': 890, '1.5': 600, 'double': 400 },
+                    '11': { 'single': 600, '1.5': 410, 'double': 310 },
+                    '12': { 'single': 600, '1.5': 360, 'double': 260 },
+                    '13': { 'single': 430, '1.5': 285, 'double': 210 },
+                    '14': { 'single': 460, '1.5': 280, 'double': 200 }
+                },
+                'Helvetica': {
+                    '10': { 'single': 750, '1.5': 500, 'double': 480 },
+                    '11': { 'single': 635, '1.5': 440, 'double': 320 },
+                    '12': { 'single': 560, '1.5': 360, 'double': 280 },
+                    '13': { 'single': 460, '1.5': 320, 'double': 220 },
+                    '14': { 'single': 400, '1.5': 260, 'double': 190 }
+                },
+                'Century Gothic': {
+                    '10': { 'single': 600, '1.5': 430, 'double': 310 },
+                    '11': { 'single': 490, '1.5': 360, 'double': 220 },
+                    '12': { 'single': 560, '1.5': 280, 'double': 210 },
+                    '13': { 'single': 380, '1.5': 220, 'double': 190 },
+                    '14': { 'single': 315, '1.5': 200, 'double': 150 }
+                },
+                'Candara': {
+                    '10': { 'single': 670, '1.5': 460, 'double': 350 },
+                    '11': { 'single': 550, '1.5': 385, 'double': 280 },
+                    '12': { 'single': 590, '1.5': 315, 'double': 220 },
+                    '13': { 'single': 420, '1.5': 260, 'double': 190 },
+                    '14': { 'single': 350, '1.5': 220, 'double': 170 }
+                },
+                'Cambria': {
+                    '10': { 'single': 710, '1.5': 490, 'double': 360 },
+                    '11': { 'single': 590, '1.5': 400, 'double': 300 },
+                    '12': { 'single': 490, '1.5': 320, 'double': 220 },
+                    '13': { 'single': 435, '1.5': 270, 'double': 190 },
+                    '14': { 'single': 380, '1.5': 220, 'double': 170 }
+                }
+            };
+
+            // Check if font style and size exist in data
+            if (!data[fontStyle] || !data[fontStyle][fontSize]) {
+                result.error = 'Invalid font style or size';
+                return result;
+            }
+
+            const wordsPerPage = data[fontStyle][fontSize][spacing];
+
+            if (!isNaN(totalWords) && totalWords > 0) {
+                if (wordsPerPage && wordsPerPage > 0) {
+                    const pages = Math.ceil(totalWords / wordsPerPage);
+                    result.tech_counter = pages;
+                } else {
+                    result.error = 'Invalid spacing value';
+                    return result;
+                }
+            } else {
+                result.error = 'Please add Number of Words';
+                return result;
+            }
+            return result;
+        } else {
+            if (title != 'Empty' && page2 != '' && page2 != 0) {
+                result.error = "Please choose either a title or a Enter length (not both).";
+                return result;
+            } else {
+                let counter = 0;
+
+                if (title == "Empty") {
+                    if (!page2 || page2 == 0) {
+                        result.error = "Please choose either a title or a Enter length (not both).";
+                        return result;
+                    } else {
+                        counter = page2 / 242;
+                    }
+                } else if (title == 'Quran') {
+                    counter = 604;
+                } else if (title == 'Bible') {
+                    counter = 1120;
+                } else if (title == 'Gatsby') {
+                    counter = 218;
+                } else if (title == 'Harry') {
+                    counter = 3407;
+                } else if (title == 'Av_noval') {
+                    counter = 300;
+                } else if (title == 'Hobbit') {
+                    counter = 310;
+                } else if (title == 'Rings') {
+                    counter = 1191;
+                } else if (title == 'Peace') {
+                    counter = 1225;
+                } else if (title == 'Pride') {
+                    counter = 248;
+                } else if (title == 'Rich') {
+                    counter = 336;
+                } else if (title == 'War') {
+                    counter = 1400;
+                } else if (title == 'Great_Ex') {
+                    counter = 544;
+                } else if (title == 'Shakespearean') {
+                    counter = 444;
+                } else {
+                    result.error = 'Invalid title selected';
+                    return result;
+                }
+
+                result.tech_counter = Number(counter.toFixed(0));
+                return result;
+            }
+        }
+    }
+
+       /**
+    * getCalculationHowManyWordsCalculator: Service Method
+    * POST: /api/calculators-lol/how-many-words-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationHowManyWordsCalculator(body) {
+      const page = parseFloat(body.tech_page) || 0;
+      const size = body.tech_size;
+      const font = body.tech_font;
+      const space = body.tech_space;
+      const page2 = parseFloat(body.tech_page2) || 0;
+      const title = body.tech_title;
+      const sp_title = body.tech_sp_title;
+      const lang = body.tech_lang;
+      const main = parseInt(body.tech_main) || 0;
+
+      const result = {};
+
+      if (main == 1) {
+          const fontSize = body.tech_size;
+          const fontStyle = body.tech_font;
+          const spacing = body.tech_space;
+          let wordCount = 0;
+
+          const data = {
+              'Times': {
+                  '10': { 'single': 900, '1.5': 600, 'double': 400 },
+                  '11': { 'single': 650, '1.5': 440, 'double': 320 },
+                  '12': { 'single': 650, '1.5': 400, 'double': 300 },
+                  '13': { 'single': 470, '1.5': 320, 'double': 220 },
+                  '14': { 'single': 475, '1.5': 300, 'double': 230 }
+              },
+              'Calibri': {
+                  '10': { 'single': 900, '1.5': 560, 'double': 400 },
+                  '11': { 'single': 600, '1.5': 385, 'double': 280 },
+                  '12': { 'single': 650, '1.5': 400, 'double': 300 },
+                  '13': { 'single': 435, '1.5': 270, 'double': 210 },
+                  '14': { 'single': 430, '1.5': 300, 'double': 200 }
+              },
+              'Courier': {
+                  '10': { 'single': 650, '1.5': 450, 'double': 300 },
+                  '12': { 'single': 450, '1.5': 310, 'double': 250 },
+                  '13': { 'single': 325, '1.5': 210, 'double': 160 },
+                  '14': { 'single': 350, '1.5': 220, 'double': 170 }
+              },
+              'Garamond': {
+                  '10': { 'single': 1000, '1.5': 630, 'double': 480 },
+                  '11': { 'single': 680, '1.5': 460, 'double': 320 },
+                  '12': { 'single': 700, '1.5': 450, 'double': 310 },
+                  '13': { 'single': 500, '1.5': 320, 'double': 220 },
+                  '14': { 'single': 500, '1.5': 310, 'double': 240 }
+              },
+              'Verdana': {
+                  '10': { 'single': 750, '1.5': 480, 'double': 370 },
+                  '11': { 'single': 500, '1.5': 325, 'double': 220 },
+                  '12': { 'single': 500, '1.5': 310, 'double': 230 },
+                  '13': { 'single': 350, '1.5': 220, 'double': 170 },
+                  '14': { 'single': 370, '1.5': 240, 'double': 200 }
+              },
+              'Arial': {
+                  '10': { 'single': 890, '1.5': 600, 'double': 400 },
+                  '11': { 'single': 600, '1.5': 410, 'double': 310 },
+                  '12': { 'single': 600, '1.5': 360, 'double': 260 },
+                  '13': { 'single': 430, '1.5': 285, 'double': 210 },
+                  '14': { 'single': 460, '1.5': 280, 'double': 200 }
+              },
+              'Helvetica': {
+                  '10': { 'single': 750, '1.5': 500, 'double': 480 },
+                  '11': { 'single': 635, '1.5': 440, 'double': 320 },
+                  '12': { 'single': 560, '1.5': 360, 'double': 280 },
+                  '13': { 'single': 460, '1.5': 320, 'double': 220 },
+                  '14': { 'single': 400, '1.5': 260, 'double': 190 }
+              },
+              'Century Gothic': {
+                  '10': { 'single': 600, '1.5': 430, 'double': 310 },
+                  '11': { 'single': 490, '1.5': 360, 'double': 220 },
+                  '12': { 'single': 560, '1.5': 280, 'double': 210 },
+                  '13': { 'single': 380, '1.5': 220, 'double': 190 },
+                  '14': { 'single': 315, '1.5': 200, 'double': 150 }
+              },
+              'Candara': {
+                  '10': { 'single': 670, '1.5': 460, 'double': 350 },
+                  '11': { 'single': 550, '1.5': 385, 'double': 280 },
+                  '12': { 'single': 590, '1.5': 315, 'double': 220 },
+                  '13': { 'single': 420, '1.5': 260, 'double': 190 },
+                  '14': { 'single': 350, '1.5': 220, 'double': 170 }
+              },
+              'Cambria': {
+                  '10': { 'single': 710, '1.5': 490, 'double': 360 },
+                  '11': { 'single': 590, '1.5': 400, 'double': 300 },
+                  '12': { 'single': 490, '1.5': 320, 'double': 220 },
+                  '13': { 'single': 435, '1.5': 270, 'double': 190 },
+                  '14': { 'single': 380, '1.5': 220, 'double': 170 }
+              }
+          };
+
+          if (page && !isNaN(page)) {
+              // Check if font data exists
+              if (data[fontStyle] && data[fontStyle][fontSize] && data[fontStyle][fontSize][spacing]) {
+                  const wordsPerPage = data[fontStyle][fontSize][spacing];
+                  wordCount = wordsPerPage * page;
+              } else {
+                  result.error = 'Invalid font style, size, or spacing';
+                  return result;
+              }
+          } else {
+              result.error = 'Please add Number of Pages';
+              return result;
+          }
+          
+          result.tech_counter = wordCount;
+          return result;
+
+      } else if (main == 2) {
+          if (title != 'Empty' && page2 != '' && page2 != 0) {
+              result.error = "Please choose either a title or a Enter length (not both).";
+              return result;
+          } else {
+              let counter = 0;
+
+              if (title == "Empty") {
+                  if (!page2 || isNaN(page2)) {
+                      result.error = "Please choose either a title or a Enter length (not both).";
+                      return result;
+                  } else {
+                      counter = page2 * 242;
+                  }
+              } else if (title == 'Quran') {
+                  counter = 77439;
+              } else if (title == 'Bible') {
+                  counter = 783137;
+              } else if (title == 'Gatsby') {
+                  counter = 47094;
+              } else if (title == 'Harry') {
+                  counter = 1084170;
+              } else if (title == 'Av_noval') {
+                  counter = 90000;
+              } else if (title == 'Hobbit') {
+                  counter = 95022;
+              } else if (title == 'Rings') {
+                  counter = 455125;
+              } else if (title == 'Peace') {
+                  counter = 587287;
+              } else if (title == 'Pride') {
+                  counter = 122204;
+              } else if (title == 'Rich') {
+                  counter = 72000;
+              } else if (title == 'War') {
+                  counter = 587287;
+              } else if (title == 'Great_Ex') {
+                  counter = 132500;
+              } else if (title == 'Shakespearean') {
+                  counter = 29551;
+              } else {
+                  result.error = 'Invalid title selected';
+                  return result;
+              }
+
+              result.counter = counter.toLocaleString();
+              return result;
+          }
+      } else if (main == 3) {
+          const currentTitle = sp_title;
+          
+          if (currentTitle != 'Empty' && page2 != '' && page2 != 0) {
+              result.error = "Please choose either a title or a Enter length (not both).";
+              return result;
+          } else {
+              let counter = 0;
+
+              if (currentTitle == "Empty") {
+                  if (!page2 || isNaN(page2)) {
+                      result.error = "Please choose either a title or a Enter length (not both).";
+                      return result;
+                  } else {
+                      counter = page2 * 130;
+                  }
+              } else if (currentTitle == 'Perfect') {
+                  counter = 4891;
+              } else if (currentTitle == 'Gettysburg') {
+                  counter = 272;
+              } else if (currentTitle == 'Dream') {
+                  counter = 1667;
+              } else if (currentTitle == 'Beaches') {
+                  counter = 3855;
+              } else {
+                  result.error = 'Invalid special title selected';
+                  return result;
+              }
+
+              result.tech_counter = counter.toLocaleString();
+              return result;
+          }
+      } else if (main == 4) {
+          let counter = 0;
+
+          if (lang == 'English') {
+              counter = 170000;
+          } else if (lang == 'French') {
+              counter = 70000;
+          } else if (lang == 'German') {
+              counter = 145000;
+          } else if (lang == 'Russian') {
+              counter = 150000;
+          } else if (lang == 'Spanish') {
+              counter = 93000;
+          } else if (lang == 'Japanese') {
+              counter = 500000;
+          } else if (lang == 'Korean') {
+              counter = 511282;
+          } else if (lang == 'Portuguese') {
+              counter = 818000;
+          } else if (lang == 'Swedish') {
+              counter = 600000;
+          } else if (lang == 'Italian') {
+              counter = 500000;
+          } else if (lang == 'Hindi') {
+              counter = 183175;
+          } else if (lang == 'Urdu') {
+              counter = 286563;
+          } else if (lang == 'Arabic') {
+              counter = 170000;
+          } else if (lang == 'Turkish') {
+              counter = 316000;
+          } else if (lang == 'Chinese') {
+              counter = 370000;
+          } else {
+              result.error = 'Invalid language selected';
+              return result;
+          }
+
+          result.tech_counter = counter.toLocaleString();
+          return result;
+      } else {
+          result.error = 'Invalid main mode selected';
+          return result;
+      }
+  }
 
 }
 
