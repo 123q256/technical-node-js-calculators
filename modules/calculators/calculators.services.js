@@ -7973,13 +7973,13 @@ class CalculatorsServices {
   async getCalculationIBMCalculator(body) {
     // const { age, height_cm, ft_in, weight, stage, gender, unit_type } = body;
 
-    let age = body.age;
-    let height_cm = body.height_cm;
-    let ft_in = body.ft_in;
-    let weight = body.weight;
-    let stage = body.stage;
-    let gender = body.gender;
-    let unit_type = body.unit_type;
+    let age = body.tech_age;
+    let height_cm = body.tech_height_cm;
+    let ft_in = body.tech_ft_in;
+    let weight = body.tech_weight;
+    let stage = body.tech_stage;
+    let gender = body.tech_gender;
+    let unit_type = body.tech_unit_type;
 
     let param = {};
     let result = {};
@@ -8011,11 +8011,11 @@ class CalculatorsServices {
       weight = weight * 2.205; // Convert weight to lbs
     }
 
-    const heightInInches = heightInCm / 2.54;
+    const heightInInches = Math.round(heightInCm / 2.54);
     const bmi = (weight * 703) / (heightInInches * heightInInches);
     const roundBmi = Math.round(bmi * 100) / 100;
 
-    if (stage === "child") {
+    if (stage == "child") {
       const n = [
         50, 50.399, 50.798, 51.197, 51.595, 51.994, 52.392, 52.79, 53.188,
         53.586, 53.983, 54.38, 54.776, 55.172, 55.567, 55.962, 56.356, 56.749,
@@ -8058,7 +8058,7 @@ class CalculatorsServices {
 
       const ageMonths = age * 12;
 
-      if (gender === "Male") {
+      if (gender == "Male") {
         if (ageMonths >= 24 && ageMonths < 25) {
           L = -1.982373595;
           M = 16.54777487;
@@ -8931,7 +8931,7 @@ class CalculatorsServices {
         zScore = (Math.pow(roundBmi / M, L) - 1) / (L * S);
       }
 
-      if (gender === "Female") {
+      if (gender == "Female") {
         if (ageMonths >= 24 && ageMonths < 25) {
           L = -1.024496827;
           M = 16.38804056;
@@ -9823,20 +9823,20 @@ class CalculatorsServices {
       let status, color, left;
       if (thisPercentile < 5) {
         status = "Underweight";
-        param.under = "bg-blue-800 text-white";
+        param.tech_under = "bg-blue-800 text-white";
         color = "#20BEC8";
         left = "3";
       } else if (thisPercentile >= 5 && thisPercentile < 85) {
         status = "Healthy Weight";
-        param.healthy = "bg-green-800 text-white";
+        param.tech_healthy = "bg-green-800 text-white";
         color = "#10951D";
       } else if (thisPercentile >= 85 && thisPercentile < 95) {
         status = "Overweight";
-        param.over = "bg-turmeric text-white";
+        param.tech_over = "bg-turmeric text-white";
         color = "#CABE52";
       } else if (thisPercentile >= 95) {
         status = "Obese";
-        param.obese1 = "bg-red-800 text-white";
+        param.tech_obese1 = "bg-red-800 text-white";
         color = "#FF0000";
       }
 
@@ -9927,18 +9927,17 @@ class CalculatorsServices {
 
       let Robinson, Miller, Devine, Hamwi;
 
-      if (gender === "Female") {
-        Robinson = Math.round(49 + 1.7 * (convert_height - 60));
-        Miller = Math.round(53.1 + 1.36 * (convert_height - 60));
-        Devine = Math.round(45.5 + 2.3 * (convert_height - 60));
-        Hamwi = Math.round(45 + 2.2 * (convert_height - 60));
+      if (gender == "Female") {
+        Robinson = Math.round(49 + (1.7 * (convert_height - 60)));
+        Miller = Math.round(53.1 + (1.36 * (convert_height - 60)));
+        Devine = Math.round(45.5 + (2.3 * (convert_height - 60)));
+        Hamwi = Math.round(45 + (2.2 * (convert_height - 60)));
       } else {
-        Robinson = Math.round(52 + 1.9 * (convert_height - 60));
-        Miller = Math.round(56.2 + 1.41 * (convert_height - 60));
-        Devine = Math.round(50 + 2.3 * (convert_height - 60));
-        Hamwi = Math.round(48 + 2.7 * (convert_height - 60));
+        Robinson = Math.round(52 + (1.9 * (convert_height - 60)));
+        Miller = Math.round(56.2 + (1.41 * (convert_height - 60)));
+        Devine = Math.round(50 + (2.3 * (convert_height - 60)));
+        Hamwi = Math.round(48 + (2.7 * (convert_height - 60)));
       }
-
       let ibw = "";
       if (unit_type === "lbs") {
         ibw = `${Math.round(Robinson * 2.205)} - ${Math.round(
@@ -83023,6 +83022,3471 @@ async getCalculationNormalCriticalValueCalculator(body) {
           return result;
       }
   }
+
+
+    /**
+    * getCalculationWeightlossCalculator: Service Method
+    * POST: /api/calculators-lol/weightloss-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async getCalculationWeightlossCalculator(body) {
+    // Extract request data
+    const submit = body.tech_unit;
+    const gender = body.tech_gender;
+    const age = body.tech_age;
+    const height_ft = body.tech_height_ft;
+    const height_in = body.tech_height_in;
+    const height_cm = body.tech_height_cm;
+    const hightUnit = body.tech_hightUnit;
+    const weight = body.tech_weight;
+    const lose_w = body.tech_lose_w;
+    const lose_unit = body.tech_lose_unit;
+    const activity = body.tech_activity;
+    const weight_unit = body.tech_unit;
+    const start = body.tech_start;
+    const end = body.tech_target;
+    const choose = body.tech_choose;
+    const enter_calories = body.tech_enter_calories;
+
+      const all_activites = [
+        [2.3, "Activity promoting video game (e.g., Wii Fit), light effort (e.g., balance, yoga)", 'Activity promoting video game'],
+        [3.8, "Activity promoting video game (e.g., Wii Fit), moderate effort (e.g., aerobic, resistance)", 'Activity promoting video game'],
+        [7.2, "Activity promoting video/arcade game (e.g., Exergaming, Dance Dance Revolution), vigorous effort", 'Activity promoting video game'],
+        [10.0, "Aerobic dance wearing 10-15 lb weights", 'aerobics'],
+        [7.3, "Aerobic, general", 'aerobics'],
+        [7.3, "Aerobic, high impact", 'aerobics'],
+        [5.0, "Aerobic, low impact", 'aerobics'],
+        [9.5, "Aerobic, step, with 10 - 12 inch step", 'aerobics'],
+        [5.5, "Aerobic, step, with 4-inch step", 'aerobics'],
+        [7.5, "Aerobic, step, with 6 - 8 inch step", 'aerobics'],
+        [5.5, "Alaska Native Games, Eskimo Olympics, general", 'Alaska Native Games'],
+        [5.5, "Anishinaabe Jingle Dancing", 'Anishinaabe Jingle Dancing'],
+        [4.3, "Archery, non-hunting", 'Archery'],
+        [5.0, "Army type obstacle course exercise, boot camp training program", 'Army type obstacle course exercise'],
+        [8.5, "Auto racing, open wheel", 'Auto racing'],
+        [2.5, "Automobile or light truck (not a semi) driving", 'Automobile or light truck driving'],
+        [7.0, "Backpacking (Taylor Code 050)", 'Backpacking'],
+        [7.8, "Backpacking, hiking or organized walking with a daypack", 'Backpacking'],
+        [7.0, "Badminton, competitive (Taylor Code 450)", 'Badminton'],
+        [5.5, "Badminton, social singles and doubles, general", 'Badminton'],
+        [5.0, "Ballet, modern, or jazz, general, rehearsal or class", 'Ballet, modern, or jazz'],
+        [6.8, "Ballet, modern, or jazz, performance, vigorous effort", 'Ballet, modern, or jazz'],
+        [11.3, "Ballroom dancing, competitive, general", 'Ballroom'],
+        [5.5, "Ballroom, fast (Taylor Code 125)", 'Ballroom'],
+        [3.0, "Ballroom, slow (e.g., waltz, foxtrot, slow dancing, samba, tango, 19th century dance, mambo, cha cha)", 'Ballroom'],
+        [9.3, "Basketball, drills, practice", 'Basketball'],
+        [8.0, "Basketball, game (Taylor Code 490)", 'Basketball'],
+        [6.5, "Basketball, general", 'Basketball'],
+        [6.0, "Basketball, non-game, general (Taylor Code 480)", 'Basketball'],
+        [7.0, "Basketball, officiating (Taylor Code 500)", 'Basketball'],
+        [4.5, "Basketball, shooting baskets", 'Basketball'],
+        [7.8, "Basketball, wheelchair", 'Basketball'],
+        [8.5, "Bench step class, general", 'Bench step class'],
+        [6.8, "Bicycling, 10-11.9 mph, leisure, slow, light effort", 'Bicycling'],
+        [8.5, "Bicycling, 12 mph, seated, hands on brake hoods or bar drops, 80 rpm", 'Bicycling'],
+        [9.0, "Bicycling, 12 mph, standing, hands on brake hoods, 60 rpm", 'Bicycling'],
+        [8.0, "Bicycling, 12-13.9 mph, leisure, moderate effort", 'Bicycling'],
+        [10.0, "Bicycling, 14-15.9 mph, racing or leisure, fast, vigorous effort", 'Bicycling'],
+        [12.0, "Bicycling, 16-19 mph, racing/not drafting or > 19 mph drafting, very fast, racing general", 'Bicycling'],
+        [4.0, "Bicycling, <10 mph, leisure, to work or for pleasure (Taylor Code 115)", 'Bicycling'],
+        [15.8, "Bicycling, > 20 mph, racing, not drafting", 'Bicycling'],
+        [8.5, "Bicycling, BMX", 'Bicycling'],
+        [7.5, "Bicycling, general", 'Bicycling'],
+        [3.5, "Bicycling, leisure, 5.5 mph", 'Bicycling'],
+        [5.8, "Bicycling, leisure, 9.4 mph", 'Bicycling'],
+        [16.0, "Bicycling, mountain, competitive, racing", 'Bicycling'],
+        [8.5, "Bicycling, mountain, general", 'Bicycling'],
+        [14.0, "Bicycling, mountain, uphill, vigorous", 'Bicycling'],
+        [5.8, "Bicycling, on dirt or farm road, moderate pace", 'Bicycling'],
+        [8.8, "Bicycling, stationary, 101-160 watts, vigorous effort", 'Bicycling'],
+        [11.0, "Bicycling, stationary, 161-200 watts, vigorous effort", 'Bicycling'],
+        [14.0, "Bicycling, stationary, 201-270 watts, very vigorous effort", 'Bicycling'],
+        [3.5, "Bicycling, stationary, 30-50 watts, very light to light effort", 'Bicycling'],
+        [4.8, "Bicycling, stationary, 51-89 watts, light-to-moderate effort", 'Bicycling'],
+        [6.8, "Bicycling, stationary, 90-100 watts, moderate to vigorous effort", 'Bicycling'],
+        [7.0, "Bicycling, stationary, general", 'Bicycling'],
+        [8.5, "Bicycling, stationary, RPM/Spin bike class", 'Bicycling'],
+        [6.8, "Bicycling, to/from work, self selected pace", 'Bicycling'],
+        [2.5, "Billiards", 'Billiards'],
+        [2.5, "Bird watching, slow walk", 'Bird watching'],
+        [2.5, "Boating, power, driving", 'Boating'],
+        [1.3, "Boating, power, passenger, light", 'Boating'],
+        [3.0, "Bowling (Taylor Code 390)", 'Bowling'],
+        [3.8, "Bowling, indoor, bowling alley", 'Bowling'],
+        [12.8, "Boxing, in ring, general", 'Boxing'],
+        [5.5, "Boxing, punching bag", 'Boxing'],
+        [7.8, "Boxing, sparring", 'Boxing'],
+        [7.0, "Broomball", 'Broomball'],
+        [8.0, "Calisthenics (e.g., push ups, sit ups, pull-ups, jumping jacks), vigorous effort", 'Calisthenics'],
+        [3.8, "Calisthenics (e.g., push ups, sit ups, pull-ups, lunges), moderate effort", 'Calisthenics'],
+        [2.8, "Calisthenics (e.g., situps, abdominal crunches), light effort", 'Calisthenics'],
+        [3.5, "Calisthenics, light or moderate effort, general (e.g., back exercises), going up & down from floor (Taylor Code 150)", 'Calisthenics'],
+        [3.3, "Canoeing, harvesting wild rice, knocking rice off the stalks", 'Canoeing'],
+        [4.0, "Canoeing, on camping trip (Taylor Code 270)", 'Canoeing'],
+        [7.0, "Canoeing, portaging", 'Canoeing'],
+        [2.8, "Canoeing, rowing, 2.0-3.9 mph, light effort", 'Canoeing'],
+        [5.8, "Canoeing, rowing, 4.0-5.9 mph, moderate effort", 'Canoeing'],
+        [3.5, "Canoeing, rowing, for pleasure, general (Taylor Code 250)", 'Canoeing'],
+        [12.0, "Canoeing, rowing, in competition, or crew or sculling (Taylor Code 260)", 'Canoeing'],
+        [12.5, "Canoeing, rowing, kayaking, competition, >6 mph, vigorous effort", 'Canoeing'],
+        [3.5, "Caribbean dance (Abakua, Beguine, Bellair, Bongo, Brukin's, Caribbean Quadrills, Dinki Mini, Gere, Gumbay, Ibo, Jonkonnu, Kumina, Oreisha, Jambu)", '0'],
+        [5.0, "Carrying 1 to 15 lb load, upstairs", 'Carrying'],
+        [2.3, "Carrying 15 lb child, slow walking", 'Carrying'],
+        [5.0, "Carrying 15 pound load (e.g. suitcase), level ground or downstairs", 'Carrying'],
+        [6.0, "Carrying 16 to 24 lb load, upstairs", 'Carrying'],
+        [8.0, "Carrying 25 to 49 lb load, upstairs", 'Carrying'],
+        [10.0, "Carrying 50 to 74 lb load, upstairs", 'Carrying'],
+        [12.0, "Carrying > 74 lb load, upstairs", 'Carrying'],
+        [8.3, "Carrying load upstairs, general", 'Carrying'],
+        [6.0, "Cheerleading, gymnastic moves, competitive", 'Cheerleading'],
+        [5.8, "Children's games, adults playing (e.g., hopscotch, 4-square, dodgeball, playground apparatus, t-ball, tetherball, marbles, arcade games), moderate effort", 'Childrens games'],
+        [8.0, "Circuit training, including kettlebells, some aerobic movement with minimal rest, general, vigorous intensity", 'Circuit training'],
+        [4.3, "Circuit training, moderate effort", 'Circuit training'],
+        [6.5, "Climbing hills with 0 to 9 lb load", 'Climbing'],
+        [7.3, "Climbing hills with 10 to 20 lb load", 'Climbing'],
+        [8.3, "Climbing hills with 21 to 42 lb load", 'Climbing'],
+        [9.0, "Climbing hills with 42+ lb load", 'Climbing'],
+        [6.3, "Climbing hills, no load", 'Climbing'],
+        [8.0, "Coaching, actively playing sport with players", 'Coaching'],
+        [4.0, "Coaching, football, soccer, basketball, baseball, swimming, etc.", 'Coaching'],
+        [4.8, "Cricket, batting, bowling, fielding", 'Cricket'],
+        [3.3, "Croquet", 'Croquet'],
+        [4.0, "Curling", 'Curling'],
+        [3.5, "Curves(TM) Eexercise routines in women", 'Curves'],
+        [2.5, "Darts, wall or lawn", 'Darts'],
+        [3.5, "Descending stairs", 'Descending'],
+        [3.0, "Diving, springboard or platform", 'Diving'],
+        [7.5, "Dog sledding, mushing", 'Dog sledding'],
+        [2.5, "Dog sledding, passenger", 'Dog sledding'],
+        [6.0, "Drag racing, pushing or driving a car", 'Drag racing'],
+        [5.0, "Elliptical trainer, moderate effort", 'Elliptical trainer'],
+        [4.5, "Ethnic or cultural dancing (e.g., Greek, Middle Eastern, hula, salsa, merengue, bamba y plena, flamenco, belly, and swing)", 'Ethnic'],
+        [6.0, "Fencing", 'Fencing'],
+        [1.8, "Flying airplane or helicopter", 'Flying airplane'],
+        [2.5, "Football or baseball, playing catch", 'Football'],
+        [8.0, "Football, competitive", 'Football'],
+        [8.0, "Football, touch, flag, general (Taylor Code 510)", 'Football'],
+        [4.0, "Football, touch, flag, light effort", 'Football'],
+        [3.0, "Frisbee playing, general", 'Frisbee'],
+        [8.0, "Frisbee, ultimate", 'Frisbee'],
+        [7.8, "General dancing (e.g., disco, folk, Irish step dancing, line dancing, polka, contra, country)", 'General dancing'],
+        [4.8, "Golf, general", 'Golf'],
+        [3.0, "Golf, miniature, driving range", 'Golf'],
+        [3.5, "Golf, using power cart (Taylor Code 070)", 'Golf'],
+        [4.3, "Golf, walking, carrying clubs", 'Golf'],
+        [5.3, "Golf, walking, pulling clubs", 'Golf'],
+        [3.8, "Gymnastics, general", 'Gymnastics'],
+        [4.0, "Hacky sack", 'Hacky sack'],
+        [12.0, "Handball, general (Taylor Code 520)", 'Handball'],
+        [8.0, "Handball, team", 'Handball'],
+        [3.5, "Hang gliding", 'Hang gliding'],
+        [5.0, "Health club exercise classes, general, gym/weight training combined in one visit", 'Health club'],
+        [7.8, "Health club exercise, conditioning classes", 'Health club'],
+        [5.5, "Health club exercise, general (Taylor Code 160)", 'Health club'],
+        [4.0, "High ropes course, multiple elements", 'High ropes course'],
+        [5.3, "Hiking or walking at a normal pace through fields and hillsides", 'Hiking'],
+        [6.0, "Hiking, cross country (Taylor Code 040)", 'Hiking'],
+        [7.8, "Hockey, field", 'Hockey'],
+        [10.0, "Hockey, ice, competitive", 'Hockey'],
+        [8.0, "Hockey, ice, general", 'Hockey'],
+        [3.8, "Home exercise, general", 'Home exercise'],
+        [1.8, "Horse cart, driving, standing or sitting", 'Horse cart'],
+        [4.3, "Horse chores, feeding, watering, cleaning stalls, implied walking and lifting loads", 'Horse chores'],
+        [7.3, "Horseback riding, canter or gallop", 'Horseback riding'],
+        [5.5, "Horseback riding, general", 'Horseback riding'],
+        [9.0, "Horseback riding, jumping", 'Horseback riding'],
+        [5.8, "Horseback riding, trotting", 'Horseback riding'],
+        [3.8, "Horseback riding,walking", 'Horseback riding'],
+        [3.0, "Horseshoe pitching, quoits", 'Horseshoe pitching'],
+        [2.0, "Ice fishing, sitting", 'Ice fishing'],
+        [12.0, "Jai alai", 'Jai alai'],
+        [7.0, "Jet skiing, driving, in water", 'Jet skiing'],
+        [6.0, "Jog/walk combination (jogging component of less than 10 minutes) (Taylor Code 180)", 'walk combination'],
+        [7.0, "Jogging, general", 'Jogging'],
+        [8.0, "Jogging, in place", 'Jogging'],
+        [4.5, "Jogging, on a mini-tramp", 'Jogging'],
+        [4.0, "Juggling", 'Juggling'],
+        [5.0, "Kayaking, moderate effort", 'Kayaking'],
+        [7.0, "Kickball", 'Kickball'],
+        [8.0, "Lacrosse", 'Lacrosse'],
+        [3.3, "Lawn bowling, bocce ball, outdoor", 'Lawn bowling'],
+        [3.5, "Loading /unloading a car, implied walking", 'unloading a car'],
+        [8.0, "Marching rapidly, military, no pack", 'Marching rapidly'],
+        [4.5, "Marching, moderate speed, military, no pack", 'Marching'],
+        [10.3, "Martial arts, different types, moderate pace (e.g., judo, jujitsu, karate, kick boxing, tae kwan do, tai-bo, Muay Thai boxing)", 'Martial arts'],
+        [5.3, "Martial arts, different types, slower pace, novice performers, practice", 'Martial arts'],
+        [4.0, "Moto-cross, off-road motor sports, all-terrain vehicle, general", 'Moto-cross'],
+        [3.5, "Motor scooter, motorcycle", 'Motor scooter'],
+        [6.0, "Moving ice house, set up/drill holes", 'Moving ice house'],
+        [9.0, "Orienteering", 'Orienteering'],
+        [6.0, "Paddle boarding, standing", 'Paddle boarding'],
+        [4.0, "Paddle boat", 'Paddle boat'],
+        [6.0, "Paddleball, casual, general (Taylor Code 460)", 'Paddleball'],
+        [10.0, "Paddleball, competitive", 'Paddleball'],
+        [3.0, "Pilates, general", 'Pilates'],
+        [8.0, "Polo, on horseback", 'Polo'],
+        [6.3, "Pulling rickshaw", 'Pulling rickshaw'],
+        [3.8, "Pushing a wheelchair, non-occupational", 'Pushing a wheelchair'],
+        [4.0, "Pushing or pulling stroller with child or walking with children, 2.5 to 3.1 mph", 'Pushing'],
+        [6.0, "Pushing plane in and out of hangar", 'Pushing plane in and out of hangar'],
+        [6.5, "Race walking", 'Race walking'],
+        [10.0, "Racquetball, competitive", 'Racquetball'],
+        [7.0, "Racquetball, general (Taylor Code 470)", 'Racquetball'],
+        [3.5, "Resistance (weight) training, multiple exercises, 8-15 repetitions at varied resistance", 'Resistance'],
+        [5.0, "Resistance (weight) training, squats , slow or explosive effort", 'Resistance'],
+        [6.0, "Resistance training (weight lifting, free weight, nautilus or universal), power lifting or body building, vigorous effort (Taylor Code 210)", 'Resistance'],
+        [1.3, "Riding in a bus or train", 'Riding in a bus or train'],
+        [1.3, "Riding in a car or truck", 'Riding in a car or truck'],
+        [5.8, "Rock climbing, ascending or traversing rock, low-to-moderate difficulty", 'Rock climbing'],
+        [7.5, "Rock climbing, ascending rock, high difficulty", 'Rock climbing'],
+        [5.0, "Rock climbing, rappelling", 'Rock climbing'],
+        [8.0, "Rock or mountain climbing (Taylor Code 470) (Formerly code = 17120)", 'Rock or mountain climbing'],
+        [4.0, "Rodeo sports, general, light effort", 'Rodeo sports'],
+        [5.5, "Rodeo sports, general, moderate effort", 'Rodeo sports'],
+        [7.0, "Rodeo sports, general, vigorous effort", 'Rodeo sports'],
+        [7.5, "Rollerblading, in-line skating, 14.4 km/h (9.0 mph), recreational pace", 'Rollerblading'],
+        [9.8, "Rollerblading, in-line skating, 17.7 km/h (11.0 mph), moderate pace, exercise training", 'Rollerblading'],
+        [12.3, "Rollerblading, in-line skating, 21.0 to 21.7 km/h (13.0 to 13.6 mph), fast pace, exercise training", 'Rollerblading'],
+        [14.0, "Rollerblading, in-line skating, 24.0 km/h (15.0 mph), maximal effort", 'Rollerblading'],
+        [12.3, "Rope jumping, fast pace, 120-160 skips/min", 'Rope jumping'],
+        [11.8, "Rope jumping, moderate pace, 100-120 skips/min, general, 2 foot skip, plain bounce", 'Rope jumping'],
+        [8.8, "Rope jumping, slow pace, < 100 skips/min, 2 foot skip, rhythm bounce", 'Rope jumping'],
+        [12.3, "Rope skipping, general", 'Rope skipping'],
+        [6.0, "Rowing, stationary ergometer, general, vigorous effort", 'Rowing'],
+        [7.0, "Rowing, stationary, 100 watts, moderate effort", 'Rowing'],
+        [8.5, "Rowing, stationary, 150 watts, vigorous effort", 'Rowing'],
+        [12.0, "Rowing, stationary, 200 watts, very vigorous effort", 'Rowing'],
+        [4.8, "Rowing, stationary, general, moderate effort", 'Rowing'],
+        [6.3, "Rugby, touch, non-competitive", 'Rugby'],
+        [8.3, "Rugby, union, team, competitive", 'Rugby'],
+        [8.0, "Running, (Taylor code 200)", 'Running'],
+        [14.5, "Running, 10 mph (6 min/mile)", 'Running'],
+        [16.0, "Running, 11 mph (5.5 min/mile)", 'Running'],
+        [19.0, "Running, 12 mph (5 min/mile)", 'Running'],
+        [19.8, "Running, 13 mph (4.6 min/mile)", 'Running'],
+        [23.0, "Running, 14 mph (4.3 min/mile)", 'Running'],
+        [6.0, "Running, 4 mph (13 min/mile)", 'Running'],
+        [8.3, "Running, 5 mph (12 min/mile)", 'Running'],
+        [9.0, "Running, 5.2 mph (11.5 min/mile)", 'Running'],
+        [9.8, "Running, 6 mph (10 min/mile)", 'Running'],
+        [10.5, "Running, 6.7 mph (9 min/mile)", 'Running'],
+        [11.0, "Running, 7 mph (8.5 min/mile)", 'Running'],
+        [11.5, "Running, 7.5 mph (8 min/mile)", 'Running'],
+        [11.8, "Running, 8 mph (7.5 min/mile)", 'Running'],
+        [12.3, "Running, 8.6 mph (7 min/mile)", 'Running'],
+        [12.8, "Running, 9 mph (6.5 min/mile)", 'Running'],
+        [9.0, "Running, cross country", 'Running'],
+        [13.3, "Running, marathon", 'Running'],
+        [10.0, "Running, on a track, team practice", 'Running'],
+        [15.0, "Running, stairs, up", 'Running'],
+        [8.0, "Running, training, pushing a wheelchair or baby carrier", 'Running'],
+        [4.5, "Saddling, cleaning, grooming, harnessing and unharnessing horse", 'Saddling'],
+        [3.0, "Sailing, boat and board sailing, windsurfing, ice sailing, general (Taylor Code 235)", 'Sailing'],
+        [4.5, "Sailing, in competition", 'Sailing'],
+        [3.3, "Sailing, Sunfish/Laser/Hobby Cat, Keel boats, ocean sailing, yachting, leisure", 'Sailing'],
+        [3.0, "Shuffleboard", 'Shuffleboard'],
+        [6.0, "Skateboarding, competitive, vigorous effort", 'Skateboarding'],
+        [5.0, "Skateboarding, general, moderate effort", 'Skateboarding'],
+        [7.0, "Skating, ice dancing", 'Skating'],
+        [5.5, "Skating, ice, 9 mph or less", 'Skating'],
+        [7.0, "Skating, ice, general (Taylor Code 360)", 'Skating'],
+        [9.0, "Skating, ice, rapidly, more than 9 mph, not competitive", 'Skating'],
+        [7.0, "Skating, roller (Taylor Code 360)", 'Skating'],
+        [13.3, "Skating, speed, competitive", 'Skating'],
+        [7.0, "Ski jumping, climb up carrying skis", 'Ski jumping'],
+        [6.8, "Ski machine, general", 'Ski machine'],
+        [6.8, "Skiing, cross country, 2.5 mph, slow or light effort, ski walking", 'Skiing'],
+        [9.0, "Skiing, cross country, 4.0-4.9 mph, moderate speed and effort, general", 'Skiing'],
+        [12.5, "Skiing, cross country, 5.0-7.9 mph, brisk speed, vigorous effort", 'Skiing'],
+        [15.0, "Skiing, cross country, >8.0 mph, elite skier, racing", 'Skiing'],
+        [15.5, "Skiing, cross country, hard snow, uphill, maximum, snow mountaineering", 'Skiing'],
+        [13.5, "Skiing, cross-country, biathlon, skating technique", 'Skiing'],
+        [13.3, "Skiing, cross-country, skating", 'Skiing'],
+        [4.3, "Skiing, downhill, alpine or snowboarding, light effort, active time only", 'Skiing'],
+        [5.3, "Skiing, downhill, alpine or snowboarding, moderate effort, general, active time only", 'Skiing'],
+        [8.0, "Skiing, downhill, vigorous effort, racing", 'Skiing'],
+        [7.0, "Skiing, general", 'Skiing'],
+        [12.5, "Skiing, roller, elite racers", 'Skiing'],
+        [6.0, "Skiing, water or wakeboarding (Taylor Code 220)", 'Skiing'],
+        [15.8, "Skindiving, fast", 'Skindiving'],
+        [11.8, "Skindiving, moderate", 'Skindiving'],
+        [7.0, "Skindiving, scuba diving, general (Taylor Code 310)", 'Skindiving'],
+        [3.5, "Skydiving, base jumping, bungee jumping", 'Skindiving'],
+        [7.0, "Sledding, tobogganing, bobsledding, luge (Taylor Code 370)", 'Sledding'],
+        [11.0, "Slide board exercise, general", 'Slide board exercise'],
+        [6.0, "Slimnastics, Jazzercise", 'Slimnastics'],
+        [5.0, "Snorkeling (Taylor Code 310)", 'Snorkeling'],
+        [2.5, "Snow blower, walking and pushing", 'Snow blower'],
+        [5.3, "Snow shoeing, moderate effort", 'Snow shoeing'],
+        [10.0, "Snow shoeing, vigorous effort", 'Snow shoeing'],
+        [5.3, "Snow shoveling, by hand, moderate effort", 'Snow shoveling'],
+        [7.5, "Snow shoveling, by hand, vigorous effort", 'Snow shoveling'],
+        [3.5, "Snowmobiling, driving, moderate", 'Snowmobiling'],
+        [2.0, "Snowmobiling, passenger", 'Snowmobiling'],
+        [7.0, "Soccer, casual, general (Taylor Code 540)", 'Soccer'],
+        [10.0, "Soccer, competitive", 'Soccer'],
+        [5.0, "Softball or baseball, fast or slow pitch, general (Taylor Code 440)", 'Softball'],
+        [4.0, "Softball, officiating", 'Softball'],
+        [4.0, "Softball, practice", 'Softball'],
+        [6.0, "Softball,pitching", 'Softball'],
+        [3.3, "Sports spectator, very excited, emotional, physically moving", 'Sports spectator'],
+        [12.0, "Squash (Taylor Code 530)", 'Squash'],
+        [7.3, "Squash, general", 'Squash'],
+        [8.8, "Stair climbing, fast pace", 'Stair climbing'],
+        [4.0, "Stair climbing, slow pace", 'Stair climbing'],
+        [8.0, "Stair climbing, using or climbing up ladder (Taylor Code 030)", 'Stair climbing'],
+        [9.0, "Stair-treadmill ergometer, general", 'Stair-treadmill ergometer'],
+        [2.3, "Stretching, mild", 'Stretching'],
+        [5.0, "Surfing, body or board, competitive", 'Surfing'],
+        [3.0, "Surfing, body or board, general", 'Surfing'],
+        [9.8, "Swimming laps, freestyle, fast, vigorous effort", 'Swimming'],
+        [5.8, "Swimming laps, freestyle, front crawl, slow, light or moderate effort", 'Swimming'],
+        [9.5, "Swimming, backstroke, general, training or competition", 'Swimming'],
+        [4.8, "Swimming, backstroke, recreational", 'Swimming'],
+        [10.3, "Swimming, breaststroke, general, training or competition", 'Swimming'],
+        [5.3, "Swimming, breaststroke, recreational", 'Swimming'],
+        [13.8, "Swimming, butterfly, general", 'Swimming'],
+        [10.0, "Swimming, crawl, fast speed, ~75 yards/minute, vigorous effort", 'Swimming'],
+        [8.3, "Swimming, crawl, medium speed, ~50 yards/minute, vigorous effort", 'Swimming'],
+        [6.0, "Swimming, lake, ocean, river (Taylor Codes 280, 295)", 'Swimming'],
+        [6.0, "Swimming, leisurely, not lap swimming, general", 'Swimming'],
+        [7.0, "Swimming, sidestroke, general", 'Swimming'],
+        [8.0, "Swimming, synchronized", 'Swimming'],
+        [9.8, "Swimming, treading water, fast, vigorous effort", 'Swimming'],
+        [3.5, "Swimming, treading water, moderate effort, general", 'Swimming'],
+        [4.0, "Table tennis, ping pong (Taylor Code 410)", 'Table tennis'],
+        [3.0, "Tai chi, qi gong, general", 'Tai chi'],
+        [1.5, "Tai chi, qi gong, sitting, light effort", 'Tai chi'],
+        [4.8, "Tap", 'Tap'],
+        [6.8, "Teaching exercise class (e.g., aerobic, water)", 'Teaching exercise class'],
+        [4.5, "Tennis, doubles", 'Tennis'],
+        [6.0, "Tennis, doubles (Taylor Code 430)", 'Tennis'],
+        [7.3, "Tennis, general", 'Tennis'],
+        [5.0, "Tennis, hitting balls, non-game play, moderate effort", 'Tennis'],
+        [8.0, "Tennis, singles (Taylor Code 420)", 'Tennis'],
+        [2.8, "Therapeutic exercise ball, Fitball exercise", 'Therapeutic'],
+        [6.0, "Track and field (e.g., high jump, long jump, triple jump, javelin, pole vault)", 'Track and field'],
+        [4.0, "Track and field (e.g., shot, discus, hammer throw)", 'Track and field'],
+        [10.0, "Track and field (e.g., steeplechase, hurdles)", 'Track and field'],
+        [4.5, "Trampoline, competitive", 'Trampoline'],
+        [3.5, "Trampoline, recreational", 'Trampoline'],
+        [2.5, "Truck, semi, tractor, > 1 ton, or bus, driving", 'Truck, semi, tractor'],
+        [2.3, "Tubing, floating on a river, general", 'Tubing'],
+        [5.0, "Unicycling", 'Unicycling'],
+        [2.8, "Upper body exercise, arm ergometer", 'Upper body exercise'],
+        [4.3, "Upper body exercise, stationary bicycle - Airdyne (arms only) 40 rpm, moderate", 'Upper body exercise'],
+        [5.0, "Using crutches", 'Using crutches'],
+        [4.0, "Video exercise workouts, TV conditioning programs (e.g., cardio-resistance), moderate effort", 'Video exercise'],
+        [6.0, "Video exercise workouts, TV conditioning programs (e.g., cardio-resistance), vigorous effort", 'Video exercise'],
+        [2.3, "Video exercise workouts, TV conditioning programs (e.g., yoga, stretching), light effort", 'Video exercise'],
+        [4.0, "Volleyball (Taylor Code 400)", 'Volleyball'],
+        [8.0, "Volleyball, beach, in sand", 'Volleyball'],
+        [6.0, "Volleyball, competitive, in gymnasium", 'Volleyball'],
+        [3.0, "Volleyball, non-competitive, 6 - 9 member team, general", 'Volleyball'],
+        [3.5, "Walking for pleasure (Taylor Code 010)", 'Walking'],
+        [3.5, "Walking for transportation, 2.8-3.2 mph, level, moderate pace, firm surface", 'Walking'],
+        [2.5, "Walking from house to car or bus, from car or bus to go places, from car or bus to and from the worksite", 'Walking'],
+        [3.0, "Walking the dog", 'Walking'],
+        [2.5, "Walking to neighbor's house or family's house for social reasons", 'Walking'],
+        [2.8, "Walking, 2.0 mph, level, slow pace, firm surface", 'Walking'],
+        [3.3, "Walking, 2.5 mph, downhill", 'Walking'],
+        [3.0, "Walking, 2.5 mph, level, firm surface", 'Walking'],
+        [3.5, "Walking, 2.8 to 3.2 mph, level, moderate pace, firm surface", 'Walking'],
+        [5.3, "Walking, 2.9 to 3.5 mph, uphill, 1 to 5% grade", 'Walking'],
+        [8.0, "Walking, 2.9 to 3.5 mph, uphill, 6% to 15% grade", 'Walking'],
+        [4.3, "Walking, 3.5 mph, level, brisk, firm surface, walking for exercise", 'Walking'],
+        [5.0, "Walking, 4.0 mph, level, firm surface, very brisk pace", 'Walking'],
+        [7.0, "Walking, 4.5 mph, level, firm surface, very, very brisk", 'Walking'],
+        [8.3, "Walking, 5.0 mph, level, firm surface", 'Walking'],
+        [9.8, "Walking, 5.0 mph, uphill, 3% grade", 'Walking'],
+        [6.0, "Walking, backwards, 3.5 mph, level", 'Walking'],
+        [8.0, "Walking, backwards, 3.5 mph, uphill, 5% grade", 'Walking'],
+        [4.8, "Walking, for exercise, 3.5 to 4 mph, with ski poles, Nordic walking, level, moderate pace", 'Walking'],
+        [9.5, "Walking, for exercise, 5.0 mph, with ski poles, Nordic walking, level, fast pace", 'Walking'],
+        [6.8, "Walking, for exercise, with ski poles, Nordic walking, uphill", 'Walking'],
+        [3.5, "Walking, for pleasure, work break", 'Walking'],
+        [4.8, "Walking, grass track", 'Walking'],
+        [2.0, "Walking, household", 'Walking'],
+        [2.0, "Walking, less than 2.0 mph, level, strolling, very slow", 'Walking'],
+        [4.5, "Walking, normal pace, plowed field or sand", 'Walking'],
+        [2.5, "Walking, to and from an outhouse", 'Walking'],
+        [4.0, "Walking, to work or class (Taylor Code 015)", 'Walking'],
+        [7.0, "Wallyball, general", 'Wallyball'],
+        [5.5, "Water aerobics, water calisthenics", 'Water aerobics'],
+        [5.3, "Water aerobics, water calisthenics, water exercise", 'Water aerobics'],
+        [9.8, "Water jogging", 'Water jogging'],
+        [10.0, "Water polo", 'Water polo'],
+        [3.0, "Water volleyball", 'Water volleyball'],
+        [2.5, "Water walking, light effort, slow pace", 'Water walking'],
+        [4.5, "Water walking, moderate effort, moderate pace", 'Water walking'],
+        [6.8, "Water walking, vigorous effort, brisk pace", 'Water walking'],
+        [1.3, "Whirlpool, sitting", 'Whirlpool'],
+        [5.0, "Whitewater rafting, kayaking, or canoeing", 'Whitewater rafting'],
+        [11.0, "Windsurfing or kitesurfing, crossing trial", 'Windsurfing'],
+        [13.5, "Windsurfing, competition, pumping for speed", 'Windsurfing'],
+        [5.0, "Windsurfing, not pumping for speed", 'Windsurfing'],
+        [6.0, "Wrestling (one match = 5 minutes)", 'Wresling'],
+        [2.5, "Yoga, Hatha", 'yoga'],
+        [2.0, "Yoga, Nadisodhana", 'yoga'],
+        [4.0, "Yoga, Power", 'yoga'],
+        [3.3, "Yoga, Surya Namaskar", 'yoga']
+    ];
+
+    function getClosest(search, arr) {
+        let closest = null;
+        for (const item of arr) {
+            const [calories_burn_act, act_name_ans_pandran, act_img_name] = item.split("@@");
+            if (closest == null || Math.abs(search - closest) > Math.abs(calories_burn_act - search)) {
+                closest = calories_burn_act;
+            }
+        }
+        return closest;
+    }
+
+    if (isNumeric(age) && isNumeric(weight) && isNumeric(lose_w) && gender && activity) {
+        let lose_w_lbs, lose_w_kg;
+        
+        if (lose_unit == "lbs") {
+            lose_w_lbs = lose_w;
+            lose_w_kg = lose_w / 2.205;
+        } else {
+            lose_w_kg = lose_w;
+            lose_w_lbs = lose_w * 2.205;
+        }
+
+        let weight_lbs, weight_kg, new_lose_kg, new_lose_lbs;
+        
+        if (weight_unit == "lbs") {
+            weight_lbs = weight;
+            weight_kg = weight / 2.205;
+            new_lose_kg = lose_w_lbs / 2.205;
+            new_lose_lbs = lose_w_lbs;
+        } else {
+            weight_kg = weight;
+            weight_lbs = weight * 2.205;
+            new_lose_kg = lose_w_lbs * 2.205;
+            new_lose_lbs = lose_w_lbs;
+        }
+
+        const weight_diff_kg = weight_kg - new_lose_kg;
+        const weight_diff_lbs = weight_lbs - new_lose_lbs;
+
+        let final_height_cm;
+        
+        if (hightUnit == "ft/in") {
+            if (isNumeric(height_ft) && isNumeric(height_in)) {
+                if (body.tech_unit_ft_in == 'ft/in') {
+                    final_height_cm = height_ft * 30.48;
+                    if (height_in != null) {
+                        const height_in_cm = height_in * 2.54;
+                        final_height_cm += height_in_cm;
+                    }
+                }
+            } else {
+                return { error: 'Please Enter Height.' };
+            }
+        } else {
+            if (isNumeric(height_cm)) {
+                final_height_cm = height_cm;
+            } else {
+                return { error: 'Please Enter Height.' };
+            }
+        }
+
+        const height_m = final_height_cm / 100;
+        const height_in_total = final_height_cm / 2.54;
+
+        let new_BMR, ibw;
+        
+        if (gender == 'Male') {
+            new_BMR = Math.round((10 * weight_kg) + (6.25 * final_height_cm) - (5 * age) + 5);
+            ibw = 50 + (2.3 * (height_in_total - 60));
+        } else {
+            new_BMR = Math.round((10 * weight_kg) + (6.25 * final_height_cm) - (5 * age) - 161);
+            ibw = 45.5 + (2.3 * (height_in_total - 60));
+        }
+
+        const BMI = Math.round((weight_kg / (height_m * height_m)) * 100) / 100;
+        let you_are;
+        
+        if (BMI <= 18.5) {
+            you_are = 'Underweight';
+        } else if (BMI > 18.5 && BMI <= 24.9) {
+            you_are = 'Normal Weight';
+        } else if (BMI > 24.9 && BMI <= 29.9) {
+            you_are = 'Overweight';
+        } else if (BMI > 29.9 && BMI <= 35) {
+            you_are = 'Obesity';
+        } else {
+            you_are = 'Severe Obesity';
+        }
+
+        const activity_multiplier = Math.round(new_BMR * activity);
+        const calories = Math.round(new_BMR + activity_multiplier);
+
+        let calories_less, calories_daily, pounds_daily, days;
+
+        if (choose == "by_calories") {
+            if (!enter_calories) {
+                return { error: 'Enter Kcal/day are you ready to reduce.' };
+            }
+            calories_less = enter_calories;
+            calories_daily = calories - calories_less;
+            pounds_daily = Math.round((calories_less / 3500) * 1000) / 1000;
+            days = Math.round(weight_diff_lbs / pounds_daily);
+        } else {
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            const timeDiff = endDate.getTime() - startDate.getTime();
+            days = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            
+            if (days == 0) {
+                return { error: 'Start and target dates must not be the same.' };
+            }
+            
+            pounds_daily = Math.round((weight_diff_lbs / days) * 100) / 100;
+            calories_less = Math.round(pounds_daily * 3500);
+            calories_daily = calories - calories_less;
+        }
+
+        const sab_ki_calories_pandran = [];
+        const sab_ki_calories_adha = [];
+        const sab_ki_calories_pona = [];
+        const sab_ki_calories_hour = [];
+        const sab_ki_calories_sawa = [];
+        const sab_ki_calories_dher = [];
+        const sab_ki_calories_pone = [];
+        const sab_ki_calories_do = [];
+
+        for (const act_val of all_activites) {
+            sab_ki_calories_pandran.push(Math.round(new_BMR * act_val[0] * (15/1440)) + "@@" + act_val[1] + "@@" + act_val[2]);
+            sab_ki_calories_adha.push(Math.round(new_BMR * act_val[0] * (30/1440)) + "@@" + act_val[1] + "@@" + act_val[2]);
+            sab_ki_calories_pona.push(Math.round(new_BMR * act_val[0] * (45/1440)) + "@@" + act_val[1] + "@@" + act_val[2]);
+            sab_ki_calories_hour.push(Math.round(new_BMR * act_val[0] * (60/1440)) + "@@" + act_val[1] + "@@" + act_val[2]);
+            sab_ki_calories_sawa.push(Math.round(new_BMR * act_val[0] * (75/1440)) + "@@" + act_val[1] + "@@" + act_val[2]);
+            sab_ki_calories_dher.push(Math.round(new_BMR * act_val[0] * (90/1440)) + "@@" + act_val[1] + "@@" + act_val[2]);
+            sab_ki_calories_pone.push(Math.round(new_BMR * act_val[0] * (105/1440)) + "@@" + act_val[1] + "@@" + act_val[2]);
+            sab_ki_calories_do.push(Math.round(new_BMR * act_val[0] * (120/1440)) + "@@" + act_val[1] + "@@" + act_val[2]);
+        }
+
+        const diff_array_pandran = [];
+        const diff_array_adha = [];
+        const diff_array_pona = [];
+        const diff_array = [];
+        const diff_array_sawa = [];
+        const diff_array_dher = [];
+        const diff_array_pone = [];
+        const diff_array_do = [];
+
+        for (let i = 0; i < sab_ki_calories_hour.length; i++) {
+            const [cal_ans_pandran, name_ans_pandran, img_name_pandran] = sab_ki_calories_pandran[i].split("@@");
+            const [cal_ans_adha, name_ans_adha, img_name_adha] = sab_ki_calories_adha[i].split("@@");
+            const [cal_ans_pona, name_ans_pona, img_name_pona] = sab_ki_calories_pona[i].split("@@");
+            const [cal_ans, name_ans, img_name] = sab_ki_calories_hour[i].split("@@");
+            const [cal_ans_sawa, name_ans_sawa, img_name_sawa] = sab_ki_calories_sawa[i].split("@@");
+            const [cal_ans_dher, name_ans_dher, img_name_dher] = sab_ki_calories_dher[i].split("@@");
+            const [cal_ans_pone, name_ans_pone, img_name_pone] = sab_ki_calories_pone[i].split("@@");
+            const [cal_ans_do, name_ans_do, img_name_do] = sab_ki_calories_do[i].split("@@");
+
+            diff_array_pandran.push([Math.abs(cal_ans_pandran - calories_less), cal_ans_pandran, name_ans_pandran, img_name_pandran]);
+            diff_array_adha.push([Math.abs(cal_ans_adha - calories_less), cal_ans_adha, name_ans_adha, img_name_adha]);
+            diff_array_pona.push([Math.abs(cal_ans_pona - calories_less), cal_ans_pona, name_ans_pona, img_name_pona]);
+            diff_array.push([Math.abs(cal_ans - calories_less), cal_ans, name_ans, img_name]);
+            diff_array_sawa.push([Math.abs(cal_ans_sawa - calories_less), cal_ans_sawa, name_ans_sawa, img_name_sawa]);
+            diff_array_dher.push([Math.abs(cal_ans_dher - calories_less), cal_ans_dher, name_ans_dher, img_name_dher]);
+            diff_array_pone.push([Math.abs(cal_ans_pone - calories_less), cal_ans_pone, name_ans_pone, img_name_pone]);
+            diff_array_do.push([Math.abs(cal_ans_do - calories_less), cal_ans_do, name_ans_do, img_name_do]);
+        }
+
+        diff_array_pandran.sort((a, b) => a[0] - b[0]);
+        diff_array_adha.sort((a, b) => a[0] - b[0]);
+        diff_array_pona.sort((a, b) => a[0] - b[0]);
+        diff_array.sort((a, b) => a[0] - b[0]);
+        diff_array_sawa.sort((a, b) => a[0] - b[0]);
+        diff_array_dher.sort((a, b) => a[0] - b[0]);
+        diff_array_pone.sort((a, b) => a[0] - b[0]);
+        diff_array_do.sort((a, b) => a[0] - b[0]);
+
+        const slice_pandran = diff_array_pandran.slice(0, 15);
+        const slice_adha = diff_array_adha.slice(0, 15);
+        const slice_pona = diff_array_pona.slice(0, 15);
+        const slice = diff_array.slice(0, 15);
+        const slice_sawa = diff_array_sawa.slice(0, 15);
+        const slice_dher = diff_array_dher.slice(0, 15);
+        const slice_pone = diff_array_pone.slice(0, 15);
+        const slice_do = diff_array_do.slice(0, 15);
+
+        const final_array_pandran = [];
+        const final_array_adha = [];
+        const final_array_pona = [];
+        const final_array = [];
+        const final_array_sawa = [];
+        const final_array_dher = [];
+        const final_array_pone = [];
+        const final_array_do = [];
+
+        for (let i = 0; i < slice.length; i++) {
+            final_array_pandran.push(slice_pandran[i][1] + "@@" + slice_pandran[i][2] + "@@" + slice_pandran[i][3]);
+            final_array_adha.push(slice_adha[i][1] + "@@" + slice_adha[i][2] + "@@" + slice_adha[i][3]);
+            final_array_pona.push(slice_pona[i][1] + "@@" + slice_pona[i][2] + "@@" + slice_pona[i][3]);
+            final_array.push(slice[i][1] + "@@" + slice[i][2] + "@@" + slice[i][3]);
+            final_array_sawa.push(slice_sawa[i][1] + "@@" + slice_sawa[i][2] + "@@" + slice_sawa[i][3]);
+            final_array_dher.push(slice_dher[i][1] + "@@" + slice_dher[i][2] + "@@" + slice_dher[i][3]);
+            final_array_pone.push(slice_pone[i][1] + "@@" + slice_pone[i][2] + "@@" + slice_pone[i][3]);
+            final_array_do.push(slice_do[i][1] + "@@" + slice_do[i][2] + "@@" + slice_do[i][3]);
+        }
+
+        final_array_pandran.sort();
+        final_array_adha.sort();
+        final_array_pona.sort();
+        final_array.sort();
+        final_array_sawa.sort();
+        final_array_dher.sort();
+        final_array_pone.sort();
+        final_array_do.sort();
+
+        const activity_first = Math.round(((0.2 * new_BMR * 7) / 3500) * 100) / 100;
+        const activity_second = Math.round(((0.375 * new_BMR * 7) / 3500) * 100) / 100;
+        const activity_third = Math.round(((0.55 * new_BMR * 7) / 3500) * 100) / 100;
+        const activity_four = Math.round(((0.725 * new_BMR * 7) / 3500) * 100) / 100;
+        const activity_five = Math.round(((0.9 * new_BMR * 7) / 3500) * 100) / 100;
+
+        const ans_weight = (submit == "lbs") ? weight_lbs : weight_kg;
+
+        return {
+            tech_PoundsDaily: pounds_daily,
+            tech_CaloriesDaily: calories_daily,
+            tech_Calories: calories,
+            tech_days: days,
+            tech_ans_weight: ans_weight,
+            tech_BMR: new_BMR,
+            tech_BMI: BMI,
+            tech_you_are: you_are,
+            tech_ibw: ibw,
+            tech_submit: submit,
+            tech_lose_w: lose_w,
+            tech_weight: weight,
+            tech_final_array_pandran: final_array_pandran,
+            tech_final_array_adha: final_array_adha,
+            tech_final_array_pona: final_array_pona,
+            tech_final_array: final_array,
+            tech_final_array_sawa: final_array_sawa,
+            tech_final_array_dher: final_array_dher,
+            tech_final_array_pone: final_array_pone,
+            tech_final_array_do: final_array_do,
+            tech_diff_array_pandran: diff_array_pandran,
+            tech_diff_array_adha: diff_array_adha,
+            tech_diff_array_pona: diff_array_pona,
+            tech_diff_array: diff_array,
+            tech_diff_array_sawa: diff_array_sawa,
+            tech_diff_array_dher: diff_array_dher,
+            tech_diff_array_pone: diff_array_pone,
+            tech_diff_array_do: diff_array_do,
+            tech_activity_first: activity_first,
+            tech_activity_second: activity_second,
+            tech_activity_third: activity_third,
+            tech_activity_four: activity_four,
+            tech_activity_five: activity_five,
+        };
+    } else {
+        return { error: 'Please! Check Your Input.' };
+    }
+    
+    // Helper function to check if value is numeric
+    function isNumeric(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+    }
+}
+
+   /**
+    * getCalculationOvulationCalculator: Service Method
+    * POST: /api/calculators-lol/ovulation-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationOvulationCalculator(body) {
+      const request = body;
+      
+      // Validate input
+      if (!isNaN(request.tech_days) && request.tech_date) {
+        const datepicker = request.tech_date;
+        const exp = datepicker.split('-');
+        let dateyear = parseInt(exp[0]);
+        let datemonth = parseInt(exp[1]);
+        let dateday = parseInt(exp[2]);
+        
+        // Set default values
+        let days = parseInt(request.tech_days) || 28;
+        let ldays = parseInt(request.tech_Luteal) || 14;
+        
+        let table = '';
+        
+        // Helper function to format date
+        const formatDate = (d, format) => {
+          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          const month = months[d.getMonth()];
+          const day = String(d.getDate()).padStart(2, '0');
+          const year = d.getFullYear();
+          
+          if (format == 'M d, Y') return `${month} ${day}, ${year}`;
+          if (format == 'M d') return `${month} ${day}`;
+          if (format == 'M d - ') return `${month} ${day} - `;
+          if (format == 'M d ') return `${month} ${day} `;
+          if (format == 'Y-m-d') return `${year}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          return d;
+        };
+        
+        // Helper function to add days
+        const addDays = (date, days) => {
+          const result = new Date(date);
+          result.setDate(result.getDate() + days);
+          return result;
+        };
+        
+        // Parse date string to create proper date
+        const parseDate = (dateStr) => {
+          const parts = dateStr.split(', ');
+          const monthDay = parts[0].split(' ');
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          const month = monthNames.indexOf(monthDay[0]);
+          const day = parseInt(monthDay[1]);
+          const year = parts[1] ? parseInt(parts[1]) : new Date().getFullYear();
+          return new Date(year, month, day);
+        };
+        
+        // Initial date
+        const date = `${dateyear}-${datemonth}-${dateday}`;
+        const dateObj = new Date(dateyear, datemonth - 1, dateday);
+        
+        const start_period = formatDate(dateObj, 'M d, Y');
+        const start_perio = formatDate(dateObj, 'M d');
+        const save1 = formatDate(dateObj, 'M d ');
+        const save2 = formatDate(addDays(dateObj, 6), 'M d');
+        const save = `${save1}to ${save2}`;
+        
+        // Next period calculation
+        const next_period_date = addDays(dateObj, days);
+        const next_period = formatDate(next_period_date, 'M d, Y');
+        const save3 = formatDate(next_period_date, 'M d');
+        const save4 = formatDate(addDays(next_period_date, -6), 'M d');
+        const saven = `${save4} to ${save3}`;
+        
+        // Ovulation date calculation
+        const ovu_date_obj = addDays(next_period_date, -ldays);
+        const ovu_date = formatDate(ovu_date_obj, 'M d, Y');
+        const firstday = formatDate(addDays(ovu_date_obj, -2), 'M d');
+        const lastday = formatDate(addDays(ovu_date_obj, 2), 'M d');
+        const testdate = formatDate(addDays(ovu_date_obj, 9), 'M d, Y');
+        const inter = formatDate(addDays(addDays(ovu_date_obj, 2), -7), 'M d - ');
+        
+        const diff = 280 + (days - 28);
+        const duedate = formatDate(addDays(dateObj, diff), 'M d, Y');
+        
+        // Build table first row
+        table += `<tr><td class="border-b-dark font-s-12">${start_perio}</td><td class="border-b-dark font-s-12 border-s-dark">${firstday} - ${lastday}</td><td class="border-b-dark font-s-12 border-s-dark">${duedate}</td></tr>`;
+        
+        // Build table rows for next 5 cycles
+        let current_period_str = start_period;
+        for (let i = 0; i < 5; i++) {
+          const current = parseDate(current_period_str);
+          const next_current = addDays(current, days);
+          current_period_str = formatDate(next_current, 'M d, Y');
+          const start_period_display = formatDate(next_current, 'M d');
+          
+          const next = addDays(next_current, days);
+          const ovu = addDays(next, -ldays);
+          const first = formatDate(addDays(ovu, -2), 'M d');
+          const last = formatDate(addDays(ovu, 2), 'M d');
+          const d_date = formatDate(addDays(next_current, diff), 'M d, Y');
+          const border_b = i == 4 ? '' : 'border-b-dark';
+          
+          table += `<tr><td class="${border_b} font-s-12">${start_period_display}</td><td class="${border_b} font-s-12 border-s-dark">${first} - ${last}</td><td class="${border_b} font-s-12 border-s-dark">${d_date}</td></tr>`;
+        }
+        
+        // Calculate chance
+        const aj_ki_date = formatDate(new Date(), 'M d, Y');
+        const one = formatDate(addDays(ovu_date_obj, -2), 'M d, Y');
+        const two = formatDate(addDays(ovu_date_obj, -1), 'M d, Y');
+        const three = formatDate(addDays(ovu_date_obj, 2), 'M d, Y');
+        const four = formatDate(addDays(ovu_date_obj, 1), 'M d, Y');
+        
+        let chance;
+        if (aj_ki_date == ovu_date) {
+          chance = 'High';
+        } else if (aj_ki_date == one || aj_ki_date == two || aj_ki_date == three || aj_ki_date == four) {
+          chance = 'Medium';
+        } else {
+          chance = 'Low';
+        }
+        
+        // Calculate all event dates - FIXED LOGIC
+        const event1 = formatDate(dateObj, 'Y-m-d');
+        const event2 = formatDate(next_period_date, 'Y-m-d');
+        const event3 = formatDate(addDays(ovu_date_obj, -2), 'Y-m-d');
+        const event4 = formatDate(addDays(ovu_date_obj, -1), 'Y-m-d');
+        const event5 = formatDate(ovu_date_obj, 'Y-m-d');
+        const event6 = formatDate(addDays(ovu_date_obj, 1), 'Y-m-d');
+        const event7 = formatDate(addDays(ovu_date_obj, 2), 'Y-m-d');
+        
+        // event8-12: Next fertile window
+        const event7_date = addDays(ovu_date_obj, 2);
+        const event8 = formatDate(addDays(event7_date, days - 4), 'Y-m-d');
+        const event9 = formatDate(addDays(event7_date, days - 3), 'Y-m-d');
+        const event10 = formatDate(addDays(event7_date, days - 2), 'Y-m-d');
+        const event11 = formatDate(addDays(event7_date, days - 1), 'Y-m-d');
+        const event12 = formatDate(addDays(event7_date, days), 'Y-m-d');
+        
+        // event13-17: Third fertile window
+        const event13 = formatDate(addDays(event7_date, days + (days - 4)), 'Y-m-d');
+        const event14 = formatDate(addDays(event7_date, days + (days - 3)), 'Y-m-d');
+        const event15 = formatDate(addDays(event7_date, days + (days - 2)), 'Y-m-d');
+        const event16 = formatDate(addDays(event7_date, days + (days - 1)), 'Y-m-d');
+        const event17 = formatDate(addDays(event7_date, days + days), 'Y-m-d');
+        
+        // event18-22: Fourth fertile window
+        const event18 = formatDate(addDays(event7_date, (days * 2) + (days - 4)), 'Y-m-d');
+        const event19 = formatDate(addDays(event7_date, (days * 2) + (days - 3)), 'Y-m-d');
+        const event20 = formatDate(addDays(event7_date, (days * 2) + (days - 2)), 'Y-m-d');
+        const event21 = formatDate(addDays(event7_date, (days * 2) + (days - 1)), 'Y-m-d');
+        const event22 = formatDate(addDays(event7_date, (days * 2) + days), 'Y-m-d');
+        
+        // event23-27: Fifth fertile window
+        const event23 = formatDate(addDays(event7_date, (days * 3) + (days - 4)), 'Y-m-d');
+        const event24 = formatDate(addDays(event7_date, (days * 3) + (days - 3)), 'Y-m-d');
+        const event25 = formatDate(addDays(event7_date, (days * 3) + (days - 2)), 'Y-m-d');
+        const event26 = formatDate(addDays(event7_date, (days * 3) + (days - 1)), 'Y-m-d');
+        const event27 = formatDate(addDays(event7_date, (days * 3) + days), 'Y-m-d');
+        
+        // event28-32: Sixth fertile window
+        const event28 = formatDate(addDays(event7_date, (days * 4) + (days - 4)), 'Y-m-d');
+        const event29 = formatDate(addDays(event7_date, (days * 4) + (days - 3)), 'Y-m-d');
+        const event30 = formatDate(addDays(event7_date, (days * 4) + (days - 2)), 'Y-m-d');
+        const event31 = formatDate(addDays(event7_date, (days * 4) + (days - 1)), 'Y-m-d');
+        const event32 = formatDate(addDays(event7_date, (days * 4) + days), 'Y-m-d');
+        
+        const lasttime_date = addDays(ovu_date_obj, -2);
+        lasttime_date.setHours(0, 0, 0, 0);
+        const lasttime = Math.floor(lasttime_date.getTime() / 1000);
+        
+        // Return result object
+        return {
+          tech_Date: date,
+          tech_First_day: firstday,
+          tech_Ovu_date: ovu_date,
+          tech_Last_day: lastday,
+          tech_Next_period: next_period,
+          tech_table: table,
+          tech_test: testdate,
+          tech_inter: inter,
+          tech_save: save,
+          tech_saven: saven,
+          tech_chance: chance,
+          tech_Due_date: duedate,
+          tech_event1: event1, 
+          tech_event2: event2, 
+          tech_event3: event3, 
+          tech_event4: event4, 
+          tech_event5: event5, 
+          tech_event6: event6, 
+          tech_event7: event7,
+          tech_event8: event8, 
+          tech_event9: event9, 
+          tech_event10: event10, 
+          tech_event11: event11, 
+          tech_event12: event12, 
+          tech_event13: event13, 
+          tech_event14: event14,
+          tech_event15: event15, 
+          tech_event16: event16, 
+          tech_event17: event17, 
+          tech_event18: event18, 
+          tech_event19: event19, 
+          tech_event20: event20, 
+          tech_event21: event21,
+          tech_event22: event22, 
+          tech_event23: event23, 
+          tech_event24: event24, 
+          tech_event25: event25, 
+          tech_event26: event26, 
+          tech_event27: event27, 
+          tech_event28: event28,
+          tech_event29: event29, 
+          tech_event30: event30, 
+          tech_event31: event31, 
+          tech_event32: event32,
+          tech_lasttime: lasttime,
+          request: request,
+        };
+      } else {
+        return {
+          error: 'Invalid Input.'
+        };
+      }
+    }
+
+     /**
+    * getCalculationOvulationCalculator: Service Method
+    * POST: /api/calculators-lol/pregnancy-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+   
+
+      async getCalculationPregnancyCalculator(body) {
+        const param = {};
+        let fieldsDone = 0;
+
+        // Check if date is provided
+        if (!body.tech_date) {
+          param.error = 'Please Fill All Fields.';
+          return param;
+        }
+
+        fieldsDone = 1;
+        const dop = body.tech_date; // Expected format: YYYY-MM-DD
+        const dop2 = dop.split("-");
+
+        // Convert month string to number
+        let month = parseInt(dop2[1], 10);
+        const year = parseInt(dop2[0], 10);
+        const day = parseInt(dop2[2], 10);
+
+        let ovu_date, modi_ageEsimated, due_date;
+        let weeksRemaining, daysRemaining;
+
+        if (body.tech_method == 'Last') {
+          // Last Menstrual Period method
+          if (!body.tech_cycle) {
+            param.error = 'Please Fill All Fields.';
+            return param;
+          }
+
+          const cycle = parseInt(body.tech_cycle, 10);
+          const startDate = new Date(year, month - 1, day);
+          
+          // Calculate ovulation date
+          const ovuDateTime = new Date(startDate);
+          ovuDateTime.setDate(ovuDateTime.getDate() + cycle - 14);
+          ovu_date = formatDate(ovuDateTime, 'MMM dd, yyyy');
+          
+          // Calculate due date (ovulation + 266 days)
+          const dueDateTime = new Date(ovuDateTime);
+          dueDateTime.setDate(dueDateTime.getDate() + 266);
+          modi_ageEsimated = formatDate(dueDateTime, 'MMM dd, yyyy');
+          
+          // Calculate current pregnancy progress
+          const bday = new Date(dueDateTime);
+          bday.setDate(bday.getDate() - 280);
+          const today = new Date();
+          const diff = dateDiff(bday, today);
+          
+          const months = diff.months;
+          if (months > 9) {
+            param.error = 'You are not pregnant yet.';
+            return param;
+          }
+          
+          const days = (months * 30.417) + diff.days;
+          weeksRemaining = Math.floor(days / 7);
+          daysRemaining = Math.floor(days % 7);
+        } 
+        else if (body.tech_method == 'Due') {
+          // Due Date method
+          const dueDate = new Date(year, month - 1, day);
+          
+          // Calculate ovulation date (due date - 266 days)
+          const ovuDateTime = new Date(dueDate);
+          ovuDateTime.setDate(ovuDateTime.getDate() - 266);
+          ovu_date = formatDate(ovuDateTime, 'MMM dd, yyyy');
+          
+          due_date = formatDate(dueDate, 'MMM dd, yyyy');
+          modi_ageEsimated = formatDate(dueDate, 'MM/dd/yyyy');
+          
+          // Calculate current pregnancy progress
+          const bday = new Date(dueDate);
+          bday.setDate(bday.getDate() - 280);
+          const today = new Date();
+          const diff = dateDiff(bday, today);
+          
+          const months = diff.months;
+        
+          if (months > 9) {
+            param.error = 'You are not pregnant yet.';
+            return param;
+          }
+          
+          const days = (months * 30.417) + diff.days;
+          weeksRemaining = Math.floor(days / 7);
+          daysRemaining = Math.floor(days % 7);
+        } 
+        else if (body.tech_method == 'Conception') {
+          // Conception Date method
+          const conceptionDate = new Date(year, month - 1, day);
+          ovu_date = formatDate(conceptionDate, 'MMM dd, yyyy');
+          
+          // Calculate due date (conception + 266 days)
+          const dueDateTime = new Date(conceptionDate);
+          dueDateTime.setDate(dueDateTime.getDate() + 266);
+          due_date = formatDate(dueDateTime, 'yyyy-MM-dd');
+          modi_ageEsimated = formatDate(dueDateTime, 'MM/dd/yyyy');
+          
+          // Calculate current pregnancy progress
+          const bday = new Date(dueDateTime);
+          bday.setDate(bday.getDate() - 280);
+          const today = new Date();
+          const diff = dateDiff(bday, today);
+          
+          const months = diff.months;
+          if (months > 9) {
+            param.error = 'You are not pregnant yet.';
+            return param;
+          }
+          
+          const days = (months * 30.417) + diff.days;
+          weeksRemaining = Math.floor(days / 7);
+          daysRemaining = Math.floor(days % 7);
+        } 
+        else if (body.tech_method == 'IVF') {
+          // IVF Transfer Date method
+          let ivfDays = body.tech_ivf;
+          
+          // Convert string values to numbers
+          if (ivfDays == 'Last') {
+            ivfDays = 280;
+          } else if (ivfDays == 'Due') {
+            ivfDays = 0;
+          } else if (ivfDays == 'Conception') {
+            ivfDays = 266;
+          } else if (ivfDays == 'IVF') {
+            ivfDays = 266;
+          } else if (ivfDays == 'Ultrasound') {
+            ivfDays = 250;
+          }
+          
+          const daysToAdd = 266 - ivfDays;
+          const transferDate = new Date(year, month - 1, day);
+          
+          // Calculate due date
+          const dueDateTime = new Date(transferDate);
+          dueDateTime.setDate(dueDateTime.getDate() + daysToAdd);
+          due_date = formatDate(dueDateTime, 'yyyy-MM-dd');
+          modi_ageEsimated = formatDate(dueDateTime, 'MM/dd/yyyy');
+          
+          // Calculate ovulation date (due date - 38 weeks)
+          const ovuDateTime = new Date(dueDateTime);
+          ovuDateTime.setDate(ovuDateTime.getDate() - (38 * 7));
+          ovu_date = formatDate(ovuDateTime, 'MMM dd, yyyy');
+          
+          // Calculate current pregnancy progress
+          const bday = new Date(dueDateTime);
+          bday.setDate(bday.getDate() - 280);
+          const today = new Date();
+          const diff = dateDiff(bday, today);
+          
+          const months = diff.months;
+          if (months > 9) {
+            param.error = 'You are not pregnant yet.';
+            return param;
+          }
+          
+          const days = (months * 30.417) + diff.days;
+          weeksRemaining = Math.floor(days / 7);
+          daysRemaining = Math.floor(days % 7);
+        } 
+        else if (body.tech_method == 'Ultrasound') { 
+          // Ultrasound method
+          const weeks = body.tech_week ? parseInt(body.tech_week, 10) : 0;
+          const days = body.tech_days ? parseInt(body.tech_days, 10) : 0;
+          
+          // Check if at least one value is numeric and greater than 0
+          if ((isNaN(weeks) || weeks === 0) && (isNaN(days) || days === 0)) {
+            param.error = 'Please enter weeks or days.';
+            return param;
+          }
+          
+          const pregLength = 40 * 7; // 280 days
+          const totalDays = (weeks * 7) + days;
+          
+          // Calculate pregnancy start date (subtract totalDays from scan date)
+          const scanDate = new Date(year, month - 1, day);
+          const pregStartDate = new Date(scanDate);
+          pregStartDate.setDate(pregStartDate.getDate() - totalDays);
+          
+          // Calculate due date (add 280 days to pregnancy start date)
+          const dueDateTime = new Date(pregStartDate);
+          dueDateTime.setDate(dueDateTime.getDate() + pregLength);
+          due_date = formatDate(dueDateTime, 'yyyy-MM-dd');
+          modi_ageEsimated = due_date;
+          
+          // Calculate ovulation date (due date - 38 weeks)
+          const ovuDateTime = new Date(dueDateTime);
+          ovuDateTime.setDate(ovuDateTime.getDate() - (38 * 7));
+          ovu_date = formatDate(ovuDateTime, 'MMM dd, yyyy');
+          
+          // Calculate current pregnancy progress
+          const today = new Date();
+          const diff = dateDiff(pregStartDate, today);
+          
+          const months = diff.months;  // Now this matches Laravel's $diff->m
+          console.log('Years:', diff.years, 'Months:', months, 'Days:', diff.days);
+          
+          if (months > 9 || diff.years > 0) {
+            param.error = 'You are not pregnant yet.';
+            return param;
+          }
+          
+          const calcDays = (months * 30.417) + diff.days;
+          weeksRemaining = Math.floor(calcDays / 7);
+          daysRemaining = Math.floor(calcDays % 7);
+      }
+
+        // Check if due date has passed
+      const today = new Date();
+      const estimatedDate = new Date(modi_ageEsimated);
+
+      // normalize both to midnight (date-only)
+        today.setHours(0, 0, 0, 0);
+          estimatedDate.setHours(0, 0, 0, 0);
+                  // console.log(today,modi_ageEsimated);
+          if (today > estimatedDate) {
+              param.error = 'You are not pregnant yet.111';
+              return param;
+            }
+
+        // Check if all fields are done
+        if (!fieldsDone) {
+          param.error = 'Please Fill All Fields.';
+          return param;
+        }
+
+        // Set trimester indicators
+        if (weeksRemaining >= 0 && weeksRemaining < 5) {
+          param.tech_one_t = 'bg-dark-blue text-white';
+        } else if (weeksRemaining > 4 && weeksRemaining < 9) {
+          param.tech_two_t = 'bg-dark-blue text-white';
+        } else if (weeksRemaining > 8 && weeksRemaining < 14) {
+          param.tech_three_t = 'bg-dark-blue text-white';
+        } else if (weeksRemaining > 13 && weeksRemaining < 18) {
+          param.tech_four_t = 'bg-dark-blue text-white';
+        } else if (weeksRemaining > 17 && weeksRemaining < 22) {
+          param.tech_five_t = 'bg-dark-blue text-white';
+        } else if (weeksRemaining > 21 && weeksRemaining < 28) {
+          param.tech_six_t = 'bg-dark-blue text-white';
+        } else if (weeksRemaining > 27 && weeksRemaining < 32) {
+          param.tech_seven_t = 'bg-dark-blue text-white';
+        } else if (weeksRemaining > 31 && weeksRemaining < 36) {
+          param.tech_eight_t = 'bg-dark-blue text-white';
+        } else if (weeksRemaining > 35 && weeksRemaining < 41) {
+          param.tech_nine_t = 'bg-dark-blue text-white';
+        }
+
+        // Set return values
+        param.tech_RemainingWeeks = weeksRemaining;
+        param.tech_RemainingDays = daysRemaining;
+        param.tech_EstimatedAge = modi_ageEsimated;
+        param.tech_ovu_date = ovu_date;
+
+        return param;
+
+        // Helper function to calculate date difference
+
+        // Helper function to calculate date difference (like Laravel's DateTime diff)
+          function dateDiff(date1, date2) {
+            const d1 = new Date(date1);
+            const d2 = new Date(date2);
+            
+            // Calculate year and month difference
+            let years = d2.getFullYear() - d1.getFullYear();
+            let months = d2.getMonth() - d1.getMonth();
+            let days = d2.getDate() - d1.getDate();
+            
+            // Adjust if days are negative
+            if (days < 0) {
+              months--;
+              const lastMonth = new Date(d2.getFullYear(), d2.getMonth(), 0);
+              days += lastMonth.getDate();
+            }
+            
+            // Adjust if months are negative
+            if (months < 0) {
+              years--;
+              months += 12;
+            }
+            
+            // Return only months within current year cycle (like Laravel's DateInterval->m)
+            // Laravel's ->m is the month component, not total months
+            return { 
+              years: years,
+              months: months,  // This is like $diff->m (0-11 range)
+              days: days 
+            };
+          }
+
+      
+
+        // Helper function to format dates
+        function formatDate(date, format) {
+          const d = new Date(date);
+          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          
+          if (format == 'MMM dd, yyyy') {
+            return `${months[d.getMonth()]} ${String(d.getDate()).padStart(2, '0')}, ${d.getFullYear()}`;
+          } else if (format == 'MM/dd/yyyy') {
+            return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+          } else if (format == 'yyyy-MM-dd') {
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          }
+          
+          return d.toString();
+        }
+  }
+
+    /**
+    * getCalculationTdeeCalculator: Service Method
+    * POST: /api/calculators-lol/tdee-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+   
+
+     async getCalculationTdeeCalculator(body) {
+      const result = {};
+      try {
+          let age = body.tech_age;
+        let gender = body.tech_gender;
+        let ft_in = body.tech_ft_in;
+        let inputWeight = body.tech_weight;
+        let percent = body.tech_percent;
+        let activity = body.tech_activity;
+        let unit = body.tech_unit;
+        let height_ft = body.tech_height_ft;
+        let height_in = body.tech_height_in;
+        let inputHeightCm = body.tech_height_cm;
+        let hightUnit = body.tech_hightUnit;
+        let unit_ft_in = body.tech_unit_ft_in;
+
+
+        // Validation
+        if (!age || !inputWeight || !gender || !activity || 
+            isNaN(age) || isNaN(inputWeight)) {
+          result.error = 'Please fill All fields.';
+          return result;
+        }
+
+        if (percent && percent > 100) {
+          result.error = 'Body Fat Percentage cannot greater than 100.';
+          return result;
+        }
+
+        // Weight conversion
+        let weight = parseFloat(inputWeight);
+        if (unit == 'lbs') {
+          weight = weight / 2.205;
+        }
+
+        // Height conversion to cm
+        let height_cm;
+        
+        if (hightUnit == 'ft/in') {
+          if (ft_in) {
+            height_cm = parseFloat(ft_in) * 2.54;
+          } else {
+            if (height_ft && height_in && !isNaN(height_ft) && !isNaN(height_in)) {
+              if (unit_ft_in === 'ft/in') {
+                height_cm = parseFloat(height_ft) * 30.48;
+                if (height_in != null) {
+                  const heightInCm = parseFloat(height_in) * 2.54;
+                  height_cm = height_cm + heightInCm;
+                }
+              }
+            } else {
+              result.error = 'Please Enter Height.';
+              return result;
+            }
+          }
+        } else {
+          if (inputHeightCm && !isNaN(inputHeightCm)) {
+            height_cm = parseFloat(inputHeightCm);
+          } else {
+            result.error = 'Please Enter Height.';
+            return result;
+          }
+        }
+
+        // Calculate BMI
+        const height_m = height_cm / 100;
+        const BMI = Math.round((weight / (height_m * height_m)) * 100) / 100;
+
+        // Determine BMI category
+        let you_are;
+        if (BMI <= 18.5) {
+          you_are = 'Underweight';
+        } else if (BMI > 18.5 && BMI <= 24.9) {
+          you_are = 'Normal Weight';
+        } else if (BMI > 24.9 && BMI <= 29.9) {
+          you_are = 'Overweight';
+        } else if (BMI > 29.9 && BMI <= 35) {
+          you_are = 'Obesity';
+        } else {
+          you_are = 'Severe Obesity';
+        }
+
+        // Calculate BMR (Mifflin-St Jeor Equation)
+        let BMR;
+        if (gender == 'female') {
+          BMR = Math.round((weight * 10) + (height_cm * 6.25) - (age * 5) - 161);
+        } else {
+          BMR = Math.round((10 * weight) + (6.25 * height_cm) - (5 * age) + 5);
+        }
+
+        // Calculate TDEE
+        let tdee;
+        const activityMultipliers = {
+          'Sedentary': 1.2,
+          'Lightly Active': 1.375,
+          'Moderately Active': 1.55,
+          'Very Active': 1.725,
+          'Extra Active': 1.9
+        };
+        
+        tdee = Math.round(BMR * (activityMultipliers[activity] || 1.2));
+
+        // Helper function for macro calculations
+        const calculateMacros = (calories, proPercent, fatPercent, carbPercent) => {
+          const pro = (proPercent * calories) / 100;
+          const pro_ans = Math.round(pro / 4);
+          
+          const fat = (fatPercent * calories) / 100;
+          const fat_ans = Math.round(fat / 9);
+          
+          const carb = (carbPercent * calories) / 100;
+          const carb_ans = Math.round(carb / 4);
+          
+          const total = pro_ans + fat_ans + carb_ans;
+          
+          return {
+            pro_per_ans: Math.round((pro_ans / total) * 100),
+            fat_per_ans: Math.round((fat_ans / total) * 100),
+            carb_per_ans: Math.round((carb_ans / total) * 100)
+          };
+        };
+
+        // MAINTENANCE
+        const main_mod = calculateMacros(tdee, 30, 35, 35);
+        const main_low = calculateMacros(tdee, 40, 40, 20);
+        const main_high = calculateMacros(tdee, 30, 20, 50);
+
+        // CUTTING
+        const cut_mod = calculateMacros(tdee - 500, 30, 35, 35);
+        const cut_low = calculateMacros(tdee - 500, 40, 40, 20);
+        const cut_high = calculateMacros(tdee - 500, 30, 20, 50);
+
+        // BULKING
+        const bulk_mod = calculateMacros(tdee + 500, 30, 35, 35);
+        const bulk_low = calculateMacros(tdee + 500, 40, 40, 20);
+        const bulk_high = calculateMacros(tdee + 500, 30, 20, 50);
+
+        // Populate result object
+        result.tech_tdee = tdee;
+        result.tech_height_cm = height_cm;
+        result.tech_weight = weight;
+        result.tech_BMR = Math.round(BMR);
+        result.tech_BMI = BMI;
+        result.tech_you_are = you_are;
+        result.tech_calories = tdee;
+        result.tech_submit = unit;
+
+        // Maintenance
+        result.tech_main_mod_pro_per_ans = main_mod.pro_per_ans;
+        result.tech_main_mod_fat_per_ans = main_mod.fat_per_ans;
+        result.tech_main_mod_carb_per_ans = main_mod.carb_per_ans;
+        
+        result.tech_main_low_pro_per_ans = main_low.pro_per_ans;
+        result.tech_main_low_fat_per_ans = main_low.fat_per_ans;
+        result.tech_main_low_carb_per_ans = main_low.carb_per_ans;
+        
+        result.tech_main_high_pro_per_ans = main_high.pro_per_ans;
+        result.tech_main_high_fat_per_ans = main_high.fat_per_ans;
+        result.tech_main_high_carb_per_ans = main_high.carb_per_ans;
+
+        // Cutting
+        result.tech_cut_mod_pro_per_ans = cut_mod.pro_per_ans;
+        result.tech_cut_mod_fat_per_ans = cut_mod.fat_per_ans;
+        result.tech_cut_mod_carb_per_ans = cut_mod.carb_per_ans;
+        
+        result.tech_cut_low_pro_per_ans = cut_low.pro_per_ans;
+        result.tech_cut_low_fat_per_ans = cut_low.fat_per_ans;
+        result.tech_cut_low_carb_per_ans = cut_low.carb_per_ans;
+        
+        result.tech_cut_high_pro_per_ans = cut_high.pro_per_ans;
+        result.tech_cut_high_fat_per_ans = cut_high.fat_per_ans;
+        result.tech_cut_high_carb_per_ans = cut_high.carb_per_ans;
+
+        // Bulking
+        result.tech_bulk_mod_pro_per_ans = bulk_mod.pro_per_ans;
+        result.tech_bulk_mod_fat_per_ans = bulk_mod.fat_per_ans;
+        result.tech_bulk_mod_carb_per_ans = bulk_mod.carb_per_ans;
+        
+        result.tech_bulk_low_pro_per_ans = bulk_low.pro_per_ans;
+        result.tech_bulk_low_fat_per_ans = bulk_low.fat_per_ans;
+        result.tech_bulk_low_carb_per_ans = bulk_low.carb_per_ans;
+        
+        result.tech_bulk_high_pro_per_ans = bulk_high.pro_per_ans;
+        result.tech_bulk_high_fat_per_ans = bulk_high.fat_per_ans;
+        result.tech_bulk_high_carb_per_ans = bulk_high.carb_per_ans;
+
+        result.tech_disable = 'disable';
+        return result;
+
+      } catch (error) {
+        result.error = 'An error occurred during calculation.';
+        console.error('TDEE Calculation Error:', error);
+        return result;
+      }
+    }
+
+     /**
+    * getCalculationCalorieDeficitCalculator: Service Method
+    * POST: /api/calculators-lol/calorie-deficit-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationCalorieDeficitCalculator(body) {
+      let submit = body.tech_unit_type;
+      let gender = body.tech_gender;
+      let age = body.tech_age;
+      let ft_in = body.tech_ft_in;
+      let height_cm = body.tech_height_cm;
+      let weight = body.tech_weight;
+      let target = body.tech_target;
+      let activity = body.tech_activity;
+      // Helper functions
+      function isNumeric(value) {
+          return !isNaN(parseFloat(value)) && isFinite(value);
+      }
+
+      function getDateDifference(start, end) {
+          let years = end.getFullYear() - start.getFullYear();
+          let months = end.getMonth() - start.getMonth();
+          let days = end.getDate() - start.getDate();
+
+          if (days < 0) {
+              months--;
+              const prevMonth = new Date(end.getFullYear(), end.getMonth(), 0);
+              days += prevMonth.getDate();
+          }
+
+          if (months < 0) {
+              years--;
+              months += 12;
+          }
+
+          return { years, months, days };
+      }
+
+      function formatDate(date) {
+          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          const day = date.getDate().toString().padStart(2, '0');
+          const month = months[date.getMonth()];
+          const year = date.getFullYear();
+          return `${day}-${month}-${year}`;
+      }
+
+      // Custom rounding function
+      function customRound(num) {
+          if (num >= 50) {
+              return Math.ceil(num / 100) * 100;
+          } else {
+              return Math.ceil(num / 50) * 50;
+          }
+      }
+
+      // Validation
+      if (!isNumeric(age) || !isNumeric(weight) || !isNumeric(target) || !gender || !activity) {
+          return { error: 'Please! Check your input.' };
+      }
+
+      let weight_kg, target_kg, height_cm_val;
+
+      if (submit == "lbs") {
+          if (!ft_in) {
+              return { error: 'Please Select Height.' };
+          }
+          weight_kg = weight / 2.205;
+          target_kg = target / 2.205;
+          height_cm_val = ft_in * 2.54;
+      } else {
+          if (!height_cm) {
+              return { error: 'Please Enter Height.' };
+          }
+          weight_kg = weight;
+          target_kg = target;
+          height_cm_val = height_cm;
+      }
+
+      if (target > weight) {
+          return { error: 'Your target weight must be lower than your current weight.' };
+      }
+
+      const height_m = height_cm_val / 100;
+      const height_in = height_cm_val / 2.54;
+      const weight_lbs = weight_kg * 2.205;
+      const target_lbs = target_kg * 2.205;
+
+      let RMR, BMR, LBM, RMR_target, BMR_target, LBM_target;
+      let Robinson, Miller, Devine, Hamwi;
+
+      if (gender === 'Male') {
+          RMR = Math.round(66 + (13.7 * weight_kg) + (5 * height_cm_val) - (6.8 * age));
+          BMR = Math.round((height_cm_val * 6.25) + (weight_kg * 10) - (age * 5) + 5);
+          LBM = Math.round((0.32810 * weight) + (0.33929 * height_cm_val) - 29.5336);
+          RMR_target = Math.round(66 + (13.7 * target_kg) + (5 * height_cm_val) - (6.8 * age));
+          BMR_target = Math.round((height_cm_val * 6.25) + (target_kg * 10) - (age * 5) + 5);
+          LBM_target = Math.round((0.32810 * target_kg) + (0.33929 * height_cm_val) - 29.5336);
+          Robinson = Math.round(52 + (1.9 * (height_in - 60)));
+          Miller = Math.round(56.2 + (1.41 * (height_in - 60)));
+          Devine = Math.round(50 + (2.3 * (height_in - 60)));
+          Hamwi = Math.round(48 + (2.7 * (height_in - 60)));
+      } else {
+          RMR = Math.round(655 + (9.6 * weight_kg) + (1.8 * height_cm_val) - (4.7 * age));
+          BMR = Math.round((height_cm_val * 6.25) + (weight_kg * 10) - (age * 5) - 161);
+          LBM = Math.round((0.29569 * weight) + (0.41813 * height_cm_val) - 43.2933);
+          RMR_target = Math.round(655 + (9.6 * target_kg) + (1.8 * height_cm_val) - (4.7 * age));
+          BMR_target = Math.round((height_cm_val * 6.25) + (target_kg * 10) - (age * 5) - 161);
+          LBM_target = Math.round((0.29569 * target_kg) + (0.41813 * height_cm_val) - 43.2933);
+          Robinson = Math.round(49 + (1.7 * (height_in - 60)));
+          Miller = Math.round(53.1 + (1.36 * (height_in - 60)));
+          Devine = Math.round(45.5 + (2.3 * (height_in - 60)));
+          Hamwi = Math.round(45 + (2.2 * (height_in - 60)));
+      }
+
+      const BMI = Math.round((weight_kg / (height_m * height_m)) * 100) / 100;
+      const BMI_target = Math.round((target_kg / (height_m * height_m)) * 100) / 100;
+
+      let ibw;
+      if (Hamwi >= Miller) {
+          ibw = Miller + ' - ' + Hamwi;
+      } else {
+          ibw = Hamwi + ' - ' + Miller;
+      }
+
+      if (submit == "lbs") {
+          Miller = Miller * 2.205;
+          Hamwi = Hamwi * 2.205;
+          if (Hamwi >= Miller) {
+              ibw = Math.round(Miller) + '-' + Math.round(Hamwi);
+          } else {
+              ibw = Math.round(Hamwi) + '-' + Math.round(Miller);
+          }
+      }
+
+      const tdee = Math.round(BMR * activity);
+      const tdee_target = Math.round(BMR_target * activity);
+      
+      const first_num = tdee.toString().substring(0, 2);
+      const last_num = tdee.toString().slice(-2);
+      
+      let table_cal;
+      if (parseInt(last_num) < 50) {
+          table_cal = parseInt(first_num + "00");
+      } else {
+          table_cal = parseInt(first_num + "50");
+      }
+
+      let x = table_cal;
+      const main_cal_less = tdee - table_cal;
+      let jama = 50;
+      const intake_cal_array = [];
+
+      while (x >= 1000) {
+          const intake_cal = x;
+          const calories_less = jama + main_cal_less;
+          const calories_daily = intake_cal - calories_less;
+          const pounds_daily = Math.round((calories_less / 3500) * 1000) / 1000;
+          const days = Math.round((weight_lbs - target_lbs) / pounds_daily);
+
+          const start_date = new Date();
+          const end_date = new Date(start_date);
+          end_date.setDate(start_date.getDate() + days);
+
+          const diff = getDateDifference(start_date, end_date);
+          let yrs;
+          if (diff.years > 0) {
+              yrs = `${diff.years} years ${diff.months} months ${diff.days} days`;
+          } else {
+              yrs = `${diff.months} months ${diff.days} days`;
+          }
+
+          const NewDate = formatDate(end_date);
+          intake_cal_array.push(`${intake_cal}@@${yrs}@@${NewDate}@@${calories_less}`);
+          
+          x -= 50;
+          jama += 50;
+      }
+
+      const weight_loss_cal = Math.round(0.8 * tdee);
+      const calorie_def_cal = Math.round(tdee - weight_loss_cal);
+
+      // Calculate final days and pounds_daily
+      const final_calories_less = (jama - 50) + main_cal_less;
+      const final_pounds_daily = Math.round((final_calories_less / 3500) * 1000) / 1000;
+      const final_days = Math.round((weight_lbs - target_lbs) / final_pounds_daily);
+
+      return {
+          tech_height_in:height_in,
+          tech_tdee:tdee,
+          tech_RMR:RMR,
+          tech_LBM:LBM,
+          tech_tdee_target:tdee_target,
+          tech_RMR_target:RMR_target,
+          tech_LBM_target:LBM_target,
+          tech_BMI:BMI,
+          tech_BMI_target:BMI_target,
+          tech_intake_cal_array:intake_cal_array,
+          tech_age:age,
+          tech_gender:gender,
+          tech_weight:weight,
+          tech_submit:submit,
+          tech_target:target,
+          tech_activity:activity,
+          tech_days: final_days,
+          tech_pounds_daily: final_pounds_daily,
+          tech_BMR:BMR,
+          tech_ibw:ibw,
+          tech_weight_loss_cal:weight_loss_cal,
+          tech_calorie_def_cal:calorie_def_cal,
+      };
+  }
+
+
+       /**
+    * getCalculationIpptCalculator: Service Method
+    * POST: /api/calculators-lol/ippt-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async getCalculationIpptCalculator(body) {
+      if (isNaN(body.tech_age) || isNaN(body.tech_push) || isNaN(body.tech_sit)) {
+        return { error: "Please! Check Your Input." };
+      }
+
+      let age = Number(body.tech_age);
+      let push = Number(body.tech_push) - 1;
+      let sit = Number(body.tech_sit) - 1;
+      let gender = body.gender;
+      let time = gender == "Male" ? body.tech_time : body.tech_time_fe;
+      let type = body.tech_type;
+
+      // ✅ Determine Age Group
+      let age_g = 0;
+      if (age < 22) age_g = 0;
+      else if (age > 21 && age < 25) age_g = 1;
+      else if (age > 24 && age < 28) age_g = 2;
+      else if (age > 27 && age < 31) age_g = 3;
+      else if (age > 30 && age < 34) age_g = 4;
+      else if (age > 33 && age < 37) age_g = 5;
+      else if (age > 36 && age < 40) age_g = 6;
+      else if (age > 39 && age < 43) age_g = 7;
+      else if (age > 42 && age < 46) age_g = 8;
+      else if (age > 45 && age < 49) age_g = 9;
+      else if (age > 48 && age < 52) age_g = 10;
+      else if (age > 51 && age < 55) age_g = 11;
+      else if (age > 54 && age < 58) age_g = 12;
+      else if (age > 57 && age < 61) age_g = 13;
+
+
+      // ✅ Male / Female Scoring Arrays
+      if (gender == "Male") {
+         var pusha = [
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25],
+                  [0,0,0,0,0,0,0,0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25],
+                  [0,0,0,0,0,0,0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25],
+                  [0,0,0,0,0,0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25,25],
+                  [0,0,0,0,0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25,25,25],
+                  [0,0,0,0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25,25,25,25],
+                  [0,0,0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25,25,25,25,25,25],
+                  [0,0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25],
+                  [0,0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                  [0,0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,24,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                  [0,0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,21,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                  [0,1,2,4,6,8,9,10,11,12,13,14,15,15,16,16,16,17,17,17,18,18,18,19,19,19,20,20,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25]
+              ];
+              
+              var sita = [
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,13,14,14,15,16,17,18,18,19,19,20,20,20,20,21,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,25],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,13,14,14,15,16,17,18,18,19,19,20,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,25,25],
+                  [0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,13,14,14,15,16,17,18,18,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25],
+                  [0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,13,14,14,15,16,17,18,18,19,19,20,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,25,25,25,25],
+                  [0,0,0,0,0,0,0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,14,14,15,16,16,17,18,18,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25],
+                  [0,0,0,0,0,0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,14,14,15,16,16,17,18,18,19,19,20,20,20,20,20,21,21,23,21,22,22,22,22,23,23,23,23,24,24,24,25,25,25,25,25,25],
+                  [0,0,0,0,0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,14,14,15,16,16,17,18,18,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25,25,25],
+                  [0,0,0,0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,14,14,15,16,16,17,18,18,19,19,20,20,20,20,20,21,21,23,21,22,22,22,22,23,23,23,23,24,24,24,25,25,25,25,25,25,25,25],
+                  [0,0,0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,14,14,15,16,16,17,18,18,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25],
+                  [0,0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,14,14,15,16,16,17,18,18,19,19,20,20,20,20,20,21,21,21,23,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25],
+                  [0,0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,14,14,15,16,16,17,18,18,19,19,20,20,20,20,20,21,21,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                  [0,0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,14,14,15,16,16,17,18,18,19,19,20,20,20,20,21,21,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                  [0,0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,14,14,15,16,16,17,18,18,19,19,20,20,20,20,23,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                  [0,1,2,3,4,5,6,6,7,7,8,9,10,11,12,13,14,14,15,16,16,17,18,18,19,19,20,20,20,21,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25]
+              ];
+              
+              var timea = [
+                  [50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0,0,0,0,0],
+                  [50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0,0,0],
+                  [50,50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0,0],
+                  [50,50,50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0],
+                  [50,50,50,50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0],
+                  [50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0],
+                  [50,50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0],
+                  [50,50,50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0,0],
+                  [50,50,50,50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0,0],
+                  [50,50,50,50,50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0,0],
+                  [50,50,50,50,50,50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1,0],
+                  [50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,43,42,41,40,39,38,38,37,37,36,36,35,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,16,14,12,10,8,6,4,2,1]
+              ];
+      } else {
+        var pusha = [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,5,10,15,15,16,17,18,18,18,19,19,19,20,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,24,25],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,1,5,10,15,15,16,17,18,18,18,19,19,19,20,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25],
+                [0,0,0,0,0,0,0,0,0,0,0,0,1,5,10,15,15,16,17,18,18,18,19,19,19,20,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25],
+                [0,0,0,0,0,0,0,0,0,0,0,1,5,10,15,15,16,17,18,18,18,19,19,19,20,20,20,21,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25,25,25],
+                [0,0,0,0,0,0,0,0,0,0,1,5,10,15,15,16,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,0,0,0,0,0,1,5,10,15,15,16,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,23,24,24,24,24,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,0,0,0,0,1,5,10,15,15,16,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,24,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,0,0,0,1,5,10,15,15,16,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,0,0,1,5,10,15,15,16,17,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,0,1,5,10,15,15,16,17,18,18,19,19,20,20,20,21,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,1,5,10,15,15,16,17,18,18,19,19,20,20,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,1,5,10,15,15,16,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,1,5,10,15,15,16,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,1,5,10,15,15,16,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,50]
+            ];
+            
+            var sita = [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,24,24,24,24,25],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,24,24,24,25,25,25],
+                [0,0,0,0,0,0,0,0,0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,19,20,20,20,21,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25],
+                [0,0,0,0,0,0,0,0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,20,20,21,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25],
+                [0,0,0,0,0,0,0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,20,21,21,22,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,0,0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,20,21,21,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,20,21,21,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,20,21,21,22,22,23,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,20,21,21,22,22,23,23,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,21,22,23,23,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,21,22,23,23,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,21,22,23,23,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25],
+                [0,1,2,4,6,8,10,11,12,13,14,15,15,16,16,17,18,18,19,19,20,21,22,23,23,24,24,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25]
+            ];
+            
+            var timea = [
+                [50,49,48,47,47,46,46,45,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [50,50,50,49,48,47,46,46,45,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0,0,0,0,0],
+                [50,50,50,50,49,48,47,46,46,45,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0,0,0,0],
+                [50,50,50,50,50,49,48,47,46,46,45,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0,0,0],
+                [50,50,50,50,50,50,49,48,47,46,46,45,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0,0],
+                [50,50,50,50,50,50,50,49,48,47,46,46,45,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0,0],
+                [50,50,50,50,50,50,50,50,49,48,47,46,46,45,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0,0],
+                [50,50,50,50,50,50,50,50,50,49,48,47,46,46,45,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0,0],
+                [50,50,50,50,50,50,50,50,50,50,49,48,47,46,46,45,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0,0,0],
+                [50,50,50,50,50,50,50,50,50,50,50,49,48,47,46,46,45,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0,0],
+                [50,50,50,50,50,50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0,0],
+                [50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0,0],
+                [50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,43,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1,0],
+                [50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,50,49,48,47,46,45,44,43,42,42,41,41,39,39,38,38,38,37,37,37,36,36,36,35,35,35,34,34,33,33,32,32,31,31,30,30,29,28,27,26,25,24,23,22,21,20,18,16,14,12,10,8,6,4,2,1]
+            ];
+      }
+
+      // ✅ Get Scores
+      const push_s = pusha[age_g][push];
+      const sit_s = sita[age_g][sit];
+      const run_s = timea[age_g][time];
+      const score = push_s + sit_s + run_s;
+
+      // ✅ Determine Status
+      let status = "";
+      let to_next = 0;
+
+      if (score < 51) {
+        status = "Fail";
+        to_next = 51 - score;
+      } else if (type == "NSF" && score < 61) {
+        status = "Fail";
+        to_next = 61 - score;
+      } else if (type == "NSM" && score > 50 && score < 61) {
+        status = "Pass";
+        to_next = 61 - score;
+      } else if (type == "NSF" && score > 60 && score < 75) {
+        status = "Pass";
+        to_next = 75 - score;
+      } else if (type == "NSM" && score > 60 && score < 75) {
+        status = "incentive";
+        to_next = 75 - score;
+      } else if (score > 74 && score < 85) {
+        status = "Silver";
+        to_next = 85 - score;
+      } else if (score > 84 && score < 90) {
+        status = "Gold";
+        to_next = 90 - score;
+      } else if (score > 89) {
+        status = "Gold1";
+      }
+
+      // ✅ Male & Female Running Time Lists
+      const male_r = [
+        "18:20","18:10","18:00","17:50","17:40","17:30","17:20","17:10","17:00",
+        "16:50","16:40","16:30","16:20","16:10","16:00","15:50","15:40","15:30",
+        "15:20","15:10","15:00","14:50","14:40","14:30","14:20","14:10","14:00",
+        "13:50","13:40","13:30","13:20","13:10","13:00","12:50","12:40","12:30",
+        "12:20","12:10","12:00","11:50","11:40","11:30","11:20","11:10","11:00",
+        "10:50","10:40","10:30","10:20","10:10","10:00","9:50","9:40","9:30","9:20",
+        "9:10","9:00","8:50","8:40","8:30"
+      ];
+
+      const female_r = [
+        "10:00","10:10","10:20","10:30","10:40","10:50","11:00","11:10","11:20",
+        "11:30","11:40","11:50","12:00","12:10","12:20","12:30","12:40","12:50",
+        "13:00","13:10","13:20","13:30","13:40","13:50","14:00","14:10","14:20",
+        "14:30","14:40","14:50","15:00","15:10","15:20","15:30","15:40","15:50",
+        "16:00","16:10","16:20","16:30","16:40","16:50","17:00","17:10","17:20",
+        "17:30","17:40","17:50","18:00","18:10","18:20","18:30","18:40","18:50",
+        "19:00","19:10","19:20","19:30","19:40","19:50","20:00","20:10","20:20",
+        "20:30","20:40","20:50","21:00","21:10","21:20","21:30","21:40","21:50",
+        "22:00","22:10"
+      ];
+
+      // ✅ Needed push-ups/sit-ups for next level
+      const need_push_val = push_s + to_next;
+      const need_push = pusha[age_g].indexOf(need_push_val) + 1;
+
+      const need_sit_val = sit_s + to_next;
+      const need_sit = sita[age_g].indexOf(need_sit_val) + 1;
+
+      // ✅ Return Response
+      return {
+        tech_status:status,
+        tech_need_push:need_push,
+        tech_need_sit:need_sit,
+        tech_to_next:to_next,
+        tech_score:score,
+        tech_push_s:push_s,
+        tech_sit_s:sit_s,
+        tech_run_s:run_s,
+      };
+    }
+
+   /**
+    * getCalculationHeightPercentileCalculator: Service Method
+    * POST: /api/calculators-lol/height-percentile-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async  getCalculationHeightPercentileCalculator(body) {
+      let height_ft = body.tech_height_ft;
+      let height_in = body.tech_height_in;
+      let height_cm = body.tech_height_cm;
+      let age = body.tech_age;
+      let age_unit = body.tech_age_unit;
+      let gender = body.tech_gender;
+      let unit_ft_in = body.tech_unit_ft_in;
+
+      let ageUnit = age_unit;
+      if (age_unit == 'days') {
+          ageUnit = 1;
+      } else if (age_unit == 'weeks') {
+          ageUnit = 2;
+      } else if (age_unit == 'months') {
+          ageUnit = 3;
+      } else if (age_unit == 'years') {
+          ageUnit = 4;
+      }
+
+      function umar(a, b) {
+          let kini;
+          if (a == "1") {
+              kini = b / 365;
+          } else if (a == "2") {
+              kini = b / 52.143;
+          } else if (a == "3") {
+              kini = b / 12;
+          } else if (a == "4") {
+              kini = b * 1;
+          }
+          return kini;
+      }
+
+      const girls_to_13w = [
+          { name: "a", uid: "4292594509", values: { age: 0, P01: "43.4", P1: "44.8", P3: "45.6", P5: "46.1", P10: "46.8", P15: "47.2", P25: "47.9", P50: "49.1", P75: "50.4", P85: "51.1", P90: "51.5", P95: "52.2", P97: "52.7", P99: "53.5", P999: "54.9" } },
+          { name: 1, uid: "1320094567", values: { age: 1, P01: "44.5", P1: "45.9", P3: "46.8", P5: "47.2", P10: "47.9", P15: "48.4", P25: "49.1", P50: "50.3", P75: "51.6", P85: "52.3", P90: "52.7", P95: "53.4", P97: "53.9", P99: "54.7", P999: "56.1" } },
+          { name: 2, uid: "2956171945", values: { age: 2, P01: "45.6", P1: "47.1", P3: "47.9", P5: "48.4", P10: "49.1", P15: "49.5", P25: "50.2", P50: "51.5", P75: "52.8", P85: "53.5", P90: 54, P95: "54.6", P97: "55.1", P99: "55.9", P999: "57.4" } },
+          { name: 3, uid: "655667886", values: { age: 3, P01: "46.5", P1: 48, P3: "48.8", P5: "49.3", P10: 50, P15: "50.5", P25: "51.2", P50: "52.5", P75: "53.8", P85: "54.5", P90: "54.9", P95: "55.6", P97: "56.1", P99: "56.9", P999: "58.4" } },
+          { name: 4, uid: "1735974756", values: { age: 4, P01: "47.4", P1: "48.9", P3: "49.7", P5: "50.2", P10: "50.9", P15: "51.4", P25: "52.1", P50: "53.4", P75: "54.7", P85: "55.4", P90: "55.9", P95: "56.6", P97: 57, P99: "57.9", P999: "59.4" } },
+          { name: 5, uid: "2331707210", values: { age: 5, P01: "48.2", P1: "49.7", P3: "50.5", P5: 51, P10: "51.7", P15: "52.2", P25: "52.9", P50: "54.2", P75: "55.6", P85: "56.3", P90: "56.8", P95: "57.5", P97: "57.9", P99: "58.8", P999: "60.3" } },
+          { name: 6, uid: "627454600", values: { age: 6, P01: "48.9", P1: "50.4", P3: "51.3", P5: "51.8", P10: "52.5", P15: 53, P25: "53.7", P50: "55.1", P75: "56.4", P85: "57.1", P90: "57.6", P95: "58.3", P97: "58.8", P99: "59.7", P999: "61.2" } },
+          { name: 7, uid: "926254527", values: { age: 7, P01: "49.6", P1: "51.2", P3: "52.1", P5: "52.5", P10: "53.3", P15: "53.8", P25: "54.5", P50: "55.8", P75: "57.2", P85: "57.9", P90: "58.4", P95: "59.1", P97: "59.6", P99: "60.5", P999: 62 } },
+          { name: 8, uid: "1934482258", values: { age: 8, P01: "50.3", P1: "51.9", P3: "52.8", P5: "53.2", P10: 54, P15: "54.5", P25: "55.2", P50: "56.6", P75: "57.9", P85: "58.7", P90: "59.2", P95: "59.9", P97: "60.4", P99: "61.3", P999: "62.8" } },
+          { name: 9, uid: "915270415", values: { age: 9, P01: 51, P1: "52.5", P3: "53.4", P5: "53.9", P10: "54.7", P15: "55.2", P25: "55.9", P50: "57.3", P75: "58.7", P85: "59.4", P90: "59.9", P95: "60.6", P97: "61.1", P99: 62, P999: "63.6" } },
+          { name: 10, uid: "1188328851", values: { age: 10, P01: "51.6", P1: "53.2", P3: "54.1", P5: "54.6", P10: "55.3", P15: "55.8", P25: "56.6", P50: "57.9", P75: "59.3", P85: "60.1", P90: "60.6", P95: "61.3", P97: "61.8", P99: "62.7", P999: "64.3" } },
+          { name: 11, uid: "108398006", values: { age: 11, P01: "52.2", P1: "53.8", P3: "54.7", P5: "55.2", P10: "55.9", P15: "56.4", P25: "57.2", P50: "58.6", P75: 60, P85: "60.7", P90: "61.2", P95: 62, P97: "62.5", P99: "63.4", P999: 65 } },
+          { name: 12, uid: "2249598896", values: { age: 12, P01: "52.7", P1: "54.3", P3: "55.3", P5: "55.8", P10: "56.5", P15: 57, P25: "57.8", P50: "59.2", P75: "60.6", P85: "61.4", P90: "61.9", P95: "62.6", P97: "63.1", P99: "64.1", P999: "65.6" } },
+          { name: 13, uid: "728608598", values: { age: 13, P01: "53.3", P1: "54.9", P3: "55.8", P5: "56.3", P10: "57.1", P15: "57.6", P25: "58.4", P50: "59.8", P75: "61.2", P85: 62, P90: "62.5", P95: "63.2", P97: "63.7", P99: "64.7", P999: "66.3" } }
+      ];
+
+        const boys_to_5y = [
+          { name: "a", uid: "4292594509", values: { age: 0, P01: "43.4", P1: "44.8", P3: "45.6", P5: "46.1", P10: "46.8", P15: "47.2", P25: "47.9", P50: "49.1", P75: "50.4", P85: "51.1", P90: "51.5", P95: "52.2", P97: "52.7", P99: "53.5", P999: "54.9" } },
+          { name: 1, uid: "1694182680", values: { age: 1, P01: "47.6", P1: "49.1", P3: 50, P5: "50.5", P10: "51.2", P15: "51.7", P25: "52.4", P50: "53.7", P75: 55, P85: "55.7", P90: "56.2", P95: "56.9", P97: "57.4", P99: "58.2", P999: "59.7" } },
+          { name: 2, uid: "3836906478", values: { age: 2, P01: "50.8", P1: "52.3", P3: "53.2", P5: "53.7", P10: "54.5", P15: 55, P25: "55.7", P50: "57.1", P75: "58.4", P85: "59.2", P90: "59.7", P95: "60.4", P97: "60.9", P99: "61.8", P999: "63.4" } },
+          { name: 3, uid: "1857069783", values: { age: 3, P01: "53.3", P1: "54.9", P3: "55.8", P5: "56.3", P10: "57.1", P15: "57.6", P25: "58.4", P50: "59.8", P75: "61.2", P85: 62, P90: "62.5", P95: "63.3", P97: "63.8", P99: "64.7", P999: "66.3" } },
+          { name: 4, uid: "2510953547", values: { age: 4, P01: "55.4", P1: "57.1", P3: 58, P5: "58.5", P10: "59.3", P15: "59.8", P25: "60.6", P50: "62.1", P75: "63.5", P85: "64.3", P90: "64.9", P95: "65.7", P97: "66.2", P99: "67.1", P999: "68.8" } },
+          { name: 5, uid: "2879534329", values: { age: 5, P01: "57.2", P1: "58.9", P3: "59.9", P5: "60.4", P10: "61.2", P15: "61.7", P25: "62.5", P50: 64, P75: "65.5", P85: "66.3", P90: "66.9", P95: "67.7", P97: "68.2", P99: "69.2", P999: "70.9" } },
+          { name: 6, uid: "3934177210", values: { age: 6, P01: "58.7", P1: "60.5", P3: "61.5", P5: 62, P10: "62.8", P15: "63.4", P25: "64.2", P50: "65.7", P75: "67.3", P85: "68.1", P90: "68.6", P95: "69.5", P97: 70, P99: 71, P999: "72.7" } },
+          { name: 7, uid: "4181026999", values: { age: 7, P01: "60.1", P1: "61.9", P3: "62.9", P5: "63.5", P10: "64.3", P15: "64.9", P25: "65.7", P50: "67.3", P75: "68.8", P85: "69.7", P90: "70.3", P95: "71.1", P97: "71.6", P99: "72.7", P999: "74.4" } },
+          { name: 8, uid: "1331713863", values: { age: 8, P01: "61.4", P1: "63.2", P3: "64.3", P5: "64.9", P10: "65.7", P15: "66.3", P25: "67.2", P50: "68.7", P75: "70.3", P85: "71.2", P90: "71.8", P95: "72.6", P97: "73.2", P99: "74.3", P999: "76.1" } },
+          { name: 9, uid: "2290555629", values: { age: 9, P01: "62.7", P1: "64.5", P3: "65.6", P5: "66.2", P10: 67, P15: "67.6", P25: "68.5", P50: "70.1", P75: "71.8", P85: "72.6", P90: "73.2", P95: "74.1", P97: "74.7", P99: "75.8", P999: "77.6" } },
+          { name: 10, uid: "2889369098", values: { age: 10, P01: "63.9", P1: "65.7", P3: "66.8", P5: "67.4", P10: "68.3", P15: "68.9", P25: "69.8", P50: "71.5", P75: "73.1", P85: 74, P90: "74.6", P95: "75.5", P97: "76.1", P99: "77.2", P999: "79.1" } },
+          { name: 11, uid: "2996673809", values: { age: 11, P01: 65, P1: "66.9", P3: 68, P5: "68.6", P10: "69.5", P15: "70.2", P25: "71.1", P50: "72.8", P75: "74.5", P85: "75.4", P90: 76, P95: "76.9", P97: "77.5", P99: "78.6", P999: "80.6" } },
+          { name: 12, uid: "2016267904", values: { age: 12, P01: "66.1", P1: 68, P3: "69.2", P5: "69.8", P10: "70.7", P15: "71.3", P25: "72.3", P50: 74, P75: "75.8", P85: "76.7", P90: "77.3", P95: "78.3", P97: "78.9", P99: 80, P999: 82 } },
+          { name: 13, uid: "2499511250", values: { age: 13, P01: "67.1", P1: "69.1", P3: "70.3", P5: "70.9", P10: "71.8", P15: "72.5", P25: "73.4", P50: "75.2", P75: 77, P85: "77.9", P90: "78.6", P95: "79.5", P97: "80.2", P99: "81.3", P999: "83.3" } },
+          { name: 14, uid: "3001587822", values: { age: 14, P01: "68.1", P1: "70.1", P3: "71.3", P5: 72, P10: "72.9", P15: "73.6", P25: "74.6", P50: "76.4", P75: "78.2", P85: "79.2", P90: "79.8", P95: "80.8", P97: "81.4", P99: "82.6", P999: "84.7" } },
+          { name: 15, uid: "2541104492", values: { age: 15, P01: 69, P1: "71.1", P3: "72.4", P5: 73, P10: 74, P15: "74.7", P25: "75.7", P50: "77.5", P75: "79.4", P85: "80.3", P90: 81, P95: 82, P97: "82.7", P99: "83.9", P999: 86 } },
+          { name: 16, uid: "3609313349", values: { age: 16, P01: 70, P1: "72.1", P3: "73.3", P5: 74, P10: 75, P15: "75.7", P25: "76.7", P50: "78.6", P75: "80.5", P85: "81.5", P90: "82.2", P95: "83.2", P97: "83.9", P99: "85.1", P999: "87.2" } },
+          { name: 17, uid: "3392822480", values: { age: 17, P01: "70.9", P1: 73, P3: "74.3", P5: 75, P10: 76, P15: "76.7", P25: "77.7", P50: "79.7", P75: "81.6", P85: "82.6", P90: "83.3", P95: "84.4", P97: 85, P99: "86.3", P999: "88.5" } },
+          { name: 18, uid: "3429818064", values: { age: 18, P01: "71.7", P1: 74, P3: "75.2", P5: "75.9", P10: 77, P15: "77.7", P25: "78.7", P50: "80.7", P75: "82.7", P85: "83.7", P90: "84.4", P95: "85.5", P97: "86.2", P99: "87.5", P999: "89.7" } },
+          { name: 19, uid: "73114113", values: { age: 19, P01: "72.6", P1: "74.8", P3: "76.2", P5: "76.9", P10: "77.9", P15: "78.7", P25: "79.7", P50: "81.7", P75: "83.7", P85: "84.8", P90: "85.5", P95: "86.6", P97: "87.3", P99: "88.6", P999: "90.9" } },
+          { name: 20, uid: "3424860360", values: { age: 20, P01: "73.4", P1: "75.7", P3: 77, P5: "77.7", P10: "78.8", P15: "79.6", P25: "80.7", P50: "82.7", P75: "84.7", P85: "85.8", P90: "86.6", P95: "87.7", P97: "88.4", P99: "89.7", P999: 92 } },
+          { name: 21, uid: "99668725", values: { age: 21, P01: "74.2", P1: "76.5", P3: "77.9", P5: "78.6", P10: "79.7", P15: "80.5", P25: "81.6", P50: "83.7", P75: "85.7", P85: "86.8", P90: "87.6", P95: "88.7", P97: "89.4", P99: "90.8", P999: "93.1" } },
+          { name: 22, uid: "1332685489", values: { age: 22, P01: 75, P1: "77.3", P3: "78.7", P5: "79.5", P10: "80.6", P15: "81.4", P25: "82.5", P50: "84.6", P75: "86.7", P85: "87.8", P90: "88.6", P95: "89.7", P97: "90.5", P99: "91.9", P999: "94.2" } },
+          { name: 23, uid: "2477842487", values: { age: 23, P01: "75.7", P1: "78.1", P3: "79.6", P5: "80.3", P10: "81.5", P15: "82.2", P25: "83.4", P50: "85.5", P75: "87.7", P85: "88.8", P90: "89.6", P95: "90.7", P97: "91.5", P99: "92.9", P999: "95.3" } },
+          { name: 24, uid: "3947959837", values: { age: 24, P01: "76.4", P1: "78.9", P3: "80.3", P5: "81.1", P10: "82.3", P15: "83.1", P25: "84.2", P50: "86.4", P75: "88.6", P85: "89.8", P90: "90.6", P95: "91.7", P97: "92.5", P99: "93.9", P999: "96.4" } },
+          { name: 25, uid: "3437703006", values: { age: 25, P01: "76.5", P1: 79, P3: "80.4", P5: "81.2", P10: "82.4", P15: "83.2", P25: "84.4", P50: "86.6", P75: "88.8", P85: 90, P90: "90.8", P95: 92, P97: "92.8", P99: "94.2", P999: "96.7" } },
+          { name: 26, uid: "2008451231", values: { age: 26, P01: "77.2", P1: "79.7", P3: "81.2", P5: 82, P10: "83.2", P15: 84, P25: "85.2", P50: "87.4", P75: "89.7", P85: "90.9", P90: "91.7", P95: "92.9", P97: "93.7", P99: "95.2", P999: "97.7" } },
+          { name: 27, uid: "3869042796", values: { age: 27, P01: "77.8", P1: "80.4", P3: "81.9", P5: "82.7", P10: "83.9", P15: "84.8", P25: 86, P50: "88.3", P75: "90.6", P85: "91.8", P90: "92.6", P95: "93.8", P97: "94.6", P99: "96.1", P999: "98.7" } },
+          { name: 28, uid: "488631192", values: { age: 28, P01: "78.5", P1: "81.1", P3: "82.6", P5: "83.5", P10: "84.7", P15: "85.5", P25: "86.8", P50: "89.1", P75: "91.4", P85: "92.7", P90: "93.5", P95: "94.7", P97: "95.6", P99: "97.1", P999: "99.7" } },
+          { name: 29, uid: "225902613", values: { age: 29, P01: "79.1", P1: "81.8", P3: "83.4", P5: "84.2", P10: "85.4", P15: "86.3", P25: "87.6", P50: "89.9", P75: "92.2", P85: "93.5", P90: "94.4", P95: "95.6", P97: "96.4", P99: 98, P999: "100.7" } },
+          { name: 30, uid: "3905580519", values: { age: 30, P01: "79.8", P1: "82.5", P3: 84, P5: "84.9", P10: "86.2", P15: 87, P25: "88.3", P50: "90.7", P75: "93.1", P85: "94.3", P90: "95.2", P95: "96.5", P97: "97.3", P99: "98.9", P999: "101.6" } },
+          { name: 31, uid: "4141214059", values: { age: 31, P01: "80.4", P1: "83.1", P3: "84.7", P5: "85.6", P10: "86.9", P15: "87.7", P25: 89, P50: "91.4", P75: "93.9", P85: "95.2", P90: 96, P95: "97.3", P97: "98.2", P99: "99.8", P999: "102.5" } },
+          { name: 32, uid: "2921275721", values: { age: 32, P01: 81, P1: "83.8", P3: "85.4", P5: "86.2", P10: "87.5", P15: "88.4", P25: "89.7", P50: "92.2", P75: "94.6", P85: "95.9", P90: "96.8", P95: "98.2", P97: 99, P99: "100.6", P999: "103.4" } },
+          { name: 33, uid: "3413164629", values: { age: 33, P01: "81.6", P1: "84.4", P3: 86, P5: "86.9", P10: "88.2", P15: "89.1", P25: "90.4", P50: "92.9", P75: "95.4", P85: "96.7", P90: "97.6", P95: 99, P97: "99.8", P99: "101.5", P999: "104.3" } },
+          { name: 34, uid: "3660971566", values: { age: 34, P01: "82.2", P1: 85, P3: "86.7", P5: "87.5", P10: "88.9", P15: "89.8", P25: "91.1", P50: "93.6", P75: "96.2", P85: "97.5", P90: "98.4", P95: "99.8", P97: "100.6", P99: "102.3", P999: "105.1" } },
+          { name: 35, uid: "47436646", values: { age: 35, P01: "82.7", P1: "85.6", P3: "87.3", P5: "88.2", P10: "89.5", P15: "90.5", P25: "91.8", P50: "94.4", P75: "96.9", P85: "98.3", P90: "99.2", P95: "100.5", P97: "101.4", P99: "103.1", P999: 106 } },
+          { name: 36, uid: "3561310937", values: { age: 36, P01: "83.3", P1: "86.2", P3: "87.9", P5: "88.8", P10: "90.2", P15: "91.1", P25: "92.5", P50: "95.1", P75: "97.6", P85: 99, P90: "99.9", P95: "101.3", P97: "102.2", P99: "103.9", P999: "106.8" } },
+          { name: 37, uid: "1340891525", values: { age: 37, P01: "83.8", P1: "86.8", P3: "88.5", P5: "89.4", P10: "90.8", P15: "91.7", P25: "93.1", P50: "95.7", P75: "98.3", P85: "99.7", P90: "100.7", P95: "102.1", P97: 103, P99: "104.7", P999: "107.6" } },
+          { name: 38, uid: "3975654557", values: { age: 38, P01: "84.4", P1: "87.4", P3: "89.1", P5: 90, P10: "91.4", P15: "92.4", P25: "93.8", P50: "96.4", P75: 99, P85: "100.5", P90: "101.4", P95: "102.8", P97: "103.7", P99: "105.5", P999: "108.5" } },
+          { name: 39, uid: "4249632025", values: { age: 39, P01: "84.9", P1: "87.9", P3: "89.7", P5: "90.6", P10: 92, P15: 93, P25: "94.4", P50: "97.1", P75: "99.7", P85: "101.2", P90: "102.1", P95: "103.6", P97: "104.5", P99: "106.3", P999: "109.3" } },
+          { name: 40, uid: "3256697291", values: { age: 40, P01: "85.4", P1: "88.5", P3: "90.3", P5: "91.2", P10: "92.6", P15: "93.6", P25: "95.1", P50: "97.7", P75: "100.4", P85: "101.9", P90: "102.9", P95: "104.3", P97: "105.2", P99: 107, P999: "110.1" } },
+          { name: 41, uid: "1994271769", values: { age: 41, P01: 86, P1: 89, P3: "90.8", P5: "91.8", P10: "93.2", P15: "94.2", P25: "95.7", P50: "98.4", P75: "101.1", P85: "102.6", P90: "103.6", P95: 105, P97: 106, P99: "107.8", P999: "110.8" } },
+          { name: 42, uid: "3024703670", values: { age: 42, P01: "86.5", P1: "89.6", P3: "91.4", P5: "92.4", P10: "93.8", P15: "94.8", P25: "96.3", P50: 99, P75: "101.8", P85: "103.3", P90: "104.3", P95: "105.7", P97: "106.7", P99: "108.5", P999: "111.6" } },
+          { name: 43, uid: "539761812", values: { age: 43, P01: 87, P1: "90.1", P3: 92, P5: "92.9", P10: "94.4", P15: "95.4", P25: "96.9", P50: "99.7", P75: "102.4", P85: "103.9", P90: "104.9", P95: "106.4", P97: "107.4", P99: "109.2", P999: "112.4" } },
+          { name: 44, uid: "1131637531", values: { age: 44, P01: "87.5", P1: "90.7", P3: "92.5", P5: "93.5", P10: 95, P15: 96, P25: "97.5", P50: "100.3", P75: "103.1", P85: "104.6", P90: "105.6", P95: "107.1", P97: "108.1", P99: 110, P999: "113.1" } },
+          { name: 45, uid: "770128760", values: { age: 45, P01: 88, P1: "91.2", P3: 93, P5: 94, P10: "95.6", P15: "96.6", P25: "98.1", P50: "100.9", P75: "103.7", P85: "105.3", P90: "106.3", P95: "107.8", P97: "108.8", P99: "110.7", P999: "113.9" } },
+          { name: 46, uid: "867275806", values: { age: 46, P01: "88.5", P1: "91.7", P3: "93.6", P5: "94.6", P10: "96.1", P15: "97.2", P25: "98.7", P50: "101.5", P75: "104.4", P85: "105.9", P90: 107, P95: "108.5", P97: "109.5", P99: "111.4", P999: "114.6" } },
+          { name: 47, uid: "413845457", values: { age: 47, P01: "88.9", P1: "92.2", P3: "94.1", P5: "95.1", P10: "96.7", P15: "97.7", P25: "99.3", P50: "102.1", P75: 105, P85: "106.6", P90: "107.6", P95: "109.2", P97: "110.2", P99: "112.1", P999: "115.3" } },
+          { name: 48, uid: "2294614592", values: { age: 48, P01: "89.4", P1: "92.7", P3: "94.6", P5: "95.6", P10: "97.2", P15: "98.3", P25: "99.8", P50: "102.7", P75: "105.6", P85: "107.2", P90: "108.3", P95: "109.8", P97: "110.8", P99: "112.8", P999: 116 } },
+          { name: 49, uid: "2068353644", values: { age: 49, P01: "89.9", P1: "93.2", P3: "95.1", P5: "96.2", P10: "97.8", P15: "98.8", P25: "100.4", P50: "103.3", P75: "106.3", P85: "107.8", P90: "108.9", P95: "110.5", P97: "111.5", P99: "113.4", P999: "116.7" } },
+          { name: 50, uid: "1795226332", values: { age: 50, P01: "90.4", P1: "93.7", P3: "95.7", P5: "96.7", P10: "98.3", P15: "99.4", P25: "100.9", P50: "103.9", P75: "106.9", P85: "108.4", P90: "109.5", P95: "111.1", P97: "112.1", P99: "114.1", P999: "117.5" } },
+          { name: 51, uid: "1971330515", values: { age: 51, P01: "90.8", P1: "94.2", P3: "96.2", P5: "97.2", P10: "98.8", P15: "99.9", P25: "101.5", P50: "104.5", P75: "107.5", P85: "109.1", P90: "110.1", P95: "111.8", P97: "112.8", P99: "114.8", P999: "118.1" } },
+          { name: 52, uid: "1318538245", values: { age: 52, P01: "91.3", P1: "94.7", P3: "96.7", P5: "97.7", P10: "99.3", P15: "100.4", P25: 102, P50: 105, P75: "108.1", P85: "109.7", P90: "110.8", P95: "112.4", P97: "113.4", P99: "115.4", P999: "118.8" } },
+          { name: 53, uid: "2514551350", values: { age: 53, P01: "91.7", P1: "95.2", P3: "97.2", P5: "98.2", P10: "99.9", P15: 101, P25: "102.6", P50: "105.6", P75: "108.6", P85: "110.3", P90: "111.4", P95: 113, P97: "114.1", P99: "116.1", P999: "119.5" } },
+          { name: 54, uid: "3747670552", values: { age: 54, P01: "92.2", P1: "95.6", P3: "97.6", P5: "98.7", P10: "100.4", P15: "101.5", P25: "103.1", P50: "106.2", P75: "109.2", P85: "110.9", P90: 112, P95: "113.6", P97: "114.7", P99: "116.7", P999: "120.2" } },
+          { name: 55, uid: "2605612880", values: { age: 55, P01: "92.6", P1: "96.1", P3: "98.1", P5: "99.2", P10: "100.9", P15: 102, P25: "103.6", P50: "106.7", P75: "109.8", P85: "111.5", P90: "112.6", P95: "114.3", P97: "115.3", P99: "117.4", P999: "120.9" } },
+          { name: 56, uid: "163409046", values: { age: 56, P01: 93, P1: "96.6", P3: "98.6", P5: "99.7", P10: "101.4", P15: "102.5", P25: "104.2", P50: "107.3", P75: "110.4", P85: "112.1", P90: "113.2", P95: "114.9", P97: 116, P99: 118, P999: "121.5" } },
+          { name: 57, uid: "1692115043", values: { age: 57, P01: "93.5", P1: 97, P3: "99.1", P5: "100.2", P10: "101.9", P15: 103, P25: "104.7", P50: "107.8", P75: 111, P85: "112.6", P90: "113.8", P95: "115.5", P97: "116.6", P99: "118.6", P999: "122.2" } },
+          { name: 58, uid: "588246151", values: { age: 58, P01: "93.9", P1: "97.5", P3: "99.6", P5: "100.7", P10: "102.4", P15: "103.5", P25: "105.2", P50: "108.4", P75: "111.5", P85: "113.2", P90: "114.4", P95: "116.1", P97: "117.2", P99: "119.3", P999: "122.8" } },
+          { name: 59, uid: "144235665", values: { age: 59, P01: "94.3", P1: "97.9", P3: 100, P5: "101.1", P10: "102.8", P15: 104, P25: "105.7", P50: "108.9", P75: "112.1", P85: "113.8", P90: "114.9", P95: "116.7", P97: "117.8", P99: "119.9", P999: "123.5" } },
+          { name: 60, uid: "1501489022", values: { age: 60, P01: "94.7", P1: "98.4", P3: "100.5", P5: "101.6", P10: "103.3", P15: "104.5", P25: "106.2", P50: "109.4", P75: "112.6", P85: "114.4", P90: "115.5", P95: "117.2", P97: "118.4", P99: "120.5", P999: "124.1" } },
+          { name: 61, uid: "430782244", values: { age: 61, P01: "96.076", P1: "99.583", P3: "101.629", P5: "102.712", P10: "104.381", P15: "105.506", P25: "107.168", P50: "110.265", P75: "113.362", P85: "115.023", P90: "116.149", P95: "117.817", P97: "118.9", P99: "120.946", P999: "124.453" } },
+          { name: 62, uid: "1304649232", values: { age: 62, P01: "96.516", P1: "100.047", P3: "102.106", P5: "103.197", P10: "104.876", P15: "106.01", P25: "107.683", P50: "110.801", P75: "113.918", P85: "115.592", P90: "116.725", P95: "118.404", P97: "119.495", P99: "121.554", P999: "125.086" } },
+          { name: 63, uid: "3948184828", values: { age: 63, P01: "96.953", P1: "100.508", P3: "102.581", P5: "103.679", P10: "105.37", P15: "106.51", P25: "108.195", P50: "111.334", P75: "114.473", P85: "116.157", P90: "117.298", P95: "118.989", P97: "120.087", P99: "122.16", P999: "125.715" } },
+          { name: 64, uid: "2595030366", values: { age: 64, P01: "97.39", P1: "100.968", P3: "103.054", P5: "104.16", P10: "105.861", P15: "107.009", P25: "108.704", P50: "111.864", P75: "115.023", P85: "116.718", P90: "117.866", P95: "119.568", P97: "120.673", P99: "122.76", P999: "126.337" } },
+          { name: 65, uid: "2817129998", values: { age: 65, P01: "97.82", P1: "101.421", P3: "103.522", P5: "104.634", P10: "106.347", P15: "107.503", P25: "109.209", P50: "112.39", P75: "115.57", P85: "117.276", P90: "118.432", P95: "120.145", P97: "121.257", P99: "123.358", P999: "126.959" } },
+          { name: 66, uid: "1434310053", values: { age: 66, P01: "98.246", P1: "101.871", P3: "103.985", P5: "105.105", P10: "106.829", P15: "107.992", P25: "109.71", P50: "112.911", P75: "116.112", P85: "117.83", P90: "118.993", P95: "120.717", P97: "121.837", P99: "123.951", P999: "127.576" } },
+          { name: 67, uid: "700646132", values: { age: 67, P01: "98.668", P1: "102.316", P3: "104.444", P5: "105.571", P10: "107.307", P15: "108.478", P25: "110.206", P50: "113.428", P75: "116.65", P85: "118.378", P90: "119.549", P95: "121.285", P97: "122.412", P99: "124.54", P999: "128.188" } },
+          { name: 68, uid: "3040033768", values: { age: 68, P01: "99.089", P1: "102.76", P3: "104.902", P5: "106.036", P10: "107.782", P15: "108.96", P25: "110.699", P50: "113.941", P75: "117.183", P85: "118.922", P90: "120.1", P95: "121.846", P97: "122.98", P99: "125.122", P999: "128.793" } },
+          { name: 69, uid: "3714514231", values: { age: 69, P01: "99.504", P1: "103.198", P3: "105.353", P5: "106.494", P10: "108.252", P15: "109.437", P25: "111.188", P50: "114.45", P75: "117.712", P85: "119.463", P90: "120.648", P95: "122.406", P97: "123.547", P99: "125.702", P999: "129.396" } },
+          { name: 70, uid: "2632755756", values: { age: 70, P01: "99.914", P1: "103.632", P3: "105.801", P5: "106.949", P10: "108.717", P15: "109.91", P25: "111.672", P50: "114.955", P75: "118.238", P85: "119.999", P90: "121.192", P95: "122.961", P97: "124.109", P99: "126.277", P999: "129.995" } },
+          { name: 71, uid: "3066781923", values: { age: 71, P01: "100.324", P1: "104.064", P3: "106.246", P5: "107.401", P10: "109.18", P15: "110.38", P25: "112.152", P50: "115.455", P75: "118.758", P85: "120.53", P90: "121.73", P95: "123.509", P97: "124.664", P99: "126.846", P999: "130.586" } },
+          { name: 72, uid: "2078397296", values: { age: 72, P01: "100.726", P1: "104.49", P3: "106.685", P5: "107.847", P10: "109.637", P15: "110.845", P25: "112.628", P50: "115.951", P75: "119.274", P85: "121.057", P90: "122.265", P95: "124.055", P97: "125.217", P99: "127.412", P999: "131.176" } },
+          { name: 73, uid: "1729440127", values: { age: 73, P01: "101.125", P1: "104.912", P3: "107.12", P5: "108.29", P10: "110.091", P15: "111.306", P25: "113.1", P50: "116.443", P75: "119.787", P85: "121.581", P90: "122.796", P95: "124.597", P97: "125.766", P99: "127.975", P999: "131.761" } },
+          { name: 74, uid: "418257979", values: { age: 74, P01: "101.525", P1: "105.333", P3: "107.555", P5: "108.731", P10: "110.543", P15: "111.765", P25: "113.569", P50: "116.932", P75: "120.296", P85: "122.1", P90: "123.322", P95: "125.134", P97: "126.31", P99: "128.532", P999: "132.34" } },
+          { name: 75, uid: "2741082608", values: { age: 75, P01: "101.918", P1: "105.75", P3: "107.985", P5: "109.169", P10: "110.991", P15: "112.221", P25: "114.036", P50: "117.42", P75: "120.803", P85: "122.619", P90: "123.848", P95: "125.67", P97: "126.854", P99: "129.089", P999: "132.921" } },
+          { name: 76, uid: "3602540926", values: { age: 76, P01: "102.31", P1: "106.165", P3: "108.414", P5: "109.604", P10: "111.437", P15: "112.674", P25: "114.501", P50: "117.905", P75: "121.308", P85: "123.135", P90: "124.372", P95: "126.205", P97: "127.396", P99: "129.644", P999: "133.499" } },
+          { name: 77, uid: "845527562", values: { age: 77, P01: "102.704", P1: "106.581", P3: "108.842", P5: "110.04", P10: "111.884", P15: "113.128", P25: "114.965", P50: "118.388", P75: "121.811", P85: "123.648", P90: "124.892", P95: "126.736", P97: "127.934", P99: "130.195", P999: "134.072" } },
+          { name: 78, uid: "880310114", values: { age: 78, P01: "103.093", P1: "106.993", P3: "109.268", P5: "110.472", P10: "112.327", P15: "113.579", P25: "115.426", P50: "118.87", P75: "122.314", P85: "124.161", P90: "125.413", P95: "127.268", P97: "128.472", P99: "130.747", P999: "134.647" } },
+          { name: 79, uid: "1584461390", values: { age: 79, P01: "103.48", P1: "107.403", P3: "109.692", P5: "110.903", P10: "112.769", P15: "114.028", P25: "115.887", P50: "119.351", P75: "122.815", P85: "124.674", P90: "125.932", P95: "127.798", P97: "129.01", P99: "131.298", P999: "135.221" } },
+          { name: 80, uid: "149966327", values: { age: 80, P01: "103.867", P1: "107.813", P3: "110.114", P5: "111.333", P10: "113.21", P15: "114.476", P25: "116.346", P50: "119.83", P75: "123.315", P85: "125.184", P90: "126.451", P95: "128.327", P97: "129.546", P99: "131.848", P999: "135.794" } },
+          { name: 81, uid: "2312031320", values: { age: 81, P01: "104.255", P1: "108.223", P3: "110.538", P5: "111.764", P10: "113.651", P15: "114.924", P25: "116.805", P50: "120.308", P75: "123.812", P85: "125.693", P90: "126.966", P95: "128.853", P97: "130.079", P99: "132.394", P999: "136.362" } },
+          { name: 82, uid: "3476139249", values: { age: 82, P01: "104.638", P1: "108.63", P3: "110.958", P5: "112.191", P10: "114.089", P15: "115.37", P25: "117.261", P50: "120.785", P75: "124.31", P85: "126.201", P90: "127.482", P95: "129.38", P97: "130.613", P99: "132.941", P999: "136.932" } },
+          { name: 83, uid: "624866038", values: { age: 83, P01: "105.02", P1: "109.034", P3: "111.376", P5: "112.616", P10: "114.525", P15: "115.814", P25: "117.716", P50: "121.26", P75: "124.805", P85: "126.707", P90: "127.995", P95: "129.905", P97: "131.145", P99: "133.486", P999: "137.501" } },
+          { name: 84, uid: "601447789", values: { age: 84, P01: "105.4", P1: "109.437", P3: "111.793", P5: "113.04", P10: "114.96", P15: "116.256", P25: "118.169", P50: "121.734", P75: "125.299", P85: "127.212", P90: "128.508", P95: "130.428", P97: "131.675", P99: "134.03", P999: "138.068" } },
+          { name: 85, uid: "1847062413", values: { age: 85, P01: "105.778", P1: "109.839", P3: "112.207", P5: "113.461", P10: "115.393", P15: "116.696", P25: "118.62", P50: "122.205", P75: "125.791", P85: "127.715", P90: "129.018", P95: "130.949", P97: "132.203", P99: "134.572", P999: "138.633" } },
+          { name: 86, uid: "1221853667", values: { age: 86, P01: "106.154", P1: "110.238", P3: "112.62", P5: "113.881", P10: "115.824", P15: "117.134", P25: "119.069", P50: "122.675", P75: "126.281", P85: "128.216", P90: "129.526", P95: "131.469", P97: "132.73", P99: "135.112", P999: "139.196" } },
+          { name: 87, uid: "4114931826", values: { age: 87, P01: "106.529", P1: "110.635", P3: "113.031", P5: "114.299", P10: "116.253", P15: "117.571", P25: "119.517", P50: "123.143", P75: "126.769", P85: "128.715", P90: "130.033", P95: "131.986", P97: "133.255", P99: "135.65", P999: "139.757" } },
+          { name: 88, uid: "2324485048", values: { age: 88, P01: "106.901", P1: "111.031", P3: "113.44", P5: "114.716", P10: "116.68", P15: "118.006", P25: "119.962", P50: "123.609", P75: "127.256", P85: "129.213", P90: "130.538", P95: "132.502", P97: "133.778", P99: "136.187", P999: "140.317" } },
+          { name: 89, uid: "1017747503", values: { age: 89, P01: "107.272", P1: "111.425", P3: "113.848", P5: "115.131", P10: "117.106", P15: "118.439", P25: "120.406", P50: "124.074", P75: "127.741", P85: "129.709", P90: "131.041", P95: "133.017", P97: "134.299", P99: "136.722", P999: "140.875" } },
+          { name: 90, uid: "1505881967", values: { age: 90, P01: "107.641", P1: "111.818", P3: "114.254", P5: "115.543", P10: "117.53", P15: "118.87", P25: "120.849", P50: "124.536", P75: "128.224", P85: "130.202", P90: "131.543", P95: "133.529", P97: "134.819", P99: "137.255", P999: "141.431" } },
+          { name: 91, uid: "3488173932", values: { age: 91, P01: "108.008", P1: "112.208", P3: "114.657", P5: "115.954", P10: "117.951", P15: "119.299", P25: "121.288", P50: "124.996", P75: "128.704", P85: "130.694", P90: "132.042", P95: "134.039", P97: "135.336", P99: "137.785", P999: "141.984" } },
+          { name: 92, uid: "401697859", values: { age: 92, P01: "108.373", P1: "112.596", P3: "115.058", P5: "116.363", P10: "118.371", P15: "119.726", P25: "121.726", P50: "125.454", P75: "129.183", P85: "131.183", P90: "132.538", P95: "134.546", P97: "135.851", P99: "138.313", P999: "142.536" } },
+          { name: 93, uid: "2397012861", values: { age: 93, P01: "108.736", P1: "112.981", P3: "115.458", P5: "116.769", P10: "118.788", P15: "120.15", P25: "122.162", P50: "125.91", P75: "129.659", P85: "131.671", P90: "133.033", P95: "135.052", P97: "136.363", P99: "138.84", P999: "143.085" } },
+          { name: 94, uid: "590217990", values: { age: 94, P01: "109.096", P1: "113.365", P3: "115.854", P5: "117.173", P10: "119.203", P15: "120.573", P25: "122.595", P50: "126.364", P75: "130.133", P85: "132.155", P90: "133.525", P95: "135.555", P97: "136.874", P99: "139.363", P999: "143.632" } },
+          { name: 95, uid: "1259371169", values: { age: 95, P01: "109.455", P1: "113.746", P3: "116.249", P5: "117.575", P10: "119.616", P15: "120.993", P25: "123.026", P50: "126.816", P75: "130.605", P85: "132.638", P90: "134.015", P95: "136.056", P97: "137.382", P99: "139.885", P999: "144.176" } },
+          { name: 96, uid: "890803329", values: { age: 96, P01: "109.811", P1: "114.126", P3: "116.642", P5: "117.975", P10: "120.027", P15: "121.411", P25: "123.456", P50: "127.265", P75: "131.075", P85: "133.119", P90: "134.503", P95: "136.555", P97: "137.888", P99: "140.404", P999: "144.719" } },
+          { name: 97, uid: "3747565444", values: { age: 97, P01: "110.166", P1: "114.504", P3: "117.034", P5: "118.373", P10: "120.436", P15: "121.828", P25: "123.883", P50: "127.713", P75: "131.543", P85: "133.598", P90: "134.99", P95: "137.053", P97: "138.392", P99: "140.922", P999: "145.26" } },
+          { name: 98, uid: "779671503", values: { age: 98, P01: "110.519", P1: "114.88", P3: "117.423", P5: "118.77", P10: "120.844", P15: "122.243", P25: "124.309", P50: "128.159", P75: "132.009", P85: "134.075", P90: "135.474", P95: "137.548", P97: "138.895", P99: "141.438", P999: "145.799" } },
+          { name: 99, uid: "2353325356", values: { age: 99, P01: "110.871", P1: "115.254", P3: "117.811", P5: "119.165", P10: "121.249", P15: "122.656", P25: "124.733", P50: "128.603", P75: "132.474", P85: "134.551", P90: "135.957", P95: "138.042", P97: "139.396", P99: "141.953", P999: "146.336" } },
+          { name: 100, uid: "2983512797", values: { age: 100, P01: "111.221", P1: "115.627", P3: "118.197", P5: "119.558", P10: "121.654", P15: "123.068", P25: "125.156", P50: "129.047", P75: "132.937", P85: "135.025", P90: "136.439", P95: "138.535", P97: "139.896", P99: "142.466", P999: "146.872" } },
+          { name: 101, uid: "3769753469", values: { age: 101, P01: "111.57", P1: "115.999", P3: "118.583", P5: "119.951", P10: "122.058", P15: "123.479", P25: "125.578", P50: "129.489", P75: "133.4", P85: "135.498", P90: "136.92", P95: "139.026", P97: "140.394", P99: "142.978", P999: "147.407" } },
+          { name: 102, uid: "289944114", values: { age: 102, P01: "111.914", P1: "116.367", P3: "118.965", P5: "120.341", P10: "122.459", P15: "123.888", P25: "125.998", P50: "129.93", P75: "133.862", P85: "135.972", P90: "137.401", P95: "139.519", P97: "140.895", P99: "143.493", P999: "147.946" } },
+          { name: 103, uid: "2174618243", values: { age: 103, P01: "112.261", P1: "116.738", P3: "119.349", P5: "120.731", P10: "122.86", P15: "124.297", P25: "126.418", P50: "130.37", P75: "134.323", P85: "136.444", P90: "137.881", P95: "140.01", P97: "141.392", P99: "144.003", P999: "148.48" } },
+          { name: 104, uid: "3159005784", values: { age: 104, P01: "112.608", P1: "117.107", P3: "119.732", P5: "121.121", P10: "123.261", P15: "124.705", P25: "126.837", P50: "130.81", P75: "134.783", P85: "136.915", P90: "138.359", P95: "140.499", P97: "141.889", P99: "144.513", P999: "149.013" } },
+          { name: 105, uid: "1635282944", values: { age: 105, P01: "112.953", P1: "117.476", P3: "120.114", P5: "121.511", P10: "123.662", P15: "125.113", P25: "127.256", P50: "131.25", P75: "135.243", P85: "137.386", P90: "138.837", P95: "140.988", P97: "142.385", P99: "145.023", P999: "149.546" } },
+          { name: 106, uid: "2635518549", values: { age: 106, P01: "113.298", P1: "117.844", P3: "120.496", P5: "121.9", P10: "124.062", P15: "125.521", P25: "127.675", P50: "131.688", P75: "135.702", P85: "137.856", P90: "139.315", P95: "141.477", P97: "142.881", P99: "145.532", P999: "150.078" } },
+          { name: 107, uid: "1879569795", values: { age: 107, P01: "113.643", P1: "118.212", P3: "120.877", P5: "122.288", P10: "124.461", P15: "125.928", P25: "128.093", P50: "132.127", P75: "136.161", P85: "138.326", P90: "139.792", P95: "141.965", P97: "143.377", P99: "146.042", P999: "150.611" } },
+          { name: 108, uid: "1683816934", values: { age: 108, P01: "113.987", P1: "118.58", P3: "121.258", P5: "122.677", P10: "124.861", P15: "126.334", P25: "128.51", P50: "132.565", P75: "136.62", P85: "138.796", P90: "140.27", P95: "142.454", P97: "143.872", P99: "146.551", P999: "151.143" } },
+          { name: 109, uid: "4176610999", values: { age: 109, P01: "114.331", P1: "118.947", P3: "121.639", P5: "123.064", P10: "125.26", P15: "126.741", P25: "128.928", P50: "133.003", P75: "137.079", P85: "139.266", P90: "140.747", P95: "142.942", P97: "144.367", P99: "147.06", P999: "151.675" } },
+          { name: 110, uid: "3844025369", values: { age: 110, P01: "114.674", P1: "119.313", P3: "122.019", P5: "123.451", P10: "125.658", P15: "127.146", P25: "129.344", P50: "133.44", P75: "137.536", P85: "139.735", P90: "141.223", P95: "143.429", P97: "144.862", P99: "147.568", P999: "152.207" } },
+          { name: 111, uid: "3683987628", values: { age: 111, P01: "115.016", P1: "119.678", P3: "122.398", P5: "123.838", P10: "126.055", P15: "127.551", P25: "129.76", P50: "133.877", P75: "137.994", P85: "140.203", P90: "141.699", P95: "143.916", P97: "145.356", P99: "148.076", P999: "152.738" } },
+          { name: 112, uid: "137361947", values: { age: 112, P01: "115.361", P1: "120.046", P3: "122.779", P5: "124.226", P10: "126.454", P15: "127.957", P25: "130.177", P50: "134.313", P75: "138.449", P85: "140.669", P90: "142.172", P95: "144.4", P97: "145.847", P99: "148.58", P999: "153.265" } },
+          { name: 113, uid: "451296020", values: { age: 113, P01: "115.702", P1: "120.41", P3: "123.156", P5: "124.61", P10: "126.85", P15: "128.36", P25: "130.591", P50: "134.748", P75: "138.905", P85: "141.136", P90: "142.647", P95: "144.886", P97: "146.34", P99: "149.086", P999: "153.795" } },
+          { name: 114, uid: "2373802134", values: { age: 114, P01: "116.042", P1: "120.773", P3: "123.533", P5: "124.995", P10: "127.245", P15: "128.763", P25: "131.005", P50: "135.183", P75: "139.361", P85: "141.603", P90: "143.121", P95: "145.371", P97: "146.833", P99: "149.592", P999: "154.324" } },
+          { name: 115, uid: "667841728", values: { age: 115, P01: "116.385", P1: "121.139", P3: "123.912", P5: "125.38", P10: "127.641", P15: "129.167", P25: "131.419", P50: "135.617", P75: "139.814", P85: "142.067", P90: "143.592", P95: "145.853", P97: "147.322", P99: "150.095", P999: "154.849" } },
+          { name: 116, uid: "1272808188", values: { age: 116, P01: "116.723", P1: "121.501", P3: "124.287", P5: "125.763", P10: "128.035", P15: "129.568", P25: "131.832", P50: "136.05", P75: "140.269", P85: "142.532", P90: "144.065", P95: "146.337", P97: "147.813", P99: "150.6", P999: "155.377" } },
+          { name: 117, uid: "2924658003", values: { age: 117, P01: "117.065", P1: "121.865", P3: "124.665", P5: "126.147", P10: "128.43", P15: "129.97", P25: "132.245", P50: "136.483", P75: "140.721", P85: "142.996", P90: "144.536", P95: "146.819", P97: "148.301", P99: "151.101", P999: "155.901" } },
+          { name: 118, uid: "292285188", values: { age: 118, P01: "117.402", P1: "122.225", P3: "125.039", P5: "126.529", P10: "128.823", P15: "130.371", P25: "132.656", P50: "136.915", P75: "141.174", P85: "143.46", P90: "145.008", P95: "147.302", P97: "148.792", P99: "151.605", P999: "156.429" } },
+          { name: 119, uid: "1775430122", values: { age: 119, P01: "117.743", P1: "122.589", P3: "125.416", P5: "126.912", P10: "129.217", P15: "130.772", P25: "133.068", P50: "137.347", P75: "141.626", P85: "143.923", P90: "145.478", P95: "147.782", P97: "149.279", P99: "152.106", P999: "156.952" } },
+          { name: 120, uid: "2517110824", values: { age: 120, P01: "118.083", P1: "122.952", P3: "125.792", P5: "127.296", P10: "129.611", P15: "131.174", P25: "133.481", P50: "137.78", P75: "142.078", P85: "144.385", P90: "145.948", P95: "148.263", P97: "149.767", P99: "152.607", P999: "157.476" } },
+          { name: 121, uid: "3473313914", values: { age: 121, P01: "118.424", P1: "123.315", P3: "126.169", P5: "127.679", P10: "130.006", P15: "131.575", P25: "133.893", P50: "138.212", P75: "142.531", P85: "144.849", P90: "146.418", P95: "148.744", P97: "150.255", P99: "153.108", P999: 158 } },
+          { name: 122, uid: "1917767853", values: { age: 122, P01: "118.765", P1: "123.679", P3: "126.546", P5: "128.064", P10: "130.401", P15: "131.978", P25: "134.306", P50: "138.645", P75: "142.984", P85: "145.313", P90: "146.89", P95: "149.227", P97: "150.745", P99: "153.611", P999: "158.525" } },
+          { name: 123, uid: "4188619211", values: { age: 123, P01: "119.107", P1: "124.044", P3: "126.924", P5: "128.449", P10: "130.797", P15: "132.381", P25: "134.72", P50: "139.08", P75: "143.439", P85: "145.778", P90: "147.362", P95: "149.71", P97: "151.235", P99: "154.115", P999: "159.052" } },
+          { name: 124, uid: "3109720063", values: { age: 124, P01: "119.451", P1: "124.411", P3: "127.304", P5: "128.836", P10: "131.195", P15: "132.786", P25: "135.136", P50: "139.516", P75: "143.895", P85: "146.245", P90: "147.837", P95: "150.196", P97: "151.728", P99: "154.621", P999: "159.581" } },
+          { name: 125, uid: "2302253123", values: { age: 125, P01: "119.796", P1: "124.779", P3: "127.685", P5: "129.224", P10: "131.594", P15: "133.193", P25: "135.554", P50: "139.954", P75: "144.354", P85: "146.715", P90: "148.314", P95: "150.684", P97: "152.223", P99: "155.129", P999: "160.112" } },
+          { name: 126, uid: "2964250079", values: { age: 126, P01: "120.147", P1: "125.152", P3: "128.071", P5: "129.617", P10: "131.998", P15: "133.604", P25: "135.975", P50: "140.395", P75: "144.814", P85: "147.186", P90: "148.792", P95: "151.172", P97: "152.718", P99: "155.638", P999: "160.643" } },
+          { name: 127, uid: "338678783", values: { age: 127, P01: "120.496", P1: "125.525", P3: "128.458", P5: "130.011", P10: "132.403", P15: "134.016", P25: "136.399", P50: "140.839", P75: "145.279", P85: "147.661", P90: "149.275", P95: "151.666", P97: "153.22", P99: "156.153", P999: "161.181" } },
+          { name: 128, uid: "1263138964", values: { age: 128, P01: "120.853", P1: "125.904", P3: "128.85", P5: "130.41", P10: "132.812", P15: "134.433", P25: "136.826", P50: "141.286", P75: "145.746", P85: "148.139", P90: "149.76", P95: "152.162", P97: "153.722", P99: "156.668", P999: "161.719" } },
+          { name: 129, uid: "1817793496", values: { age: 129, P01: "121.212", P1: "126.286", P3: "129.245", P5: "130.812", P10: "133.225", P15: "134.853", P25: "137.257", P50: "141.737", P75: "146.217", P85: "148.621", P90: "150.249", P95: "152.662", P97: "154.229", P99: "157.188", P999: "162.261" } },
+          { name: 130, uid: "3021169938", values: { age: 130, P01: "121.575", P1: "126.671", P3: "129.644", P5: "131.218", P10: "133.642", P15: "135.277", P25: "137.692", P50: "142.192", P75: "146.692", P85: "149.106", P90: "150.742", P95: "153.165", P97: "154.74", P99: "157.712", P999: "162.808" } },
+          { name: 131, uid: "933563622", values: { age: 131, P01: "121.94", P1: "127.06", P3: "130.046", P5: "131.627", P10: "134.062", P15: "135.704", P25: "138.13", P50: "142.65", P75: "147.17", P85: "149.596", P90: "151.239", P95: "153.673", P97: "155.255", P99: "158.241", P999: "163.36" } },
+          { name: 132, uid: "230550625", values: { age: 132, P01: "122.314", P1: "127.455", P3: "130.454", P5: "132.042", P10: "134.487", P15: "136.137", P25: "138.573", P50: "143.113", P75: "147.652", P85: "150.088", P90: "151.738", P95: "154.183", P97: "155.771", P99: "158.77", P999: "163.912" } },
+          { name: 133, uid: "2510808441", values: { age: 133, P01: "122.686", P1: "127.851", P3: "130.863", P5: "132.458", P10: "134.915", P15: "136.572", P25: "139.019", P50: "143.58", P75: "148.14", P85: "150.587", P90: "152.244", P95: "154.701", P97: "156.296", P99: "159.308", P999: "164.473" } },
+          { name: 134, uid: "2619878640", values: { age: 134, P01: "123.067", P1: "128.254", P3: "131.279", P5: "132.882", P10: "135.349", P15: "137.013", P25: "139.471", P50: "144.051", P75: "148.631", P85: "151.089", P90: "152.754", P95: "155.221", P97: "156.823", P99: "159.848", P999: "165.036" } },
+          { name: 135, uid: "2556350469", values: { age: 135, P01: "123.451", P1: "128.661", P3: "131.7", P5: "133.309", P10: "135.787", P15: "137.459", P25: "139.927", P50: "144.528", P75: "149.128", P85: "151.596", P90: "153.268", P95: "155.746", P97: "157.355", P99: "160.394", P999: "165.604" } },
+          { name: 136, uid: "3460670524", values: { age: 136, P01: "123.845", P1: "129.077", P3: "132.128", P5: "133.744", P10: "136.232", P15: "137.911", P25: "140.39", P50: "145.009", P75: "149.629", P85: "152.108", P90: "153.786", P95: "156.275", P97: "157.89", P99: "160.942", P999: "166.174" } },
+          { name: 137, uid: "3314160856", values: { age: 137, P01: "124.238", P1: "129.493", P3: "132.558", P5: "134.181", P10: "136.681", P15: "138.367", P25: "140.857", P50: "145.496", P75: "150.136", P85: "152.626", P90: "154.312", P95: "156.811", P97: "158.435", P99: "161.5", P999: "166.754" } },
+          { name: 138, uid: "504113973", values: { age: 138, P01: "124.641", P1: "129.918", P3: "132.996", P5: "134.626", P10: "137.136", P15: "138.829", P25: "141.33", P50: "145.989", P75: "150.649", P85: "153.149", P90: "154.842", P95: "157.352", P97: "158.982", P99: "162.06", P999: "167.337" } },
+          { name: 139, uid: "1400014522", values: { age: 139, P01: "125.049", P1: "130.348", P3: "133.439", P5: "135.076", P10: "137.597", P15: "139.297", P25: "141.808", P50: "146.488", P75: "151.167", P85: "153.678", P90: "155.379", P95: "157.899", P97: "159.536", P99: "162.627", P999: "167.927" } },
+          { name: 140, uid: "1168911856", values: { age: 140, P01: "125.462", P1: "130.784", P3: "133.888", P5: "135.532", P10: "138.064", P15: "139.771", P25: "142.293", P50: "146.993", P75: "151.692", P85: "154.214", P90: "155.922", P95: "158.453", P97: "160.097", P99: "163.201", P999: "168.524" } },
+          { name: 141, uid: "3128175767", values: { age: 141, P01: "125.88", P1: "131.225", P3: "134.343", P5: "135.994", P10: "138.536", P15: "140.252", P25: "142.784", P50: "147.504", P75: "152.224", P85: "154.757", P90: "156.472", P95: "159.014", P97: "160.665", P99: "163.783", P999: "169.128" } },
+          { name: 142, uid: "3558648845", values: { age: 142, P01: "126.309", P1: "131.676", P3: "134.807", P5: "136.465", P10: "139.017", P15: "140.74", P25: "143.283", P50: "148.022", P75: "152.762", P85: "155.305", P90: "157.027", P95: "159.58", P97: "161.238", P99: "164.369", P999: "169.736" } },
+          { name: 143, uid: "2307687108", values: { age: 143, P01: "126.743", P1: "132.133", P3: "135.277", P5: "136.942", P10: "139.505", P15: "141.235", P25: "143.789", P50: "148.548", P75: "153.307", P85: "155.861", P90: "157.59", P95: "160.154", P97: "161.819", P99: "164.963", P999: "170.353" } },
+          { name: 144, uid: "1262322983", values: { age: 144, P01: "127.184", P1: "132.597", P3: "135.754", P5: "137.426", P10: 140, P15: "141.737", P25: "144.301", P50: "149.081", P75: "153.86", P85: "156.425", P90: "158.162", P95: "160.736", P97: "162.408", P99: "165.565", P999: "170.977" } },
+          { name: 145, uid: "279612429", values: { age: 145, P01: "127.636", P1: "133.07", P3: "136.24", P5: "137.919", P10: "140.504", P15: "142.248", P25: "144.823", P50: "149.621", P75: "154.42", P85: "156.995", P90: "158.739", P95: "161.323", P97: "163.002", P99: "166.172", P999: "171.607" } },
+          { name: 146, uid: "3142117998", values: { age: 146, P01: "128.09", P1: "133.548", P3: "136.731", P5: "138.417", P10: "141.013", P15: "142.764", P25: "145.35", P50: "150.169", P75: "154.989", P85: "157.575", P90: "159.326", P95: "161.922", P97: "163.608", P99: "166.791", P999: "172.249" } },
+          { name: 147, uid: "3231907183", values: { age: 147, P01: "128.559", P1: "134.039", P3: "137.235", P5: "138.927", P10: "141.533", P15: "143.291", P25: "145.887", P50: "150.726", P75: "155.564", P85: "158.16", P90: "159.918", P95: "162.524", P97: "164.217", P99: "167.413", P999: "172.892" } },
+          { name: 148, uid: "197365089", values: { age: 148, P01: "129.031", P1: "134.533", P3: "137.743", P5: "139.442", P10: "142.059", P15: "143.825", P25: "146.432", P50: "151.29", P75: "156.148", P85: "158.755", P90: "160.521", P95: "163.138", P97: "164.837", P99: "168.046", P999: "173.549" } },
+          { name: 149, uid: "2572357721", values: { age: 149, P01: "129.515", P1: "135.039", P3: "138.261", P5: "139.967", P10: "142.595", P15: "144.367", P25: "146.985", P50: "151.862", P75: "156.74", P85: "159.357", P90: "161.13", P95: "163.757", P97: "165.464", P99: "168.686", P999: "174.21" } },
+          { name: 150, uid: "3333712994", values: { age: 150, P01: "130.005", P1: "135.551", P3: "138.786", P5: "140.499", P10: "143.137", P15: "144.917", P25: "147.545", P50: "152.442", P75: "157.34", P85: "159.968", P90: "161.748", P95: "164.386", P97: "166.099", P99: "169.334", P999: "174.88" } },
+          { name: 151, uid: "2104858378", values: { age: 151, P01: "130.506", P1: "136.073", P3: "139.321", P5: "141.041", P10: "143.689", P15: "145.475", P25: "148.114", P50: "153.03", P75: "157.946", P85: "160.584", P90: "162.371", P95: "165.019", P97: "166.739", P99: "169.986", P999: "175.554" } },
+          { name: 152, uid: "514590605", values: { age: 152, P01: "131.007", P1: "136.598", P3: "139.859", P5: "141.585", P10: "144.244", P15: "146.038", P25: "148.687", P50: "153.623", P75: "158.56", P85: "161.209", P90: "163.003", P95: "165.661", P97: "167.388", P99: "170.649", P999: "176.24" } },
+          { name: 153, uid: "2398471900", values: { age: 153, P01: "131.523", P1: "137.134", P3: "140.407", P5: "142.14", P10: "144.809", P15: "146.609", P25: "149.268", P50: "154.222", P75: "159.177", P85: "161.836", P90: "163.636", P95: "166.305", P97: "168.038", P99: "171.311", P999: "176.922" } },
+          { name: 154, uid: "4041165890", values: { age: 154, P01: "132.037", P1: "137.67", P3: "140.956", P5: "142.696", P10: "145.375", P15: "147.183", P25: "149.852", P50: "154.826", P75: "159.8", P85: "162.469", P90: "164.276", P95: "166.956", P97: "168.695", P99: "171.981", P999: "177.614" } },
+          { name: 155, uid: "791916420", values: { age: 155, P01: "132.56", P1: "138.214", P3: "141.512", P5: "143.258", P10: "145.947", P15: "147.762", P25: "150.441", P50: "155.433", P75: "160.425", P85: "163.104", P90: "164.919", P95: "167.608", P97: "169.354", P99: "172.652", P999: "178.306" } },
+          { name: 156, uid: "326613932", values: { age: 156, P01: "133.09", P1: "138.763", P3: "142.073", P5: "143.825", P10: "146.524", P15: "148.344", P25: "151.033", P50: "156.043", P75: "161.052", P85: "163.741", P90: "165.561", P95: "168.26", P97: "170.012", P99: "173.322", P999: "178.996" } },
+          { name: 157, uid: "3943529072", values: { age: 157, P01: "133.621", P1: "139.314", P3: "142.635", P5: "144.394", P10: "147.102", P15: "148.929", P25: "151.627", P50: "156.654", P75: "161.681", P85: "164.379", P90: "166.206", P95: "168.914", P97: "170.673", P99: "173.994", P999: "179.687" } },
+          { name: 158, uid: "3092908032", values: { age: 158, P01: "134.152", P1: "139.866", P3: "143.198", P5: "144.963", P10: "147.681", P15: "149.514", P25: "152.221", P50: "157.266", P75: "162.311", P85: "165.018", P90: "166.851", P95: "169.569", P97: "171.334", P99: "174.666", P999: "180.38" } },
+          { name: 159, uid: "2750463162", values: { age: 159, P01: "134.684", P1: "140.417", P3: "143.761", P5: "145.532", P10: "148.259", P15: "150.099", P25: "152.815", P50: "157.878", P75: "162.94", P85: "165.656", P90: "167.496", P95: "170.223", P97: "171.994", P99: "175.338", P999: "181.071" } },
+          { name: 160, uid: "4045070226", values: { age: 160, P01: "135.219", P1: "140.97", P3: "144.325", P5: "146.102", P10: "148.837", P15: "150.683", P25: "153.408", P50: "158.487", P75: "163.566", P85: "166.291", P90: "168.137", P95: "170.872", P97: "172.649", P99: "176.004", P999: "181.756" } },
+          { name: 161, uid: "81391415", values: { age: 161, P01: "135.756", P1: "141.525", P3: "144.89", P5: "146.671", P10: "149.415", P15: "151.266", P25: 154, P50: "159.094", P75: "164.188", P85: "166.921", P90: "168.772", P95: "171.516", P97: "173.298", P99: "176.663", P999: "182.432" } },
+          { name: 162, uid: "1329091151", values: { age: 162, P01: "136.285", P1: "142.072", P3: "145.447", P5: "147.235", P10: "149.987", P15: "151.844", P25: "154.586", P50: "159.696", P75: "164.806", P85: "167.548", P90: "169.405", P95: "172.158", P97: "173.945", P99: "177.321", P999: "183.108" } },
+          { name: 163, uid: "3164086796", values: { age: 163, P01: "136.815", P1: "142.618", P3: "146.004", P5: "147.796", P10: "150.557", P15: "152.419", P25: "155.169", P50: "160.294", P75: "165.419", P85: "168.169", P90: "170.031", P95: "172.791", P97: "174.584", P99: "177.969", P999: "183.773" } },
+          { name: 164, uid: "1140954684", values: { age: 164, P01: "137.345", P1: "143.164", P3: "146.558", P5: "148.356", P10: "151.123", P15: "152.991", P25: "155.748", P50: "160.886", P75: "166.024", P85: "168.782", P90: "170.649", P95: "173.417", P97: "175.214", P99: "178.608", P999: "184.427" } },
+          { name: 165, uid: "2986250480", values: { age: 165, P01: "137.87", P1: "143.704", P3: "147.107", P5: "148.909", P10: "151.684", P15: "153.556", P25: "156.32", P50: "161.472", P75: "166.624", P85: "169.388", P90: "171.26", P95: "174.035", P97: "175.837", P99: "179.24", P999: "185.074" } },
+          { name: 166, uid: "2306330411", values: { age: 166, P01: "138.389", P1: "144.238", P3: "147.649", P5: "149.456", P10: "152.238", P15: "154.115", P25: "156.886", P50: "162.05", P75: "167.215", P85: "169.986", P90: "171.863", P95: "174.645", P97: "176.452", P99: "179.863", P999: "185.712" } },
+          { name: 167, uid: "3261233776", values: { age: 167, P01: "138.901", P1: "144.764", P3: "148.184", P5: "149.995", P10: "152.784", P15: "154.665", P25: "157.444", P50: "162.621", P75: "167.798", P85: "170.576", P90: "172.458", P95: "175.246", P97: "177.057", P99: "180.477", P999: "186.34" } },
+          { name: 168, uid: "2172835202", values: { age: 168, P01: "139.41", P1: "145.286", P3: "148.714", P5: "150.529", P10: "153.323", P15: "155.209", P25: "157.993", P50: "163.182", P75: "168.37", P85: "171.154", P90: "173.04", P95: "175.834", P97: "177.649", P99: "181.077", P999: "186.953" } },
+          { name: 169, uid: "2205288039", values: { age: 169, P01: "139.916", P1: "145.803", P3: "149.237", P5: "151.055", P10: "153.855", P15: "155.744", P25: "158.534", P50: "163.732", P75: "168.93", P85: "171.72", P90: "173.609", P95: "176.409", P97: "178.227", P99: "181.661", P999: "187.548" } },
+          { name: 170, uid: "2284826073", values: { age: 170, P01: "140.408", P1: "146.307", P3: "149.747", P5: "151.569", P10: "154.375", P15: "156.268", P25: "159.063", P50: "164.272", P75: "169.48", P85: "172.275", P90: "174.168", P95: "176.974", P97: "178.796", P99: "182.237", P999: "188.136" } },
+          { name: 171, uid: "2641770925", values: { age: 171, P01: "140.894", P1: "146.804", P3: "150.25", P5: "152.075", P10: "154.886", P15: "156.782", P25: "159.582", P50: "164.799", P75: "170.017", P85: "172.817", P90: "174.713", P95: "177.523", P97: "179.349", P99: "182.795", P999: "188.704" } },
+          { name: 172, uid: "271759548", values: { age: 172, P01: "141.37", P1: "147.289", P3: "150.742", P5: "152.57", P10: "155.385", P15: "157.284", P25: "160.088", P50: "165.314", P75: "170.541", P85: "173.345", P90: "175.244", P95: "178.059", P97: "179.887", P99: "183.34", P999: "189.259" } },
+          { name: 173, uid: "1031940298", values: { age: 173, P01: "141.841", P1: "147.767", P3: "151.224", P5: "153.055", P10: "155.874", P15: "157.775", P25: "160.583", P50: "165.816", P75: "171.05", P85: "173.858", P90: "175.759", P95: "178.578", P97: "180.409", P99: "183.866", P999: "189.792" } },
+          { name: 174, uid: "3443775443", values: { age: 174, P01: "142.3", P1: "148.234", P3: "151.695", P5: "153.528", P10: "156.35", P15: "158.254", P25: "161.065", P50: "166.305", P75: "171.545", P85: "174.356", P90: "176.26", P95: "179.082", P97: "180.915", P99: "184.376", P999: "190.31" } },
+          { name: 175, uid: "1048606429", values: { age: 175, P01: "142.747", P1: "148.688", P3: "152.153", P5: "153.988", P10: "156.813", P15: "158.72", P25: "161.534", P50: "166.78", P75: "172.025", P85: "174.84", P90: "176.746", P95: "179.572", P97: "181.407", P99: "184.872", P999: "190.812" } },
+          { name: 176, uid: "1846791124", values: { age: 176, P01: "143.184", P1: "149.131", P3: "152.599", P5: "154.436", P10: "157.265", P15: "159.173", P25: "161.991", P50: "167.242", P75: "172.492", P85: "175.31", P90: "177.218", P95: "180.047", P97: "181.884", P99: "185.352", P999: "191.299" } },
+          { name: 177, uid: "1135524415", values: { age: 177, P01: "143.614", P1: "149.566", P3: "153.037", P5: "154.875", P10: "157.705", P15: "159.615", P25: "162.435", P50: "167.69", P75: "172.945", P85: "175.765", P90: "177.674", P95: "180.505", P97: "182.343", P99: "185.814", P999: "191.766" } },
+          { name: 178, uid: "343553084", values: { age: 178, P01: "144.034", P1: "149.989", P3: "153.463", P5: "155.302", P10: "158.135", P15: "160.045", P25: "162.867", P50: "168.126", P75: "173.384", P85: "176.206", P90: "178.116", P95: "180.949", P97: "182.788", P99: "186.262", P999: "192.217" } },
+          { name: 179, uid: "3983184467", values: { age: 179, P01: "144.443", P1: "150.402", P3: "153.877", P5: "155.718", P10: "158.552", P15: "160.464", P25: "163.287", P50: "168.548", P75: "173.809", P85: "176.633", P90: "178.545", P95: "181.379", P97: "183.219", P99: "186.695", P999: "192.653" } },
+          { name: 180, uid: "3560003606", values: { age: 180, P01: "144.841", P1: "150.803", P3: "154.28", P5: "156.121", P10: "158.957", P15: "160.869", P25: "163.694", P50: "168.958", P75: "174.222", P85: "177.047", P90: "178.959", P95: "181.795", P97: "183.636", P99: "187.113", P999: "193.075" } },
+          { name: 181, uid: "2234758627", values: { age: 181, P01: "145.234", P1: "151.196", P3: "154.674", P5: "156.516", P10: "159.352", P15: "161.265", P25: "164.09", P50: "169.355", P75: "174.62", P85: "177.445", P90: "179.358", P95: "182.194", P97: "184.036", P99: "187.513", P999: "193.476" } },
+          { name: 182, uid: "4177063850", values: { age: 182, P01: "145.616", P1: "151.579", P3: "155.057", P5: "156.899", P10: "159.735", P15: "161.648", P25: "164.474", P50: "169.739", P75: "175.004", P85: "177.83", P90: "179.743", P95: "182.579", P97: "184.421", P99: "187.899", P999: "193.862" } },
+          { name: 183, uid: "3844135236", values: { age: 183, P01: "145.986", P1: "151.95", P3: "155.428", P5: "157.27", P10: "160.106", P15: "162.019", P25: "164.845", P50: "170.11", P75: "175.375", P85: "178.201", P90: "180.114", P95: "182.95", P97: "184.792", P99: "188.27", P999: "194.233" } },
+          { name: 184, uid: "3258713263", values: { age: 184, P01: "146.346", P1: "152.309", P3: "155.787", P5: "157.629", P10: "160.465", P15: "162.378", P25: "165.203", P50: "170.468", P75: "175.733", P85: "178.558", P90: "180.471", P95: "183.307", P97: "185.149", P99: "188.627", P999: "194.59" } },
+          { name: 185, uid: "3139626585", values: { age: 185, P01: "146.696", P1: "152.658", P3: "156.135", P5: "157.976", P10: "160.812", P15: "162.725", P25: "165.55", P50: "170.814", P75: "176.078", P85: "178.902", P90: "180.815", P95: "183.651", P97: "185.492", P99: "188.97", P999: "194.931" } },
+          { name: 186, uid: "2767316396", values: { age: 186, P01: "147.035", P1: "152.995", P3: "156.472", P5: "158.313", P10: "161.147", P15: "163.06", P25: "165.884", P50: "171.147", P75: "176.41", P85: "179.234", P90: "181.146", P95: "183.981", P97: "185.822", P99: "189.298", P999: "195.259" } },
+          { name: 187, uid: "2933110036", values: { age: 187, P01: "147.369", P1: "153.326", P3: "156.801", P5: "158.641", P10: "161.474", P15: "163.386", P25: "166.208", P50: "171.468", P75: "176.728", P85: "179.55", P90: "181.462", P95: "184.295", P97: "186.135", P99: "189.61", P999: "195.567" } },
+          { name: 188, uid: "1281656912", values: { age: 188, P01: "147.688", P1: "153.643", P3: "157.116", P5: "158.955", P10: "161.787", P15: "163.698", P25: "166.519", P50: "171.777", P75: "177.035", P85: "179.857", P90: "181.767", P95: "184.599", P97: "186.439", P99: "189.912", P999: "195.866" } },
+          { name: 189, uid: "1867385945", values: { age: 189, P01: "148.002", P1: "153.953", P3: "157.424", P5: "159.262", P10: "162.092", P15: "164.001", P25: "166.821", P50: "172.075", P75: "177.329", P85: "180.148", P90: "182.058", P95: "184.888", P97: "186.726", P99: "190.197", P999: "196.147" } },
+          { name: 190, uid: "505316266", values: { age: 190, P01: "148.307", P1: "154.253", P3: "157.721", P5: "159.557", P10: "162.385", P15: "164.293", P25: "167.111", P50: "172.361", P75: "177.611", P85: "180.428", P90: "182.336", P95: "185.164", P97: 187, P99: "190.468", P999: "196.414" } },
+          { name: 191, uid: "1725374003", values: { age: 191, P01: "148.596", P1: "154.538", P3: "158.004", P5: "159.839", P10: "162.665", P15: "164.572", P25: "167.388", P50: "172.634", P75: "177.881", P85: "180.697", P90: "182.604", P95: "185.43", P97: "187.265", P99: "190.731", P999: "196.673" } },
+          { name: 192, uid: "1234191081", values: { age: 192, P01: "148.88", P1: "154.817", P3: "158.28", P5: "160.113", P10: "162.937", P15: "164.842", P25: "167.655", P50: "172.897", P75: "178.139", P85: "180.952", P90: "182.857", P95: "185.68", P97: "187.514", P99: "190.976", P999: "196.913" } },
+          { name: 193, uid: "2073103163", values: { age: 193, P01: "149.155", P1: "155.085", P3: "158.545", P5: "160.377", P10: "163.197", P15: "165.1", P25: "167.91", P50: "173.147", P75: "178.384", P85: "181.194", P90: "183.097", P95: "185.917", P97: "187.749", P99: "191.209", P999: "197.139" } },
+          { name: 194, uid: "4135110570", values: { age: 194, P01: "149.419", P1: "155.344", P3: "158.799", P5: "160.629", P10: "163.446", P15: "165.348", P25: "168.155", P50: "173.386", P75: "178.617", P85: "181.424", P90: "183.325", P95: "186.142", P97: "187.972", P99: "191.428", P999: "197.352" } },
+          { name: 195, uid: "3815559940", values: { age: 195, P01: "149.674", P1: "155.591", P3: "159.043", P5: "160.871", P10: "163.685", P15: "165.584", P25: "168.388", P50: "173.613", P75: "178.838", P85: "181.641", P90: "183.54", P95: "186.355", P97: "188.182", P99: "191.634", P999: "197.551" } },
+          { name: 196, uid: "2257090442", values: { age: 196, P01: "149.919", P1: "155.829", P3: "159.276", P5: "161.102", P10: "163.913", P15: "165.809", P25: "168.609", P50: "173.828", P75: "179.047", P85: "181.847", P90: "183.743", P95: "186.554", P97: "188.38", P99: "191.827", P999: "197.737" } },
+          { name: 197, uid: "3411115778", values: { age: 197, P01: "150.154", P1: "156.056", P3: "159.499", P5: "161.322", P10: "164.13", P15: "166.024", P25: "168.82", P50: "174.032", P75: "179.244", P85: "182.041", P90: "183.935", P95: "186.742", P97: "188.565", P99: "192.008", P999: "197.91" } },
+          { name: 198, uid: "19388084", values: { age: 198, P01: "150.38", P1: "156.274", P3: "159.712", P5: "161.533", P10: "164.336", P15: "166.228", P25: "169.02", P50: "174.225", P75: "179.43", P85: "182.223", P90: "184.114", P95: "186.917", P97: "188.738", P99: "192.176", P999: "198.071" } },
+          { name: 199, uid: "2852858453", values: { age: 199, P01: "150.596", P1: "156.482", P3: "159.915", P5: "161.733", P10: "164.532", P15: "166.421", P25: "169.21", P50: "174.407", P75: "179.604", P85: "182.393", P90: "184.282", P95: "187.081", P97: "188.899", P99: "192.332", P999: "198.218" } },
+          { name: 200, uid: "1068750170", values: { age: 200, P01: "150.803", P1: "156.68", P3: "160.108", P5: "161.923", P10: "164.719", P15: "166.604", P25: "169.389", P50: "174.578", P75: "179.768", P85: "182.552", P90: "184.438", P95: "187.233", P97: "189.049", P99: "192.477", P999: "198.354" } },
+          { name: 201, uid: "957430453", values: { age: 201, P01: "151.001", P1: "156.869", P3: "160.292", P5: "162.104", P10: "164.895", P15: "166.778", P25: "169.558", P50: "174.739", P75: "179.92", P85: "182.701", P90: "184.583", P95: "187.374", P97: "189.187", P99: "192.609", P999: "198.477" } },
+          { name: 202, uid: "3600189363", values: { age: 202, P01: "151.191", P1: "157.049", P3: "160.466", P5: "162.275", P10: "165.061", P15: "166.941", P25: "169.717", P50: "174.89", P75: "180.062", P85: "182.838", P90: "184.718", P95: "187.504", P97: "189.313", P99: "192.73", P999: "198.588" } },
+          { name: 203, uid: "2405910515", values: { age: 203, P01: "151.366", P1: "157.216", P3: "160.628", P5: "162.435", P10: "165.217", P15: "167.094", P25: "169.865", P50: "175.03", P75: "180.195", P85: "182.967", P90: "184.844", P95: "187.626", P97: "189.432", P99: "192.844", P999: "198.694" } },
+          { name: 204, uid: "2700706876", values: { age: 204, P01: "151.539", P1: "157.378", P3: "160.784", P5: "162.588", P10: "165.365", P15: "167.238", P25: "170.005", P50: "175.161", P75: "180.317", P85: "183.083", P90: "184.957", P95: "187.734", P97: "189.538", P99: "192.944", P999: "198.783" } },
+          { name: 205, uid: "2380778449", values: { age: 205, P01: "151.704", P1: "157.532", P3: "160.932", P5: "162.732", P10: "165.504", P15: "167.374", P25: "170.136", P50: "175.282", P75: "180.429", P85: "183.19", P90: "185.061", P95: "187.833", P97: "189.633", P99: "193.033", P999: "198.861" } },
+          { name: 206, uid: "2527733938", values: { age: 206, P01: "151.856", P1: "157.674", P3: "161.068", P5: "162.866", P10: "165.633", P15: "167.5", P25: "170.257", P50: "175.395", P75: "180.533", P85: "183.29", P90: "185.157", P95: "187.925", P97: "189.722", P99: "193.116", P999: "198.935" } },
+          { name: 207, uid: "2473704154", values: { age: 207, P01: "152.006", P1: "157.813", P3: "161.201", P5: "162.994", P10: "165.756", P15: "167.62", P25: "170.372", P50: "175.5", P75: "180.627", P85: "183.379", P90: "185.243", P95: "188.005", P97: "189.798", P99: "193.186", P999: "198.993" } },
+          { name: 208, uid: "2496321499", values: { age: 208, P01: "152.143", P1: "157.941", P3: "161.322", P5: "163.113", P10: "165.87", P15: "167.73", P25: "170.477", P50: "175.596", P75: "180.715", P85: "183.462", P90: "185.322", P95: "188.079", P97: "189.87", P99: "193.251", P999: "199.048" } },
+          { name: 209, uid: "3124782586", values: { age: 209, P01: "152.28", P1: "158.066", P3: "161.44", P5: "163.227", P10: "165.979", P15: "167.835", P25: "170.577", P50: "175.685", P75: "180.793", P85: "183.535", P90: "185.391", P95: "188.143", P97: "189.93", P99: "193.304", P999: "199.09" } },
+          { name: 210, uid: "298051321", values: { age: 210, P01: "152.406", P1: "158.181", P3: "161.549", P5: "163.333", P10: "166.079", P15: "167.932", P25: "170.668", P50: "175.767", P75: "180.866", P85: "183.602", P90: "185.455", P95: "188.202", P97: "189.986", P99: "193.354", P999: "199.129" } },
+          { name: 211, uid: "1299803586", values: { age: 211, P01: "152.526", P1: "158.29", P3: "161.652", P5: "163.432", P10: "166.173", P15: "168.023", P25: "170.754", P50: "175.843", P75: "180.933", P85: "183.664", P90: "185.513", P95: "188.254", P97: "190.035", P99: "193.396", P999: "199.16" } },
+          { name: 212, uid: "1352546306", values: { age: 212, P01: "152.641", P1: "158.394", P3: "161.749", P5: "163.526", P10: "166.262", P15: "168.108", P25: "170.834", P50: "175.913", P75: "180.993", P85: "183.719", P90: "185.564", P95: "188.3", P97: "190.077", P99: "193.433", P999: "199.185" } },
+          { name: 213, uid: "609848827", values: { age: 213, P01: "152.752", P1: "158.493", P3: "161.842", P5: "163.615", P10: "166.346", P15: "168.188", P25: "170.909", P50: "175.978", P75: "181.048", P85: "183.768", P90: "185.61", P95: "188.341", P97: "190.114", P99: "193.463", P999: "199.204" } },
+          { name: 214, uid: "2467335667", values: { age: 214, P01: "152.858", P1: "158.588", P3: "161.93", P5: "163.7", P10: "166.425", P15: "168.264", P25: "170.979", P50: "176.038", P75: "181.097", P85: "183.812", P90: "185.651", P95: "188.376", P97: "190.146", P99: "193.488", P999: "199.218" } },
+          { name: 215, uid: "2631080298", values: { age: 215, P01: "152.961", P1: "158.679", P3: "162.014", P5: "163.781", P10: "166.5", P15: "168.335", P25: "171.044", P50: "176.094", P75: "181.143", P85: "183.852", P90: "185.687", P95: "188.406", P97: "190.173", P99: "193.508", P999: "199.226" } },
+          { name: 216, uid: "2108238642", values: { age: 216, P01: "153.06", P1: "158.766", P3: "162.095", P5: "163.857", P10: "166.571", P15: "168.402", P25: "171.106", P50: "176.145", P75: "181.184", P85: "183.887", P90: "185.718", P95: "188.432", P97: "190.195", P99: "193.523", P999: "199.23" } },
+          { name: 217, uid: "1505008879", values: { age: 217, P01: "153.15", P1: "158.846", P3: "162.168", P5: "163.928", P10: "166.637", P15: "168.464", P25: "171.163", P50: "176.192", P75: "181.222", P85: "183.921", P90: "185.748", P95: "188.457", P97: "190.217", P99: "193.539", P999: "199.235" } },
+          { name: 218, uid: "3383194047", values: { age: 218, P01: "153.243", P1: "158.927", P3: "162.242", P5: "163.998", P10: "166.701", P15: "168.525", P25: "171.218", P50: "176.237", P75: "181.255", P85: "183.949", P90: "185.772", P95: "188.476", P97: "190.231", P99: "193.546", P999: "199.23" } },
+          { name: 219, uid: "1989401026", values: { age: 219, P01: "153.328", P1: "159.001", P3: "162.31", P5: "164.062", P10: "166.76", P15: "168.581", P25: "171.269", P50: "176.278", P75: "181.287", P85: "183.975", P90: "185.795", P95: "188.494", P97: "190.246", P99: "193.555", P999: "199.228" } },
+          { name: 220, uid: "1323052124", values: { age: 220, P01: "153.41", P1: "159.073", P3: "162.375", P5: "164.124", P10: "166.817", P15: "168.634", P25: "171.317", P50: "176.316", P75: "181.316", P85: "183.999", P90: "185.815", P95: "188.508", P97: "190.257", P99: "193.56", P999: "199.222" } },
+          { name: 221, uid: "740013408", values: { age: 221, P01: "153.49", P1: "159.142", P3: "162.438", P5: "164.183", P10: "166.871", P15: "168.684", P25: "171.362", P50: "176.352", P75: "181.342", P85: "184.019", P90: "185.833", P95: "188.52", P97: "190.266", P99: "193.562", P999: "199.213" } },
+          { name: 222, uid: "993165819", values: { age: 222, P01: "153.574", P1: "159.213", P3: "162.502", P5: "164.243", P10: "166.925", P15: "168.734", P25: "171.406", P50: "176.385", P75: "181.364", P85: "184.036", P90: "185.845", P95: "188.527", P97: "190.269", P99: "193.558", P999: "199.196" } },
+          { name: 223, uid: "1025189630", values: { age: 223, P01: "153.645", P1: "159.274", P3: "162.557", P5: "164.295", P10: "166.973", P15: "168.779", P25: "171.446", P50: "176.416", P75: "181.386", P85: "184.054", P90: "185.86", P95: "188.537", P97: "190.276", P99: "193.559", P999: "199.188" } },
+          { name: 224, uid: "1537328397", values: { age: 224, P01: "153.719", P1: "159.337", P3: "162.613", P5: "164.349", P10: "167.02", P15: "168.823", P25: "171.485", P50: "176.445", P75: "181.406", P85: "184.067", P90: "185.87", P95: "188.542", P97: "190.277", P99: "193.554", P999: "199.172" } },
+          { name: 225, uid: "2412384672", values: { age: 225, P01: "153.792", P1: "159.398", P3: "162.668", P5: "164.4", P10: "167.066", P15: "168.866", P25: "171.522", P50: "176.472", P75: "181.423", P85: "184.079", P90: "185.878", P95: "188.545", P97: "190.276", P99: "193.547", P999: "199.153" } },
+          { name: 226, uid: "2338598534", values: { age: 226, P01: "153.863", P1: "159.458", P3: "162.721", P5: "164.45", P10: "167.111", P15: "168.906", P25: "171.557", P50: "176.498", P75: "181.438", P85: "184.089", P90: "185.885", P95: "188.546", P97: "190.274", P99: "193.537", P999: "199.132" } },
+          { name: 227, uid: "3070697871", values: { age: 227, P01: "153.927", P1: "159.512", P3: "162.77", P5: "164.495", P10: "167.151", P15: "168.943", P25: "171.59", P50: "176.521", P75: "181.453", P85: "184.099", P90: "185.891", P95: "188.547", P97: "190.273", P99: "193.53", P999: "199.115" } },
+          { name: 228, uid: "2595842587", values: { age: 228, P01: "153.99", P1: "159.565", P3: "162.817", P5: "164.539", P10: "167.19", P15: "168.979", P25: "171.621", P50: "176.543", P75: "181.466", P85: "184.107", P90: "185.896", P95: "188.548", P97: "190.27", P99: "193.522", P999: "199.097" } }
+      ];
+
+
+      const boys_to_13w = [
+          { name: "a", uid: "1589549939", values: { age: 0, P01: 44, P1: "45.5", P3: "46.3", P5: "46.8", P10: "47.5", P15: "47.9", P25: "48.6", P50: "49.9", P75: "51.2", P85: "51.8", P90: "52.3", P95: 53, P97: "53.4", P99: "54.3", P999: "55.7" } },
+          { name: 1, uid: "1309102428", values: { age: 1, P01: "45.2", P1: "46.7", P3: "47.5", P5: 48, P10: "48.7", P15: "49.1", P25: "49.8", P50: "51.1", P75: "52.4", P85: "53.1", P90: "53.6", P95: "54.2", P97: "54.7", P99: "55.5", P999: 57 } },
+          { name: 2, uid: "3205415503", values: { age: 2, P01: "46.4", P1: "47.9", P3: "48.8", P5: "49.2", P10: "49.9", P15: "50.4", P25: "51.1", P50: "52.3", P75: "53.6", P85: "54.3", P90: "54.8", P95: "55.5", P97: "55.9", P99: "56.8", P999: "58.3" } },
+          { name: 3, uid: "1029676985", values: { age: 3, P01: "47.4", P1: "48.9", P3: "49.8", P5: "50.2", P10: "50.9", P15: "51.4", P25: "52.1", P50: "53.4", P75: "54.7", P85: "55.4", P90: "55.9", P95: "56.6", P97: 57, P99: "57.9", P999: "59.3" } },
+          { name: 4, uid: "1524543629", values: { age: 4, P01: "48.4", P1: "49.9", P3: "50.7", P5: "51.2", P10: "51.9", P15: "52.4", P25: "53.1", P50: "54.4", P75: "55.7", P85: "56.4", P90: "56.9", P95: "57.6", P97: 58, P99: "58.9", P999: "60.4" } },
+          { name: 5, uid: "3324676590", values: { age: 5, P01: "49.3", P1: "50.8", P3: "51.7", P5: "52.1", P10: "52.8", P15: "53.3", P25: 54, P50: "55.3", P75: "56.7", P85: "57.4", P90: "57.8", P95: "58.6", P97: 59, P99: "59.9", P999: "61.4" } },
+          { name: 6, uid: "2861606192", values: { age: 6, P01: "50.2", P1: "51.7", P3: "52.5", P5: 53, P10: "53.7", P15: "54.2", P25: "54.9", P50: "56.2", P75: "57.6", P85: "58.3", P90: "58.8", P95: "59.5", P97: "59.9", P99: "60.8", P999: "62.3" } },
+          { name: 7, uid: "1891408407", values: { age: 7, P01: 51, P1: "52.5", P3: "53.4", P5: "53.8", P10: "54.5", P15: 55, P25: "55.7", P50: "57.1", P75: "58.4", P85: "59.1", P90: "59.6", P95: "60.3", P97: "60.8", P99: "61.7", P999: "63.2" } },
+          { name: 8, uid: "3962747673", values: { age: 8, P01: "51.7", P1: "53.3", P3: "54.1", P5: "54.6", P10: "55.3", P15: "55.8", P25: "56.5", P50: "57.9", P75: "59.2", P85: 60, P90: "60.4", P95: "61.2", P97: "61.6", P99: "62.5", P999: 64 } },
+          { name: 9, uid: "2156180893", values: { age: 9, P01: "52.5", P1: 54, P3: "54.9", P5: "55.4", P10: "56.1", P15: "56.6", P25: "57.3", P50: "58.7", P75: 60, P85: "60.7", P90: "61.2", P95: "61.9", P97: "62.4", P99: "63.3", P999: "64.8" } },
+          { name: 10, uid: "2889875267", values: { age: 10, P01: "53.2", P1: "54.7", P3: "55.6", P5: "56.1", P10: "56.8", P15: "57.3", P25: 58, P50: "59.4", P75: "60.7", P85: "61.5", P90: 62, P95: "62.7", P97: "63.2", P99: "64.1", P999: "65.6" } },
+          { name: 11, uid: "188111283", values: { age: 11, P01: "53.8", P1: "55.4", P3: "56.3", P5: "56.8", P10: "57.5", P15: 58, P25: "58.7", P50: "60.1", P75: "61.5", P85: "62.2", P90: "62.7", P95: "63.4", P97: "63.9", P99: "64.8", P999: "66.3" } },
+          { name: 12, uid: "2298099179", values: { age: 12, P01: "54.5", P1: 56, P3: "56.9", P5: "57.4", P10: "58.2", P15: "58.7", P25: "59.4", P50: "60.8", P75: "62.1", P85: "62.9", P90: "63.4", P95: "64.1", P97: "64.6", P99: "65.5", P999: 67 } },
+          { name: 13, uid: "399350150", values: { age: 13, P01: "55.1", P1: "56.6", P3: "57.6", P5: 58, P10: "58.8", P15: "59.3", P25: 60, P50: "61.4", P75: "62.8", P85: "63.5", P90: 64, P95: "64.8", P97: "65.2", P99: "66.2", P999: "67.7" } }
+      ];
+
+      const girls_to_5y = [
+      {"name":"a","uid":"1589549939","values":{"age":0,"P01":44,"P1":"45.5","P3":"46.3","P5":"46.8","P10":"47.5","P15":"47.9","P25":"48.6","P50":"49.9","P75":"51.2","P85":"51.8","P90":"52.3","P95":53,"P97":"53.4","P99":"54.3","P999":"55.7"}},
+      {"name":1,"uid":"4093758805","values":{"age":1,"P01":"48.7","P1":"50.2","P3":"51.1","P5":"51.5","P10":"52.2","P15":"52.7","P25":"53.4","P50":"54.7","P75":56,"P85":"56.7","P90":"57.2","P95":"57.9","P97":"58.4","P99":"59.3","P999":"60.7"}},
+      {"name":2,"uid":"4049563981","values":{"age":2,"P01":"52.2","P1":"53.8","P3":"54.7","P5":"55.1","P10":"55.9","P15":"56.4","P25":"57.1","P50":"58.4","P75":"59.8","P85":"60.5","P90":61,"P95":"61.7","P97":"62.2","P99":"63.1","P999":"64.6"}},
+      {"name":3,"uid":"3461950553","values":{"age":3,"P01":"55.1","P1":"56.7","P3":"57.6","P5":"58.1","P10":"58.8","P15":"59.3","P25":"60.1","P50":"61.4","P75":"62.8","P85":"63.5","P90":64,"P95":"64.8","P97":"65.3","P99":"66.2","P999":"67.7"}},
+      {"name":4,"uid":"5364138","values":{"age":4,"P01":"57.5","P1":59,"P3":60,"P5":"60.5","P10":"61.2","P15":"61.7","P25":"62.5","P50":"63.9","P75":"65.3","P85":66,"P90":"66.6","P95":"67.3","P97":"67.8","P99":"68.7","P999":"70.3"}},
+      {"name":5,"uid":"2984285765","values":{"age":5,"P01":"59.4","P1":61,"P3":"61.9","P5":"62.4","P10":"63.2","P15":"63.7","P25":"64.5","P50":"65.9","P75":"67.3","P85":"68.1","P90":"68.6","P95":"69.4","P97":"69.9","P99":"70.8","P999":"72.4"}},
+      {"name":6,"uid":"935059469","values":{"age":6,"P01":61,"P1":"62.6","P3":"63.6","P5":"64.1","P10":"64.9","P15":"65.4","P25":"66.2","P50":"67.6","P75":"69.1","P85":"69.8","P90":"70.4","P95":"71.1","P97":"71.6","P99":"72.6","P999":"74.2"}},
+      {"name":7,"uid":"2162721115","values":{"age":7,"P01":"62.5","P1":"64.1","P3":"65.1","P5":"65.6","P10":"66.4","P15":"66.9","P25":"67.7","P50":"69.2","P75":"70.6","P85":"71.4","P90":"71.9","P95":"72.7","P97":"73.2","P99":"74.2","P999":"75.9"}},
+      {"name":8,"uid":"125627344","values":{"age":8,"P01":"63.8","P1":"65.5","P3":"66.5","P5":67,"P10":"67.8","P15":"68.3","P25":"69.1","P50":"70.6","P75":"72.1","P85":"72.9","P90":"73.4","P95":"74.2","P97":"74.7","P99":"75.7","P999":"77.4"}},
+      {"name":9,"uid":"3418199007","values":{"age":9,"P01":65,"P1":"66.8","P3":"67.7","P5":"68.3","P10":"69.1","P15":"69.6","P25":"70.5","P50":72,"P75":"73.5","P85":"74.3","P90":"74.8","P95":"75.7","P97":"76.2","P99":"77.2","P999":"78.9"}},
+      {"name":10,"uid":"2989642416","values":{"age":10,"P01":"66.2","P1":68,"P3":69,"P5":"69.5","P10":"70.4","P15":"70.9","P25":"71.7","P50":"73.3","P75":"74.8","P85":"75.6","P90":"76.2","P95":77,"P97":"77.6","P99":"78.6","P999":"80.3"}},
+      {"name":11,"uid":"1933077736","values":{"age":11,"P01":"67.3","P1":"69.1","P3":"70.2","P5":"70.7","P10":"71.6","P15":"72.1","P25":73,"P50":"74.5","P75":"76.1","P85":77,"P90":"77.5","P95":"78.4","P97":"78.9","P99":80,"P999":"81.7"}},
+      {"name":12,"uid":"3974467696","values":{"age":12,"P01":"68.4","P1":"70.2","P3":"71.3","P5":"71.8","P10":"72.7","P15":"73.3","P25":"74.1","P50":"75.7","P75":"77.4","P85":"78.2","P90":"78.8","P95":"79.7","P97":"80.2","P99":"81.3","P999":"83.1"}},
+      {"name":13,"uid":"3537086184","values":{"age":13,"P01":"69.4","P1":"71.3","P3":"72.4","P5":"72.9","P10":"73.8","P15":"74.4","P25":"75.3","P50":"76.9","P75":"78.6","P85":"79.4","P90":80,"P95":"80.9","P97":"81.5","P99":"82.6","P999":"84.4"}},
+      {"name":14,"uid":"576952500","values":{"age":14,"P01":"70.4","P1":"72.3","P3":"73.4","P5":74,"P10":"74.9","P15":"75.5","P25":"76.4","P50":78,"P75":"79.7","P85":"80.6","P90":"81.2","P95":"82.1","P97":"82.7","P99":"83.8","P999":"85.7"}},
+      {"name":15,"uid":"3702332655","values":{"age":15,"P01":"71.3","P1":"73.3","P3":"74.4","P5":75,"P10":"75.9","P15":"76.5","P25":"77.4","P50":"79.1","P75":"80.9","P85":"81.8","P90":"82.4","P95":"83.3","P97":"83.9","P99":85,"P999":87}},
+      {"name":16,"uid":"2629194847","values":{"age":16,"P01":"72.2","P1":"74.2","P3":"75.4","P5":76,"P10":"76.9","P15":"77.5","P25":"78.5","P50":"80.2","P75":82,"P85":"82.9","P90":"83.5","P95":"84.5","P97":"85.1","P99":"86.2","P999":"88.2"}},
+      {"name":17,"uid":"4002604646","values":{"age":17,"P01":"73.1","P1":"75.1","P3":"76.3","P5":"76.9","P10":"77.9","P15":"78.5","P25":"79.5","P50":"81.2","P75":83,"P85":84,"P90":"84.6","P95":"85.6","P97":"86.2","P99":"87.4","P999":"89.4"}},
+      {"name":18,"uid":"133910667","values":{"age":18,"P01":"73.9","P1":76,"P3":"77.2","P5":"77.8","P10":"78.8","P15":"79.5","P25":"80.4","P50":"82.3","P75":"84.1","P85":"85.1","P90":"85.7","P95":"86.7","P97":"87.3","P99":"88.5","P999":"90.6"}},
+      {"name":19,"uid":"2724884999","values":{"age":19,"P01":"74.7","P1":"76.8","P3":"78.1","P5":"78.7","P10":"79.7","P15":"80.4","P25":"81.4","P50":"83.2","P75":"85.1","P85":"86.1","P90":"86.8","P95":"87.8","P97":"88.4","P99":"89.7","P999":"91.8"}},
+      {"name":20,"uid":"97698012","values":{"age":20,"P01":"75.5","P1":"77.7","P3":"78.9","P5":"79.6","P10":"80.6","P15":"81.3","P25":"82.3","P50":"84.2","P75":"86.1","P85":"87.1","P90":"87.8","P95":"88.8","P97":"89.5","P99":"90.7","P999":"92.9"}},
+      {"name":21,"uid":"2943559141","values":{"age":21,"P01":"76.3","P1":"78.4","P3":"79.7","P5":"80.4","P10":"81.5","P15":"82.2","P25":"83.2","P50":"85.1","P75":"87.1","P85":"88.1","P90":"88.8","P95":"89.9","P97":"90.5","P99":"91.8","P999":94}},
+      {"name":22,"uid":"3376612254","values":{"age":22,"P01":77,"P1":"79.2","P3":"80.5","P5":"81.2","P10":"82.3","P15":83,"P25":"84.1","P50":86,"P75":88,"P85":"89.1","P90":"89.8","P95":"90.9","P97":"91.6","P99":"92.9","P999":"95.1"}},
+      {"name":23,"uid":"3494845315","values":{"age":23,"P01":"77.7","P1":80,"P3":"81.3","P5":82,"P10":"83.1","P15":"83.8","P25":"84.9","P50":"86.9","P75":89,"P85":90,"P90":"90.8","P95":"91.9","P97":"92.6","P99":"93.9","P999":"96.2"}},
+      {"name":24,"uid":"3273731722","values":{"age":24,"P01":"78.4","P1":"80.7","P3":"82.1","P5":"82.8","P10":"83.9","P15":"84.6","P25":"85.8","P50":"87.8","P75":"89.9","P85":91,"P90":"91.7","P95":"92.8","P97":"93.6","P99":"94.9","P999":"97.3"}},
+      {"name":25,"uid":"169556906","values":{"age":25,"P01":"78.3","P1":"80.7","P3":"82.1","P5":"82.8","P10":84,"P15":"84.7","P25":"85.9","P50":88,"P75":"90.1","P85":"91.2","P90":92,"P95":"93.1","P97":"93.8","P99":"95.2","P999":"97.6"}},
+      {"name":26,"uid":"1531721040","values":{"age":26,"P01":79,"P1":"81.4","P3":"82.8","P5":"83.6","P10":"84.7","P15":"85.5","P25":"86.7","P50":"88.8","P75":"90.9","P85":"92.1","P90":"92.9","P95":94,"P97":"94.8","P99":"96.2","P999":"98.6"}},
+      {"name":27,"uid":"2591991239","values":{"age":27,"P01":"79.6","P1":"82.1","P3":"83.5","P5":"84.3","P10":"85.5","P15":"86.3","P25":"87.4","P50":"89.6","P75":"91.8","P85":93,"P90":"93.8","P95":"94.9","P97":"95.7","P99":"97.1","P999":"99.6"}},
+      {"name":28,"uid":"2883704525","values":{"age":28,"P01":"80.2","P1":"82.8","P3":"84.2","P5":85,"P10":"86.2","P15":87,"P25":"88.2","P50":"90.4","P75":"92.6","P85":"93.8","P90":"94.6","P95":"95.8","P97":"96.6","P99":"98.1","P999":"100.6"}},
+      {"name":29,"uid":"2189393354","values":{"age":29,"P01":"80.8","P1":"83.4","P3":"84.9","P5":"85.7","P10":"86.9","P15":"87.7","P25":"88.9","P50":"91.2","P75":"93.4","P85":"94.7","P90":"95.5","P95":"96.7","P97":"97.5","P99":99,"P999":"101.5"}},
+      {"name":30,"uid":"1338886867","values":{"age":30,"P01":"81.4","P1":84,"P3":"85.5","P5":"86.3","P10":"87.6","P15":"88.4","P25":"89.6","P50":"91.9","P75":"94.2","P85":"95.5","P90":"96.3","P95":"97.5","P97":"98.3","P99":"99.9","P999":"102.5"}},
+      {"name":31,"uid":"2874105084","values":{"age":31,"P01":82,"P1":"84.6","P3":"86.2","P5":87,"P10":"88.2","P15":"89.1","P25":"90.3","P50":"92.7","P75":95,"P85":"96.2","P90":"97.1","P95":"98.4","P97":"99.2","P99":"100.7","P999":"103.4"}},
+      {"name":32,"uid":"3579270741","values":{"age":32,"P01":"82.5","P1":"85.2","P3":"86.8","P5":"87.6","P10":"88.9","P15":"89.7","P25":91,"P50":"93.4","P75":"95.7","P85":97,"P90":"97.9","P95":"99.2","P97":100,"P99":"101.5","P999":"104.2"}},
+      {"name":33,"uid":"572763733","values":{"age":33,"P01":"83.1","P1":"85.8","P3":"87.4","P5":"88.2","P10":"89.5","P15":"90.4","P25":"91.7","P50":"94.1","P75":"96.5","P85":"97.8","P90":"98.6","P95":"99.9","P97":"100.8","P99":"102.4","P999":"105.1"}},
+      {"name":34,"uid":"3809508546","values":{"age":34,"P01":"83.6","P1":"86.4","P3":88,"P5":"88.8","P10":"90.1","P15":91,"P25":"92.3","P50":"94.8","P75":"97.2","P85":"98.5","P90":"99.4","P95":"100.7","P97":"101.5","P99":"103.2","P999":"105.9"}},
+      {"name":35,"uid":"2832660290","values":{"age":35,"P01":"84.1","P1":"86.9","P3":"88.5","P5":"89.4","P10":"90.7","P15":"91.6","P25":93,"P50":"95.4","P75":"97.9","P85":"99.2","P90":"100.1","P95":"101.4","P97":"102.3","P99":"103.9","P999":"106.7"}},
+      {"name":36,"uid":"2593086519","values":{"age":36,"P01":"84.6","P1":"87.5","P3":"89.1","P5":90,"P10":"91.3","P15":"92.2","P25":"93.6","P50":"96.1","P75":"98.6","P85":"99.9","P90":"100.8","P95":"102.2","P97":"103.1","P99":"104.7","P999":"107.5"}},
+      {"name":37,"uid":"2576968997","values":{"age":37,"P01":"85.1","P1":88,"P3":"89.7","P5":"90.6","P10":"91.9","P15":"92.8","P25":"94.2","P50":"96.7","P75":"99.3","P85":"100.6","P90":"101.5","P95":"102.9","P97":"103.8","P99":"105.5","P999":"108.3"}},
+      {"name":38,"uid":"3163459531","values":{"age":38,"P01":"85.6","P1":"88.5","P3":"90.2","P5":"91.1","P10":"92.5","P15":"93.4","P25":"94.8","P50":"97.4","P75":"99.9","P85":"101.3","P90":"102.2","P95":"103.6","P97":"104.5","P99":"106.2","P999":"109.1"}},
+      {"name":39,"uid":"4294052699","values":{"age":39,"P01":"86.1","P1":"89.1","P3":"90.8","P5":"91.7","P10":"93.1","P15":94,"P25":"95.4","P50":98,"P75":"100.6","P85":102,"P90":"102.9","P95":"104.3","P97":"105.2","P99":"106.9","P999":"109.9"}},
+      {"name":40,"uid":"250775112","values":{"age":40,"P01":"86.6","P1":"89.6","P3":"91.3","P5":"92.2","P10":"93.7","P15":"94.6","P25":96,"P50":"98.6","P75":"101.3","P85":"102.7","P90":"103.6","P95":105,"P97":"105.9","P99":"107.7","P999":"110.6"}},
+      {"name":41,"uid":"4094003707","values":{"age":41,"P01":"87.1","P1":"90.1","P3":"91.9","P5":"92.8","P10":"94.2","P15":"95.2","P25":"96.6","P50":"99.2","P75":"101.9","P85":"103.3","P90":"104.3","P95":"105.7","P97":"106.6","P99":"108.4","P999":"111.4"}},
+      {"name":42,"uid":"833569153","values":{"age":42,"P01":"87.6","P1":"90.6","P3":"92.4","P5":"93.3","P10":"94.8","P15":"95.7","P25":"97.2","P50":"99.9","P75":"102.5","P85":104,"P90":"104.9","P95":"106.4","P97":"107.3","P99":"109.1","P999":"112.1"}},
+      {"name":43,"uid":"2968591951","values":{"age":43,"P01":"88.1","P1":"91.1","P3":"92.9","P5":"93.9","P10":"95.3","P15":"96.3","P25":"97.7","P50":"100.4","P75":"103.1","P85":"104.6","P90":"105.6","P95":107,"P97":108,"P99":"109.8","P999":"112.8"}},
+      {"name":44,"uid":"543345448","values":{"age":44,"P01":"88.5","P1":"91.6","P3":"93.4","P5":"94.4","P10":"95.9","P15":"96.8","P25":"98.3","P50":101,"P75":"103.8","P85":"105.2","P90":"106.2","P95":"107.7","P97":"108.6","P99":"110.4","P999":"113.5"}},
+      {"name":45,"uid":"1532667843","values":{"age":45,"P01":89,"P1":"92.1","P3":"93.9","P5":"94.9","P10":"96.4","P15":"97.4","P25":"98.9","P50":"101.6","P75":"104.4","P85":"105.8","P90":"106.8","P95":"108.3","P97":"109.3","P99":"111.1","P999":"114.2"}},
+      {"name":46,"uid":"3991254004","values":{"age":46,"P01":"89.5","P1":"92.6","P3":"94.4","P5":"95.4","P10":"96.9","P15":"97.9","P25":"99.4","P50":"102.2","P75":105,"P85":"106.5","P90":"107.5","P95":109,"P97":"109.9","P99":"111.8","P999":"114.9"}},
+      {"name":47,"uid":"3897932360","values":{"age":47,"P01":"89.9","P1":"93.1","P3":"94.9","P5":"95.9","P10":"97.4","P15":"98.5","P25":100,"P50":"102.8","P75":"105.6","P85":"107.1","P90":"108.1","P95":"109.6","P97":"110.6","P99":"112.4","P999":"115.6"}},
+      {"name":48,"uid":"1523726453","values":{"age":48,"P01":"90.4","P1":"93.6","P3":"95.4","P5":"96.4","P10":98,"P15":99,"P25":"100.5","P50":"103.3","P75":"106.2","P85":"107.7","P90":"108.7","P95":"110.2","P97":"111.2","P99":"113.1","P999":"116.3"}},
+      {"name":49,"uid":"2666968585","values":{"age":49,"P01":"90.8","P1":94,"P3":"95.9","P5":"96.9","P10":"98.5","P15":"99.5","P25":101,"P50":"103.9","P75":"106.7","P85":"108.3","P90":"109.3","P95":"110.8","P97":"111.8","P99":"113.7","P999":117}},
+      {"name":50,"uid":"1664314738","values":{"age":50,"P01":"91.3","P1":"94.5","P3":"96.4","P5":"97.4","P10":99,"P15":100,"P25":"101.6","P50":"104.4","P75":"107.3","P85":"108.9","P90":"109.9","P95":"111.5","P97":"112.5","P99":"114.4","P999":"117.6"}},
+      {"name":51,"uid":"3071254588","values":{"age":51,"P01":"91.7","P1":95,"P3":"96.9","P5":"97.9","P10":"99.5","P15":"100.5","P25":"102.1","P50":105,"P75":"107.9","P85":"109.5","P90":"110.5","P95":"112.1","P97":"113.1","P99":115,"P999":"118.3"}},
+      {"name":52,"uid":"1165396677","values":{"age":52,"P01":"92.1","P1":"95.5","P3":"97.4","P5":"98.4","P10":100,"P15":"101.1","P25":"102.6","P50":"105.6","P75":"108.5","P85":"110.1","P90":"111.1","P95":"112.7","P97":"113.7","P99":"115.7","P999":119}},
+      {"name":53,"uid":"1938953078","values":{"age":53,"P01":"92.6","P1":"95.9","P3":"97.9","P5":"98.9","P10":"100.5","P15":"101.6","P25":"103.2","P50":"106.1","P75":"109.1","P85":"110.7","P90":"111.7","P95":"113.3","P97":"114.3","P99":"116.3","P999":"119.6"}},
+      {"name":54,"uid":"3800210561","values":{"age":54,"P01":93,"P1":"96.4","P3":"98.4","P5":"99.4","P10":101,"P15":"102.1","P25":"103.7","P50":"106.7","P75":"109.6","P85":"111.2","P90":"112.3","P95":"113.9","P97":115,"P99":"116.9","P999":"120.3"}},
+      {"name":55,"uid":"3638779759","values":{"age":55,"P01":"93.5","P1":"96.9","P3":"98.8","P5":"99.9","P10":"101.5","P15":"102.6","P25":"104.2","P50":"107.2","P75":"110.2","P85":"111.8","P90":"112.9","P95":"114.5","P97":"115.6","P99":"117.6","P999":121}},
+      {"name":56,"uid":"2271954843","values":{"age":56,"P01":"93.9","P1":"97.3","P3":"99.3","P5":"100.4","P10":102,"P15":"103.1","P25":"104.7","P50":"107.8","P75":"110.8","P85":"112.4","P90":"113.5","P95":"115.2","P97":"116.2","P99":"118.2","P999":"121.6"}},
+      {"name":57,"uid":"3319396319","values":{"age":57,"P01":"94.3","P1":"97.8","P3":"99.8","P5":"100.9","P10":"102.5","P15":"103.6","P25":"105.3","P50":"108.3","P75":"111.4","P85":113,"P90":"114.1","P95":"115.8","P97":"116.8","P99":"118.8","P999":"122.3"}},
+      {"name":58,"uid":"1502254666","values":{"age":58,"P01":"94.8","P1":"98.3","P3":"100.3","P5":"101.4","P10":103,"P15":"104.1","P25":"105.8","P50":"108.9","P75":"111.9","P85":"113.6","P90":"114.7","P95":"116.4","P97":"117.4","P99":"119.5","P999":123}},
+      {"name":59,"uid":"3781244486","values":{"age":59,"P01":"95.2","P1":"98.7","P3":"100.8","P5":"101.9","P10":"103.5","P15":"104.7","P25":"106.3","P50":"109.4","P75":"112.5","P85":"114.2","P90":"115.3","P95":117,"P97":"118.1","P99":"120.1","P999":"123.6"}},
+      {"name":60,"uid":"3913722680","values":{"age":60,"P01":"95.6","P1":"99.2","P3":"101.2","P5":"102.3","P10":104,"P15":"105.2","P25":"106.8","P50":110,"P75":"113.1","P85":"114.8","P90":"115.9","P95":"117.6","P97":"118.7","P99":"120.7","P999":"124.3"}},
+      {"name":61,"uid":"3968796314","values":{"age":61,"P01":"94.851","P1":"98.498","P3":"100.624","P5":"101.75","P10":"103.485","P15":"104.655","P25":"106.382","P50":"109.602","P75":"112.821","P85":"114.549","P90":"115.719","P95":"117.453","P97":"118.579","P99":"120.706","P999":"124.352"}},
+      {"name":62,"uid":"1926228040","values":{"age":62,"P01":"95.274","P1":"98.946","P3":"101.087","P5":"102.221","P10":"103.967","P15":"105.145","P25":"106.884","P50":"110.126","P75":"113.367","P85":"115.107","P90":"116.285","P95":"118.031","P97":"119.165","P99":"121.306","P999":"124.977"}},
+      {"name":63,"uid":"276734375","values":{"age":63,"P01":"95.693","P1":"99.389","P3":"101.545","P5":"102.686","P10":"104.444","P15":"105.63","P25":"107.382","P50":"110.645","P75":"113.909","P85":"115.66","P90":"116.846","P95":"118.604","P97":"119.745","P99":"121.901","P999":"125.597"}},
+      {"name":64,"uid":"1935845972","values":{"age":64,"P01":"96.107","P1":"99.828","P3":"101.998","P5":"103.147","P10":"104.917","P15":"106.111","P25":"107.874","P50":"111.16","P75":"114.445","P85":"116.208","P90":"117.402","P95":"119.172","P97":"120.321","P99":"122.491","P999":"126.212"}},
+      {"name":65,"uid":"2722387667","values":{"age":65,"P01":"96.52","P1":"100.265","P3":"102.449","P5":"103.606","P10":"105.387","P15":"106.589","P25":"108.363","P50":"111.67","P75":"114.976","P85":"116.751","P90":"117.952","P95":"119.733","P97":"120.89","P99":"123.074","P999":"126.819"}},
+      {"name":66,"uid":"1801737758","values":{"age":66,"P01":"96.926","P1":"100.696","P3":"102.894","P5":"104.059","P10":"105.851","P15":"107.061","P25":"108.847","P50":"112.175","P75":"115.504","P85":"117.29","P90":"118.499","P95":"120.292","P97":"121.456","P99":"123.655","P999":"127.424"}},
+      {"name":67,"uid":"3816341125","values":{"age":67,"P01":"97.332","P1":"101.125","P3":"103.337","P5":"104.509","P10":"106.313","P15":"107.53","P25":"109.327","P50":"112.677","P75":"116.026","P85":"117.823","P90":"119.04","P95":"120.844","P97":"122.016","P99":"124.229","P999":"128.022"}},
+      {"name":68,"uid":"2299436138","values":{"age":68,"P01":"97.733","P1":"101.55","P3":"103.776","P5":"104.955","P10":"106.771","P15":"107.995","P25":"109.804","P50":"113.174","P75":"116.544","P85":"118.353","P90":"119.577","P95":"121.393","P97":"122.572","P99":"124.798","P999":"128.615"}},
+      {"name":69,"uid":"4030610008","values":{"age":69,"P01":"98.131","P1":"101.971","P3":"104.212","P5":"105.398","P10":"107.224","P15":"108.457","P25":"110.276","P50":"113.667","P75":"117.058","P85":"118.878","P90":"120.11","P95":"121.937","P97":"123.123","P99":"125.363","P999":"129.203"}},
+      {"name":70,"uid":"4271451318","values":{"age":70,"P01":"98.525","P1":"102.389","P3":"104.643","P5":"105.836","P10":"107.674","P15":"108.914","P25":"110.745","P50":"114.156","P75":"117.568","P85":"119.399","P90":"120.639","P95":"122.477","P97":"123.67","P99":"125.924","P999":"129.788"}},
+      {"name":71,"uid":"975409861","values":{"age":71,"P01":"98.916","P1":"102.803","P3":"105.071","P5":"106.272","P10":"108.12","P15":"109.368","P25":"111.21","P50":"114.642","P75":"118.075","P85":"119.916","P90":"121.164","P95":"123.013","P97":"124.213","P99":"126.481","P999":"130.368"}},
+      {"name":72,"uid":"2768087330","values":{"age":72,"P01":"99.304","P1":"103.214","P3":"105.496","P5":"106.703","P10":"108.563","P15":"109.818","P25":"111.671","P50":"115.124","P75":"118.578","P85":"120.431","P90":"121.685","P95":"123.545","P97":"124.753","P99":"127.034","P999":"130.945"}},
+      {"name":73,"uid":"2649971862","values":{"age":73,"P01":"99.692","P1":"103.626","P3":"105.92","P5":"107.135","P10":"109.005","P15":"110.267","P25":"112.131","P50":"115.604","P75":"119.077","P85":"120.94","P90":"122.203","P95":"124.073","P97":"125.288","P99":"127.582","P999":"131.515"}},
+      {"name":74,"uid":"2317805115","values":{"age":74,"P01":"100.079","P1":"104.034","P3":"106.342","P5":"107.564","P10":"109.445","P15":"110.714","P25":"112.588","P50":"116.081","P75":"119.574","P85":"121.448","P90":"122.718","P95":"124.599","P97":"125.821","P99":"128.128","P999":"132.084"}},
+      {"name":75,"uid":"2987046175","values":{"age":75,"P01":"100.46","P1":"104.439","P3":"106.76","P5":"107.989","P10":"109.881","P15":"111.158","P25":"113.043","P50":"116.557","P75":"120.07","P85":"121.956","P90":"123.232","P95":"125.125","P97":"126.354","P99":"128.675","P999":"132.654"}},
+      {"name":76,"uid":"3839387394","values":{"age":76,"P01":"100.847","P1":"104.848","P3":"107.181","P5":"108.417","P10":"110.319","P15":"111.603","P25":"113.499","P50":"117.031","P75":"120.563","P85":"122.459","P90":"123.743","P95":"125.645","P97":"126.881","P99":"129.215","P999":"133.215"}},
+      {"name":77,"uid":"838665935","values":{"age":77,"P01":"101.23","P1":"105.253","P3":"107.599","P5":"108.842","P10":"110.755","P15":"112.046","P25":"113.952","P50":"117.504","P75":"121.057","P85":"122.963","P90":"124.254","P95":"126.167","P97":"127.41","P99":"129.756","P999":"133.779"}},
+      {"name":78,"uid":"3604004576","values":{"age":78,"P01":"101.611","P1":"105.657","P3":"108.016","P5":"109.266","P10":"111.19","P15":"112.488","P25":"114.405","P50":"117.977","P75":"121.549","P85":"123.466","P90":"124.764","P95":"126.688","P97":"127.938","P99":"130.297","P999":"134.343"}},
+      {"name":79,"uid":"4288201111","values":{"age":79,"P01":"101.996","P1":"106.063","P3":"108.435","P5":"109.691","P10":"111.626","P15":"112.931","P25":"114.858","P50":"118.449","P75":"122.04","P85":"123.967","P90":"125.272","P95":"127.207","P97":"128.463","P99":"130.835","P999":"134.902"}},
+      {"name":80,"uid":"2590690822","values":{"age":80,"P01":"102.376","P1":"106.466","P3":"108.851","P5":"110.115","P10":"112.06","P15":"113.372","P25":"115.31","P50":"118.921","P75":"122.532","P85":"124.47","P90":"125.782","P95":"127.727","P97":"128.99","P99":"131.376","P999":"135.465"}},
+      {"name":81,"uid":"661306056","values":{"age":81,"P01":"102.76","P1":"106.872","P3":"109.27","P5":"110.54","P10":"112.495","P15":"113.814","P25":"115.762","P50":"119.393","P75":"123.023","P85":"124.971","P90":"126.29","P95":"128.246","P97":"129.515","P99":"131.914","P999":"136.025"}},
+      {"name":82,"uid":"1330435487","values":{"age":82,"P01":"103.144","P1":"107.278","P3":"109.688","P5":"110.965","P10":"112.931","P15":"114.257","P25":"116.215","P50":"119.865","P75":"123.514","P85":"125.473","P90":"126.799","P95":"128.765","P97":"130.041","P99":"132.452","P999":"136.585"}},
+      {"name":83,"uid":"3856719168","values":{"age":83,"P01":"103.529","P1":"107.684","P3":"110.107","P5":"111.391","P10":"113.367","P15":"114.7","P25":"116.669","P50":"120.337","P75":"124.006","P85":"125.975","P90":"127.308","P95":"129.284","P97":"130.568","P99":"132.991","P999":"137.146"}},
+      {"name":84,"uid":"29131266","values":{"age":84,"P01":"103.917","P1":"108.093","P3":"110.529","P5":"111.819","P10":"113.805","P15":"115.145","P25":"117.123","P50":"120.81","P75":"124.498","P85":"126.476","P90":"127.816","P95":"129.802","P97":"131.092","P99":"133.528","P999":"137.704"}},
+      {"name":85,"uid":"3985664247","values":{"age":85,"P01":"104.302","P1":"108.5","P3":"110.949","P5":"112.245","P10":"114.242","P15":"115.589","P25":"117.578","P50":"121.284","P75":"124.991","P85":"126.98","P90":"128.327","P95":"130.323","P97":"131.62","P99":"134.068","P999":"138.266"}},
+      {"name":86,"uid":"3048211084","values":{"age":86,"P01":"104.691","P1":"108.91","P3":"111.371","P5":"112.674","P10":"114.681","P15":"116.035","P25":"118.034","P50":"121.759","P75":"125.484","P85":"127.483","P90":"128.837","P95":"130.843","P97":"132.146","P99":"134.607","P999":"138.826"}},
+      {"name":87,"uid":"110214633","values":{"age":87,"P01":"105.077","P1":"109.318","P3":"111.792","P5":"113.102","P10":"115.119","P15":"116.48","P25":"118.489","P50":"122.234","P75":"125.978","P85":"127.988","P90":"129.349","P95":"131.366","P97":"132.676","P99":"135.149","P999":"139.39"}},
+      {"name":88,"uid":"574047370","values":{"age":88,"P01":"105.467","P1":"109.73","P3":"112.216","P5":"113.532","P10":"115.559","P15":"116.927","P25":"118.946","P50":"122.71","P75":"126.473","P85":"128.493","P90":"129.86","P95":"131.887","P97":"133.204","P99":"135.69","P999":"139.952"}},
+      {"name":89,"uid":"1606933422","values":{"age":89,"P01":"105.862","P1":"110.145","P3":"112.643","P5":"113.965","P10":"116.002","P15":"117.376","P25":"119.405","P50":"123.187","P75":"126.968","P85":"128.997","P90":"130.371","P95":"132.408","P97":"133.731","P99":"136.229","P999":"140.511"}},
+      {"name":90,"uid":"3441949055","values":{"age":90,"P01":"106.254","P1":"110.558","P3":"113.068","P5":"114.397","P10":"116.444","P15":"117.825","P25":"119.864","P50":"123.665","P75":"127.465","P85":"129.504","P90":"130.885","P95":"132.932","P97":"134.261","P99":"136.772","P999":"141.075"}},
+      {"name":91,"uid":"3134682649","values":{"age":91,"P01":"106.646","P1":"110.971","P3":"113.494","P5":"114.83","P10":"116.887","P15":"118.275","P25":"120.324","P50":"124.144","P75":"127.963","P85":"130.012","P90":"131.4","P95":"133.457","P97":"134.793","P99":"137.316","P999":"141.641"}},
+      {"name":92,"uid":"1977243054","values":{"age":92,"P01":"107.043","P1":"111.389","P3":"113.923","P5":"115.266","P10":"117.333","P15":"118.727","P25":"120.786","P50":"124.623","P75":"128.461","P85":"130.52","P90":"131.914","P95":"133.981","P97":"135.323","P99":"137.858","P999":"142.204"}},
+      {"name":93,"uid":"2292899005","values":{"age":93,"P01":"107.441","P1":"111.807","P3":"114.354","P5":"115.702","P10":"117.779","P15":"119.18","P25":"121.249","P50":"125.104","P75":"128.96","P85":"131.029","P90":"132.43","P95":"134.507","P97":"135.855","P99":"138.402","P999":"142.768"}},
+      {"name":94,"uid":"2783376787","values":{"age":94,"P01":"107.839","P1":"112.226","P3":"114.785","P5":"116.14","P10":"118.227","P15":"119.635","P25":"121.713","P50":"125.587","P75":"129.461","P85":"131.539","P90":"132.947","P95":"135.033","P97":"136.388","P99":"138.947","P999":"143.334"}},
+      {"name":95,"uid":"375939122","values":{"age":95,"P01":"108.239","P1":"112.647","P3":"115.218","P5":"116.579","P10":"118.676","P15":"120.09","P25":"122.179","P50":"126.071","P75":"129.963","P85":"132.051","P90":"133.465","P95":"135.562","P97":"136.923","P99":"139.494","P999":"143.902"}},
+      {"name":96,"uid":"2100455971","values":{"age":96,"P01":"108.64","P1":"113.069","P3":"115.652","P5":"117.02","P10":"119.126","P15":"120.547","P25":"122.645","P50":"126.556","P75":"130.466","P85":"132.565","P90":"133.986","P95":"136.092","P97":"137.46","P99":"140.043","P999":"144.471"}},
+      {"name":97,"uid":"2020133764","values":{"age":97,"P01":"109.042","P1":"113.492","P3":"116.087","P5":"117.461","P10":"119.577","P15":"121.005","P25":"123.114","P50":"127.042","P75":"130.971","P85":"133.08","P90":"134.507","P95":"136.623","P97":"137.998","P99":"140.593","P999":"145.043"}},
+      {"name":98,"uid":"701015530","values":{"age":98,"P01":"109.449","P1":"113.919","P3":"116.526","P5":"117.906","P10":"120.032","P15":"121.466","P25":"123.584","P50":"127.53","P75":"131.477","P85":"133.595","P90":"135.029","P95":"137.155","P97":"138.535","P99":"141.142","P999":"145.612"}},
+      {"name":99,"uid":"2653791429","values":{"age":99,"P01":"109.857","P1":"114.347","P3":"116.966","P5":"118.352","P10":"120.488","P15":"121.928","P25":"124.056","P50":"128.02","P75":"131.984","P85":"134.111","P90":"135.552","P95":"137.687","P97":"139.074","P99":"141.693","P999":"146.182"}},
+      {"name":100,"uid":"4253640637","values":{"age":100,"P01":"110.267","P1":"114.777","P3":"117.407","P5":"118.8","P10":"120.945","P15":"122.392","P25":"124.529","P50":"128.511","P75":"132.493","P85":"134.63","P90":"136.077","P95":"138.222","P97":"139.615","P99":"142.245","P999":"146.755"}},
+      {"name":101,"uid":"4210049726","values":{"age":101,"P01":"110.678","P1":"115.208","P3":"117.85","P5":"119.249","P10":"121.404","P15":"122.857","P25":"125.004","P50":"129.004","P75":"133.003","P85":"135.15","P90":"136.603","P95":"138.758","P97":"140.157","P99":"142.799","P999":"147.329"}},
+      {"name":102,"uid":"235972243","values":{"age":102,"P01":"111.089","P1":"115.64","P3":"118.294","P5":"119.699","P10":"121.863","P15":"123.324","P25":"125.48","P50":"129.498","P75":"133.515","P85":"135.671","P90":"137.132","P95":"139.296","P97":"140.701","P99":"143.355","P999":"147.906"}},
+      {"name":103,"uid":"1157942180","values":{"age":103,"P01":"111.507","P1":"116.076","P3":"118.742","P5":"120.153","P10":"122.327","P15":"123.793","P25":"125.958","P50":"129.993","P75":"134.028","P85":"136.193","P90":"137.66","P95":"139.833","P97":"141.245","P99":"143.91","P999":"148.48"}},
+      {"name":104,"uid":"3405265845","values":{"age":104,"P01":"111.925","P1":"116.514","P3":"119.191","P5":"120.608","P10":"122.791","P15":"124.264","P25":"126.438","P50":"130.49","P75":"134.543","P85":"136.717","P90":"138.19","P95":"140.372","P97":"141.79","P99":"144.467","P999":"149.056"}},
+      {"name":105,"uid":"665405026","values":{"age":105,"P01":"112.341","P1":"116.95","P3":"119.639","P5":"121.063","P10":"123.255","P15":"124.735","P25":"126.919","P50":"130.989","P75":"135.059","P85":"137.244","P90":"138.723","P95":"140.915","P97":"142.339","P99":"145.028","P999":"149.638"}},
+      {"name":106,"uid":"896393632","values":{"age":106,"P01":"112.766","P1":"117.394","P3":"120.094","P5":"121.523","P10":"123.725","P15":"125.21","P25":"127.403","P50":"131.49","P75":"135.576","P85":"137.769","P90":"139.254","P95":"141.456","P97":"142.885","P99":"145.585","P999":"150.213"}},
+      {"name":107,"uid":"2008885367","values":{"age":107,"P01":"113.188","P1":"117.836","P3":"120.547","P5":"121.983","P10":"124.193","P15":"125.685","P25":"127.887","P50":"131.991","P75":"136.095","P85":"138.298","P90":"139.789","P95":142,"P97":"143.435","P99":"146.147","P999":"150.795"}},
+      {"name":108,"uid":"3342909536","values":{"age":108,"P01":"113.611","P1":"118.279","P3":"121.002","P5":"122.443","P10":"124.663","P15":"126.161","P25":"128.373","P50":"132.494","P75":"136.616","P85":"138.828","P90":"140.326","P95":"142.546","P97":"143.987","P99":"146.71","P999":"151.378"}},
+      {"name":109,"uid":"4284483256","values":{"age":109,"P01":"114.04","P1":"118.726","P3":"121.46","P5":"122.907","P10":"125.136","P15":"126.64","P25":"128.861","P50":"132.999","P75":"137.137","P85":"139.358","P90":"140.862","P95":"143.09","P97":"144.538","P99":"147.272","P999":"151.958"}},
+      {"name":110,"uid":"961487787","values":{"age":110,"P01":"114.469","P1":"119.175","P3":"121.919","P5":"123.372","P10":"125.61","P15":"127.12","P25":"129.35","P50":"133.505","P75":"137.659","P85":"139.889","P90":"141.399","P95":"143.637","P97":"145.09","P99":"147.835","P999":"152.54"}},
+      {"name":111,"uid":"2375108930","values":{"age":111,"P01":"114.9","P1":"119.624","P3":"122.38","P5":"123.839","P10":"126.086","P15":"127.602","P25":"129.84","P50":"134.012","P75":"138.183","P85":"140.422","P90":"141.938","P95":"144.185","P97":"145.644","P99":"148.399","P999":"153.124"}},
+      {"name":112,"uid":"748591566","values":{"age":112,"P01":"115.332","P1":"120.075","P3":"122.842","P5":"124.307","P10":"126.562","P15":"128.085","P25":"130.332","P50":"134.52","P75":"138.708","P85":"140.956","P90":"142.478","P95":"144.734","P97":"146.199","P99":"148.966","P999":"153.709"}},
+      {"name":113,"uid":"441365422","values":{"age":113,"P01":"115.769","P1":"120.53","P3":"123.307","P5":"124.778","P10":"127.042","P15":"128.57","P25":"130.826","P50":"135.03","P75":"139.234","P85":"141.49","P90":"143.018","P95":"145.282","P97":"146.753","P99":"149.53","P999":"154.291"}},
+      {"name":114,"uid":"2224665166","values":{"age":114,"P01":"116.203","P1":"120.983","P3":"123.771","P5":"125.248","P10":"127.521","P15":"129.055","P25":"131.32","P50":"135.541","P75":"139.762","P85":"142.027","P90":"143.561","P95":"145.834","P97":"147.311","P99":"150.099","P999":"154.879"}},
+      {"name":115,"uid":"3065071094","values":{"age":115,"P01":"116.642","P1":"121.44","P3":"124.239","P5":"125.721","P10":"128.003","P15":"129.543","P25":"131.816","P50":"136.053","P75":"140.29","P85":"142.564","P90":"144.103","P95":"146.386","P97":"147.868","P99":"150.666","P999":"155.465"}},
+      {"name":116,"uid":"1949369109","values":{"age":116,"P01":"117.086","P1":"121.902","P3":"124.711","P5":"126.198","P10":"128.488","P15":"130.033","P25":"132.315","P50":"136.567","P75":"140.819","P85":"143.101","P90":"144.646","P95":"146.936","P97":"148.423","P99":"151.232","P999":"156.048"}},
+      {"name":117,"uid":"4271350892","values":{"age":117,"P01":"117.528","P1":"122.362","P3":"125.181","P5":"126.674","P10":"128.973","P15":"130.524","P25":"132.814","P50":"137.082","P75":"141.35","P85":"143.64","P90":"145.191","P95":"147.49","P97":"148.983","P99":"151.803","P999":"156.636"}},
+      {"name":118,"uid":"579455541","values":{"age":118,"P01":"117.971","P1":"122.823","P3":"125.653","P5":"127.151","P10":"129.459","P15":"131.016","P25":"133.315","P50":"137.599","P75":"141.883","P85":"144.182","P90":"145.739","P95":"148.046","P97":"149.545","P99":"152.375","P999":"157.226"}},
+      {"name":119,"uid":"3714037045","values":{"age":119,"P01":"118.419","P1":"123.288","P3":"126.128","P5":"127.632","P10":"129.948","P15":"131.51","P25":"133.817","P50":"138.117","P75":"142.416","P85":"144.723","P90":"146.285","P95":"148.601","P97":"150.105","P99":"152.945","P999":"157.814"}},
+      {"name":120,"uid":"3680569762","values":{"age":120,"P01":"118.869","P1":"123.755","P3":"126.605","P5":"128.115","P10":"130.439","P15":"132.007","P25":"134.322","P50":"138.636","P75":"142.951","P85":"145.266","P90":"146.834","P95":"149.158","P97":"150.667","P99":"153.517","P999":"158.404"}},
+      {"name":121,"uid":"1259939703","values":{"age":121,"P01":"119.325","P1":"124.227","P3":"127.087","P5":"128.601","P10":"130.933","P15":"132.506","P25":"134.829","P50":"139.158","P75":"143.486","P85":"145.809","P90":"147.382","P95":"149.714","P97":"151.228","P99":"154.088","P999":"158.99"}},
+      {"name":122,"uid":"4249505179","values":{"age":122,"P01":"119.777","P1":"124.697","P3":"127.567","P5":"129.086","P10":"131.426","P15":"133.005","P25":"135.336","P50":"139.68","P75":"144.024","P85":"146.356","P90":"147.934","P95":"150.274","P97":"151.794","P99":"154.664","P999":"159.583"}},
+      {"name":123,"uid":"2825003937","values":{"age":123,"P01":"120.236","P1":"125.172","P3":"128.051","P5":"129.576","P10":"131.923","P15":"133.507","P25":"135.846","P50":"140.205","P75":"144.563","P85":"146.902","P90":"148.486","P95":"150.834","P97":"152.359","P99":"155.238","P999":"160.174"}},
+      {"name":124,"uid":"1101631835","values":{"age":124,"P01":"120.696","P1":"125.648","P3":"128.537","P5":"130.067","P10":"132.422","P15":"134.012","P25":"136.358","P50":"140.731","P75":"145.104","P85":"147.451","P90":"149.04","P95":"151.396","P97":"152.925","P99":"155.814","P999":"160.767"}},
+      {"name":125,"uid":"1651618125","values":{"age":125,"P01":"121.157","P1":"126.127","P3":"129.025","P5":"130.56","P10":"132.923","P15":"134.517","P25":"136.872","P50":"141.259","P75":"145.647","P85":"148.001","P90":"149.596","P95":"151.959","P97":"153.494","P99":"156.392","P999":"161.361"}},
+      {"name":126,"uid":"1269441904","values":{"age":126,"P01":"121.621","P1":"126.606","P3":"129.514","P5":"131.054","P10":"133.425","P15":"135.025","P25":"137.387","P50":"141.789","P75":"146.191","P85":"148.554","P90":"150.153","P95":"152.524","P97":"154.064","P99":"156.972","P999":"161.958"}},
+      {"name":127,"uid":"1382264475","values":{"age":127,"P01":"122.09","P1":"127.091","P3":"130.008","P5":"131.552","P10":"133.931","P15":"135.535","P25":"137.905","P50":"142.321","P75":"146.736","P85":"149.106","P90":"150.711","P95":"153.089","P97":"154.634","P99":"157.551","P999":"162.552"}},
+      {"name":128,"uid":"2565375047","values":{"age":128,"P01":"122.56","P1":"127.576","P3":"130.502","P5":"132.052","P10":"134.437","P15":"136.047","P25":"138.424","P50":"142.853","P75":"147.283","P85":"149.66","P90":"151.269","P95":"153.655","P97":"155.205","P99":"158.13","P999":"163.147"}},
+      {"name":129,"uid":"4113192923","values":{"age":129,"P01":"123.031","P1":"128.063","P3":"130.998","P5":"132.552","P10":"134.946","P15":"136.56","P25":"138.944","P50":"143.387","P75":"147.83","P85":"150.215","P90":"151.829","P95":"154.222","P97":"155.777","P99":"158.712","P999":"163.743"}},
+      {"name":130,"uid":"732554308","values":{"age":130,"P01":"123.504","P1":"128.551","P3":"131.495","P5":"133.054","P10":"135.454","P15":"137.074","P25":"139.466","P50":"143.922","P75":"148.379","P85":"150.77","P90":"152.39","P95":"154.791","P97":"156.349","P99":"159.293","P999":"164.341"}},
+      {"name":131,"uid":"2188387991","values":{"age":131,"P01":"123.976","P1":"129.039","P3":"131.992","P5":"133.556","P10":"135.964","P15":"137.588","P25":"139.987","P50":"144.458","P75":"148.928","P85":"151.327","P90":"152.951","P95":"155.359","P97":"156.923","P99":"159.876","P999":"164.939"}},
+      {"name":132,"uid":"605831249","values":{"age":132,"P01":"124.454","P1":"129.531","P3":"132.492","P5":"134.06","P10":"136.475","P15":"138.104","P25":"140.51","P50":"144.993","P75":"149.476","P85":"151.882","P90":"153.511","P95":"155.925","P97":"157.494","P99":"160.455","P999":"165.532"}},
+      {"name":133,"uid":"1162492173","values":{"age":133,"P01":"124.931","P1":"130.022","P3":"132.992","P5":"134.565","P10":"136.986","P15":"138.62","P25":"141.032","P50":"145.528","P75":"150.024","P85":"152.436","P90":"154.07","P95":"156.491","P97":"158.064","P99":"161.034","P999":"166.125"}},
+      {"name":134,"uid":"4172267192","values":{"age":134,"P01":"125.408","P1":"130.513","P3":"133.491","P5":"135.068","P10":"137.497","P15":"139.135","P25":"141.554","P50":"146.062","P75":"150.57","P85":"152.99","P90":"154.628","P95":"157.056","P97":"158.633","P99":"161.611","P999":"166.717"}},
+      {"name":135,"uid":"3402045358","values":{"age":135,"P01":"125.888","P1":"131.007","P3":"133.992","P5":"135.573","P10":"138.008","P15":"139.65","P25":"142.075","P50":"146.595","P75":"151.115","P85":"153.54","P90":"155.183","P95":"157.617","P97":"159.198","P99":"162.184","P999":"167.302"}},
+      {"name":136,"uid":"2294822336","values":{"age":136,"P01":"126.362","P1":"131.495","P3":"134.489","P5":"136.074","P10":"138.515","P15":"140.162","P25":"142.594","P50":"147.126","P75":"151.658","P85":"154.09","P90":"155.737","P95":"158.178","P97":"159.764","P99":"162.758","P999":"167.89"}},
+      {"name":137,"uid":"3593258071","values":{"age":137,"P01":"126.839","P1":"131.984","P3":"134.986","P5":"136.575","P10":"139.022","P15":"140.673","P25":"143.111","P50":"147.655","P75":"152.198","P85":"154.636","P90":"156.287","P95":"158.735","P97":"160.324","P99":"163.325","P999":"168.471"}},
+      {"name":138,"uid":"1175695338","values":{"age":138,"P01":"127.313","P1":"132.472","P3":"135.48","P5":"137.073","P10":"139.527","P15":"141.182","P25":"143.626","P50":"148.18","P75":"152.735","P85":"155.179","P90":"156.834","P95":"159.287","P97":"160.881","P99":"163.889","P999":"169.047"}},
+      {"name":139,"uid":"1747060025","values":{"age":139,"P01":"127.785","P1":"132.955","P3":"135.971","P5":"137.568","P10":"140.028","P15":"141.687","P25":"144.137","P50":"148.702","P75":"153.268","P85":"155.718","P90":"157.377","P95":"159.836","P97":"161.433","P99":"164.449","P999":"169.62"}},
+      {"name":140,"uid":"845391807","values":{"age":140,"P01":"128.257","P1":"133.439","P3":"136.461","P5":"138.062","P10":"140.526","P15":"142.189","P25":"144.644","P50":"149.22","P75":"153.795","P85":"156.25","P90":"157.913","P95":"160.378","P97":"161.978","P99":"165.001","P999":"170.182"}},
+      {"name":141,"uid":"4129363247","values":{"age":141,"P01":"128.721","P1":"133.915","P3":"136.944","P5":"138.548","P10":"141.018","P15":"142.685","P25":"145.146","P50":"149.732","P75":"154.318","P85":"156.779","P90":"158.446","P95":"160.916","P97":"162.52","P99":"165.55","P999":"170.744"}},
+      {"name":142,"uid":"2887641460","values":{"age":142,"P01":"129.184","P1":"134.389","P3":"137.425","P5":"139.032","P10":"141.507","P15":"143.177","P25":"145.643","P50":"150.239","P75":"154.835","P85":"157.301","P90":"158.971","P95":"161.446","P97":"163.053","P99":"166.089","P999":"171.294"}},
+      {"name":143,"uid":"187161073","values":{"age":143,"P01":"129.642","P1":"134.857","P3":"137.899","P5":"139.51","P10":"141.99","P15":"143.664","P25":"146.135","P50":"150.739","P75":"155.344","P85":"157.815","P90":"159.489","P95":"161.969","P97":"163.58","P99":"166.621","P999":"171.836"}},
+      {"name":144,"uid":"2446965742","values":{"age":144,"P01":"130.095","P1":"135.32","P3":"138.368","P5":"139.981","P10":"142.467","P15":"144.143","P25":"146.619","P50":"151.233","P75":"155.846","P85":"158.322","P90":"159.999","P95":"162.484","P97":"164.098","P99":"167.146","P999":"172.371"}},
+      {"name":145,"uid":"1591309892","values":{"age":145,"P01":"130.545","P1":"135.779","P3":"138.832","P5":"140.448","P10":"142.938","P15":"144.617","P25":"147.097","P50":"151.718","P75":"156.34","P85":"158.819","P90":"160.499","P95":"162.988","P97":"164.605","P99":"167.657","P999":"172.891"}},
+      {"name":146,"uid":"43489725","values":{"age":146,"P01":"130.984","P1":"136.227","P3":"139.285","P5":"140.905","P10":"143.399","P15":"145.081","P25":"147.565","P50":"152.195","P75":"156.825","P85":"159.309","P90":"160.992","P95":"163.485","P97":"165.105","P99":"168.163","P999":"173.406"}},
+      {"name":147,"uid":"1327634788","values":{"age":147,"P01":"131.419","P1":"136.671","P3":"139.733","P5":"141.355","P10":"143.853","P15":"145.538","P25":"148.026","P50":"152.663","P75":"157.3","P85":"159.788","P90":"161.473","P95":"163.97","P97":"165.592","P99":"168.655","P999":"173.906"}},
+      {"name":148,"uid":"3198890813","values":{"age":148,"P01":"131.842","P1":"137.102","P3":"140.17","P5":"141.794","P10":"144.296","P15":"145.984","P25":"148.476","P50":"153.121","P75":"157.765","P85":"160.257","P90":"161.945","P95":"164.447","P97":"166.071","P99":"169.139","P999":"174.399"}},
+      {"name":149,"uid":"3744078175","values":{"age":149,"P01":"132.26","P1":"137.527","P3":"140.599","P5":"142.226","P10":"144.731","P15":"146.421","P25":"148.917","P50":"153.568","P75":"158.219","P85":"160.714","P90":"162.404","P95":"164.909","P97":"166.536","P99":"169.608","P999":"174.876"}},
+      {"name":150,"uid":"4148094079","values":{"age":150,"P01":"132.669","P1":"137.943","P3":"141.019","P5":"142.648","P10":"145.156","P15":"146.849","P25":"149.347","P50":"154.004","P75":"158.661","P85":"161.16","P90":"162.852","P95":"165.36","P97":"166.989","P99":"170.065","P999":"175.339"}},
+      {"name":151,"uid":"1221654597","values":{"age":151,"P01":"133.069","P1":"138.349","P3":"141.428","P5":"143.059","P10":"145.571","P15":"147.265","P25":"149.767","P50":"154.429","P75":"159.091","P85":"161.593","P90":"163.287","P95":"165.799","P97":"167.43","P99":"170.509","P999":"175.789"}},
+      {"name":152,"uid":"1940742844","values":{"age":152,"P01":"133.463","P1":"138.748","P3":"141.83","P5":"143.463","P10":"145.976","P15":"147.672","P25":"150.176","P50":"154.842","P75":"159.509","P85":"162.013","P90":"163.709","P95":"166.222","P97":"167.854","P99":"170.937","P999":"176.222"}},
+      {"name":153,"uid":"2228871445","values":{"age":153,"P01":"133.843","P1":"139.133","P3":"142.218","P5":"143.852","P10":"146.368","P15":"148.066","P25":"150.573","P50":"155.244","P75":"159.915","P85":"162.421","P90":"164.119","P95":"166.635","P97":"168.269","P99":"171.355","P999":"176.645"}},
+      {"name":154,"uid":"1931102725","values":{"age":154,"P01":"134.212","P1":"139.507","P3":"142.596","P5":"144.231","P10":"146.749","P15":"148.449","P25":"150.958","P50":"155.633","P75":"160.308","P85":"162.817","P90":"164.517","P95":"167.035","P97":"168.67","P99":"171.759","P999":"177.054"}},
+      {"name":155,"uid":"3891889879","values":{"age":155,"P01":"134.576","P1":"139.874","P3":"142.965","P5":"144.601","P10":"147.121","P15":"148.821","P25":"151.332","P50":"156.01","P75":"160.689","P85":"163.199","P90":"164.899","P95":"167.419","P97":"169.056","P99":"172.146","P999":"177.445"}},
+      {"name":156,"uid":"1077532422","values":{"age":156,"P01":"134.924","P1":"140.227","P3":"143.319","P5":"144.957","P10":"147.479","P15":"149.18","P25":"151.693","P50":"156.375","P75":"161.057","P85":"163.569","P90":"165.271","P95":"167.793","P97":"169.43","P99":"172.523","P999":"177.826"}},
+      {"name":157,"uid":"2759846483","values":{"age":157,"P01":"135.267","P1":"140.571","P3":"143.666","P5":"145.304","P10":"147.827","P15":"149.529","P25":"152.043","P50":"156.727","P75":"161.411","P85":"163.924","P90":"165.627","P95":"168.15","P97":"169.788","P99":"172.882","P999":"178.187"}},
+      {"name":158,"uid":"733135620","values":{"age":158,"P01":"135.599","P1":"140.905","P3":"144.001","P5":"145.64","P10":"148.164","P15":"149.866","P25":"152.381","P50":"157.067","P75":"161.752","P85":"164.267","P90":"165.97","P95":"168.493","P97":"170.133","P99":"173.228","P999":"178.535"}},
+      {"name":159,"uid":"1844233434","values":{"age":159,"P01":"135.92","P1":"141.228","P3":"144.324","P5":"145.964","P10":"148.488","P15":"150.191","P25":"152.707","P50":"157.394","P75":"162.081","P85":"164.596","P90":"166.299","P95":"168.824","P97":"170.463","P99":"173.559","P999":"178.867"}},
+      {"name":160,"uid":"4197343225","values":{"age":160,"P01":"136.226","P1":"141.536","P3":"144.633","P5":"146.274","P10":"148.799","P15":"150.503","P25":"153.019","P50":"157.708","P75":"162.397","P85":"164.913","P90":"166.617","P95":"169.143","P97":"170.783","P99":"173.88","P999":"179.191"}},
+      {"name":161,"uid":"4014774874","values":{"age":161,"P01":"136.526","P1":"141.836","P3":"144.934","P5":"146.574","P10":"149.1","P15":"150.804","P25":"153.321","P50":"158.01","P75":"162.7","P85":"165.216","P90":"166.92","P95":"169.446","P97":"171.086","P99":"174.184","P999":"179.495"}},
+      {"name":162,"uid":"4047542558","values":{"age":162,"P01":"136.815","P1":"142.126","P3":"145.223","P5":"146.864","P10":"149.39","P15":"151.094","P25":"153.61","P50":"158.3","P75":"162.989","P85":"165.506","P90":"167.21","P95":"169.736","P97":"171.376","P99":"174.474","P999":"179.785"}},
+      {"name":163,"uid":"106257909","values":{"age":163,"P01":"137.094","P1":"142.404","P3":"145.502","P5":"147.142","P10":"149.668","P15":"151.372","P25":"153.888","P50":"158.577","P75":"163.266","P85":"165.782","P90":"167.486","P95":"170.012","P97":"171.652","P99":"174.75","P999":"180.06"}},
+      {"name":164,"uid":"2523502217","values":{"age":164,"P01":"137.362","P1":"142.672","P3":"145.769","P5":"147.409","P10":"149.935","P15":"151.638","P25":"154.154","P50":"158.842","P75":"163.531","P85":"166.047","P90":"167.75","P95":"170.276","P97":"171.916","P99":"175.013","P999":"180.323"}},
+      {"name":165,"uid":"1964351237","values":{"age":165,"P01":"137.616","P1":"142.926","P3":"146.023","P5":"147.663","P10":"150.188","P15":"151.892","P25":"154.408","P50":"159.096","P75":"163.784","P85":"166.3","P90":"168.004","P95":"170.529","P97":"172.169","P99":"175.266","P999":"180.576"}},
+      {"name":166,"uid":"270629889","values":{"age":166,"P01":"137.865","P1":"143.173","P3":"146.269","P5":"147.909","P10":"150.433","P15":"152.136","P25":"154.651","P50":"159.338","P75":"164.025","P85":"166.54","P90":"168.243","P95":"170.768","P97":"172.407","P99":"175.503","P999":"180.811"}},
+      {"name":167,"uid":"780913863","values":{"age":167,"P01":"138.104","P1":"143.41","P3":"146.505","P5":"148.144","P10":"150.667","P15":"152.37","P25":"154.884","P50":"159.569","P75":"164.254","P85":"166.768","P90":"168.471","P95":"170.994","P97":"172.633","P99":"175.728","P999":"181.034"}},
+      {"name":168,"uid":"1382052324","values":{"age":168,"P01":"138.334","P1":"143.638","P3":"146.731","P5":"148.369","P10":"150.891","P15":"152.593","P25":"155.106","P50":"159.789","P75":"164.472","P85":"166.985","P90":"168.687","P95":"171.209","P97":"172.847","P99":"175.94","P999":"181.244"}},
+      {"name":169,"uid":"4233914812","values":{"age":169,"P01":"138.555","P1":"143.855","P3":"146.947","P5":"148.584","P10":"151.105","P15":"152.806","P25":"155.318","P50":"159.998","P75":"164.679","P85":"167.19","P90":"168.891","P95":"171.412","P97":"173.049","P99":"176.141","P999":"181.442"}},
+      {"name":170,"uid":"1955243579","values":{"age":170,"P01":"138.762","P1":"144.06","P3":"147.151","P5":"148.788","P10":"151.308","P15":"153.008","P25":"155.518","P50":"160.197","P75":"164.876","P85":"167.386","P90":"169.087","P95":"171.607","P97":"173.243","P99":"176.334","P999":"181.633"}},
+      {"name":171,"uid":"3975149856","values":{"age":171,"P01":"138.965","P1":"144.26","P3":"147.348","P5":"148.984","P10":"151.502","P15":"153.201","P25":"155.71","P50":"160.386","P75":"165.061","P85":"167.57","P90":"169.269","P95":"171.788","P97":"173.423","P99":"176.512","P999":"181.807"}},
+      {"name":172,"uid":"4211715664","values":{"age":172,"P01":"139.159","P1":"144.45","P3":"147.537","P5":"149.171","P10":"151.687","P15":"153.385","P25":"155.892","P50":"160.564","P75":"165.236","P85":"167.743","P90":"169.441","P95":"171.958","P97":"173.592","P99":"176.678","P999":"181.97"}},
+      {"name":173,"uid":"2454048041","values":{"age":173,"P01":"139.34","P1":"144.628","P3":"147.713","P5":"149.346","P10":"151.861","P15":"153.558","P25":"156.064","P50":"160.733","P75":"165.403","P85":"167.908","P90":"169.605","P95":"172.12","P97":"173.754","P99":"176.838","P999":"182.126"}},
+      {"name":174,"uid":"352251968","values":{"age":174,"P01":"139.518","P1":"144.802","P3":"147.884","P5":"149.516","P10":"152.028","P15":"153.724","P25":"156.227","P50":"160.893","P75":"165.558","P85":"168.061","P90":"169.757","P95":"172.27","P97":"173.902","P99":"176.984","P999":"182.267"}},
+      {"name":175,"uid":"391855851","values":{"age":175,"P01":"139.683","P1":"144.963","P3":"148.043","P5":"149.674","P10":"152.185","P15":"153.879","P25":"156.381","P50":"161.043","P75":"165.705","P85":"168.207","P90":"169.901","P95":"172.412","P97":"174.043","P99":"177.123","P999":"182.403"}},
+      {"name":176,"uid":"1082844531","values":{"age":176,"P01":"139.846","P1":"145.121","P3":"148.197","P5":"149.827","P10":"152.335","P15":"154.028","P25":"156.527","P50":"161.184","P75":"165.842","P85":"168.341","P90":"170.034","P95":"172.542","P97":"174.172","P99":"177.248","P999":"182.523"}},
+      {"name":177,"uid":"358547978","values":{"age":177,"P01":"139.996","P1":"145.267","P3":"148.341","P5":"149.969","P10":"152.475","P15":"154.167","P25":"156.664","P50":"161.318","P75":"165.971","P85":"168.469","P90":"170.16","P95":"172.666","P97":"174.294","P99":"177.368","P999":"182.639"}},
+      {"name":178,"uid":"1714672419","values":{"age":178,"P01":"140.14","P1":"145.406","P3":"148.477","P5":"150.104","P10":"152.608","P15":"154.298","P25":"156.793","P50":"161.442","P75":"166.092","P85":"168.587","P90":"170.277","P95":"172.781","P97":"174.408","P99":"177.479","P999":"182.745"}},
+      {"name":179,"uid":"1830292910","values":{"age":179,"P01":"140.276","P1":"145.537","P3":"148.606","P5":"150.231","P10":"152.733","P15":"154.421","P25":"156.914","P50":"161.56","P75":"166.205","P85":"168.698","P90":"170.386","P95":"172.888","P97":"174.513","P99":"177.582","P999":"182.843"}},
+      {"name":180,"uid":"3200121327","values":{"age":180,"P01":"140.411","P1":"145.666","P3":"148.731","P5":"150.354","P10":"152.853","P15":"154.54","P25":"157.029","P50":"161.669","P75":"166.309","P85":"168.799","P90":"170.485","P95":"172.984","P97":"174.607","P99":"177.672","P999":"182.927"}},
+      {"name":181,"uid":"2807941529","values":{"age":181,"P01":"140.535","P1":"145.785","P3":"148.847","P5":"150.468","P10":"152.965","P15":"154.649","P25":"157.137","P50":"161.772","P75":"166.407","P85":"168.894","P90":"170.579","P95":"173.075","P97":"174.697","P99":"177.759","P999":"183.008"}},
+      {"name":182,"uid":"2203905691","values":{"age":182,"P01":"140.653","P1":"145.897","P3":"148.956","P5":"150.576","P10":"153.07","P15":"154.752","P25":"157.237","P50":"161.867","P75":"166.498","P85":"168.982","P90":"170.665","P95":"173.159","P97":"174.779","P99":"177.837","P999":"183.081"}},
+      {"name":183,"uid":"1873072924","values":{"age":183,"P01":"140.761","P1":146,"P3":"149.056","P5":"150.675","P10":"153.166","P15":"154.848","P25":"157.33","P50":"161.956","P75":"166.583","P85":"169.065","P90":"170.746","P95":"173.238","P97":"174.856","P99":"177.912","P999":"183.152"}},
+      {"name":184,"uid":"256042732","values":{"age":184,"P01":"140.868","P1":"146.101","P3":"149.154","P5":"150.77","P10":"153.259","P15":"154.939","P25":"157.418","P50":"162.039","P75":"166.66","P85":"169.14","P90":"169.819","P95":"173.308","P97":"174.925","P99":"177.977","P999":"183.211"}},
+      {"name":185,"uid":"2572440135","values":{"age":185,"P01":"140.97","P1":"146.197","P3":"149.246","P5":"150.861","P10":"153.347","P15":"155.024","P25":"157.501","P50":"162.116","P75":"166.732","P85":"169.209","P90":"170.886","P95":"173.372","P97":"174.987","P99":"178.035","P999":"183.263"}},
+      {"name":186,"uid":"95867344","values":{"age":186,"P01":"141.067","P1":"146.288","P3":"149.334","P5":"150.946","P10":"153.429","P15":"155.104","P25":"157.578","P50":"162.188","P75":"166.798","P85":"169.272","P90":"170.947","P95":"173.43","P97":"175.042","P99":"178.088","P999":"183.309"}},
+      {"name":187,"uid":"1653293342","values":{"age":187,"P01":"141.155","P1":"146.371","P3":"149.413","P5":"151.024","P10":"153.504","P15":"155.178","P25":"157.649","P50":"162.254","P75":"166.859","P85":"169.331","P90":"171.004","P95":"173.485","P97":"175.096","P99":"178.138","P999":"183.353"}},
+      {"name":188,"uid":"2888966573","values":{"age":188,"P01":"141.244","P1":"146.452","P3":"149.491","P5":"151.099","P10":"153.577","P15":"155.248","P25":"157.716","P50":"162.315","P75":"166.915","P85":"169.383","P90":"171.054","P95":"173.531","P97":"175.14","P99":"178.178","P999":"183.387"}},
+      {"name":189,"uid":"2356285949","values":{"age":189,"P01":"141.323","P1":"146.526","P3":"149.561","P5":"151.168","P10":"153.643","P15":"155.312","P25":"157.778","P50":"162.372","P75":"166.966","P85":"169.432","P90":"171.101","P95":"173.576","P97":"175.183","P99":"178.218","P999":"183.421"}},
+      {"name":190,"uid":"3029970325","values":{"age":190,"P01":"141.398","P1":"146.596","P3":"149.627","P5":"151.232","P10":"153.704","P15":"155.372","P25":"157.835","P50":"162.424","P75":"167.013","P85":"169.476","P90":"171.143","P95":"173.615","P97":"175.221","P99":"178.252","P999":"183.45"}},
+      {"name":191,"uid":"2363310069","values":{"age":191,"P01":"141.475","P1":"146.665","P3":"149.693","P5":"151.296","P10":"153.764","P15":"155.43","P25":"157.889","P50":"162.472","P75":"167.055","P85":"169.514","P90":"171.179","P95":"173.648","P97":"175.251","P99":"178.278","P999":"183.468"}},
+      {"name":192,"uid":"2075253118","values":{"age":192,"P01":"141.543","P1":"146.727","P3":"149.751","P5":"151.353","P10":"153.818","P15":"155.482","P25":"157.938","P50":"162.516","P75":"167.093","P85":"169.55","P90":"171.213","P95":"173.679","P97":"175.28","P99":"178.304","P999":"183.488"}},
+      {"name":193,"uid":"905466505","values":{"age":193,"P01":"141.609","P1":"146.787","P3":"149.807","P5":"151.406","P10":"153.869","P15":"155.53","P25":"157.984","P50":"162.556","P75":"167.128","P85":"169.582","P90":"171.243","P95":"173.706","P97":"175.305","P99":"178.325","P999":"183.503"}},
+      {"name":194,"uid":"499760512","values":{"age":194,"P01":"141.671","P1":"146.843","P3":"149.86","P5":"151.457","P10":"153.917","P15":"155.576","P25":"158.027","P50":"162.593","P75":"167.16","P85":"169.61","P90":"171.27","P95":"173.73","P97":"175.327","P99":"178.344","P999":"183.515"}},
+      {"name":195,"uid":"2112949532","values":{"age":195,"P01":"141.731","P1":"146.897","P3":"149.91","P5":"151.505","P10":"153.962","P15":"155.619","P25":"158.067","P50":"162.628","P75":"167.189","P85":"169.636","P90":"171.294","P95":"173.75","P97":"175.346","P99":"178.358","P999":"183.524"}},
+      {"name":196,"uid":"1934508512","values":{"age":196,"P01":"141.789","P1":"146.948","P3":"149.957","P5":"151.551","P10":"154.004","P15":"155.66","P25":"158.104","P50":"162.659","P75":"167.215","P85":"169.659","P90":"171.315","P95":"173.768","P97":"175.362","P99":"178.371","P999":"183.53"}},
+      {"name":197,"uid":"2863660879","values":{"age":197,"P01":"141.84","P1":"146.994","P3":150,"P5":"151.592","P10":"154.043","P15":"155.696","P25":"158.138","P50":"162.689","P75":"167.24","P85":"169.682","P90":"171.335","P95":"173.786","P97":"175.378","P99":"178.384","P999":"183.538"}},
+      {"name":198,"uid":"3633744753","values":{"age":198,"P01":"141.894","P1":"147.041","P3":"150.044","P5":"151.633","P10":"154.081","P15":"155.733","P25":"158.172","P50":"162.716","P75":"167.261","P85":"169.7","P90":"171.352","P95":"173.8","P97":"175.389","P99":"178.392","P999":"183.539"}},
+      {"name":199,"uid":"1427476772","values":{"age":199,"P01":"141.942","P1":"147.084","P3":"150.083","P5":"151.671","P10":"154.116","P15":"155.766","P25":"158.202","P50":"162.742","P75":"167.283","P85":"169.719","P90":"171.369","P95":"173.814","P97":"175.402","P99":"178.401","P999":"183.543"}},
+      {"name":200,"uid":"3434279385","values":{"age":200,"P01":"141.994","P1":"147.129","P3":"150.124","P5":"151.71","P10":"154.152","P15":"155.8","P25":"158.233","P50":"162.767","P75":"167.301","P85":"169.734","P90":"171.382","P95":"173.824","P97":"175.41","P99":"178.405","P999":"183.54"}},
+      {"name":201,"uid":"717939969","values":{"age":201,"P01":"142.039","P1":"147.169","P3":"150.161","P5":"151.745","P10":"154.185","P15":"155.831","P25":"158.261","P50":"162.79","P75":"167.32","P85":"169.75","P90":"171.396","P95":"173.836","P97":"175.42","P99":"178.412","P999":"183.542"}},
+      {"name":202,"uid":"874345614","values":{"age":202,"P01":"142.089","P1":"147.212","P3":"150.2","P5":"151.782","P10":"154.218","P15":"155.862","P25":"158.289","P50":"162.813","P75":"167.336","P85":"169.763","P90":"171.407","P95":"173.843","P97":"175.426","P99":"178.414","P999":"183.536"}},
+      {"name":203,"uid":"1734021569","values":{"age":203,"P01":"142.133","P1":"147.25","P3":"150.235","P5":"151.815","P10":"154.249","P15":"155.891","P25":"158.316","P50":"162.834","P75":"167.352","P85":"169.777","P90":"171.419","P95":"173.853","P97":"175.433","P99":"178.418","P999":"183.535"}},
+      {"name":204,"uid":"1299629719","values":{"age":204,"P01":"142.176","P1":"147.287","P3":"150.269","P5":"151.848","P10":"154.279","P15":"155.919","P25":"158.341","P50":"162.854","P75":"167.368","P85":"169.79","P90":"171.43","P95":"173.861","P97":"175.44","P99":"178.422","P999":"183.533"}},
+      {"name":205,"uid":"3332136068","values":{"age":205,"P01":"142.218","P1":"147.324","P3":"150.302","P5":"151.88","P10":"154.308","P15":"155.946","P25":"158.366","P50":"162.874","P75":"167.383","P85":"169.802","P90":"171.441","P95":"173.869","P97":"175.446","P99":"178.424","P999":"183.531"}},
+      {"name":206,"uid":"1473239117","values":{"age":206,"P01":"142.26","P1":"147.36","P3":"150.335","P5":"151.911","P10":"154.337","P15":"155.973","P25":"158.39","P50":"162.894","P75":"167.397","P85":"169.814","P90":"171.45","P95":"173.876","P97":"175.452","P99":"178.427","P999":"183.527"}},
+      {"name":207,"uid":"1706489484","values":{"age":207,"P01":"142.301","P1":"147.396","P3":"150.368","P5":"151.941","P10":"154.365","P15":"155.999","P25":"158.413","P50":"162.912","P75":"167.411","P85":"169.825","P90":"171.459","P95":"173.883","P97":"175.456","P99":"178.428","P999":"183.523"}},
+      {"name":208,"uid":"1102095774","values":{"age":208,"P01":"142.342","P1":"147.431","P3":"150.4","P5":"151.972","P10":"154.392","P15":"156.025","P25":"158.436","P50":"162.93","P75":"167.424","P85":"169.835","P90":"171.468","P95":"173.888","P97":"175.46","P99":"178.429","P999":"183.518"}},
+      {"name":209,"uid":"3995344323","values":{"age":209,"P01":"142.383","P1":"147.466","P3":"150.431","P5":"152.001","P10":"154.419","P15":"156.05","P25":"158.459","P50":"162.948","P75":"167.436","P85":"169.845","P90":"171.476","P95":"173.894","P97":"175.464","P99":"178.429","P999":"183.512"}},
+      {"name":210,"uid":"2458929740","values":{"age":210,"P01":"142.418","P1":"147.497","P3":"150.46","P5":"152.028","P10":"154.444","P15":"156.074","P25":"158.48","P50":"162.965","P75":"167.45","P85":"169.856","P90":"171.486","P95":"173.901","P97":"175.47","P99":"178.433","P999":"183.512"}},
+      {"name":211,"uid":"3242933941","values":{"age":211,"P01":"142.458","P1":"147.531","P3":"150.49","P5":"152.057","P10":"154.47","P15":"156.098","P25":"158.502","P50":"162.982","P75":"167.461","P85":"169.865","P90":"171.493","P95":"173.906","P97":"175.473","P99":"178.432","P999":"183.505"}},
+      {"name":212,"uid":"738616686","values":{"age":212,"P01":"142.493","P1":"147.561","P3":"150.518","P5":"152.084","P10":"154.494","P15":"156.121","P25":"158.523","P50":"162.998","P75":"167.474","P85":"169.876","P90":"171.502","P95":"173.913","P97":"175.479","P99":"178.435","P999":"183.504"}},
+      {"name":213,"uid":"2363032163","values":{"age":213,"P01":"142.532","P1":"147.595","P3":"150.548","P5":"152.112","P10":"154.52","P15":"156.145","P25":"158.544","P50":"163.014","P75":"167.485","P85":"169.884","P90":"171.509","P95":"173.917","P97":"175.481","P99":"178.434","P999":"183.497"}},
+      {"name":214,"uid":"2678594119","values":{"age":214,"P01":"142.566","P1":"147.624","P3":"150.575","P5":"152.137","P10":"154.543","P15":"156.166","P25":"158.563","P50":"163.03","P75":"167.497","P85":"169.894","P90":"171.517","P95":"173.923","P97":"175.485","P99":"178.436","P999":"183.494"}},
+      {"name":215,"uid":"1263598448","values":{"age":215,"P01":"142.599","P1":"147.653","P3":"150.601","P5":"152.162","P10":"154.566","P15":"156.188","P25":"158.582","P50":"163.045","P75":"167.508","P85":"169.903","P90":"171.524","P95":"173.928","P97":"175.489","P99":"178.437","P999":"183.491"}},
+      {"name":216,"uid":"1791049428","values":{"age":216,"P01":"142.637","P1":"147.685","P3":"150.63","P5":"152.189","P10":"154.59","P15":"156.21","P25":"158.602","P50":"163.06","P75":"167.517","P85":"169.909","P90":"171.529","P95":"173.93","P97":"175.489","P99":"178.434","P999":"183.482"}},
+      {"name":217,"uid":"650079837","values":{"age":217,"P01":"142.669","P1":"147.713","P3":"150.655","P5":"152.213","P10":"154.611","P15":"156.23","P25":"158.62","P50":"163.073","P75":"167.527","P85":"169.917","P90":"171.535","P95":"173.934","P97":"175.492","P99":"178.434","P999":"183.478"}},
+      {"name":218,"uid":"1346409268","values":{"age":218,"P01":"142.7","P1":"147.74","P3":"150.679","P5":"152.235","P10":"154.632","P15":"156.249","P25":"158.637","P50":"163.086","P75":"167.536","P85":"169.923","P90":"171.54","P95":"173.937","P97":"175.493","P99":"178.433","P999":"183.472"}},
+      {"name":219,"uid":"320096602","values":{"age":219,"P01":"142.731","P1":"147.766","P3":"150.702","P5":"152.257","P10":"154.652","P15":"156.267","P25":"158.653","P50":"163.098","P75":"167.544","P85":"169.929","P90":"171.545","P95":"173.939","P97":"175.494","P99":"178.431","P999":"183.465"}},
+      {"name":220,"uid":"2947940617","values":{"age":220,"P01":"142.761","P1":"147.791","P3":"150.725","P5":"152.278","P10":"154.671","P15":"156.285","P25":"158.668","P50":"163.109","P75":"167.551","P85":"169.934","P90":"171.548","P95":"173.94","P97":"175.494","P99":"178.428","P999":"183.458"}},
+      {"name":221,"uid":"4027603167","values":{"age":221,"P01":"142.785","P1":"147.811","P3":"150.743","P5":"152.296","P10":"154.686","P15":"156.299","P25":"158.681","P50":"163.119","P75":"167.557","P85":"169.939","P90":"171.552","P95":"173.943","P97":"175.495","P99":"178.427","P999":"183.454"}},
+      {"name":222,"uid":"1892824652","values":{"age":222,"P01":"142.813","P1":"147.834","P3":"150.763","P5":"152.315","P10":"154.703","P15":"156.314","P25":"158.694","P50":"163.128","P75":"167.562","P85":"169.941","P90":"171.553","P95":"173.941","P97":"175.492","P99":"178.421","P999":"183.443"}},
+      {"name":223,"uid":"3571097475","values":{"age":223,"P01":"142.839","P1":"147.856","P3":"150.783","P5":"152.332","P10":"154.718","P15":"156.328","P25":"158.706","P50":"163.136","P75":"167.565","P85":"169.943","P90":"171.553","P95":"173.939","P97":"175.488","P99":"178.415","P999":"183.432"}},
+      {"name":224,"uid":"2469886881","values":{"age":224,"P01":"142.86","P1":"147.874","P3":"150.798","P5":"152.346","P10":"154.731","P15":"156.339","P25":"158.715","P50":"163.142","P75":"167.569","P85":"169.944","P90":"171.553","P95":"173.937","P97":"175.486","P99":"178.41","P999":"183.424"}},
+      {"name":225,"uid":"4133763121","values":{"age":225,"P01":"142.885","P1":"147.893","P3":"150.815","P5":"152.362","P10":"154.744","P15":"156.351","P25":"158.724","P50":"163.147","P75":"167.569","P85":"169.943","P90":"171.55","P95":"173.932","P97":"175.479","P99":"178.4","P999":"183.409"}},
+      {"name":226,"uid":"1051777605","values":{"age":226,"P01":"142.903","P1":"147.908","P3":"150.828","P5":"152.373","P10":"154.754","P15":"156.36","P25":"158.731","P50":"163.151","P75":"167.57","P85":"169.942","P90":"171.548","P95":"173.928","P97":"175.474","P99":"178.393","P999":"183.398"}},
+      {"name":227,"uid":"2180644588","values":{"age":227,"P01":"142.926","P1":"147.926","P3":"150.842","P5":"152.387","P10":"154.765","P15":"156.369","P25":"158.738","P50":"163.153","P75":"167.568","P85":"169.938","P90":"171.542","P95":"173.92","P97":"175.465","P99":"178.381","P999":"183.381"}},
+      {"name":228,"uid":"38776938","values":{"age":228,"P01":"142.942","P1":"147.938","P3":"150.853","P5":"152.396","P10":"154.772","P15":"156.376","P25":"158.743","P50":"163.155","P75":"167.567","P85":"169.934","P90":"171.537","P95":"173.914","P97":"175.457","P99":"178.371","P999":"183.368"}}
+  ];
+
+      let convertHight;
+      const unitH1 = unit_ft_in;
+
+      if (unitH1 == "ft/in") {
+          if (isNumeric(height_ft) || isNumeric(height_in)) {
+              convertHight = ((parseFloat(height_ft) * 12) + parseFloat(height_in));
+          } else {
+              return { error: 'Please! Check your input.' };
+          }
+      } else if (unitH1 == "cm") {
+          if (isNumeric(height_cm)) {
+              convertHight = (parseFloat(height_cm) / 2.54);
+          } else {
+              return { error: 'Please! Check your input.' };
+          }
+      } else if (unitH1 == "ft") {
+          if (isNumeric(height_cm)) {
+              convertHight = (parseFloat(height_cm) * 12);
+          } else {
+              return { error: 'Please! Check your input.' };
+          }
+      } else if (unitH1 == "in") {
+          if (isNumeric(height_cm)) {
+              convertHight = (parseFloat(height_cm) * 1);
+          } else {
+              return { error: 'Please! Check your input.' };
+          }
+      } else if (unitH1 === "m") {
+          if (isNumeric(height_cm)) {
+              convertHight = (parseFloat(height_cm) * 39.37);
+          } else {
+              return { error: 'Please! Check your input.' };
+          }
+      }
+
+      const calculatedAge = umar(ageUnit.toString(), parseFloat(age));
+
+      if (isNumeric(calculatedAge)) {
+          if (calculatedAge > 0 && calculatedAge <= 19) {
+            const ageInMonths = calculatedAge * 12;
+            let takeRow;
+            if (gender == 0) { // Girls
+              if (ageInMonths <= 13 * 0.23) {
+                      for (let i = 0; i < girls_to_13w.length; i++) {
+                          if ((ageInMonths <= 0.23 * girls_to_13w[i].values.age) && (i === 0 || ageInMonths > 0.23 * girls_to_13w[i - 1].values.age)) {
+                              takeRow = girls_to_13w[i].values;
+                              break;
+                          }
+                      }
+                  } else {
+                      for (let i = 0; i < girls_to_5y.length; i++) {
+                          if ((ageInMonths <= girls_to_5y[i].values.age) && (i === 0 || ageInMonths > girls_to_5y[i - 1].values.age)) {
+                              takeRow = girls_to_5y[i].values;
+                              break;
+                          }
+                      }
+                  }
+              } else if (gender == 1) { // Boys
+                  if (ageInMonths <= 13 * 0.23) {
+                      for (let i = 0; i < boys_to_13w.length; i++) {
+                          if ((ageInMonths <= 0.23 * boys_to_13w[i].values.age) && (i === 0 || ageInMonths > 0.23 * boys_to_13w[i - 1].values.age)) {
+                              takeRow = boys_to_13w[i].values;
+                              break;
+                          }
+                      }
+                  } else {
+                      for (let i = 0; i < boys_to_5y.length; i++) {
+                          if ((ageInMonths <= boys_to_5y[i].values.age) && (i === 0 || ageInMonths > boys_to_5y[i - 1].values.age)) {
+                              takeRow = boys_to_5y[i].values;
+                              break;
+                          }
+                      }
+                  }
+
+              }
+
+              const actualCm = convertHight * 2.54;
+              const weight = convertHight * 2.54;
+              let result;
+              let firstAns;
+              let percentile;
+              let line;
+              let image;
+              if (weight <= parseFloat(takeRow.P01)) {
+                  result = 0.1;
+              } else if (weight <= parseFloat(takeRow.P1)) {
+                  result = ((weight - parseFloat(takeRow.P01)) / (parseFloat(takeRow.P1) - parseFloat(takeRow.P01)) * (1 - 0.1) + 0.1);
+              } else if (weight <= parseFloat(takeRow.P3)) {
+                  result = ((weight - parseFloat(takeRow.P1)) / (parseFloat(takeRow.P3) - parseFloat(takeRow.P1)) * (3 - 1) + 1);
+              } else if (weight <= parseFloat(takeRow.P5)) {
+                  result = ((weight - parseFloat(takeRow.P3)) / (parseFloat(takeRow.P5) - parseFloat(takeRow.P3)) * 2 + 3);
+              } else if (weight <= parseFloat(takeRow.P10)) {
+                  result = ((weight - parseFloat(takeRow.P5)) / (parseFloat(takeRow.P10) - parseFloat(takeRow.P5)) * 5 + 5);
+              } else if (weight <= parseFloat(takeRow.P15)) {
+                  result = ((weight - parseFloat(takeRow.P10)) / (parseFloat(takeRow.P15) - parseFloat(takeRow.P10)) * 5 + 10);
+              } else if (weight <= parseFloat(takeRow.P25)) {
+                  result = ((weight - parseFloat(takeRow.P15)) / (parseFloat(takeRow.P25) - parseFloat(takeRow.P15)) * 10 + 10);
+              } else if (weight <= parseFloat(takeRow.P50)) {
+                  result = ((weight - parseFloat(takeRow.P25)) / (parseFloat(takeRow.P50) - parseFloat(takeRow.P25)) * 25 + 25);
+              } else if (weight <= parseFloat(takeRow.P75)) {
+                  result = ((weight - parseFloat(takeRow.P50)) / (parseFloat(takeRow.P75) - parseFloat(takeRow.P50)) * 25 + 50);
+              } else if (weight <= parseFloat(takeRow.P85)) {
+                  result = ((weight - parseFloat(takeRow.P75)) / (parseFloat(takeRow.P85) - parseFloat(takeRow.P75)) * 10 + 75);
+              } else if (weight <= parseFloat(takeRow.P90)) {
+                  result = ((weight - parseFloat(takeRow.P85)) / (parseFloat(takeRow.P90) - parseFloat(takeRow.P85)) * 5 + 85);
+              } else if (weight <= parseFloat(takeRow.P95)) {
+                  result = ((weight - parseFloat(takeRow.P90)) / (parseFloat(takeRow.P95) - parseFloat(takeRow.P90)) * 5 + 90);
+              } else if (weight <= parseFloat(takeRow.P97)) {
+                  result = ((weight - parseFloat(takeRow.P95)) / (parseFloat(takeRow.P97) - parseFloat(takeRow.P95)) * 2 + 95);
+              } else if (weight <= parseFloat(takeRow.P99)) {
+                  result = ((weight - parseFloat(takeRow.P97)) / (parseFloat(takeRow.P99) - parseFloat(takeRow.P97)) * 2 + 97);
+              } else if (weight <= parseFloat(takeRow.P999)) {
+                  result = ((weight - parseFloat(takeRow.P99)) / (parseFloat(takeRow.P999) - parseFloat(takeRow.P99)) * 0.99 + 99);
+              } else {
+                  result = 100;
+              }
+
+              firstAns = round(result, 2);
+
+              if (weight <= parseFloat(takeRow.P01)) {
+                  result = 0.1;
+              } else if (weight <= parseFloat(takeRow.P1)) {
+                  result = 1;
+              } else if (weight <= parseFloat(takeRow.P3)) {
+                  result = 3;
+              } else if (weight <= parseFloat(takeRow.P5)) {
+                  result = 5;
+              } else if (weight <= parseFloat(takeRow.P10)) {
+                  result = 10;
+              } else if (weight <= parseFloat(takeRow.P15)) {
+                  result = 15;
+              } else if (weight <= parseFloat(takeRow.P25)) {
+                  result = 25;
+              } else if (weight <= parseFloat(takeRow.P50)) {
+                  result = 50;
+              } else if (weight <= parseFloat(takeRow.P75)) {
+                  result = 75;
+              } else if (weight <= parseFloat(takeRow.P85)) {
+                  result = 85;
+              } else if (weight <= parseFloat(takeRow.P90)) {
+                  result = 90;
+              } else if (weight <= parseFloat(takeRow.P95)) {
+                  result = 95;
+              } else if (weight <= parseFloat(takeRow.P97)) {
+                  result = 97;
+              } else if (weight <= parseFloat(takeRow.P99)) {
+                  result = 99;
+              } else if (weight <= parseFloat(takeRow.P999)) {
+                  result = 99.9;
+              } else {
+                  result = 100;
+              }
+
+              percentile = result;
+
+              if (percentile == 0.1) {
+                  line = 'The result is below <b> 0.1 percentile </b><br />' + 'It seems that your child may be short for their age. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              } else if (percentile == 1) {
+                  line = 'Between <b>0.1</b> and <b>1st percentile</b><br />' + 'It seems that your child may be short for their age. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              } else if (percentile == 3) {
+                  line = 'Between <b>1st</b> and <b>3rd percentile</b><br />' + 'It seems that your child may be short for their age. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              } else if (percentile == 5) {
+                  line = 'Between the <b>3rd</b> and <b>5th percentiles</b>';
+              } else if (percentile == 10) {
+                  line = 'Between the <b>5th</b> and <b>10th percentiles</b>';
+              } else if (percentile == 15) {
+                  line = 'Between the <b>10th</b> and <b>15th percentiles<b>';
+              } else if (percentile == 25) {
+                  line = 'Between the <b>15th</b> and <b>25th percentiles</b>';
+              } else if (percentile == 50) {
+                  line = 'Between the <b>25th</b> and <b>50th percentiles</b>';
+              } else if (percentile == 75) {
+                  line = 'Between the <b>50th</b> and <b>75th percentiles</b>';
+              } else if (percentile == 85) {
+                  line = 'Between the <b>75th</b> and <b>85th percentiles</b>';
+              } else if (percentile == 90) {
+                  line = 'Between the <b>85th</b> and <b>90th percentiles</b><br\>';
+              } else if (percentile == 95) {
+                  line = 'Between the <b>90th</b> and <b>95th percentiles</b><br\>';
+              } else if (percentile == 97) {
+                  line = 'Between the <b>95th</b> and <b>97th percentiles</b><br\>';
+              } else if (percentile == 99) {
+                  line = 'Between the <b>97th</b> and <b>99th percentiles</b><br />' + 'It seems that your child is taller than their peers. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              } else if (percentile == 99.9) {
+                  line = 'Between the <b> 99th</b> and <b>99.9th percentiles</b><br />' + 'It seems that your child is taller than their peers. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              } else if (percentile == 100) {
+                  line = 'The result is above the <b>99.9th percentile</b><br />' + 'It seems that your child is taller than their peers. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              }
+
+              if (percentile < 3) {
+                  image = "image_1";
+              } else if (percentile === 3) {
+                  image = "image_2";
+              } else if (percentile < 4) {
+                  image = "image_3";
+              } else if (percentile < 5) {
+                  image = "image_4";
+              } else if (percentile === 5) {
+                  image = "image_5";
+              } else if (percentile < 10) {
+                  image = "image_6";
+              } else if (percentile < 15) {
+                  image = "image_7";
+              } else if (percentile === 15) {
+                  image = "image_8";
+              } else if (percentile < 20) {
+                  image = "image_9";
+              } else if (percentile < 25) {
+                  image = "image_10";
+              } else if (percentile === 25) {
+                  image = "image_11";
+              } else if (percentile < 37) {
+                  image = "image_12";
+              } else if (percentile < 50) {
+                  image = "image_13";
+              } else if (percentile === 50) {
+                  image = "image_14";
+              } else if (percentile < 63) {
+                  image = "image_15";
+              } else if (percentile < 75) {
+                  image = "image_16";
+              } else if (percentile === 75) {
+                  image = "image_17";
+              } else if (percentile < 80) {
+                  image = "image_18";
+              } else if (percentile < 85) {
+                  image = "image_19";
+              } else if (percentile === 85) {
+                  image = "image_20";
+              } else if (percentile < 90) {
+                  image = "image_21";
+              } else if (percentile < 95) {
+                  image = "image_22";
+              } else if (percentile === 95) {
+                  image = "image_23";
+              } else if (percentile < 96) {
+                  image = "image_24";
+              } else if (percentile < 97) {
+                  image = "image_25";
+              } else if (percentile === 97) {
+                  image = "image_26";
+              } else if (percentile > 97) {
+                  image = "image_27";
+              }
+
+              return {
+                  tech_first_ans: firstAns,
+                  tech_line: line,
+                  tech_image: image,
+                  tech_actual_cm: actualCm,
+              };
+          } else {
+              return { error: 'This BMI percentile calculator is only for children up to the age of 19.' };
+          }
+      } else {
+          return { error: 'Please! Check your input.' };
+      }
+      
+      // Helper functions
+      function isNumeric(value) {
+          return !isNaN(parseFloat(value)) && isFinite(value);
+      }
+      
+      function round(value, decimals) {
+          return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+      }
+  }
+
+
+   /**
+    * getCalculationJumpRopeCalorieCalculator: Service Method
+    * POST: /api/calculators-lol/jump-rope-calorie-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+async getCalculationJumpRopeCalorieCalculator(body) {
+      let operations = body.tech_operations;
+        let age = parseFloat(body.tech_age);
+        let gender = body.tech_gender;
+        let first = body.tech_first;
+        let units1 = body.tech_units1;
+        let second = body.tech_second;
+        let units2 = body.tech_units2;
+        let height_ft = body.tech_height_ft;
+        let height_in = body.tech_height_in;
+        let height_cm = body.tech_height_cm;
+        let h_unit = body.tech_unit_ft_in;
+
+
+    let param = {};
+
+    try {
+      // Convert weight unit to numeric code
+      let unitWeight = 0;
+      if (units1 == "kg") unitWeight = 1;
+      else if (units1 == "lbs") unitWeight = 2;
+      else if (units1 == "stone") unitWeight = 3;
+
+      // Convert time unit to numeric code
+      let unitTime = 0;
+      if (units2 == "sec") unitTime = 1;
+      else if (units2 == "min") unitTime = 2;
+      else if (units2 == "hrs") unitTime = 3;
+
+      // helper: time conversion
+      function time2(a, b) {
+        if (a == 1) return b * 0.016667;
+        if (a == 2) return b * 1;
+        if (a == 3) return b * 60;
+        return 0;
+      }
+
+      // helper: weight conversion
+      function weight(a, b) {
+        if (a == 1) return b * 1;
+        if (a == 2) return b * 0.4536;
+        if (a == 3) return b * 6.35;
+        return 0;
+      }
+
+      let firstVal = weight(unitWeight, parseFloat(first));
+      let secondVal = time2(unitTime, parseFloat(second));
+      if (!isNaN(firstVal) && !isNaN(secondVal)) {
+        if (firstVal > 30) {
+          if (firstVal < 300) {
+            if (secondVal > 0) {
+              let heightInches = parseFloat(height_in) || 0;
+              let heightFeet = parseFloat(height_ft) || 0;
+              
+              if (h_unit == "cm") {
+                heightInches = 0;
+                heightFeet = height_cm / 30.48;
+                heightInches = heightFeet * 12 + heightInches;
+              }
+              heightInches = heightFeet * 12 + heightInches;
+              //  console.log(heightFeet,heightInches);
+              const cbr_ans = (operations * firstVal * 7) / 400;
+              const cb_ans = cbr_ans * secondVal;
+
+              let BMR = 0;
+              if (gender == "1") {
+                BMR =
+                  13.397 * firstVal +
+                  4.799 * heightInches * 2.54 -
+                  5.677 * age +
+                  88.362;
+              } else {
+                BMR =
+                  9.247 * firstVal +
+                  3.098 * heightInches * 2.54 -
+                  4.33 * age +
+                  447.593;
+              }
+              // console.log(BMR,firstVal,heightInches,age);
+              param = {
+                tech_cbr_ans:cbr_ans,
+                tech_cb_ans:cb_ans,
+                tech_BMR:BMR,
+                tech_met: operations,
+              };
+            } else {
+              param.error = "Time must be more than zero.";
+            }
+          } else {
+            param.error = "Your weight cannot be more than 660 lb (300 kg).";
+          }
+        } else {
+          param.error = "Your weight cannot be less than 66 lb (30 kg).";
+        }
+      } else {
+        param.error = "Please! Check your input.";
+      }
+
+      return param;
+    } catch (error) {
+      console.error("Jump Rope Calculator Error:", error);
+      return {
+        status: "fail",
+        error: error.message,
+      };
+    }
+  }
+
+   /**
+    * getCalculationBiologicalAgeCalculator: Service Method
+    * POST: /api/calculators-lol/biological-age-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async getCalculationBiologicalAgeCalculator(body) {
+      let m1 = body.tech_m1;
+      let m2 = body.tech_m2;
+      let m3 = body.tech_m3;
+      let m5 = body.tech_m5;
+      let m6 = body.tech_m6;
+      let m7 = body.tech_m7;
+      let m8 = body.tech_m8;
+      let m11 = body.tech_m11;
+      let m12 = body.tech_m12;
+      let m13 = body.tech_m13;
+      let m14 = body.tech_m14;
+      let m16 = body.tech_m16;
+      let m17 = body.tech_m17;
+      let m18 = body.tech_m18;
+      let m19 = body.tech_m19;
+      let m20 = body.tech_m20;
+      let m21 = body.tech_m21;
+      let m22 = body.tech_m22;
+      let m23 = body.tech_m23;
+      let m24 = body.tech_m24;
+      let m27 = body.tech_m27;
+      let m28 = body.tech_m28;
+      let m30 = body.tech_m30;
+      let m31 = body.tech_m31;
+      let m34 = body.tech_m34;
+      let m35 = body.tech_m35;
+      let m36 = body.tech_m36;
+      let age = body.tech_age;
+
+
+      let param = {};
+
+      try {
+        let ageVal = parseFloat(age) || 0;
+
+        // Base calculations
+        const M = 75.4140596125 +
+          0.0618445029 * ageVal -
+          0.0013020249 * Math.pow(ageVal, 2) +
+          0.0000231775 * Math.pow(ageVal, 3) +
+          0.0000001066 * Math.pow(ageVal, 4);
+
+        const F = 80.6705634463 +
+          0.0374221292 * ageVal -
+          0.0005304983 * Math.pow(ageVal, 2) -
+          0.0000008558 * Math.pow(ageVal, 3) +
+          0.0000002442 * Math.pow(ageVal, 4);
+
+        const typ = Math.round(
+          10 *
+          (78.0916570818 +
+            0.0525689171 * ageVal -
+            0.0009946587 * Math.pow(ageVal, 2) +
+            0.0000124103 * Math.pow(ageVal, 3) +
+            0.0000001689 * Math.pow(ageVal, 4))
+        ) / 10;
+
+        let RaceAge = 0;
+
+        // Race & Gender based calculations
+        if ((m1 == "male" || m1 == "m") && m2 == "white") {
+          RaceAge = M + 0.55 - 0.009964 * ageVal - 0.000027 * Math.pow(ageVal, 2);
+        } else if ((m1 == "male" || m1 == "m") && m2 == "black") {
+          RaceAge =
+            M -
+            5.592857 -
+            0.01625 * ageVal +
+            0.001732 * Math.pow(ageVal, 2) -
+            0.000009 * Math.pow(ageVal, 3);
+        } else if ((m1 == "male" || m1 == "m") && m2 == "hispanic") {
+          RaceAge = M + 3.1 - 0.06975 * ageVal + 0.000338 * Math.pow(ageVal, 2);
+        } else if ((m1 == "male" || m1 == "m") && m2 == "asian") {
+          RaceAge = M + 6.8 - 0.153 * ageVal + 0.00085 * Math.pow(ageVal, 2);
+        } else if ((m1 == "male" || m1 == "m") && m2 == "amindian") {
+          RaceAge = M - 1.2 + 0.007 * ageVal + 0.0001 * Math.pow(ageVal, 2);
+        } else if ((m1 == "male" || m1 == "m") && (m2 == "other" || m2 == "oth")) {
+          RaceAge = M + 0;
+        } else if (m1 == "female" && m2 == "white") {
+          RaceAge = F + 0.396429 - 0.003946 * ageVal - 0.000013 * Math.pow(ageVal, 2);
+        } else if (m1 == "female" && m2 == "black") {
+          RaceAge =
+            F -
+            3.815873 -
+            0.022566 * ageVal +
+            0.001428 * Math.pow(ageVal, 2) -
+            0.000008 * Math.pow(ageVal, 3);
+        } else if (m1 == "female" && m2 == "hispanic") {
+          RaceAge = F + 3.9 - 0.08775 * ageVal + 0.000488 * Math.pow(ageVal, 2);
+        } else if (m1 == "female" && m2 == "asian") {
+          RaceAge = F + 6.7 - 0.15075 * ageVal + 0.000838 * Math.pow(ageVal, 2);
+        } else if (m1 == "female" && m2 == "amindian") {
+          RaceAge = F + 2.2 - 0.0695 * ageVal + 0.000525 * Math.pow(ageVal, 2);
+        } else if (m1 == "female" && (m2 == "other" || m2 == "oth")) {
+          RaceAge = F + 0;
+        }
+
+        // Sectional calculations
+        const RaceAdj = RaceAge - typ;
+        const personalT = Math.round(10 * (RaceAdj + Number(m3) + Number(m5))) / 10;
+        const cadT = Number(m6) + Number(m7) + Number(m8) + Number(m11) + Number(m12);
+        const medicalIT =
+          Number(m13) +
+          Number(m14) +
+          Number(m16) +
+          Number(m17) +
+          Number(m18) +
+          Number(m19) +
+          Number(m20);
+        const dietT = Number(m21) + Number(m22) + Number(m23) + Number(m24);
+        const psychT = Number(m27) + Number(m28) + Number(m30) + Number(m31);
+        const safetyT = Number(m34) + Number(m35) + Number(m36);
+
+        // Final totals
+        const total_value =
+          personalT + cadT + medicalIT + dietT + psychT + safetyT;
+
+        const expectancy = Math.round(10 * (typ + total_value)) / 10;
+        const healthage_value = ageVal - total_value;
+
+        // Results
+        param = {
+          tech_typ:typ,
+          tech_exp: expectancy,
+          tech_bio: healthage_value,
+          tech_per: personalT,
+          tech_med: medicalIT,
+          tech_saf: safetyT,
+          tech_tot: total_value,
+          tech_psychT:psychT,
+          tech_nut: dietT,
+          tech_cad: cadT,
+        };
+
+        return param;
+      } catch (error) {
+        console.error("Biological Age Calculator Error:", error);
+        return {
+          status: "fail",
+          message: "Internal Server Error",
+          error: error.message,
+        };
+      }
+    }
+
+      /**
+    * getCalculationPregnancyWeightGainCalculator: Service Method
+    * POST: /api/calculators-lol/pregnancy-weight-gain-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationPregnancyWeightGainCalculator(body) {
+        let height_ft = body.tech_height_ft;
+    let height_in = body.tech_height_in;
+    let height_cm = body.tech_height_cm;
+    let h_unit = body.tech_unit_ft_in;
+    let weight = body.tech_weight;
+    let w_unit = body.tech_w_unit;
+    let week = body.tech_week;
+    let activity = body.tech_activity;
+
+
+      let param = {};
+      let check = false;
+
+      // --- Unit conversion for weight ---
+      let weightUnit;
+      if (w_unit == 'lbs') {
+        weightUnit = 0.453592;
+      } else if (w_unit == 'oz') {
+        weightUnit = 0.0283495;
+      } else if (w_unit == 'kg') {
+        weightUnit = 1;
+      } else if (w_unit == 'stone') {
+        weightUnit = 6.35029;
+      }
+
+      // --- Full data array copied as-is ---
+      const data = [
+        [
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0.09, 0.4, 0.09, 0.4, 0.09, 0.4, 0.09, 0.4],
+          [0.2, 0.7, 0.2, 0.7, 0.2, 0.7, 0.2, 0.7],
+          [0.3, 1.1, 0.3, 1.1, 0.3, 1.1, 0.3, 1.1],
+          [0.4, 1.5, 0.4, 1.5, 0.4, 1.5, 0.4, 1.5],
+          [0.5, 1.8, 0.5, 1.8, 0.5, 1.8, 0.5, 1.8],
+          [0.6, 2.2, 0.6, 2.2, 0.6, 2.2, 0.6, 2.2],
+          [0.6, 2.6, 0.6, 2.6, 0.6, 2.6, 0.6, 2.6],
+          [0.7, 2.9, 0.7, 2.9, 0.7, 2.9, 0.7, 2.9],
+          [0.8, 3.3, 0.8, 3.3, 0.8, 3.3, 0.8, 3.3],
+          [0.9, 3.7, 0.9, 3.7, 0.9, 3.7, 0.9, 3.7],
+          [1, 4, 1, 4, 1, 4, 1, 4],
+          [1.1, 4.4, 1.1, 4.4, 1.1, 4.4, 1.1, 4.4],
+          [2.1, 5.7, 2, 5.5, 1.6, 5.2, 1.5, 5],
+          [3.1, 7, 2.9, 6.7, 2.1, 5.9, 1.8, 5.6],
+          [4.1, 8.4, 3.8, 7.8, 2.6, 6.7, 2.2, 6.1],
+          [5.1, 9.6, 4.6, 8.9, 3.2, 7.5, 2.6, 6.7],
+          [6.1, 11, 5.5, 10.1, 3.7, 8.2, 2.9, 7.3],
+          [7.1, 12.3, 6.4, 11.2, 4.2, 9, 3.3, 7.9],
+          [8.1, 13.6, 7.3, 12.3, 4.7, 9.7, 3.7, 8.4],
+          [9.1, 14.9, 8.2, 13.5, 5.2, 10.5, 4, 9],
+          [10.1, 16.3, 9.1, 14.6, 5.7, 11.3, 4.4, 9.6],
+          [11.1, 17.6, 10, 15.7, 6.2, 12, 4.8, 10.2],
+          [12.1, 18.9, 10.8, 16.9, 6.8, 12.8, 5.1, 10.8],
+          [13.1, 20.2, 11.7, 18, 7.3, 13.6, 5.5, 11.3],
+          [14.1, 21.5, 12.6, 19.1, 7.8, 14.3, 5.9, 11.9],
+          [15, 22.9, 13.5, 20.3, 8.3, 15.1, 6.2, 12.5],
+          [16, 24.2, 14.4, 21.4, 8.8, 15.8, 6.6, 13.1],
+          [17, 25.5, 15.3, 22.5, 9.3, 16.6, 7, 13.6],
+          [18, 26.8, 16.1, 23.7, 9.9, 17.4, 7.3, 14.2],
+          [19, 28.1, 17, 24.8, 10.4, 18.1, 7.7, 14.8],
+          [20, 29.5, 17.9, 25.9, 10.9, 18.9, 8.1, 15.4],
+          [21, 30.8, 18.8, 27.1, 11.4, 19.7, 8.4, 16],
+          [22, 32.1, 19.7, 28.2, 11.9, 20.4, 8.8, 16.5],
+          [23, 33.4, 20.6, 29.3, 12.4, 21.2, 9.2, 17.1],
+          [24, 34.7, 21.5, 30.5, 12.9, 21.9, 9.5, 17.7],
+          [25, 36, 22.3, 31.6, 13.5, 22.7, 9.9, 18.3],
+          [26, 37.4, 23.2, 32.7, 14, 23.5, 10.3, 18.8],
+          [27, 38.7, 24.1, 33.9, 14.5, 24.2, 10.6, 19.4],
+          [28, 40, 25, 35, 15, 25, 11, 20],
+        ],
+        [
+          [0, 0, 0, 0, 0, 0, 0, 0],
+          [0.09, 0.4, 0.09, 0.4, 0.09, 0.4, 0.09, 0.4],
+          [0.2, 0.7, 0.2, 0.7, 0.2, 0.7, 0.2, 0.7],
+          [0.3, 1.1, 0.3, 1.1, 0.3, 1.1, 0.3, 1.1],
+          [0.4, 1.5, 0.4, 1.5, 0.4, 1.5, 0.4, 1.5],
+          [0.5, 1.8, 0.5, 1.8, 0.5, 1.8, 0.5, 1.8],
+          [0.6, 2.2, 0.6, 2.2, 0.6, 2.2, 0.6, 2.2],
+          [0.6, 2.6, 0.6, 2.6, 0.6, 2.6, 0.6, 2.6],
+          [0.7, 2.9, 0.7, 2.9, 0.7, 2.9, 0.7, 2.9],
+          [0.8, 3.3, 0.8, 3.3, 0.8, 3.3, 0.8, 3.3],
+          [0.9, 3.7, 0.9, 3.7, 0.9, 3.7, 0.9, 3.7],
+          [1, 4, 1, 4, 1, 4, 1, 4],
+          [1.1, 4.4, 1.1, 4.4, 1.1, 4.4, 1.1, 4.4],
+          [2.4, 6.2, 2.4, 6.2, 2.2, 6.1, 2, 5.8],
+          [3.8, 8.1, 3.8, 8.1, 3.3, 7.8, 2.9, 7.2],
+          [5.1, 9.9, 5.1, 9.9, 4.4, 9.5, 3.8, 8.6],
+          [6.4, 11.7, 6.4, 11.7, 5.5, 11.2, 4.6, 10],
+          [7.7, 13.6, 7.7, 13.6, 6.6, 12.8, 5.5, 11.4],
+          [9.1, 15.4, 9.1, 15.4, 7.7, 14.5, 6.4, 12.8],
+          [10.4, 17.3, 10.4, 17.3, 8.9, 16.2, 7.3, 14.1],
+          [11.7, 19.1, 11.7, 19.1, 10, 17.9, 8.2, 15.5],
+          [13.1, 20.9, 13.1, 20.9, 11.1, 19.6, 9.1, 16.9],
+          [14.4, 22.8, 14.4, 22.8, 12.2, 21.3, 10, 18.3],
+          [15.7, 24.6, 15.7, 24.6, 13.3, 23, 10.8, 19.7],
+          [17.1, 26.4, 17.1, 26.4, 14.4, 24.7, 11.7, 21.1],
+          [18.4, 28.3, 18.4, 28.3, 15.5, 26.4, 12.6, 22.5],
+          [19.7, 30.1, 19.7, 30.1, 16.6, 28, 13.5, 23.9],
+          [21, 32, 21, 32, 17.7, 29.7, 14.4, 25.3],
+          [22.4, 33.8, 22.4, 33.8, 18.8, 31.4, 15.3, 26.7],
+          [23.7, 35.6, 23.7, 35.6, 19.9, 33.1, 16.1, 28.1],
+          [25, 37.5, 25, 37.5, 21, 34.8, 17, 29.5],
+          [26.4, 39.3, 26.4, 39.3, 22.1, 36.5, 17.9, 30.9],
+          [27.7, 41.1, 27.7, 41.1, 23.2, 38.2, 18.8, 32.3],
+          [29, 43, 29, 43, 24.4, 39.9, 19.7, 33.6],
+          [30.4, 44.8, 30.4, 44.8, 25.5, 41.6, 20.6, 35],
+          [31.7, 46.7, 31.7, 46.7, 26.6, 43.2, 21.5, 36.4],
+          [33, 48.5, 33, 48.5, 27.7, 44.9, 22.3, 37.8],
+          [34.3, 50.3, 34.3, 50.3, 28.8, 46.6, 23.2, 39.2],
+          [35.7, 52.2, 35.7, 52.2, 29.9, 48.3, 24.1, 40.6],
+          [37, 54, 37, 54, 31, 50, 25, 42],
+        ],
+      ];
+
+      // --- Input validation ---
+      if (
+        (h_unit == 'ft/in' && !isNaN(weight) && !isNaN(height_ft)) ||
+        (h_unit != 'ft/in' && !isNaN(weight) && (!isNaN(height_in) || !isNaN(height_cm)))
+      ) {
+        check = true;
+      }
+
+      if (!check) {
+        param.error = 'Please! Check your input.';
+        return param;
+      }
+
+      // --- Convert units ---
+      let weight_kg = weight * weightUnit;
+      let heightInInches;
+
+
+      	if (h_unit == 'cm') {
+				height_in = 0;
+				height_ft = (height_cm / 30.48);
+				height_in = parseFloat(height_ft) * 12 + parseFloat(height_in);							
+			}
+
+     height_in = parseFloat(height_ft) * 12 + parseFloat(height_in);	
+      const height_m = height_in / 39.37;
+      const BMI = +(weight_kg / (height_m ** 2)).toFixed(2);
+      console.log(BMI,weight_kg,height_m);
+      // --- Determine category ---
+      let you_are, category;
+      if (BMI <= 18.5) {
+        you_are = 'Underweight';
+        category = 1;
+      } else if (BMI <= 24.9) {
+        you_are = 'Normal Weight';
+        category = 2;
+      } else if (BMI <= 29.9) {
+        you_are = 'Excess Weight';
+        category = 3;
+      } else if (BMI <= 35) {
+        you_are = 'Obesity';
+        category = 4;
+      } else {
+        you_are = 'Extremely Obesity';
+        category = 4;
+      }
+
+      // --- Compute gain ---
+      const offset = 2 * (category - 1);
+      const offset_min = 2 * (category - 1) + parseInt(activity);
+
+      const min_weight = data[0][week - 1][offset_min];
+      const max_weight = data[1][week - 1][offset_min];
+
+      const min_weight_gain = +(min_weight / 2.205).toFixed(1);
+      const max_weight_gain = +(max_weight / 2.205).toFixed(1);
+
+      const min_weight_ans = +(weight_kg + min_weight_gain).toFixed(1);
+      const max_weight_ans = +(weight_kg + max_weight_gain).toFixed(1);
+
+      const gain = [];
+      const all = [];
+
+      for (const value of data[activity]) {
+        const min = value[offset];
+        const max = value[offset + 1];
+        gain.push(`${min} - ${max} kg`);
+        all.push(`${(weight_kg + min).toFixed(1)} - ${(weight_kg + max).toFixed(1)} kg`);
+      }
+
+      // --- Response ---
+      param.tech_min_weight_ans = min_weight_ans;
+      param.tech_max_weight_ans = max_weight_ans;
+      param.tech_min_weight_gain = min_weight_gain;
+      param.tech_max_weight_gain = max_weight_gain;
+      param.tech_BMI = BMI;
+      param.tech_you_are = you_are;
+      param.tech_gain = gain;
+      param.tech_all = all;
+
+      return param;
+    }
+
+        /**
+    * getCalculationStrokeVolumeCalculator: Service Method
+    * POST: /api/calculators-lol/stroke-volume-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationStrokeVolumeCalculator(body) {
+      try {
+          let Cardiac = body.tech_Cardiac;
+      let Cardiac_unit = body.tech_Cardiac_unit;
+      let heart = body.tech_heart;
+      let height = body.tech_height_cm;
+      let one_height = body.tech_height_ft;
+      let sec_height = body.tech_height_in;
+      let height_unit = body.tech_unit_ft_in;
+      let weight = body.tech_weight;
+      let weight_unit = body.tech_weight_unit;
+
+
+        Cardiac = parseFloat(Cardiac);
+        heart = parseFloat(heart);
+        height = parseFloat(height);
+        one_height = parseFloat(one_height);
+        sec_height = parseFloat(sec_height);
+        weight = parseFloat(weight);
+
+        if (!Cardiac_unit) Cardiac_unit = "";
+        Cardiac_unit = Cardiac_unit.replace("/min ", "").trim();
+        height_unit = height_unit?.trim();
+
+        // Helper functions
+        function unitToLiters(Cardiac, Cardiac_unit) {
+          switch (Cardiac_unit) {
+            case "mm³": return Cardiac / 1e9;
+            case "cm³": return Cardiac / 1000;
+            case "dm³": return Cardiac;
+            case "m³": return Cardiac * 1000;
+            case "in³": return Cardiac / 61023.7;
+            case "ft³": return Cardiac * 28.3168;
+            case "yd³": return Cardiac / 764.555;
+            case "ml": return Cardiac / 1000;
+            case "cl": return Cardiac / 100;
+            case "l": return Cardiac;
+            case "US gal": return Cardiac * 3.78541;
+            case "UK gal": return Cardiac * 4.54609;
+            case "US fl oz": return Cardiac / 33.814;
+            case "UK fl oz": return Cardiac / 35.1951;
+            case "cups": return Cardiac * 0.284131;
+            case "tbsp": return Cardiac / 67.628;
+            case "tsp": return Cardiac / 202.884;
+            case "US qt": return Cardiac * 0.946353;
+            case "UK qt": return Cardiac * 1.13652;
+            case "US pt": return Cardiac / 1.05669;
+            case "UK pt": return Cardiac / 1.13652;
+            default: return null;
+          }
+        }
+
+        function lambai_unit(height, height_unit) {
+          switch (height_unit) {
+            case "mm": return height / 10;
+            case "cm": return height;
+            case "m": return height * 100;
+            case "km": return height * 100000;
+            case "in": return height * 2.54;
+            case "ft": return height * 30.48;
+            case "yd": return height * 91.44;
+            case "mi": return height * 160934;
+            case "nmi": return height * 185200;
+            default: return height;
+          }
+        }
+
+        function other_lamba(one_height, sec_height, height_unit) {
+          if (height_unit === "ft/in") {
+            return one_height * 30.48 + sec_height * 2.54;
+          } else if (height_unit === "m/cm") {
+            return one_height * 100 + sec_height;
+          }
+          return 0;
+        }
+
+        function wazan_unit(weight, weight_unit) {
+          switch (weight_unit) {
+            case "µg": return weight / 1000000;
+            case "mg": return weight / 1000;
+            case "g": return weight;
+            case "dag": return weight / 100;
+            case "kg": return weight;
+            case "t": return weight * 1000;
+            case "gr": return weight / 15.4324;
+            case "dr": return weight / 56479.1;
+            case "oz": return weight / 35.274;
+            case "lbs": return weight / 2.20462;
+            case "st": return weight / 0.157473;
+            case "US ton": return weight * 907.185;
+            case "long ton": return weight * 1016.05;
+            case "Earths": return weight * 5.9722e24;
+            case "me": return weight * 9.10938356e-31;
+            case "u": return weight * 1.66053904e-27;
+            case "oz t": return weight / 35.27396;
+            default: return weight;
+          }
+        }
+
+        // Validation
+        if (
+          isNaN(Cardiac) ||
+          isNaN(heart) ||
+          isNaN(weight) ||
+          (isNaN(height) && isNaN(one_height) && isNaN(sec_height))
+        ) {
+          return { status: "fail", error: "Please! Check Your Input." };
+        }
+
+        Cardiac = unitToLiters(Cardiac, Cardiac_unit);
+        if (Cardiac <= 0)
+          return { status: "fail", error: "Cardiac output should be an integer greater than 0." };
+        if (heart <= 0)
+          return { status: "fail", error: "Heart rate should be an integer greater than 0." };
+        if (weight <= 0)
+          return { status: "fail", error: "Weight should be an integer greater than 0." };
+
+        const stroke_volume = Cardiac / heart;
+
+        if (!one_height && !sec_height && !height)
+          return { status: "fail", error: "Please! Enter Input." };
+
+        one_height = one_height || 0;
+        sec_height = sec_height || 0;
+
+        if (height_unit == "ft/in" || height_unit == "m/cm") {
+          height = other_lamba(one_height, sec_height, height_unit);
+        } else {
+          height = lambai_unit(height, height_unit);
+        }
+
+        weight = wazan_unit(weight, weight_unit);
+        if (height <= 0)
+          return { status: "fail", error: "Height should be an integer greater than 0." };
+
+        // Calculations
+        const bsa = 0.007184 * Math.pow(height, 0.725) * Math.pow(weight, 0.425);
+        const stroke_val_index = Cardiac / bsa;
+        const stroke_index = stroke_volume / bsa;
+
+        return {
+          tech_status: "success",
+          tech_stroke_volume:stroke_volume,
+          tech_bsa:bsa,
+          tech_stroke_val_index:stroke_val_index,
+          tech_stroke_index:stroke_index,
+        };
+      } catch (error) {
+        return {
+          status: "fail",
+          error: error.message || "Something went wrong in Stroke Volume Calculator.",
+        };
+      }
+    }
+
+
+         /**
+    * getCalculationNavyBodyFatCalculator: Service Method
+    * POST: /api/calculators-lol/navy-body-fat-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationNavyBodyFatCalculator(body) {
+      let {
+        weight,
+        weight_unit,
+        age,
+        gender,
+        height_cm,
+        unit_ft_in,
+        height_ft,
+        height_in,
+        neck_cm,
+        unit_ft_in1,
+        neck_ft,
+        neck_in,
+        waist_cm,
+        unit_ft_in2,
+        waist_ft,
+        waist_in,
+        hip_cm,
+        unit_ft_in3,
+        hip_ft,
+        hip_in
+      } = body;
+
+      let param = {};
+
+      // Ensure numeric inputs
+      const num = (v) => parseFloat(v) || 0;
+
+      weight = num(weight);
+      height_cm = num(height_cm);
+      height_ft = num(height_ft);
+      height_in = num(height_in);
+      neck_cm = num(neck_cm);
+      neck_ft = num(neck_ft);
+      neck_in = num(neck_in);
+      waist_cm = num(waist_cm);
+      waist_ft = num(waist_ft);
+      waist_in = num(waist_in);
+      hip_cm = num(hip_cm);
+      hip_ft = num(hip_ft);
+      hip_in = num(hip_in);
+      age = num(age);
+
+      // ✅ Height Conversion
+      let height = height_cm;
+      if (unit_ft_in === "ft/in") height = height_ft * 30.48 + height_in * 2.54;
+      else if (unit_ft_in === "m") height = height_cm * 100;
+      else if (unit_ft_in === "ft") height = height_cm * 30.48;
+      else if (unit_ft_in === "in") height = height_cm * 2.54;
+
+      // ✅ Weight Conversion
+      if (weight_unit === "kg") weight = weight * 2.20462; // to lbs
+
+      // ✅ Waist Conversion
+      let waist = waist_cm;
+      if (unit_ft_in2 === "ft/in") waist = waist_ft * 30.48 + waist_in * 2.54;
+      else if (unit_ft_in2 === "m") waist = waist_cm * 100;
+      else if (unit_ft_in2 === "ft") waist = waist_cm * 30.48;
+      else if (unit_ft_in2 === "in") waist = waist_cm * 2.54;
+
+      // ✅ Neck Conversion
+      let neck = neck_cm;
+      if (unit_ft_in1 === "ft/in") neck = neck_ft * 30.48 + neck_in * 2.54;
+      else if (unit_ft_in1 === "m") neck = neck_cm * 100;
+      else if (unit_ft_in1 === "ft") neck = neck_cm * 30.48;
+      else if (unit_ft_in1 === "in") neck = neck_cm * 2.54;
+
+      // ✅ Hip Conversion (for females)
+      let hip = gender === "female" ? hip_cm : null;
+      if (gender === "female" && unit_ft_in3) {
+        if (unit_ft_in3 === "ft/in") hip = hip_ft * 30.48 + hip_in * 2.54;
+        else if (unit_ft_in3 === "m") hip = hip_cm * 100;
+        else if (unit_ft_in3 === "ft") hip = hip_cm * 30.48;
+        else if (unit_ft_in3 === "in") hip = hip_cm * 2.54;
+      }
+
+      // Validation
+      if (
+        (isFinite(height) &&
+          isFinite(waist) &&
+          isFinite(neck) &&
+          isFinite(weight)) ||
+        isFinite(hip)
+      ) {
+        let bodyFat = 0;
+        if (gender === "male") {
+          if (waist <= neck || waist <= 0 || neck <= 0 || height <= 0) {
+            param.error = "Invalid measurements for male formula.";
+            return param;
+          }
+          bodyFat =
+            495 /
+              (1.0324 -
+                0.19077 * Math.log10(waist - neck) +
+                0.15456 * Math.log10(height)) -
+            450;
+        } else {
+          if (waist + hip <= neck || waist <= 0 || hip <= 0 || height <= 0) {
+            param.error = "Invalid measurements for female formula.";
+            return param;
+          }
+          bodyFat =
+            495 /
+              (1.29579 -
+                0.35004 * Math.log10(waist + hip - neck) +
+                0.221 * Math.log10(height)) -
+            450;
+        }
+
+        const fatMass = weight * (bodyFat / 100);
+        const leanMass = weight - fatMass;
+
+        let bodyFatCategory = "";
+        if (gender === "male") {
+          if (age >= 17 && age <= 26) {
+            if (bodyFat < 6) bodyFatCategory = "Essential Fat";
+            else if (bodyFat < 16) bodyFatCategory = "Athletic";
+            else if (bodyFat < 20) bodyFatCategory = "Fit";
+            else bodyFatCategory = "Acceptable";
+          } else {
+            if (bodyFat < 10) bodyFatCategory = "Essential Fat";
+            else if (bodyFat < 20) bodyFatCategory = "Athletic";
+            else if (bodyFat < 24) bodyFatCategory = "Fit";
+            else bodyFatCategory = "Acceptable";
+          }
+        } else {
+          if (age >= 17 && age <= 26) {
+            if (bodyFat < 16) bodyFatCategory = "Essential Fat";
+            else if (bodyFat < 24) bodyFatCategory = "Athletic";
+            else if (bodyFat < 30) bodyFatCategory = "Fit";
+            else bodyFatCategory = "Acceptable";
+          } else {
+            if (bodyFat < 20) bodyFatCategory = "Essential Fat";
+            else if (bodyFat < 28) bodyFatCategory = "Athletic";
+            else if (bodyFat < 34) bodyFatCategory = "Fit";
+            else bodyFatCategory = "Acceptable";
+          }
+        }
+
+        param.bodyFat = bodyFat.toFixed(2);
+        param.fatMass = Math.abs(fatMass.toFixed(2)) + 0;
+        param.leanMass = leanMass.toFixed(2);
+        param.bodyFatCategory = bodyFatCategory;
+        param.RESULT = 1;
+        return { status: "success", payload: param };
+      } else {
+        param.error = "Please! Check Your Input.";
+        return { status: "fail", payload: param };
+      }
+    }
+
+
 
 }
 
