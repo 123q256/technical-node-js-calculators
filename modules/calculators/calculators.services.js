@@ -86335,157 +86335,4232 @@ async getCalculationJumpRopeCalorieCalculator(body) {
     */
 
     async getCalculationNavyBodyFatCalculator(body) {
-      let {
-        weight,
-        weight_unit,
-        age,
-        gender,
-        height_cm,
-        unit_ft_in,
-        height_ft,
-        height_in,
-        neck_cm,
-        unit_ft_in1,
-        neck_ft,
-        neck_in,
-        waist_cm,
-        unit_ft_in2,
-        waist_ft,
-        waist_in,
-        hip_cm,
-        unit_ft_in3,
-        hip_ft,
-        hip_in
-      } = body;
+      try {
+         const weight = body.tech_weight;
+        const weight_unit = body.tech_weight_unit;
+        const age = body.tech_age;
+        const gender = body.tech_gender;
 
-      let param = {};
+        const height_cm = body.tech_height_cm;
+        const height_unit = body.tech_unit_ft_in;
+        const height_ft = body.tech_height_ft;
+        const height_in = body.tech_height_in;
 
-      // Ensure numeric inputs
-      const num = (v) => parseFloat(v) || 0;
+        const neck_cm = body.tech_neck_cm;
+        const neck_unit = body.tech_unit_ft_in1;
+        const neck_ft = body.tech_neck_ft;
+        const neck_in = body.tech_neck_in;
 
-      weight = num(weight);
-      height_cm = num(height_cm);
-      height_ft = num(height_ft);
-      height_in = num(height_in);
-      neck_cm = num(neck_cm);
-      neck_ft = num(neck_ft);
-      neck_in = num(neck_in);
-      waist_cm = num(waist_cm);
-      waist_ft = num(waist_ft);
-      waist_in = num(waist_in);
-      hip_cm = num(hip_cm);
-      hip_ft = num(hip_ft);
-      hip_in = num(hip_in);
-      age = num(age);
+        const waist_cm = body.tech_waist_cm;
+        const waist_unit = body.tech_unit_ft_in2;
+        const waist_ft = body.tech_waist_ft;
+        const waist_in = body.tech_waist_in;
 
-      // ✅ Height Conversion
-      let height = height_cm;
-      if (unit_ft_in === "ft/in") height = height_ft * 30.48 + height_in * 2.54;
-      else if (unit_ft_in === "m") height = height_cm * 100;
-      else if (unit_ft_in === "ft") height = height_cm * 30.48;
-      else if (unit_ft_in === "in") height = height_cm * 2.54;
+        const hip_cm = body.tech_hip_cm;
+        const hip_unit = body.tech_unit_ft_in3;
+        const hip_ft = body.tech_hip_ft;
+        const hip_in = body.tech_hip_in;
 
-      // ✅ Weight Conversion
-      if (weight_unit === "kg") weight = weight * 2.20462; // to lbs
 
-      // ✅ Waist Conversion
-      let waist = waist_cm;
-      if (unit_ft_in2 === "ft/in") waist = waist_ft * 30.48 + waist_in * 2.54;
-      else if (unit_ft_in2 === "m") waist = waist_cm * 100;
-      else if (unit_ft_in2 === "ft") waist = waist_cm * 30.48;
-      else if (unit_ft_in2 === "in") waist = waist_cm * 2.54;
+          let height = height_cm;
+          let weightLbs = weight;
+          let waist = waist_cm;
+          let neck = neck_cm;
+          let hip = null;
+          
+          // Check if hip input is provided for females
+          if (gender === 'female') {
+              hip = hip_cm || null;
+          }
 
-      // ✅ Neck Conversion
-      let neck = neck_cm;
-      if (unit_ft_in1 === "ft/in") neck = neck_ft * 30.48 + neck_in * 2.54;
-      else if (unit_ft_in1 === "m") neck = neck_cm * 100;
-      else if (unit_ft_in1 === "ft") neck = neck_cm * 30.48;
-      else if (unit_ft_in1 === "in") neck = neck_cm * 2.54;
+          // Convert height to cm
+          if (height_unit) {
+              if (height_unit === 'ft/in') {
+                  const feet_to_cm = height_ft * 30.48;
+                  const inches_to_cm = height_in * 2.54;
+                  height = feet_to_cm + inches_to_cm;
+              } else if (height_unit === 'cm') {
+                  height = height_cm;
+              } else if (height_unit === 'm') {
+                  height = height_cm * 100;
+              } else if (height_unit === 'ft') {
+                  height = height_cm * 30.48;
+              } else if (height_unit === 'in') {
+                  height = height_cm * 2.54;
+              }
+          }
 
-      // ✅ Hip Conversion (for females)
-      let hip = gender === "female" ? hip_cm : null;
-      if (gender === "female" && unit_ft_in3) {
-        if (unit_ft_in3 === "ft/in") hip = hip_ft * 30.48 + hip_in * 2.54;
-        else if (unit_ft_in3 === "m") hip = hip_cm * 100;
-        else if (unit_ft_in3 === "ft") hip = hip_cm * 30.48;
-        else if (unit_ft_in3 === "in") hip = hip_cm * 2.54;
+          // Convert weight to lbs
+          if (weight_unit) {
+              if (weight_unit === 'lbs') {
+                  weightLbs = weight;
+              } else if (height_unit === 'kg') {
+                  weightLbs = weight * 2.20462;
+              }
+          }
+          // console.log(weightLbs,weight_unit);
+          // Convert waist to cm
+          if (waist_unit) {
+              if (waist_unit == 'ft/in') {
+                  const feet_to_cm = waist_ft * 30.48;
+                  const inches_to_cm = waist_in * 2.54;
+                  waist = feet_to_cm + inches_to_cm;
+              } else if (waist_unit == 'cm') {
+                  waist = waist_cm;
+              } else if (waist_unit == 'm') {
+                  waist = waist_cm * 100;
+              } else if (waist_unit == 'ft') {
+                  waist = waist_cm * 30.48;
+              } else if (waist_unit == 'in') {
+                  waist = waist_cm * 2.54;
+              }
+          }
+
+          // Convert neck to cm
+          if (neck_unit) {
+              if (neck_unit == 'ft/in') {
+                  const feet_to_cm = neck_ft * 30.48;
+                  const inches_to_cm = neck_in * 2.54;
+                  neck = feet_to_cm + inches_to_cm;
+              } else if (neck_unit == 'cm') {
+                  neck = neck_cm;
+              } else if (neck_unit == 'm') {
+                  neck = neck_cm * 100;
+              } else if (neck_unit == 'ft') {
+                  neck = neck_cm * 30.48;
+              } else if (neck_unit == 'in') {
+                  neck = neck_cm * 2.54;
+              }
+          }
+
+          // Convert hip to cm
+          if (hip_unit && gender == 'female') {
+              if (hip_unit == 'ft/in') {
+                  const feet_to_cm = hip_ft * 30.48;
+                  const inches_to_cm = hip_in * 2.54;
+                  hip = feet_to_cm + inches_to_cm;
+              } else if (hip_unit == 'cm') {
+                  hip = hip_cm;
+              } else if (hip_unit == 'm') {
+                  hip = hip_cm * 100;
+              } else if (hip_unit == 'ft') {
+                  hip = hip_cm * 30.48;
+              } else if (hip_unit == 'in') {
+                  hip = hip_cm * 2.54;
+              }
+          }
+
+          // Validate inputs
+          const isValid = !isNaN(height) && !isNaN(waist) && !isNaN(neck) && !isNaN(weightLbs) && 
+                        (gender == 'male' || (gender == 'female' && !isNaN(hip)));
+
+          if (!isValid) {
+              return {
+                  error: 'Please! Check Your Input.',
+                  RESULT: 0
+              };
+          }
+
+          // Calculate body fat percentage
+          let bodyFat;
+          if (gender == 'male') {
+              bodyFat = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(height)) - 450;
+          } else {
+              bodyFat = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(height)) - 450;
+          }
+
+          // Calculate Fat Mass and Lean Mass
+          const fatMass = parseFloat(weightLbs) * (bodyFat / 100);
+          const leanMass = parseFloat(weightLbs) - fatMass;
+          // console.log(fatMass,weightLbs,bodyFat);
+          // Determine Body Fat Category
+          let bodyFatCategory;
+          if (gender == 'male') {
+              if (age >= 17 && age <= 26) {
+                  if (bodyFat < 6) {
+                      bodyFatCategory = 'Essential Fat';
+                  } else if (bodyFat >= 6 && bodyFat < 16) {
+                      bodyFatCategory = 'Athletic';
+                  } else if (bodyFat >= 16 && bodyFat < 20) {
+                      bodyFatCategory = 'Fit';
+                  } else {
+                      bodyFatCategory = 'Acceptable';
+                  }
+              } else {
+                  if (bodyFat < 10) {
+                      bodyFatCategory = 'Essential Fat';
+                  } else if (bodyFat >= 10 && bodyFat < 20) {
+                      bodyFatCategory = 'Athletic';
+                  } else if (bodyFat >= 20 && bodyFat < 24) {
+                      bodyFatCategory = 'Fit';
+                  } else {
+                      bodyFatCategory = 'Acceptable';
+                  }
+              }
+          } else {
+              if (age >= 17 && age <= 26) {
+                  if (bodyFat < 16) {
+                      bodyFatCategory = 'Essential Fat';
+                  } else if (bodyFat >= 16 && bodyFat < 24) {
+                      bodyFatCategory = 'Athletic';
+                  } else if (bodyFat >= 24 && bodyFat < 30) {
+                      bodyFatCategory = 'Fit';
+                  } else {
+                      bodyFatCategory = 'Acceptable';
+                  }
+              } else {
+                  if (bodyFat < 20) {
+                      bodyFatCategory = 'Essential Fat';
+                  } else if (bodyFat >= 20 && bodyFat < 28) {
+                      bodyFatCategory = 'Athletic';
+                  } else if (bodyFat >= 28 && bodyFat < 34) {
+                      bodyFatCategory = 'Fit';
+                  } else {
+                      bodyFatCategory = 'Acceptable';
+                  }
+              }
+          }
+
+          return {
+              tech_bodyFat: parseFloat(bodyFat.toFixed(2)),
+              tech_fatMass: Math.abs(parseFloat(fatMass.toFixed(2))),
+              tech_leanMass: parseFloat(leanMass.toFixed(2)),
+              tech_bodyFatCategory: bodyFatCategory,
+          };
+
+      } catch (error) {
+          return {
+              error: 'An error occurred during calculation.',
+              RESULT: 0
+          };
       }
+  }
 
-      // Validation
+     /**
+    * getCalculationEerCalculator: Service Method
+    * POST: /api/calculators-lol/eer-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationEerCalculator(body) {
+    const param = {};
+    const request = body;
+
+    // Validate gender
+    if (['Male', 'Female', 'pergnant', 'lac'].includes(request.tech_gender)) {
+      // Validate numeric inputs
       if (
-        (isFinite(height) &&
-          isFinite(waist) &&
-          isFinite(neck) &&
-          isFinite(weight)) ||
-        isFinite(hip)
+        !isNaN(request.tech_age) && 
+        !isNaN(request.tech_weight) && 
+        (!isNaN(request['tech_height-ft']) || !isNaN(request['tech_height-in']) || !isNaN(request['tech_height-cm']))
       ) {
-        let bodyFat = 0;
-        if (gender === "male") {
-          if (waist <= neck || waist <= 0 || neck <= 0 || height <= 0) {
-            param.error = "Invalid measurements for male formula.";
-            return param;
-          }
-          bodyFat =
-            495 /
-              (1.0324 -
-                0.19077 * Math.log10(waist - neck) +
-                0.15456 * Math.log10(height)) -
-            450;
-        } else {
-          if (waist + hip <= neck || waist <= 0 || hip <= 0 || height <= 0) {
-            param.error = "Invalid measurements for female formula.";
-            return param;
-          }
-          bodyFat =
-            495 /
-              (1.29579 -
-                0.35004 * Math.log10(waist + hip - neck) +
-                0.221 * Math.log10(height)) -
-            450;
+        let age = parseFloat(request.tech_age);
+        let height_ft = parseFloat(request['tech_height-ft']) || 0;
+        let height_in = parseFloat(request['tech_height-in']) || 0;
+        let height_cm = parseFloat(request['tech_height-cm']) || 0;
+        let weight = parseFloat(request.tech_weight);
+
+        // Convert weight if in lbs
+        if (request.tech_unit == "lbs") {
+          weight = weight / 2.205;
         }
 
-        const fatMass = weight * (bodyFat / 100);
-        const leanMass = weight - fatMass;
-
-        let bodyFatCategory = "";
-        if (gender === "male") {
-          if (age >= 17 && age <= 26) {
-            if (bodyFat < 6) bodyFatCategory = "Essential Fat";
-            else if (bodyFat < 16) bodyFatCategory = "Athletic";
-            else if (bodyFat < 20) bodyFatCategory = "Fit";
-            else bodyFatCategory = "Acceptable";
-          } else {
-            if (bodyFat < 10) bodyFatCategory = "Essential Fat";
-            else if (bodyFat < 20) bodyFatCategory = "Athletic";
-            else if (bodyFat < 24) bodyFatCategory = "Fit";
-            else bodyFatCategory = "Acceptable";
-          }
-        } else {
-          if (age >= 17 && age <= 26) {
-            if (bodyFat < 16) bodyFatCategory = "Essential Fat";
-            else if (bodyFat < 24) bodyFatCategory = "Athletic";
-            else if (bodyFat < 30) bodyFatCategory = "Fit";
-            else bodyFatCategory = "Acceptable";
-          } else {
-            if (bodyFat < 20) bodyFatCategory = "Essential Fat";
-            else if (bodyFat < 28) bodyFatCategory = "Athletic";
-            else if (bodyFat < 34) bodyFatCategory = "Fit";
-            else bodyFatCategory = "Acceptable";
+        // Convert height to cm
+        if (request.tech_unit_ft_in == 'ft/in') {
+          height_cm = height_ft * 30.48;
+          if (height_in != null) {
+            height_in = height_in * 2.54;
+            height_cm = height_cm + height_in;
           }
         }
 
-        param.bodyFat = bodyFat.toFixed(2);
-        param.fatMass = Math.abs(fatMass.toFixed(2)) + 0;
-        param.leanMass = leanMass.toFixed(2);
-        param.bodyFatCategory = bodyFatCategory;
-        param.RESULT = 1;
-        return { status: "success", payload: param };
+        // Set activity level physical activity coefficient
+        let pa;
+        if (request.tech_activity == "Sedentary") {
+          pa = 1.0;
+          param.tech_stand = 'bg-gradient text-white';
+        } else if (request.tech_activity == "Lightly Active") {
+          pa = 1.11;
+          param.tech_light = 'bg-gradient text-white';
+        } else if (request.tech_activity == "Moderately Active") {
+          pa = 1.25;
+          param.tech_mod = 'bg-gradient text-white';
+        } else {
+          pa = 1.48;
+          param.tech_very = 'bg-gradient text-white';
+        }
+
+        // Calculate BMR and RMR
+        let bmr, rmr;
+        if (request.tech_gender == 'Female') {
+          bmr = Math.round(((9.99 * weight) + (6.25 * height_cm) - (4.92 * age) - 161) * 100) / 100;
+          rmr = Math.round((655 + (9.6 * weight) + (1.8 * height_cm) - (4.7 * age)) * 100) / 100;
+        } else {
+          bmr = Math.round(((9.99 * weight) + (6.25 * height_cm) - (4.92 * age) + 5) * 100) / 100;
+          rmr = Math.round((66 + (13.7 * weight) + (5 * height_cm) - (6.8 * age)) * 100) / 100;
+        }
+
+        // Calculate height in meters
+        const height_m = height_cm / 100;
+        const convert_hight = height_m * 39.37;
+
+        // Calculate IBW (Ideal Body Weight)
+        if (request.tech_gender == 'Female') {
+          const Robinson = Math.round(49 + (1.7 * (convert_hight - 60)));
+          const Hamwi = Math.round(45 + (2.2 * (convert_hight - 60)));
+          
+          if (request.tech_unit == 'kg') {
+            param.tech_ibw = `${Math.round(Robinson * 2.205)}-${Math.round(Hamwi * 2.205)} lbs`;
+          } else if (request.tech_unit == 'lbs') {
+            param.tech_ibw = `${Robinson} - ${Hamwi} kg`;
+          }
+        } else if (request.tech_gender == 'Male') {
+          const Robinson = Math.round(52 + (1.9 * (convert_hight - 60)));
+          const Hamwi = Math.round(48 + (2.7 * (convert_hight - 60)));
+          
+          if (request.tech_unit == 'kg') {
+            param.tech_ibw = `${Math.round(Robinson * 2.205)}-${Math.round(Hamwi * 2.205)} lbs`;
+          } else if (request.tech_unit == 'lbs') {
+            param.tech_ibw = `${Robinson} - ${Hamwi} kg`;
+          }
+        }
+
+        // Calculate BMI
+        const BMI = Math.round((weight / (height_m * height_m)) * 100) / 100;
+
+        // Calculate EER for Female/Pregnant/Lactating
+        let EER, s, l, m, v;
+        if (['Female', 'pergnant', 'lac'].includes(request.tech_gender)) {
+          if (age < 9) {
+            EER = Math.round(((135.3 - (30.8 * age)) + pa * ((10.0 * weight) + (934 * height_m)) + 20) * 100) / 100;
+            s = Math.round(((135.3 - (30.8 * age)) + 1.0 * ((10.0 * weight) + (934 * height_m)) + 20) * 100) / 100;
+            l = Math.round(((135.3 - (30.8 * age)) + 1.11 * ((10.0 * weight) + (934 * height_m)) + 20) * 100) / 100;
+            m = Math.round(((135.3 - (30.8 * age)) + 1.25 * ((10.0 * weight) + (934 * height_m)) + 20) * 100) / 100;
+            v = Math.round(((135.3 - (30.8 * age)) + 1.48 * ((10.0 * weight) + (934 * height_m)) + 20) * 100) / 100;
+          } else if (age > 8 && age < 19) {
+            EER = Math.round(((135.3 - (30.8 * age)) + pa * ((10.0 * weight) + (934 * height_m)) + 25) * 100) / 100;
+            s = Math.round(((135.3 - (30.8 * age)) + 1.0 * ((10.0 * weight) + (934 * height_m)) + 25) * 100) / 100;
+            l = Math.round(((135.3 - (30.8 * age)) + 1.11 * ((10.0 * weight) + (934 * height_m)) + 25) * 100) / 100;
+            m = Math.round(((135.3 - (30.8 * age)) + 1.25 * ((10.0 * weight) + (934 * height_m)) + 25) * 100) / 100;
+            v = Math.round(((135.3 - (30.8 * age)) + 1.48 * ((10.0 * weight) + (934 * height_m)) + 25) * 100) / 100;
+          } else {
+            EER = Math.round(((354 - (6.91 * age)) + pa * ((9.36 * weight) + (726 * height_m))) * 100) / 100;
+            s = Math.round(((354 - (6.91 * age)) + 1.0 * ((9.36 * weight) + (726 * height_m))) * 100) / 100;
+            l = Math.round(((354 - (6.91 * age)) + 1.11 * ((9.36 * weight) + (726 * height_m))) * 100) / 100;
+            m = Math.round(((354 - (6.91 * age)) + 1.25 * ((9.36 * weight) + (726 * height_m))) * 100) / 100;
+            v = Math.round(((354 - (6.91 * age)) + 1.48 * ((9.36 * weight) + (726 * height_m))) * 100) / 100;
+            // console.log(EER,age,pa,weight,height_m);
+          }
+          // Pregnancy adjustments
+          if (request.tech_gender == 'pergnant') {
+            if (request.tech_trim == '2nd') {
+              EER += 340; s += 340; l += 340; m += 340; v += 340;
+            }
+            if (request.tech_trim == '3rd') {
+              EER += 452; s += 452; l += 452; m += 452; v += 452;
+            }
+          }
+          // Lactation adjustments
+          if (request.tech_gender == 'lac') {
+            if (request.tech_trim == '1st6') {
+              EER += 330; s += 330; l += 330; m += 330; v += 330;
+            }
+            if (request.tech_trim == '2nd6') {
+              EER += 400; s += 400; l += 400; m += 400; v += 400;
+            }
+          }
+        } else if (request.tech_gender == 'Male') {
+          // Calculate EER for Male
+          if (age < 9) {
+            EER = Math.round(((88.5 - (61.9 * age)) + pa * ((26.7 * weight) + (903 * height_m)) + 20) * 100) / 100;
+            s = Math.round(((88.5 - (61.9 * age)) + 1.0 * ((26.7 * weight) + (903 * height_m)) + 20) * 100) / 100;
+            l = Math.round(((88.5 - (61.9 * age)) + 1.11 * ((26.7 * weight) + (903 * height_m)) + 20) * 100) / 100;
+            m = Math.round(((88.5 - (61.9 * age)) + 1.25 * ((26.7 * weight) + (903 * height_m)) + 20) * 100) / 100;
+            v = Math.round(((88.5 - (61.9 * age)) + 1.48 * ((26.7 * weight) + (903 * height_m)) + 20) * 100) / 100;
+          } else if (age > 8 && age < 19) {
+            EER = Math.round(((88.5 - (61.9 * age)) + pa * ((26.7 * weight) + (903 * height_m)) + 25) * 100) / 100;
+            s = Math.round(((88.5 - (61.9 * age)) + 1.0 * ((26.7 * weight) + (903 * height_m)) + 25) * 100) / 100;
+            l = Math.round(((88.5 - (61.9 * age)) + 1.11 * ((26.7 * weight) + (903 * height_m)) + 25) * 100) / 100;
+            m = Math.round(((88.5 - (61.9 * age)) + 1.25 * ((26.7 * weight) + (903 * height_m)) + 25) * 100) / 100;
+            v = Math.round(((88.5 - (61.9 * age)) + 1.48 * ((26.7 * weight) + (903 * height_m)) + 25) * 100) / 100;
+          } else {
+            EER = Math.round(((662 - (9.53 * age)) + pa * ((15.91 * weight) + (539.6 * height_m))) * 100) / 100;
+            s = Math.round(((662 - (9.53 * age)) + 1.0 * ((15.91 * weight) + (539.6 * height_m))) * 100) / 100;
+            l = Math.round(((662 - (9.53 * age)) + 1.11 * ((15.91 * weight) + (539.6 * height_m))) * 100) / 100;
+            m = Math.round(((662 - (9.53 * age)) + 1.25 * ((15.91 * weight) + (539.6 * height_m))) * 100) / 100;
+            v = Math.round(((662 - (9.53 * age)) + 1.48 * ((15.91 * weight) + (539.6 * height_m))) * 100) / 100;
+          }
+        }
+
+        // Adjust for weight goals
+        if (request.tech_goal == 'lose') {
+          EER -= 500; s -= 500; l -= 500; m -= 500; v -= 500;
+        }
+        if (request.tech_goal == 'gain') {
+          EER += 500; s += 500; l += 500; m += 500; v += 500;
+        }
+
+        // Determine BMI class
+        let bmiClass;
+        if (BMI <= 18.5) {
+          bmiClass = 'under';
+        } else if (BMI > 18.5 && BMI <= 24.9) {
+          bmiClass = 'health';
+        } else if (BMI > 24.9 && BMI <= 29.9) {
+          bmiClass = 'over';
+        } else if (BMI > 29.9 && BMI <= 35) {
+          bmiClass = 'obese';
+        } else if (BMI > 35) {
+          bmiClass = 's_obese';
+        }
+
+        // Set return parameters
+        param.tech_EER = EER;
+        param.tech_bmr = bmr;
+        param.tech_rmr = rmr;
+        param.tech_BMI = BMI;
+        param.tech_s = s;
+        param.tech_l = l;
+        param.tech_m = m;
+        param.tech_v = v;
+        param.tech_class = bmiClass;
+
+        return param;
       } else {
-        param.error = "Please! Check Your Input.";
-        return { status: "fail", payload: param };
+        param.error = 'Please fill All fields.';
+        return param;
+      }
+    } else if (request.tech_gender == 'child') {
+      // Child EER calculation
+      if (!isNaN(request.tech_child_age) && !isNaN(request.tech_weight)) {
+        let weight = parseFloat(request.tech_weight);
+        
+        if (request.tech_unit == "lbs") {
+          weight = weight / 2.205;
+        }
+
+        let EER;
+        const child_age = parseFloat(request.tech_child_age);
+        
+        if (child_age < 4) {
+          EER = Math.round(((89 * weight - 100) + 175) * 100) / 100;
+        } else if (child_age > 4 && child_age < 7) {
+          EER = Math.round(((89 * weight - 100) + 56) * 100) / 100;
+        } else if (child_age > 6 && child_age < 13) {
+          EER = Math.round(((89 * weight - 100) + 22) * 100) / 100;
+        } else if (child_age > 12 && child_age < 36) {
+          EER = Math.round(((89 * weight - 100) + 20) * 100) / 100;
+        }
+
+        param.tech_EER = EER;
+        param.tech_EER_child = "Child";
+        return param;
+      } else {
+        param.error = 'Please fill All fields.';
+        return param;
+      }
+    } else {
+      // Obese children calculation
+      if (
+        !isNaN(request.tech_age) && 
+        !isNaN(request.tech_weight) && 
+        (!isNaN(request['tech_height-ft']) || !isNaN(request['tech_height-in']) || !isNaN(request['tech_height-cm']))
+      ) {
+        let age = parseFloat(request.tech_age);
+        
+        if (age < 3 || age > 18) {
+          param.error = 'Age must be 3 to 18 years.';
+          return param;
+        }
+
+        let height_ft = parseFloat(request['tech_height-ft']) || 0;
+        let height_in = parseFloat(request['tech_height-in']) || 0;
+        let height_cm = parseFloat(request['tech_height-cm']) || 0;
+        let weight = parseFloat(request.tech_weight);
+
+        if (request.tech_unit == "lbs") {
+          weight = weight / 2.205;
+        }
+
+        if (request.tech_unit_ft_in == 'ft/in') {
+          height_cm = height_ft * 30.48;
+          if (height_in != null) {
+            height_in = height_in * 2.54;
+            height_cm = height_cm + height_in;
+          }
+        }
+
+        const height_m = height_cm / 100;
+
+        let bee, tee, s, l, m, v, bmr, rmr, pa;
+
+        if (request.tech_gender == 'obs_girl') {
+          if (request.tech_activity === "Sedentary") {
+            pa = 1.0;
+            param.tech_stand = 'bg-gradient text-white';
+          } else if (request.tech_activity == "Lightly Active") {
+            pa = 1.18;
+            param.tech_light = 'bg-gradient text-white';
+          } else if (request.tech_activity == "Moderately Active") {
+            pa = 1.35;
+            param.tech_mod = 'bg-gradient text-white';
+          } else {
+            pa = 1.60;
+            param.tech_very = 'bg-gradient text-white';
+          }
+
+          bee = Math.round((516 - (26.8 * age) + 347 * height_m + 12.4 * weight) * 100) / 100;
+          tee = Math.round((389 - (41.2 * age) + pa * (15.0 * weight) + (701.6 * height_m)) * 100) / 100;
+          s = Math.round((389 - (41.2 * age) + 1.0 * (15.0 * weight) + (701.6 * height_m)) * 100) / 100;
+          l = Math.round((389 - (41.2 * age) + 1.18 * (15.0 * weight) + (701.6 * height_m)) * 100) / 100;
+          m = Math.round((389 - (41.2 * age) + 1.35 * (15.0 * weight) + (701.6 * height_m)) * 100) / 100;
+          v = Math.round((389 - (41.2 * age) + 1.60 * (15.0 * weight) + (701.6 * height_m)) * 100) / 100;
+          bmr = Math.round(((9.99 * weight) + (6.25 * height_cm) - (4.92 * age) - 161) * 100) / 100;
+          rmr = Math.round((655 + (9.6 * weight) + (1.8 * height_cm) - (4.7 * age)) * 100) / 100;
+          console.log(tee,age,height_m,weight);
+        } else {
+          if (request.tech_activity == "Sedentary") {
+            pa = 1.0;
+            param.tech_stand = 'bg-gradient text-white';
+          } else if (request.tech_activity == "Lightly Active") {
+            pa = 1.12;
+            param.tech_light = 'bg-gradient text-white';
+          } else if (request.tech_activity == "Moderately Active") {
+            pa = 1.24;
+            param.tech_mod = 'bg-gradient text-white';
+          } else {
+            pa = 1.45;
+            param.tech_very = 'bg-gradient text-white';
+          }
+
+          bee = Math.round((420 - (33.5 * age) + 418.9 * height_m + 16.7 * weight) * 100) / 100;
+          tee = Math.round((114 - (50.9 * age) + pa * (19.5 * weight + 1161.4 * height_m)) * 100) / 100;
+          s = Math.round((114 - (50.9 * age) + 1.0 * (19.5 * weight + 1161.4 * height_m)) * 100) / 100;
+          l = Math.round((114 - (50.9 * age) + 1.12 * (19.5 * weight + 1161.4 * height_m)) * 100) / 100;
+          m = Math.round((114 - (50.9 * age) + 1.24 * (19.5 * weight + 1161.4 * height_m)) * 100) / 100;
+          v = Math.round((114 - (50.9 * age) + 1.45 * (19.5 * weight + 1161.4 * height_m)) * 100) / 100;
+          bmr = Math.round(((9.99 * weight) + (6.25 * height_cm) - (4.92 * age) + 5) * 100) / 100;
+          rmr = Math.round((66 + (13.7 * weight) + (5 * height_cm) - (6.8 * age)) * 100) / 100;
+        }
+
+        const BMI = Math.round((weight / (height_m * height_m)) * 100) / 100;
+
+        let bmiClass;
+        if (BMI <= 18.5) {
+          bmiClass = 'under';
+        } else if (BMI > 18.5 && BMI <= 24.9) {
+          bmiClass = 'health';
+        } else if (BMI > 24.9 && BMI <= 29.9) {
+          bmiClass = 'over';
+        } else if (BMI > 29.9 && BMI <= 35) {
+          bmiClass = 'obese';
+        } else if (BMI > 35) {
+          bmiClass = 's_obese';
+        }
+
+        param.tech_tee = tee;
+        param.tech_bee = bee;
+        param.tech_bmr = bmr;
+        param.tech_rmr = rmr;
+        param.tech_BMI = BMI;
+        param.tech_s = s;
+        param.tech_l = l;
+        param.tech_m = m;
+        param.tech_v = v;
+        param.tech_class = bmiClass;
+
+        return param;
+      } else {
+        param.error = 'Please fill All fields.';
+        return param;
+      }
+    }
+  }
+
+
+     /**
+    * getCalculationAcftCalculator: Service Method
+    * POST: /api/calculators-lol/acft-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  
+    async getCalculationAcftCalculator(body) {
+          const request = body;
+          const unit_type = request.tech_unit_type;
+          const test_units = request.tech_test_units;
+          const deadlift = request.tech_deadlift;
+          const standing_power_throw = request.tech_standing_power_throw;
+          const hand_release = request.tech_hand_release;
+          const sprint_min = request.tech_sprint_min;
+          const sprint_sec = request.tech_sprint_sec;
+          const plank_min = request.tech_plank_min;
+          const plank_sec = request.tech_plank_sec;
+          const mile_min = request.tech_mile_min;
+          const mile_sec = request.tech_mile_sec;
+          const leg_tuck = request.tech_leg_tuck;
+
+          const dead_lift_score = {
+              "340": "100", "330": "97", "320": "94", "310": "92", "300": "90", 
+              "290": "88", "280": "86", "270": "84", "260": "82", "250": "80",
+              "240": "78", "230": "76", "220": "74", "210": "72", "200": "70",
+              "190": "68", "180": "65", "170": "64", "160": "63", "150": "62",
+              "140": "60", "130": "50", "120": "40", "110": "30", "100": "20",
+              "90": "10", "80": "0"
+          };
+
+          const power_throw_score = {
+              "12.5": "100", "12.4": "99", "12.3": "98", "12.2": "98", "12.1": "97",
+              "12.0": "96", "11.9": "96", "11.8": "95", "11.7": "94", "11.6": "94",
+              "11.5": "93", "11.4": "92", "11.3": "92", "11.2": "91", "11.1": "90",
+              "11.0": "90", "10.9": "89", "10.8": "88", "10.7": "88", "10.6": "87",
+              "10.5": "86", "10.4": "86", "10.3": "85", "10.2": "84", "10.1": "84",
+              "10.0": "83", "9.9": "82", "9.8": "82", "9.7": "81", "9.6": "80",
+              "9.5": "80", "9.4": "79", "9.3": "78", "9.2": "78", "9.1": "77",
+              "9.0": "76", "8.9": "76", "8.8": "75", "8.7": "74", "8.6": "74",
+              "8.5": "73", "8.4": "72", "8.3": "72", "8.2": "71", "8.1": "70",
+              "8.0": "70", "7.9": "69", "7.8": "69", "7.7": "68", "7.6": "68",
+              "7.5": "68", "7.4": "67", "7.3": "67", "7.2": "67", "7.1": "67",
+              "7.0": "66", "6.9": "66", "6.8": "66", "6.7": "65", "6.6": "65",
+              "6.5": "65", "6.4": "64", "6.3": "65", "6.2": "64", "6.1": "63",
+              "6.0": "63", "5.9": "63", "5.8": "63", "5.7": "62", "5.6": "62",
+              "5.5": "62", "5.4": "62", "5.3": "61", "5.2": "61", "5.1": "61",
+              "5.0": "61", "4.9": "61", "4.8": "60", "4.7": "60", "4.5": "60",
+              "4.6": "60", "4.4": "55", "4.3": "50", "4.2": "45", "4.1": "40",
+              "4.0": "35", "3.9": "30", "3.8": "25", "3.7": "20", "3.6": "15",
+              "3.5": "10", "3.4": "5", "3.3": "1", "3.2": "0"
+          };
+
+          const hand_release_score = {
+              "60": "100", "59": "99", "58": "98", "57": "97", "56": "96", "55": "95",
+              "54": "94", "53": "93", "52": "92", "51": "91", "50": "90", "49": "89",
+              "48": "88", "47": "87", "46": "86", "45": "85", "44": "84", "43": "83",
+              "42": "82", "41": "81", "40": "80", "39": "79", "38": "78", "37": "77",
+              "36": "76", "35": "75", "34": "74", "33": "73", "32": "72", "31": "71",
+              "30": "70", "29": "69", "28": "69", "27": "68", "26": "68", "25": "67",
+              "24": "67", "23": "66", "22": "66", "21": "65", "20": "65", "19": "64",
+              "18": "64", "17": "63", "16": "63", "15": "62", "14": "62", "13": "61",
+              "12": "61", "10": "60", "9": "55", "8": "50", "7": "45", "6": "40",
+              "5": "35", "4": "30", "3": "25", "2": "20", "1": "15", "0": "0"
+          };
+
+          const spring_drag_score = {
+              "1:33": "100", "1.34": "99", "1:35": "99", "1.36": "99", "1.37": "99",
+              "1.38": "99", "1:39": "98", "1:40": "98", "1:41": "97", "1:42": "97",
+              "1:43": "96", "1:44": "96", "1:45": "95", "1:46": "94", "1:47": "93",
+              "1:48": "92", "1:49": "91", "1:50": "90", "1:51": "89", "1:52": "88",
+              "1:53": "87", "1:54": "86", "1:55": "85", "1:56": "84", "1:57": "83",
+              "1:58": "82", "1:59": "81", "2:00": "80", "2:01": "79", "2:02": "78",
+              "2:03": "77", "2:04": "76", "2:05": "75", "2:06": "74", "2:07": "73",
+              "2:08": "72", "2:09": "71", "2:10": "70", "2.11": "69", "2.12": "69",
+              "2.13": "69", "2:14": "69", "2:18": "68", "2.15": "68", "2.16": "68",
+              "2.17": "68", "2.19": "68", "2.20": "67", "2.21": "67", "2.23": "66",
+              "2.24": "66", "2.25": "66", "2.27": "65", "2.28": "65", "2.29": "65",
+              "2.31": "64", "2.32": "64", "2.33": "64", "2.34": "64", "2.36": "63",
+              "2.37": "63", "2.38": "63", "2.39": "63", "2.41": "62", "2.42": "62",
+              "2.43": "62", "2.44": "62", "2.46": "61", "2.47": "61", "2.48": "61",
+              "2.49": "61", "2:22": "67", "2:26": "66", "2:30": "65", "2:35": "64",
+              "2:40": "63", "2:45": "62", "2:50": "61", "3:00": "60", "3:01": "59",
+              "3:02": "58", "3:03": "57", "3:04": "56", "3:05": "55", "3:06": "54",
+              "3:07": "53", "3:08": "52", "3:09": "51", "3:10": "50", "3:11": "48",
+              "3:12": "46", "3:13": "44", "3:14": "42", "3:15": "40", "3:16": "38",
+              "3:17": "36", "3:18": "34", "3:19": "32", "3:20": "30", "3:21": "28",
+              "3:22": "26", "3:23": "24", "3:24": "22", "3:25": "20", "3:26": "18",
+              "3:27": "16", "3:28": "14", "3:29": "12", "3:30": "10", "3:31": "8",
+              "3:32": "6", "3:33": "4", "3:34": "2", "3:35": "0"
+          };
+
+          const leg_tuck_score = {
+              "20": "100", "19": "98", "18": "96", "17": "94", "16": "92", "15": "90",
+              "14": "88", "13": "86", "12": "84", "11": "82", "10": "80", "9": "78",
+              "8": "76", "7": "74", "6": "72", "5": "70", "4": "68", "3": "65",
+              "2": "62", "1": "60", "0": "0"
+          };
+
+          const two_miles_run = {
+              "13:30": "100", "13:39": "99", "13:38": "99", "13:37": "99", "13:36": "99",
+              "13:35": "99", "13:34": "99", "13:33": "99", "13:32": "99", "13.31": "99",
+              "13:40": "98", "13:41": "98", "13:42": "98", "13:43": "98", "13:44": "98",
+              "13.45": "98", "13.46": "98", "13.47": "98", "13:48": "98", "13:49": "97",
+              "13:50": "97", "13:51": "97", "13:52": "97", "13:53": "97", "13:54": "97",
+              "13:55": "97", "13:56": "97", "13:57": "97", "13:58": "96", "13:59": "96",
+              "14:00": "96", "14:01": "96", "14:02": "96", "14:03": "96", "14:04": "96",
+              "14:05": "96", "14:06": "96", "14:07": "95", "14:08": "95", "14:09": "95",
+              "14:10": "95", "14:11": "95", "14:12": "95", "14:13": "95", "14:14": "95",
+              "14:15": "95", "14:16": "94", "14:17": "94", "14:18": "94", "14:19": "94",
+              "14:20": "94", "14:21": "94", "14:22": "94", "14:23": "94", "14:24": "94",
+              "14:25": "93", "14:26": "93", "14:27": "93", "14:28": "93", "14:29": "93",
+              "14:30": "93", "14:31": "93", "14:32": "93", "14:33": "93", "14:34": "92",
+              "14:35": "92", "14:36": "92", "14:37": "92", "14:38": "92", "14:39": "92",
+              "14:40": "92", "14:41": "92", "14:42": "92", "14:43": "91", "14:44": "91",
+              "14:45": "91", "14:46": "91", "14:47": "91", "14:48": "91", "14:49": "91",
+              "14:50": "91", "14:51": "91", "15:00": "90", "15:01": "89", "15:02": "89",
+              "15:03": "89", "15:04": "89", "15:05": "89", "15:06": "89", "15:07": "89",
+              "15:08": "89", "15:09": "89", "15:10": "88", "15:11": "88", "15:12": "88",
+              "15:13": "88", "15:14": "88", "15:15": "88", "15:16": "88", "15:17": "88",
+              "15:18": "88", "15:19": "87", "15:20": "87", "15:21": "87", "15:22": "87",
+              "15:23": "87", "15:24": "87", "15:25": "87", "15:26": "87", "15:27": "87",
+              "15:28": "86", "15:29": "86", "15:30": "86", "15:31": "86", "15:32": "86",
+              "15:33": "86", "15:34": "86", "15:35": "86", "15:36": "86", "15:37": "85",
+              "15:38": "85", "15:39": "85", "15:40": "85", "15:41": "85", "15:42": "85",
+              "15:43": "85", "15:44": "85", "15:45": "85", "15:46": "84", "15:47": "84",
+              "15:48": "84", "15:49": "84", "15:50": "84", "15:51": "84", "15:52": "84",
+              "15.53": "84", "15:54": "84", "16:03": "83", "16:04": "82", "16:05": "82",
+              "16:06": "82", "16:07": "82", "16:08": "82", "16:09": "82", "16:10": "82",
+              "16:11": "82", "16:12": "82", "16:13": "81", "16:14": "81", "16:15": "81",
+              "16:16": "81", "16:17": "81", "16:18": "81", "16:19": "81", "16:20": "81",
+              "16:21": "81", "16:22": "80", "16:23": "80", "16:24": "80", "16:25": "80",
+              "16:26": "80", "16:27": "80", "16:28": "80", "16:29": "80", "16:30": "80",
+              "16:31": "79", "16:32": "79", "16:33": "79", "16:34": "79", "16:35": "79",
+              "16:36": "79", "16:37": "79", "16:38": "79", "16:39": "79", "16:40": "78",
+              "16:41": "78", "16:42": "78", "16:43": "78", "16:44": "78", "16:45": "78",
+              "16:46": "78", "16:47": "78", "16:48": "78", "16:49": "77", "16:50": "77",
+              "16:51": "77", "16:52": "77", "16:53": "77", "16:54": "77", "16:55": "77",
+              "16:56": "77", "16:57": "77", "17:06": "76", "17:07": "75", "17:08": "75",
+              "17:09": "75", "17:10": "75", "17:11": "75", "17:12": "75", "17:13": "75",
+              "17:14": "75", "17:15": "75", "17:16": "74", "17:17": "74", "17:18": "74",
+              "17:19": "74", "17:20": "74", "17:21": "74", "17:22": "74", "17:23": "74",
+              "17:24": "74", "17:25": "73", "17:26": "73", "17:27": "73", "17:28": "73",
+              "17:29": "73", "17:30": "73", "17:31": "73", "17:32": "73", "17:33": "73",
+              "17:34": "72", "17:35": "72", "17:36": "72", "17:37": "72", "17:38": "72",
+              "17:39": "72", "17:40": "72", "17:41": "72", "17:42": "72", "17:43": "71",
+              "17:44": "71", "17:45": "71", "17:46": "71", "17:47": "71", "17:48": "71",
+              "17:49": "71", "17:50": "71", "17:51": "71", "18:00": "69", "18:01": "69",
+              "18:02": "69", "18:03": "69", "18:04": "69", "18:05": "69", "18:06": "69",
+              "18:07": "69", "18:08": "69", "18:09": "69", "18:10": "69", "18:11": "69",
+              "18:12": "69", "18:13": "68", "18:14": "68", "18:15": "68", "18:16": "68",
+              "18:17": "68", "18:18": "68", "18:19": "68", "18:20": "68", "18:21": "68",
+              "18:22": "68", "18:23": "68", "18:24": "68", "18:25": "67", "18:26": "67",
+              "18:27": "67", "18:28": "67", "18:29": "67", "18:30": "67", "18:31": "67",
+              "18:32": "67", "18:33": "67", "18:34": "67", "18:35": "67", "18:36": "67",
+              "18:37": "66", "18:38": "66", "18:39": "66", "18:40": "66", "18:41": "66",
+              "18:42": "66", "18:43": "66", "18:44": "66", "18:45": "66", "18:46": "66",
+              "18:47": "66", "18:48": "66", "19:00": "65", "19:01": "64", "19:02": "64",
+              "19:03": "64", "19:04": "64", "19:05": "64", "19:06": "64", "19:07": "64",
+              "19:08": "64", "19:09": "64", "19:10": "64", "19:11": "64", "19:12": "64",
+              "19:13": "64", "19:14": "64", "19:15": "64", "19:16": "64", "19:17": "64",
+              "19:18": "64", "19:19": "64", "19:20": "64", "19:21": "64", "19:22": "64",
+              "19:23": "64", "19:24": "64", "19:24": "64", "19:25": "63", "19:26": "63",
+              "19:27": "63", "19:28": "63", "19:29": "63", "19:30": "63", "19:31": "63",
+              "19:32": "63", "19:33": "63", "19:34": "63", "19:35": "63", "19:36": "63",
+              "1937": "63", "19:38": "63", "19:39": "63", "19:40": "63", "19:41": "63",
+              "19:42": "63", "19:43": "63", "19:44": "63", "19:45": "63", "19:46": "63",
+              "19:47": "63", "19:48": "63", "20:12": "62", "20:13": "61", "20:14": "61",
+              "20:15": "61", "20:16": "61", "20:17": "61", "20:18": "61", "20:19": "61",
+              "20:20": "61", "20:21": "61", "20:22": "61", "20:23": "61", "20:24": "61",
+              "20:25": "61", "20:26": "61", "20:27": "61", "20:28": "61", "20:29": "61",
+              "20:30": "61", "20:31": "61", "20:32": "61", "20:33": "61", "20:34": "61",
+              "20:35": "61", "20:36": "61", "21:00": "60", "21:01": "59", "21:02": "58",
+              "21:03": "58", "21:04": "57", "21:05": "57", "21:06": "56", "21:07": "56",
+              "21:08": "55", "21:09": "55", "21:10": "54", "21:11": "53", "21:12": "53",
+              "21:13": "52", "21:14": "52", "21:15": "51", "21:16": "51", "21:17": "50",
+              "21:18": "50", "21:19": "48", "21:20": "48", "21:21": "48", "21:22": "47",
+              "21:23": "47", "21:24": "46", "21:25": "46", "21:26": "45", "21:27": "45",
+              "21:28": "44", "21:29": "43", "21:30": "43", "21:31": "42", "21:32": "42",
+              "21:33": "41", "21:34": "41", "21:35": "40", "21:36": "40", "21:37": "39",
+              "21:38": "38", "21:39": "38", "21:40": "37", "21:41": "37", "21:42": "36",
+              "21:43": "36", "21:44": "35", "21:45": "35", "21:46": "34", "21:47": "33",
+              "22:48": "33", "21:49": "32", "21:50": "32", "21:51": "31", "21:52": "31",
+              "21:53": "30", "21:54": "30", "21:55": "29", "21:56": "28", "21:57": "28",
+              "21:58": "27", "21:59": "27", "22:01": "26", "22:02": "25", "22:03": "25",
+              "22:04": "24", "22:05": "23", "22:06": "23", "22:07": "22", "22:08": "22",
+              "22:09": "21", "22:10": "21", "22:11": "20", "22:12": "20", "22:13": "19",
+              "22:14": "18", "22:15": "18", "22:16": "17", "22:17": "17", "22:18": "16",
+              "22:19": "16", "22:20": "15", "22:21": "15", "22:22": "14", "22:23": "13",
+              "22:24": "13", "22:25": "12", "22:26": "12", "22:27": "11", "22:28": "11",
+              "22:29": "10", "22:30": "10", "22:31": "9", "22:32": "8", "22:33": "8",
+              "22:34": "7", "22:35": "7", "22:36": "6", "22:37": "6", "22:38": "5",
+              "22:39": "5", "22:40": "4", "22:41": "3", "22:42": "3", "22:43": "2",
+              "22:44": "2", "22:45": "1", "22:46": "1", "22:47": "0", "22:48": "0"
+          };
+
+          const plunk = {
+              "2:03": "58", "2:04": "58", "2:05": "58", "2:06": "59", "2:07": "59",
+              "2:08": "59", "2:09": "60", "2:10": "60", "2:11": "60", "2:12": "61",
+              "2:13": "61", "2:14": "61", "2:15": "62", "2:16": "62", "2:17": "62",
+              "2:18": "63", "2:19": "63", "2:20": "63", "2:21": "64", "2:22": "64",
+              "2:23": "64", "2:24": "65", "2:25": "65", "2:26": "65", "2:27": "66",
+              "2:28": "66", "2:29": "66", "2:30": "67", "2:31": "67", "2:32": "67",
+              "2:33": "68", "2:34": "68", "2:35": "68", "2:36": "69", "2:37": "69",
+              "2:38": "69", "2:39": "69", "2:40": "70", "2:41": "70", "2:42": "70",
+              "2:43": "71", "2:44": "71", "2:45": "71", "2:46": "72", "2:47": "72",
+              "2:48": "72", "2:49": "72", "2:50": "73", "2:51": "73", "2:52": "73",
+              "2:53": "74", "2:54": "74", "2:55": "74", "2:56": "75", "2:57": "75",
+              "2:58": "75", "3:02": "76", "3:03": "76", "3:04": "76", "3:05": "77",
+              "3:06": "77", "3:07": "77", "3:08": "78", "3:09": "78", "3:10": "78",
+              "3:11": "78", "3:12": "79", "3:13": "79", "3:14": "79", "3:15": "80",
+              "3:16": "80", "3:17": "80", "3:18": "81", "3:19": "81", "3:20": "81",
+              "3:21": "82", "3:22": "82", "3:23": "82", "3:24": "82", "3:25": "83",
+              "3:26": "83", "3:27": "83", "3:28": "84", "3:29": "84", "3:30": "84",
+              "3:31": "85", "3:32": "85", "3:33": "85", "3:34": "85", "3:35": "86",
+              "3:36": "86", "3:37": "86", "3:38": "87", "3:39": "87", "3:40": "87",
+              "3:41": "88", "3:42": "88", "3:43": "88", "3:44": "89", "3:45": "89",
+              "3:46": "89", "3:47": "89", "3:48": "90", "3:49": "90", "3:50": "90",
+              "3:51": "91", "3:52": "91", "3:53": "91", "3:54": "92", "3:55": "92",
+              "3:56": "92", "3:57": "92", "3:58": "93", "3:59": "93", "4:0": "93",
+              "4:1": "94", "4:2": "94", "4:3": "94", "4:4": "95", "4:5": "95",
+              "4:6": "95", "4:7": "96", "4:8": "96", "4:9": "96", "4:10": "96",
+              "4:11": "97", "4:12": "97", "4:13": "97", "4:14": "98", "4:15": "98",
+              "4:16": "98", "4:17": "99", "4:18": "99", "4:19": "99", "4:20": "100"
+          };
+
+          const param = {};
+
+          // Unit type configuration
+          if (unit_type == "1") { // Heavy
+              param.tech_min_score = 70;
+              param.tech_mdl_value = 200;
+              param.tech_spt_value = 8.0;
+              param.tech_hrp_value = 30;
+              param.tech_sdc_value = "2:10";
+              param.tech_ltk_value = 5;
+              param.tech_plk_value = "2:42";
+              param.tech_two_miles_value = "18:00";
+          } else if (unit_type == "2") { // Significant
+              param.tech_min_score = 65;
+              param.tech_mdl_value = 180;
+              param.tech_spt_value = 6.5;
+              param.tech_hrp_value = 20;
+              param.tech_sdc_value = "2:30";
+              param.tech_ltk_value = 3;
+              param.tech_plk_value = "2:26";
+              param.tech_two_miles_value = "19:00";
+          } else if (unit_type == "3") { // Moderate
+              param.tech_min_score = 60;
+              param.tech_mdl_value = 140;
+              param.tech_spt_value = 4.5;
+              param.tech_hrp_value = 10;
+              param.tech_sdc_value = "3:00";
+              param.tech_ltk_value = 1;
+              param.tech_plk_value = "2:09";
+              param.tech_two_miles_value = "21:00";
+          }
+
+          // Test units processing - PLANK VALIDATION FIRST
+          if (test_units == "2") {
+              if (isNumeric(plank_min) && isNumeric(plank_sec)) {
+                  const combine_plank = `${plank_min}:${plank_sec}`;
+                  
+                  // YAHI CHANGE KIYA HAI - sirf yeh error return karo
+                  if (compareTimes(combine_plank, "4:00") > 0) {
+                      return {
+                          error: "Plank Time cannot be more than 4:00."
+                      };
+                  }
+              }
+          }
+
+          // Baaki ka code continue karo...
+          if (test_units == "1") {
+              if (isNumeric(leg_tuck)) {
+                  // 7-Leg Tuck
+                  if (leg_tuck < 0) {
+                      param.error = 'Leg Tuck Reps cannot be less than 0.';
+                      return param;
+                  } else if (leg_tuck > 20) {
+                      param.error = 'Leg Tuck Reps cannot be more than 20.';
+                      return param;
+                  } else {
+                      let leg_tuck_answer = leg_tuck_score[leg_tuck.toString()];
+                      param.tech_leg_tuck_answer = leg_tuck_answer;
+                  }
+              } else {
+                  param.error = 'Please! Check Your Input.';
+                  return param;
+              }
+          } else if (test_units == "2") {
+              if (isNumeric(plank_min) && isNumeric(plank_sec)) {
+                  // 6-Plank Min
+                  const combine_plank = `${plank_min}:${plank_sec}`;
+                  
+                  if (compareTimes(combine_plank, "2:03") < 0) {
+                      param.error = 'Plank Time cannot be less than 2:03.';
+                      return param;
+                  } else if (compareTimes(combine_plank, "2:59") >= 0 && compareTimes(combine_plank, "3:01") <= 0) {
+                      param.tech_plank_answer = 75;
+                  } else if (compareTimes(combine_plank, "3:59") >= 0 && compareTimes(combine_plank, "4:00") <= 0) {
+                      param.tech_plank_answer = 93;
+                  } else {
+                      param.plank_answer = plunk[combine_plank];
+                  }
+              } else {
+                  param.error = 'Please! Check Your Input.';
+                  return param;
+              }
+          }
+
+          // Main calculations
+          if (isNumeric(deadlift) && isNumeric(standing_power_throw) && isNumeric(hand_release) && 
+              isNumeric(sprint_min) && isNumeric(sprint_sec)) {
+              
+              let dead_lift_answer, power_throw_score_answer, hand_release_score_answer, sst, two_mile_answer;
+
+              // 1-DeadLift Validation and Calculation
+              if (deadlift < 80) {
+                  param.error = 'DeadLift pounds cannot be less than 80.';
+                  return param;
+              } else if (deadlift > 340) {
+                  param.error = 'DeadLift pounds cannot be more than 340.';
+                  return param;
+              } else {
+                  dead_lift_answer = dead_lift_score[deadlift.toString()];
+              }
+
+              // 2-Power Throw Score
+              if (standing_power_throw > 12.5) {
+                  param.error = 'Standing Power Throw meters cannot be greater than 12.5.';
+                  return param;
+              } else if (standing_power_throw < 3.2) {
+                  param.error = 'Standing Power Throw meters cannot be less than 3.2.';
+                  return param;
+              } else {
+                  power_throw_score_answer = power_throw_score[standing_power_throw.toString()];
+              }
+
+              // 3-Hand-release push-up
+              if (hand_release > 60) {
+                  param.error = 'Hand Release Push Up cannot be greater than 60.';
+                  return param;
+              } else if (hand_release < 0) {
+                  param.error = 'Hand Release Push Up cannot be less than 0.';
+                  return param;
+              } else {
+                  hand_release_score_answer = hand_release_score[hand_release.toString()];
+              }
+
+              // 4-Sprint Drag and Carry
+              const spring_drag_score_value = `${sprint_min}:${sprint_sec}`;
+              if (compareTimes(spring_drag_score_value, "3:35") > 0) {
+                  param.error = 'Spring Drag and Carry Time cannot be greater than 3:35.';
+                  return param;
+              } else if (compareTimes(spring_drag_score_value, "1:33") < 0) {
+                  param.error = 'Spring Drag and Carry Time cannot be less than 1:33.';
+                  return param;
+              } else if (compareTimes(spring_drag_score_value, "1:60") >= 0 && compareTimes(spring_drag_score_value, "1:99") <= 0) {
+                  sst = 80;
+              } else if (compareTimes(spring_drag_score_value, "2:51") >= 0 && compareTimes(spring_drag_score_value, "2:99") <= 0) {
+                  sst = 60;
+              } else {
+                  sst = spring_drag_score[spring_drag_score_value];
+              }
+
+              // 5-Two Mile Run
+              const combine_mile_value = `${mile_min}:${mile_sec}`;
+              if (compareTimes(combine_mile_value, "13:30") < 0) {
+                  param.error = 'Two Mile Run Time cannot be less than 13:30.';
+                  return param;
+              } else if (compareTimes(combine_mile_value, "22:48") > 0) {
+                  param.error = 'Two Mile Run Time cannot be greater than 22:48.';
+                  return param;
+              } else if (compareTimes(combine_mile_value, "13:60") >= 0 && compareTimes(combine_mile_value, "13:99") <= 0) {
+                  two_mile_answer = 96;
+              } else if (compareTimes(combine_mile_value, "14:52") >= 0 && compareTimes(combine_mile_value, "14:99") <= 0) {
+                  two_mile_answer = 90;
+              } else if (compareTimes(combine_mile_value, "15:55") >= 0 && compareTimes(combine_mile_value, "16:02") <= 0) {
+                  two_mile_answer = 83;
+              } else if (compareTimes(combine_mile_value, "16:58") >= 0 && compareTimes(combine_mile_value, "17:05") <= 0) {
+                  two_mile_answer = 76;
+              } else if (compareTimes(combine_mile_value, "17:52") >= 0 && compareTimes(combine_mile_value, "17:99") <= 0) {
+                  two_mile_answer = 70;
+              } else if (compareTimes(combine_mile_value, "18:49") >= 0 && compareTimes(combine_mile_value, "18:99") <= 0) {
+                  two_mile_answer = 65;
+              } else if (compareTimes(combine_mile_value, "19:49") >= 0 && compareTimes(combine_mile_value, "20:11") <= 0) {
+                  two_mile_answer = 62;
+              } else if (compareTimes(combine_mile_value, "20:37") >= 0 && compareTimes(combine_mile_value, "20:99") <= 0) {
+                  two_mile_answer = 60;
+              } else if (compareTimes(combine_mile_value, "21:60") >= 0 && compareTimes(combine_mile_value, "22:00") <= 0) {
+                  two_mile_answer = 26;
+              } else {
+                  two_mile_answer = two_miles_run[combine_mile_value];
+              }
+
+              param.tech_dead_lift_score = dead_lift_answer;
+              param.tech_power_throw_score_answer = power_throw_score_answer;
+              param.tech_two_miles_run_values = two_mile_answer;
+              param.tech_spring_drag_score_answer = sst;
+              param.tech_hand_release_answer = hand_release_score_answer;
+              param.tech_request = request;
+              
+          } else {
+              param.error = 'Please! Check Your Input.';
+              return param;
+          }
+
+          return param;
+          
+          // Helper functions
+          function isNumeric(value) {
+              return !isNaN(parseFloat(value)) && isFinite(value);
+          }
+          
+          function compareTimes(time1, time2) {
+              const [min1, sec1] = time1.split(':').map(Number);
+              const [min2, sec2] = time2.split(':').map(Number);
+              
+              const total1 = min1 * 60 + sec1;
+              const total2 = min2 * 60 + sec2;
+              
+              if (total1 < total2) return -1;
+              if (total1 > total2) return 1;
+              return 0;
+          }
+      }
+    
+         /**
+    * getCalculationCarboplatinCalculator: Service Method
+    * POST: /api/calculators-lol/carboplatin-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  
+   async getCalculationCarboplatinCalculator(body) {
+        const request = body;
+        
+        const type = request.tech_type;
+        const operations = request.tech_operations;
+        const first = parseFloat(request.tech_first);
+        const second = parseFloat(request.tech_second);
+        const s_units = request.tech_s_units;
+        const third = parseFloat(request.tech_third);
+        const t_units = request.tech_t_units;
+        const four = parseFloat(request.tech_four);
+        const five = parseFloat(request.tech_five);
+        const f_units = request.tech_f_units;
+
+        let s_units_val = 1;
+        if (s_units == 'kg') {
+            s_units_val = 1;
+        } else if (s_units == 'lbs') {
+            s_units_val = 2;
+        } else if (s_units == 'stone') {
+            s_units_val = 3;
+        }
+
+        let t_units_val = 1;
+        if (t_units == 'mg/dL') {
+            t_units_val = 1;
+        } else if (t_units == 'μmol/L') {
+            t_units_val = 2;
+        }
+
+        let f_units_val = 1;
+        if (f_units == 'in') {
+            f_units_val = 1;
+        } else if (f_units == 'cm') {
+            f_units_val = 2;
+        }
+
+        // Helper functions
+        function baby(a, b) {
+            if (a == "1") {
+                return b * 1;
+            } else if (a == "2") {
+                return b * 0.011312;
+            }
+            return b;
+        }
+
+        function baby2(a, b) {
+            if (a == "1") {
+                return b * 88.4;
+            } else if (a == "2") {
+                return b * 1;
+            }
+            return b;
+        }
+
+        function wazan(a, b) {
+            if (a == "1") {
+                return b * 1;
+            } else if (a == "2") {
+                return b * 0.4536;
+            } else if (a == "3") {
+                return b * 6.35;
+            }
+            return b;
+        }
+
+        function kad(a, b) {
+            if (a == "1") {
+                return b * 2.54;
+            } else if (a == "2") {
+                return b * 1;
+            }
+            return b;
+        }
+
+        function kad2(a, b) {
+            if (a == "1") {
+                return b * 1;
+            } else if (a == "2") {
+                return b / 2.54;
+            }
+            return b;
+        }
+
+        const five2 = five;
+        const f_units2 = f_units_val;
+        const third2 = third;
+        const t_units2 = t_units_val;
+        
+        const third_converted = baby(t_units_val.toString(), third);
+        const second_converted = wazan(s_units_val.toString(), second);
+        const five_converted = kad(f_units_val.toString(), five);
+        const five2_converted = kad2(f_units2.toString(), five2);
+        const third2_converted = baby2(t_units2.toString(), third2);
+
+        const param = {};
+
+        if (type == "first") {
+            if (first >= 18) {
+                const batien = 140 - first;
+                const divi = 72 * third_converted;
+                const dosra = second_converted / divi;
+                const grf = batien * dosra;
+                
+                let answer;
+                if (operations == "1") {
+                    answer = grf;
+                } else if (operations == "2") {
+                    answer = 0.85 * grf;
+                }
+                
+                const max_dos = four * 150;
+                const car_dos = four * (answer + 25);
+
+                param.tech_answer = answer;
+                param.tech_max_dos = max_dos;
+                param.tech_car_dos = car_dos;
+            } else {
+                param.error = 'This calculator should not be used in patients <18 years old.';
+                return param;
+            }
+        } else if (type == "second") {
+            if (first >= 18) {
+                if (!isNaN(second) && !isNaN(third) && !isNaN(five)) {
+                    const second_pow = Math.pow(second_converted, 0.425);
+                    const five_pow = Math.pow(five_converted, 0.725);
+                    const bsa = 0.007184 * second_pow * five_pow;
+
+                    if (operations == 1) {
+                        // Male calculations
+                        const minus = five2_converted - 60;
+                        const multi = 2.3 * minus;
+                        const ibw = 50 + multi;
+                        
+                        // abw and abw alt answer
+                        const minus2 = second_converted - ibw;
+                        const multi2 = 0.4 * minus2;
+                        const abw = ibw + multi2;
+                        const multi3 = 0.3 * minus2;
+                        const abw_alt = ibw + multi3;
+                        
+                        // jellife first (ml/min)
+                        const minus1 = first - 20;
+                        const mul1 = 0.8 * minus1;
+                        const minus11 = 98 - mul1;
+                        const jell_ans1 = minus11 / third_converted;
+                        const jell_ans11 = (jell_ans1 + 25) * four;
+
+                        // jellife second (ml/min)
+                        const bsa_div = bsa / 1.73;
+                        const up_sol = minus11 * bsa_div;
+                        const div_sol = third2_converted * 0.0113;
+                        const jell_ans2 = up_sol / div_sol;
+                        const jell_ans22 = (jell_ans2 + 25) * four;
+
+                        // Cockcroft & Gault actual body weight (ml/min)
+                        const cg_minus = 140 - 22;
+                        const cgup_mul = second_converted * cg_minus;
+                        const cglo_mul = 72 * third_converted;
+                        const cg_ac_ans = cgup_mul / cglo_mul;
+                        const cg_ac_ans2 = (cg_ac_ans + 25) * four;
+
+                        // Cockcroft & Gault ideal body weight (ml/min)
+                        const cgup_mul1 = ibw * cg_minus;
+                        const cg_ibw_ans = cgup_mul1 / cglo_mul;
+                        const cg_ibw_ans2 = (cg_ibw_ans + 25) * four;
+
+                        // Cockcroft & Gault adjusted body weight (ml/min)
+                        const cgup_mul2 = abw * cg_minus;
+                        const cg_abw_ans = cgup_mul2 / cglo_mul;
+                        const cg_abw_ans2 = (cg_abw_ans + 25) * four;
+
+                        // Cockcroft & Gault adjusted body weight alt (ml/min)
+                        const cgup_mul3 = abw_alt * cg_minus;
+                        const cg_abwalt_ans = cgup_mul3 / cglo_mul;
+                        const cg_abwalt_ans2 = (cg_abwalt_ans + 25) * four;
+
+                        // Store results
+                        param.tech_bsa = Number(bsa.toFixed(2));
+                        param.tech_ibw = ibw;
+                        param.tech_abw = abw;
+                        param.tech_abw_alt = abw_alt;
+                        param.tech_jell_ans1 = jell_ans1;
+                        param.tech_jell_ans2 = jell_ans2;
+                        param.tech_cg_ac_ans = cg_ac_ans;
+                        param.tech_cg_ibw_ans = cg_ibw_ans;
+                        param.tech_cg_abw_ans = cg_abw_ans;
+                        param.tech_cg_abwalt_ans = cg_abwalt_ans;
+                        param.tech_jell_ans11 = jell_ans11;
+                        param.tech_jell_ans22 = jell_ans22;
+                        param.tech_cg_ac_ans2 = cg_ac_ans2;
+                        param.tech_cg_ibw_ans2 = cg_ibw_ans2;
+                        param.tech_cg_abw_ans2 = cg_abw_ans2;
+                        param.tech_cg_abwalt_ans2 = cg_abwalt_ans2;
+
+                    } else if (operations == 2) {
+                        // Female calculations
+                        const minus = five2_converted - 60;
+                        const multi = 2.3 * minus;
+                        const ibw = 45.5 + multi;
+                        
+                        // abw and abw alt answer
+                        const minus2 = second_converted - ibw;
+                        const multi2 = 0.4 * minus2;
+                        const abw = ibw + multi2;
+                        const multi3 = 0.3 * minus2;
+                        const abw_alt = ibw + multi3;
+                        
+                        // jellife first (ml/min)
+                        const minus1 = first - 20;
+                        const mul1 = 0.8 * minus1;
+                        const minus11 = 98 - mul1;
+                        const female_jell = minus11 / third_converted;
+                        const jell_ans1 = female_jell * 0.9;
+                        const jell_ans11 = (jell_ans1 + 25) * four;
+
+                        // jellife second (ml/min)
+                        const bsa_div = bsa / 1.73;
+                        const up_sol = minus11 * bsa_div * 0.9;
+                        const div_sol = third2_converted * 0.0113;
+                        const jell_ans2 = up_sol / div_sol;
+                        const jell_ans22 = (jell_ans2 + 25) * four;
+
+                        // Cockcroft & Gault actual body weight (ml/min)
+                        const cg_minus = 140 - 22;
+                        const cgup_mul = second_converted * cg_minus;
+                        const cglo_mul = 72 * third_converted;
+                        const cg_female = cgup_mul / cglo_mul;
+                        const cg_ac_ans = cg_female * 0.85;
+                        const cg_ac_ans2 = (cg_ac_ans + 25) * four;
+
+                        // Cockcroft & Gault ideal body weight (ml/min)
+                        const cgup_mul1 = ibw * cg_minus;
+                        const cg_ibw_fe = cgup_mul1 / cglo_mul;
+                        const cg_ibw_ans = cg_ibw_fe * 0.85;
+                        const cg_ibw_ans2 = (cg_ibw_ans + 25) * four;
+
+                        // Cockcroft & Gault adjusted body weight (ml/min)
+                        const cgup_mul2 = abw * cg_minus;
+                        const cg_abw_fe = cgup_mul2 / cglo_mul;
+                        const cg_abw_ans = cg_abw_fe * 0.85;
+                        const cg_abw_ans2 = (cg_abw_ans + 25) * four;
+
+                        // Cockcroft & Gault adjusted body weight alt (ml/min)
+                        const cgup_mul3 = abw_alt * cg_minus;
+                        const cg_abwalt_fe = cgup_mul3 / cglo_mul;
+                        const cg_abwalt_ans = cg_abwalt_fe * 0.85;
+                        const cg_abwalt_ans2 = (cg_abwalt_ans + 25) * four;
+
+                        // Store results
+                        param.tech_bsa = Number(bsa.toFixed(2));
+                        param.tech_ibw = ibw;
+                        param.tech_abw = abw;
+                        param.tech_abw_alt = abw_alt;
+                        param.tech_jell_ans1 = jell_ans1;
+                        param.tech_jell_ans2 = jell_ans2;
+                        param.tech_cg_ac_ans = cg_ac_ans;
+                        param.tech_cg_ibw_ans = cg_ibw_ans;
+                        param.tech_cg_abw_ans = cg_abw_ans;
+                        param.tech_cg_abwalt_ans = cg_abwalt_ans;
+                        param.tech_jell_ans11 = jell_ans11;
+                        param.tech_jell_ans22 = jell_ans22;
+                        param.tech_cg_ac_ans2 = cg_ac_ans2;
+                        param.tech_cg_ibw_ans2 = cg_ibw_ans2;
+                        param.tech_cg_abw_ans2 = cg_abw_ans2;
+                        param.tech_cg_abwalt_ans2 = cg_abwalt_ans2;
+                    }
+                } else {
+                    param.error = 'Please check your input.';
+                    return param;
+                }
+            } else {
+                param.error = 'This calculator should not be used in patients <18 years old.';
+                return param;
+            }
+        }
+
+        param.tech_request = request;
+        return param;
+    }
+
+           /**
+    * getCalculationVo2MaxCalculator: Service Method
+    * POST: /api/calculators-lol/vo2-max-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+     async getCalculationVo2MaxCalculator(body) {
+        const request = body;
+        const methods = request.tech_methods;
+        const operations1 = request.tech_operations1;
+        const operations2 = request.tech_operations2;
+        const first = parseFloat(request.tech_first);
+        var second = parseFloat(request.tech_second);
+        const units2 = request.tech_units2;
+        var third = parseFloat(request.tech_third);
+        const units3 = request.tech_units3;
+        const four = parseFloat(request.tech_four);
+        let wazan;
+        let units2_val = 1;
+        if (units2 == 'kg') {
+            units2_val = 1;
+        } else if (units2 == 'lbs') {
+            units2_val = 2;
+        }
+
+        let units3_val = 1;
+        if (units3 == 'sec') {
+            units3_val = 1;
+        } else if (units3 == 'min') {
+            units3_val = 2;
+        }
+
+        // Helper functions
+          function kilo(a,b){
+        if(a == "1"){
+          wazan = b * 2.205;
+          //  console.log(a,b,wazan);
+        }else if (a == "2") {
+          wazan = b * 1;
+        }
+        return wazan;
+        }
+
+
+        function secint(a, b) {
+            if (a == "1") {
+                return b / 60;
+            } else if (a == "2") {
+                return b * 1;
+            }
+            return b;
+        }
+
+       var  second = kilo(units2_val.toString(), second);
+        var third = secint(units3_val.toString(), third);
+
+        const param = {};
+        let answer;
+
+        if (methods == "1") {
+            if (!isNaN(first) && !isNaN(four)) {
+                const mul1 = 0.7 * first;
+                const mhr = 208 - mul1;
+                const rhr = four * 3;
+                const divide = mhr / rhr;
+                answer = 15.3 * divide;
+            } else {
+                param.error = 'Please! Check Your Input.';
+                return param;
+            }
+        } else if (methods == "2") {
+            if (!isNaN(first) && !isNaN(second) && !isNaN(third) && !isNaN(four)) {
+                if (operations1 == 1) {
+                    answer = 132.853 - (0.0769 * second) - (0.3877 * first) + (6.315 * 1) - (3.2649 * third) - (0.1565 * four * 6);
+                } else if (operations1 == 0) {
+                    answer = 132.853 - (0.0769 * second) - (0.3877 * first) - (3.2649 * third) - (0.1565 * four * 6);
+                }
+            } else {
+                param.error = 'Please! Check Your Input.';
+                return param;
+            }
+        } else if (methods == "3") {
+            if (!isNaN(four)) {
+                if (operations1 == 1) {
+                    answer = 111.33 - (0.42 * four * 4);
+                } else if (operations1 == 0) {
+                    answer = 65.81 - (0.1847 * four * 4);
+                }
+            } else {
+                param.error = 'Please! Check Your Input.';
+                return param;
+            }
+        } else if (methods == "4") {
+            if (!isNaN(third)) {
+                answer = (483 / third) + 3.5;
+            } else {
+                param.error = 'Please! Check Your Input.';
+                return param;
+            }
+        } else if (methods == "5") {
+            if (!isNaN(second) && !isNaN(third)) {
+              var second = second * 0.45359237; // lb -> kg
+                if (operations1 == 1) {
+                    if (operations2 == 2) {
+                        if (second <= 75.0) {
+                            answer = ((15.1 - (1.5 * third)) * 1000) / second;
+                        } else if (second > 75.0) {
+                            answer = ((15.7 - (1.5 * third)) * 1000) / second;
+                        }
+                    } else if (operations2 == 1) {
+                        answer = ((10.7 - (0.9 * third)) * 1000) / second;
+                    }
+                } else if (operations1 == 0) {
+                    if (operations2 == 2) {
+                        if (second <= 61.36) {
+                            answer = ((14.6 - (1.5 * third)) * 1000) / second;
+                        } else if (second > 61.36) {
+                            answer = ((14.9 - (1.5 * third)) * 1000) / second;
+                        }
+                    } else if (operations2 == 1) {
+                        answer = ((10.26 - (0.93 * third)) * 1000) / second;
+                    }
+                }
+            } else {
+                param.error = 'Please! Check Your Input.';
+                return param;
+            }
+        }
+
+        param.tech_answer = answer;
+        return param;
+    }
+  
+       /**
+    * getCalculationWeightPercentileCalculator: Service Method
+    * POST: /api/calculators-lol/weight-percentile-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationWeightPercentileCalculator(body) {
+
+        const weight = body.tech_weight;
+        const w_unit = body.tech_w_unit;
+        const age = body.tech_age;
+        const age_unit = body.tech_age_unit;
+        const gender = body.tech_gender;
+
+          function wazan(a, b) {
+              if (a == "g") {
+                  return b / 1000;
+              } else if (a == "dag") {
+                  return b / 100;
+              } else if (a == "kg") {
+                  return b * 1;
+              } else if (a == "oz") {
+                  return b / 35.274;
+              } else if (a == "lbs") {
+                  return b / 2.205;
+              }
+              return b;
+          }
+
+          function umar(a, b) {
+              if (a == "days") {
+                  return b / 365;
+              } else if (a == "weeks") {
+                  return b / 52.143;
+              } else if (a == "months") {
+                  return b / 12;
+              } else if (a == "years") {
+                  return b * 1;
+              }
+              return b;
+          }
+
+          const girls_to_13w = [
+              { "name": "a", "uid": "2101522777", "values": { "age": 0, "P01": 2, "P1": "2.3", "P3": "2.4", "P5": "2.5", "P10": "2.7", "P15": "2.8", "P25": "2.9", "P50": "3.2", "P75": "3.6", "P85": "3.7", "P90": "3.9", "P95": 4, "P97": "4.2", "P99": "4.4", "P999": "4.8" } },
+              { "name": 1, "uid": "1344046595", "values": { "age": 1, "P01": "2.1", "P1": "2.3", "P3": "2.5", "P5": "2.6", "P10": "2.8", "P15": "2.9", "P25": 3, "P50": "3.3", "P75": "3.7", "P85": "3.9", "P90": 4, "P95": "4.2", "P97": "4.4", "P99": "4.6", "P999": "5.1" } },
+              { "name": 2, "uid": "3902805028", "values": { "age": 2, "P01": "2.2", "P1": "2.5", "P3": "2.7", "P5": "2.8", "P10": 3, "P15": "3.1", "P25": "3.2", "P50": "3.6", "P75": "3.9", "P85": "4.1", "P90": "4.3", "P95": "4.5", "P97": "4.6", "P99": "4.9", "P999": "5.4" } },
+              { "name": 3, "uid": "3908778857", "values": { "age": 3, "P01": "2.4", "P1": "2.7", "P3": "2.9", "P5": 3, "P10": "3.2", "P15": "3.3", "P25": "3.5", "P50": "3.8", "P75": "4.2", "P85": "4.4", "P90": "4.6", "P95": "4.8", "P97": 5, "P99": "5.3", "P999": "5.8" } },
+              { "name": 4, "uid": "2653126873", "values": { "age": 4, "P01": "2.6", "P1": "2.9", "P3": "3.1", "P5": "3.3", "P10": "3.4", "P15": "3.5", "P25": "3.7", "P50": "4.1", "P75": "4.5", "P85": "4.7", "P90": "4.9", "P95": "5.1", "P97": "5.3", "P99": "5.6", "P999": "6.2" } },
+              { "name": 5, "uid": "543034340", "values": { "age": 5, "P01": "2.8", "P1": "3.1", "P3": "3.3", "P5": "3.5", "P10": "3.6", "P15": "3.8", "P25": 4, "P50": "4.3", "P75": "4.8", "P85": 5, "P90": "5.2", "P95": "5.4", "P97": "5.6", "P99": "5.9", "P999": "6.5" } },
+              { "name": 6, "uid": "986480501", "values": { "age": 6, "P01": 3, "P1": "3.3", "P3": "3.5", "P5": "3.7", "P10": "3.8", "P15": 4, "P25": "4.2", "P50": "4.6", "P75": 5, "P85": "5.3", "P90": "5.4", "P95": "5.7", "P97": "5.9", "P99": "6.2", "P999": "6.8" } },
+              { "name": 7, "uid": "481225376", "values": { "age": 7, "P01": "3.2", "P1": "3.5", "P3": "3.7", "P5": "3.8", "P10": 4, "P15": "4.2", "P25": "4.4", "P50": "4.8", "P75": "5.2", "P85": "5.5", "P90": "5.7", "P95": "5.9", "P97": "6.1", "P99": "6.5", "P999": "7.1" } },
+              { "name": 8, "uid": "2437632715", "values": { "age": 8, "P01": "3.3", "P1": "3.7", "P3": "3.9", "P5": 4, "P10": "4.2", "P15": "4.4", "P25": "4.6", "P50": 5, "P75": "5.5", "P85": "5.7", "P90": "5.9", "P95": "6.2", "P97": "6.4", "P99": "6.7", "P999": "7.4" } },
+              { "name": 9, "uid": "253589758", "values": { "age": 9, "P01": "3.4", "P1": "3.8", "P3": "4.1", "P5": "4.2", "P10": "4.4", "P15": "4.5", "P25": "4.7", "P50": "5.2", "P75": "5.7", "P85": "5.9", "P90": "6.1", "P95": "6.4", "P97": "6.6", "P99": 7, "P999": "7.7" } },
+              { "name": 10, "uid": "4090155017", "values": { "age": 10, "P01": "3.6", "P1": 4, "P3": "4.2", "P5": "4.3", "P10": "4.5", "P15": "4.7", "P25": "4.9", "P50": "5.4", "P75": "5.8", "P85": "6.1", "P90": "6.3", "P95": "6.6", "P97": "6.8", "P99": "7.2", "P999": "7.9" } },
+              { "name": 11, "uid": "2979536176", "values": { "age": 11, "P01": "3.7", "P1": "4.1", "P3": "4.3", "P5": "4.5", "P10": "4.7", "P15": "4.8", "P25": "5.1", "P50": "5.5", "P75": 6, "P85": "6.3", "P90": "6.5", "P95": "6.8", "P97": 7, "P99": "7.4", "P999": "8.2" } },
+              { "name": 12, "uid": "565790788", "values": { "age": 12, "P01": "3.8", "P1": "4.2", "P3": "4.5", "P5": "4.6", "P10": "4.8", "P15": 5, "P25": "5.2", "P50": "5.7", "P75": "6.2", "P85": "6.5", "P90": "6.7", "P95": 7, "P97": "7.2", "P99": "7.6", "P999": "8.4" } },
+              { "name": 13, "uid": "2929341763", "values": { "age": 13, "P01": "3.9", "P1": "4.3", "P3": "4.6", "P5": "4.7", "P10": 5, "P15": "5.1", "P25": "5.4", "P50": "5.8", "P75": "6.4", "P85": "6.7", "P90": "6.9", "P95": "7.2", "P97": "7.4", "P99": "7.8", "P999": "8.6" } }
+          ];
+
+          const girls_to_5y = [
+              { "name": "a", "uid": "2101522777", "values": { "age": 0, "P01": 2, "P1": "2.3", "P3": "2.4", "P5": "2.5", "P10": "2.7", "P15": "2.8", "P25": "2.9", "P50": "3.2", "P75": "3.6", "P85": "3.7", "P90": "3.9", "P95": 4, "P97": "4.2", "P99": "4.4", "P999": "4.8" } },
+              { "name": 1, "uid": "2706677359", "values": { "age": 1, "P01": "2.7", "P1": 3, "P3": "3.2", "P5": "3.3", "P10": "3.5", "P15": "3.6", "P25": "3.8", "P50": "4.2", "P75": "4.6", "P85": "4.8", "P90": 5, "P95": "5.2", "P97": "5.4", "P99": "5.7", "P999": "6.3" } },
+              { "name": 2, "uid": "2045929197", "values": { "age": 2, "P01": "3.4", "P1": "3.8", "P3": 4, "P5": "4.1", "P10": "4.3", "P15": "4.5", "P25": "4.7", "P50": "5.1", "P75": "5.6", "P85": "5.9", "P90": 6, "P95": "6.3", "P97": "6.5", "P99": "6.9", "P999": "7.6" } },
+              { "name": 3, "uid": "1944736245", "values": { "age": 3, "P01": "3.9", "P1": "4.4", "P3": "4.6", "P5": "4.7", "P10": 5, "P15": "5.1", "P25": "5.4", "P50": "5.8", "P75": "6.4", "P85": "6.7", "P90": "6.9", "P95": "7.2", "P97": "7.4", "P99": "7.8", "P999": "8.6" } },
+              { "name": 4, "uid": "2334392654", "values": { "age": 4, "P01": "4.4", "P1": "4.8", "P3": "5.1", "P5": "5.2", "P10": "5.5", "P15": "5.6", "P25": "5.9", "P50": "6.4", "P75": 7, "P85": "7.3", "P90": "7.5", "P95": "7.9", "P97": "8.1", "P99": "8.6", "P999": "9.4" } },
+              { "name": 5, "uid": "33396477", "values": { "age": 5, "P01": "4.7", "P1": "5.2", "P3": "5.5", "P5": "5.6", "P10": "5.9", "P15": "6.1", "P25": "6.4", "P50": "6.9", "P75": "7.5", "P85": "7.8", "P90": "8.1", "P95": "8.4", "P97": "8.7", "P99": "9.2", "P999": "10.1" } },
+              { "name": 6, "uid": "3435625595", "values": { "age": 6, "P01": 5, "P1": "5.5", "P3": "5.8", "P5": 6, "P10": "6.2", "P15": "6.4", "P25": "6.7", "P50": "7.3", "P75": "7.9", "P85": "8.3", "P90": "8.5", "P95": "8.9", "P97": "9.2", "P99": "9.7", "P999": "10.7" } },
+              { "name": 7, "uid": "3561095891", "values": { "age": 7, "P01": "5.3", "P1": "5.8", "P3": "6.1", "P5": "6.3", "P10": "6.5", "P15": "6.7", "P25": 7, "P50": "7.6", "P75": "8.3", "P85": "8.7", "P90": "8.9", "P95": "9.4", "P97": "9.6", "P99": "10.2", "P999": "11.2" } },
+              { "name": 8, "uid": "2388008358", "values": { "age": 8, "P01": "5.5", "P1": 6, "P3": "6.3", "P5": "6.5", "P10": "6.8", "P15": 7, "P25": "7.3", "P50": "7.9", "P75": "8.6", "P85": 9, "P90": "9.3", "P95": "9.7", "P97": 10, "P99": "10.6", "P999": "11.7" } },
+              { "name": 9, "uid": "1160676723", "values": { "age": 9, "P01": "5.7", "P1": "6.2", "P3": "6.6", "P5": "6.8", "P10": 7, "P15": "7.3", "P25": "7.6", "P50": "8.2", "P75": "8.9", "P85": "9.3", "P90": "9.6", "P95": "10.1", "P97": "10.4", "P99": 11, "P999": "12.1" } },
+              { "name": 10, "uid": "1340343038", "values": { "age": 10, "P01": "5.9", "P1": "6.4", "P3": "6.8", "P5": 7, "P10": "7.3", "P15": "7.5", "P25": "7.8", "P50": "8.5", "P75": "9.2", "P85": "9.6", "P90": "9.9", "P95": "10.4", "P97": "10.7", "P99": "11.3", "P999": "12.5" } },
+              { "name": 11, "uid": "3907737903", "values": { "age": 11, "P01": 6, "P1": "6.6", "P3": 7, "P5": "7.2", "P10": "7.5", "P15": "7.7", "P25": 8, "P50": "8.7", "P75": "9.5", "P85": "9.9", "P90": "10.2", "P95": "10.7", "P97": 11, "P99": "11.7", "P999": "12.9" } },
+              { "name": 12, "uid": "3689416734", "values": { "age": 12, "P01": "6.2", "P1": "6.8", "P3": "7.1", "P5": "7.3", "P10": "7.7", "P15": "7.9", "P25": "8.2", "P50": "8.9", "P75": "9.7", "P85": "10.2", "P90": "10.5", "P95": 11, "P97": "11.3", "P99": 12, "P999": "13.3" } },
+              { "name": 13, "uid": "14789121", "values": { "age": 13, "P01": "6.4", "P1": "6.9", "P3": "7.3", "P5": "7.5", "P10": "7.9", "P15": "8.1", "P25": "8.4", "P50": "9.2", "P75": 10, "P85": "10.4", "P90": "10.8", "P95": "11.3", "P97": "11.6", "P99": "12.3", "P999": "13.6" } },
+              { "name": 14, "uid": "2752563322", "values": { "age": 14, "P01": "6.5", "P1": "7.1", "P3": "7.5", "P5": "7.7", "P10": 8, "P15": "8.3", "P25": "8.6", "P50": "9.4", "P75": "10.2", "P85": "10.7", "P90": 11, "P95": "11.5", "P97": "11.9", "P99": "12.6", "P999": 14 } },
+              { "name": 15, "uid": "626010922", "values": { "age": 15, "P01": "6.7", "P1": "7.3", "P3": "7.7", "P5": "7.9", "P10": "8.2", "P15": "8.5", "P25": "8.8", "P50": "9.6", "P75": "10.4", "P85": "10.9", "P90": "11.3", "P95": "11.8", "P97": "12.2", "P99": "12.9", "P999": "14.3" } },
+              { "name": 16, "uid": "2127088523", "values": { "age": 16, "P01": "6.8", "P1": "7.4", "P3": "7.8", "P5": "8.1", "P10": "8.4", "P15": "8.7", "P25": 9, "P50": "9.8", "P75": "10.7", "P85": "11.2", "P90": "11.5", "P95": "12.1", "P97": "12.5", "P99": "13.2", "P999": "14.6" } },
+              { "name": 17, "uid": "3753768630", "values": { "age": 17, "P01": 7, "P1": "7.6", "P3": 8, "P5": "8.2", "P10": "8.6", "P15": "8.8", "P25": "9.2", "P50": 10, "P75": "10.9", "P85": "11.4", "P90": "11.8", "P95": "12.3", "P97": "12.7", "P99": "13.5", "P999": 15 } },
+              { "name": 18, "uid": "3733619177", "values": { "age": 18, "P01": "7.1", "P1": "7.8", "P3": "8.2", "P5": "8.4", "P10": "8.8", "P15": 9, "P25": "9.4", "P50": "10.2", "P75": "11.1", "P85": "11.6", "P90": 12, "P95": "12.6", "P97": 13, "P99": "13.8", "P999": "15.3" } },
+              { "name": 19, "uid": "3267869332", "values": { "age": 19, "P01": "7.3", "P1": "7.9", "P3": "8.3", "P5": "8.6", "P10": "8.9", "P15": "9.2", "P25": "9.6", "P50": "10.4", "P75": "11.4", "P85": "11.9", "P90": "12.3", "P95": "12.9", "P97": "13.3", "P99": "14.1", "P999": "15.6" } },
+              { "name": 20, "uid": "3513952144", "values": { "age": 20, "P01": "7.4", "P1": "8.1", "P3": "8.5", "P5": "8.7", "P10": "9.1", "P15": "9.4", "P25": "9.8", "P50": "10.6", "P75": "11.6", "P85": "12.1", "P90": "12.5", "P95": "13.1", "P97": "13.5", "P99": "14.4", "P999": "15.9" } },
+              { "name": 21, "uid": "3891989198", "values": { "age": 21, "P01": "7.6", "P1": "8.2", "P3": "8.7", "P5": "8.9", "P10": "9.3", "P15": "9.6", "P25": 10, "P50": "10.9", "P75": "11.8", "P85": "12.4", "P90": "12.8", "P95": "13.4", "P97": "13.8", "P99": "14.6", "P999": "16.2" } },
+              { "name": 22, "uid": "3205526744", "values": { "age": 22, "P01": "7.7", "P1": "8.4", "P3": "8.8", "P5": "9.1", "P10": "9.5", "P15": "9.8", "P25": "10.2", "P50": "11.1", "P75": 12, "P85": "12.6", "P90": 13, "P95": "13.6", "P97": "14.1", "P99": "14.9", "P999": "16.6" } },
+              { "name": 23, "uid": "318713343", "values": { "age": 23, "P01": "7.8", "P1": "8.5", "P3": 9, "P5": "9.2", "P10": "9.7", "P15": "9.9", "P25": "10.4", "P50": "11.3", "P75": "12.3", "P85": "12.8", "P90": "13.3", "P95": "13.9", "P97": "14.3", "P99": "15.2", "P999": "16.9" } },
+              { "name": 24, "uid": "2283995645", "values": { "age": 24, "P01": 8, "P1": "8.7", "P3": "9.2", "P5": "9.4", "P10": "9.8", "P15": "10.1", "P25": "10.6", "P50": "11.5", "P75": "12.5", "P85": "13.1", "P90": "13.5", "P95": "14.2", "P97": "14.6", "P99": "15.5", "P999": "17.2" } },
+              { "name": 25, "uid": "836552489", "values": { "age": 25, "P01": "8.1", "P1": "8.9", "P3": "9.3", "P5": "9.6", "P10": 10, "P15": "10.3", "P25": "10.8", "P50": "11.7", "P75": "12.7", "P85": "13.3", "P90": "13.8", "P95": "14.4", "P97": "14.9", "P99": "15.8", "P999": "17.6" } },
+              { "name": 26, "uid": "2043973312", "values": { "age": 26, "P01": "8.3", "P1": 9, "P3": "9.5", "P5": "9.8", "P10": "10.2", "P15": "10.5", "P25": "10.9", "P50": "11.9", "P75": "12.9", "P85": "13.6", "P90": 14, "P95": "14.7", "P97": "15.2", "P99": "16.1", "P999": "17.9" } },
+              { "name": 27, "uid": "1521245358", "values": { "age": 27, "P01": "8.4", "P1": "9.2", "P3": "9.6", "P5": "9.9", "P10": "10.4", "P15": "10.7", "P25": "11.1", "P50": "12.1", "P75": "13.2", "P85": "13.8", "P90": "14.3", "P95": 15, "P97": "15.4", "P99": "16.4", "P999": "18.2" } },
+              { "name": 28, "uid": "1855939437", "values": { "age": 28, "P01": "8.5", "P1": "9.3", "P3": "9.8", "P5": "10.1", "P10": "10.5", "P15": "10.8", "P25": "11.3", "P50": "12.3", "P75": "13.4", "P85": 14, "P90": "14.5", "P95": "15.2", "P97": "15.7", "P99": "16.7", "P999": "18.6" } },
+              { "name": 29, "uid": "2945180243", "values": { "age": 29, "P01": "8.7", "P1": "9.5", "P3": 10, "P5": "10.2", "P10": "10.7", "P15": 11, "P25": "11.5", "P50": "12.5", "P75": "13.6", "P85": "14.3", "P90": "14.7", "P95": "15.5", "P97": 16, "P99": 17, "P999": "18.9" } },
+              { "name": 30, "uid": "2415524738", "values": { "age": 30, "P01": "8.8", "P1": "9.6", "P3": "10.1", "P5": "10.4", "P10": "10.9", "P15": "11.2", "P25": "11.7", "P50": "12.7", "P75": "13.8", "P85": "14.5", "P90": 15, "P95": "15.7", "P97": "16.2", "P99": "17.3", "P999": "19.2" } },
+              { "name": 31, "uid": "287207066", "values": { "age": 31, "P01": "8.9", "P1": "9.7", "P3": "10.3", "P5": "10.5", "P10": 11, "P15": "11.3", "P25": "11.9", "P50": "12.9", "P75": "14.1", "P85": "14.7", "P90": "15.2", "P95": 16, "P97": "16.5", "P99": "17.6", "P999": "19.6" } },
+              { "name": 32, "uid": "811578739", "values": { "age": 32, "P01": 9, "P1": "9.9", "P3": "10.4", "P5": "10.7", "P10": "11.2", "P15": "11.5", "P25": 12, "P50": "13.1", "P75": "14.3", "P85": 15, "P90": "15.5", "P95": "16.2", "P97": "16.8", "P99": "17.8", "P999": "19.9" } },
+              { "name": 33, "uid": "3413938318", "values": { "age": 33, "P01": "9.2", "P1": 10, "P3": "10.5", "P5": "10.8", "P10": "11.3", "P15": "11.7", "P25": "12.2", "P50": "13.3", "P75": "14.5", "P85": "15.2", "P90": "15.7", "P95": "16.5", "P97": 17, "P99": "18.1", "P999": "20.2" } },
+              { "name": 34, "uid": "1773830548", "values": { "age": 34, "P01": "9.3", "P1": "10.1", "P3": "10.7", "P5": 11, "P10": "11.5", "P15": "11.8", "P25": "12.4", "P50": "13.5", "P75": "14.7", "P85": "15.4", "P90": "15.9", "P95": "16.8", "P97": "17.3", "P99": "18.4", "P999": "20.6" } },
+              { "name": 35, "uid": "3772242904", "values": { "age": 35, "P01": "9.4", "P1": "10.3", "P3": "10.8", "P5": "11.1", "P10": "11.6", "P15": 12, "P25": "12.5", "P50": "13.7", "P75": "14.9", "P85": "15.7", "P90": "16.2", "P95": 17, "P97": "17.6", "P99": "18.7", "P999": "20.9" } },
+              { "name": 36, "uid": "365540925", "values": { "age": 36, "P01": "9.5", "P1": "10.4", "P3": 11, "P5": "11.3", "P10": "11.8", "P15": "12.1", "P25": "12.7", "P50": "13.9", "P75": "15.1", "P85": "15.9", "P90": "16.4", "P95": "17.3", "P97": "17.8", "P99": 19, "P999": "21.2" } },
+              { "name": 37, "uid": "2362720420", "values": { "age": 37, "P01": "9.6", "P1": "10.5", "P3": "11.1", "P5": "11.4", "P10": "11.9", "P15": "12.3", "P25": "12.9", "P50": 14, "P75": "15.3", "P85": "16.1", "P90": "16.7", "P95": "17.5", "P97": "18.1", "P99": "19.3", "P999": "21.6" } },
+              { "name": 38, "uid": "414420137", "values": { "age": 38, "P01": "9.7", "P1": "10.6", "P3": "11.2", "P5": "11.6", "P10": "12.1", "P15": "12.5", "P25": 13, "P50": "14.2", "P75": "15.6", "P85": "16.3", "P90": "16.9", "P95": "17.8", "P97": "18.4", "P99": "19.6", "P999": "21.9" } },
+              { "name": 39, "uid": "1174097024", "values": { "age": 39, "P01": "9.8", "P1": "10.8", "P3": "11.4", "P5": "11.7", "P10": "12.2", "P15": "12.6", "P25": "13.2", "P50": "14.4", "P75": "15.8", "P85": "16.6", "P90": "17.1", "P95": 18, "P97": "18.6", "P99": "19.9", "P999": "22.3" } },
+              { "name": 40, "uid": "2395446952", "values": { "age": 40, "P01": 10, "P1": "10.9", "P3": "11.5", "P5": "11.8", "P10": "12.4", "P15": "12.8", "P25": "13.4", "P50": "14.6", "P75": 16, "P85": "16.8", "P90": "17.4", "P95": "18.3", "P97": "18.9", "P99": "20.2", "P999": "22.6" } },
+              { "name": 41, "uid": "1406042376", "values": { "age": 41, "P01": "10.1", "P1": 11, "P3": "11.6", "P5": 12, "P10": "12.5", "P15": "12.9", "P25": "13.5", "P50": "14.8", "P75": "16.2", "P85": 17, "P90": "17.6", "P95": "18.6", "P97": "19.2", "P99": "20.5", "P999": 23 } },
+              { "name": 42, "uid": "188749328", "values": { "age": 42, "P01": "10.2", "P1": "11.1", "P3": "11.8", "P5": "12.1", "P10": "12.7", "P15": "13.1", "P25": "13.7", "P50": 15, "P75": "16.4", "P85": "17.3", "P90": "17.9", "P95": "18.8", "P97": "19.5", "P99": "20.8", "P999": "23.3" } },
+              { "name": 43, "uid": "3574731008", "values": { "age": 43, "P01": "10.3", "P1": "11.3", "P3": "11.9", "P5": "12.2", "P10": "12.8", "P15": "13.2", "P25": "13.9", "P50": "15.2", "P75": "16.6", "P85": "17.5", "P90": "18.1", "P95": "19.1", "P97": "19.7", "P99": "21.1", "P999": "23.7" } },
+              { "name": 44, "uid": "1847243750", "values": { "age": 44, "P01": "10.4", "P1": "11.4", "P3": 12, "P5": "12.4", "P10": 13, "P15": "13.4", "P25": 14, "P50": "15.3", "P75": "16.8", "P85": "17.7", "P90": "18.3", "P95": "19.3", "P97": 20, "P99": "21.4", "P999": "24.1" } },
+              { "name": 45, "uid": "2731735734", "values": { "age": 45, "P01": "10.5", "P1": "11.5", "P3": "12.1", "P5": "12.5", "P10": "13.1", "P15": "13.5", "P25": "14.2", "P50": "15.5", "P75": 17, "P85": "17.9", "P90": "18.6", "P95": "19.6", "P97": "20.3", "P99": "21.7", "P999": "24.4" } },
+              { "name": 46, "uid": "1946702498", "values": { "age": 46, "P01": "10.6", "P1": "11.6", "P3": "12.3", "P5": "12.6", "P10": "13.2", "P15": "13.7", "P25": "14.3", "P50": "15.7", "P75": "17.3", "P85": "18.2", "P90": "18.8", "P95": "19.9", "P97": "20.6", "P99": 22, "P999": "24.8" } },
+              { "name": 47, "uid": "3162328368", "values": { "age": 47, "P01": "10.7", "P1": "11.7", "P3": "12.4", "P5": "12.8", "P10": "13.4", "P15": "13.8", "P25": "14.5", "P50": "15.9", "P75": "17.5", "P85": "18.4", "P90": "19.1", "P95": "20.1", "P97": "20.8", "P99": "22.3", "P999": "25.2" } },
+              { "name": 48, "uid": "1840523714", "values": { "age": 48, "P01": "10.8", "P1": "11.8", "P3": "12.5", "P5": "12.9", "P10": "13.5", "P15": 14, "P25": "14.7", "P50": "16.1", "P75": "17.7", "P85": "18.6", "P90": "19.3", "P95": "20.4", "P97": "21.1", "P99": "22.6", "P999": "25.5" } },
+              { "name": 49, "uid": "3046199322", "values": { "age": 49, "P01": "10.9", "P1": "11.9", "P3": "12.6", "P5": 13, "P10": "13.7", "P15": "14.1", "P25": "14.8", "P50": "16.3", "P75": "17.9", "P85": "18.9", "P90": "19.5", "P95": "20.6", "P97": "21.4", "P99": "22.9", "P999": "25.9" } },
+              { "name": 50, "uid": "1128574067", "values": { "age": 50, "P01": 11, "P1": "12.1", "P3": "12.8", "P5": "13.2", "P10": "13.8", "P15": "14.3", "P25": 15, "P50": "16.4", "P75": "18.1", "P85": "19.1", "P90": "19.8", "P95": "20.9", "P97": "21.7", "P99": "23.2", "P999": "26.3" } },
+              { "name": 51, "uid": "2932598118", "values": { "age": 51, "P01": "11.1", "P1": "12.2", "P3": "12.9", "P5": "13.3", "P10": "13.9", "P15": "14.4", "P25": "15.1", "P50": "16.6", "P75": "18.3", "P85": "19.3", "P90": 20, "P95": "21.2", "P97": 22, "P99": "23.5", "P999": "26.7" } },
+              { "name": 52, "uid": "2592184625", "values": { "age": 52, "P01": "11.2", "P1": "12.3", "P3": 13, "P5": "13.4", "P10": "14.1", "P15": "14.5", "P25": "15.3", "P50": "16.8", "P75": "18.5", "P85": "19.5", "P90": "20.3", "P95": "21.4", "P97": "22.2", "P99": "23.9", "P999": 27 } },
+              { "name": 53, "uid": "2000089489", "values": { "age": 53, "P01": "11.3", "P1": "12.4", "P3": "13.1", "P5": "13.5", "P10": "14.2", "P15": "14.7", "P25": "15.4", "P50": 17, "P75": "18.7", "P85": "19.8", "P90": "20.5", "P95": "21.7", "P97": "22.5", "P99": "24.2", "P999": "27.4" } },
+              { "name": 54, "uid": "2638138720", "values": { "age": 54, "P01": "11.3", "P1": "12.5", "P3": "13.2", "P5": "13.7", "P10": "14.3", "P15": "14.8", "P25": "15.6", "P50": "17.2", "P75": "18.9", "P85": 20, "P90": "20.8", "P95": 22, "P97": "22.8", "P99": "24.5", "P999": "27.8" } },
+              { "name": 55, "uid": "2745248364", "values": { "age": 55, "P01": "11.4", "P1": "12.6", "P3": "13.4", "P5": "13.8", "P10": "14.5", "P15": 15, "P25": "15.8", "P50": "17.3", "P75": "19.1", "P85": "20.2", "P90": 21, "P95": "22.2", "P97": "23.1", "P99": "24.8", "P999": "28.2" } },
+              { "name": 56, "uid": "3637147298", "values": { "age": 56, "P01": "11.5", "P1": "12.7", "P3": "13.5", "P5": "13.9", "P10": "14.6", "P15": "15.1", "P25": "15.9", "P50": "17.5", "P75": "19.3", "P85": "20.4", "P90": "21.2", "P95": "22.5", "P97": "23.3", "P99": "25.1", "P999": "28.5" } },
+              { "name": 57, "uid": "1827613279", "values": { "age": 57, "P01": "11.6", "P1": "12.8", "P3": "13.6", "P5": 14, "P10": "14.8", "P15": "15.3", "P25": "16.1", "P50": "17.7", "P75": "19.6", "P85": "20.7", "P90": "21.5", "P95": "22.7", "P97": "23.6", "P99": "25.4", "P999": "28.9" } },
+              { "name": 58, "uid": "3251797700", "values": { "age": 58, "P01": "11.7", "P1": "12.9", "P3": "13.7", "P5": "14.2", "P10": "14.9", "P15": "15.4", "P25": "16.2", "P50": "17.9", "P75": "19.8", "P85": "20.9", "P90": "21.7", "P95": 23, "P97": "23.9", "P99": "25.7", "P999": "29.3" } },
+              { "name": 59, "uid": "2504439315", "values": { "age": 59, "P01": "11.8", "P1": "13.1", "P3": "13.8", "P5": "14.3", "P10": 15, "P15": "15.5", "P25": "16.4", "P50": 18, "P75": 20, "P85": "21.1", "P90": "21.9", "P95": "23.3", "P97": "24.2", "P99": 26, "P999": "29.6" } },
+              { "name": 60, "uid": "470741983", "values": { "age": 60, "P01": "11.9", "P1": "13.2", "P3": 14, "P5": "14.4", "P10": "15.2", "P15": "15.7", "P25": "16.5", "P50": "18.2", "P75": "20.2", "P85": "21.3", "P90": "22.2", "P95": "23.5", "P97": "24.4", "P99": "26.3", "P999": 30 } }
+          ];
+
+          const boys_to_13w = [
+              { "name": "a", "uid": "174380932", "values": { "age": 0, "P01": 2, "P1": "2.3", "P3": "2.5", "P5": "2.6", "P10": "2.8", "P15": "2.9", "P25": 3, "P50": "3.3", "P75": "3.7", "P85": "3.9", "P90": 4, "P95": "4.2", "P97": "4.3", "P99": "4.6", "P999": "5.1" } },
+              { "name": 1, "uid": "1361477978", "values": { "age": 1, "P01": "2.2", "P1": "2.4", "P3": "2.6", "P5": "2.7", "P10": "2.9", "P15": 3, "P25": "3.2", "P50": "3.5", "P75": "3.8", "P85": 4, "P90": "4.2", "P95": "4.4", "P97": "4.5", "P99": "4.8", "P999": "5.3" } },
+              { "name": 2, "uid": "3568377109", "values": { "age": 2, "P01": "2.4", "P1": "2.7", "P3": "2.8", "P5": 3, "P10": "3.1", "P15": "3.2", "P25": "3.4", "P50": "3.8", "P75": "4.1", "P85": "4.3", "P90": "4.5", "P95": "4.7", "P97": "4.9", "P99": "5.1", "P999": "5.7" } },
+              { "name": 3, "uid": "1284471549", "values": { "age": 3, "P01": "2.6", "P1": "2.9", "P3": "3.1", "P5": "3.2", "P10": "3.4", "P15": "3.5", "P25": "3.7", "P50": "4.1", "P75": "4.5", "P85": "4.7", "P90": "4.8", "P95": "5.1", "P97": "5.2", "P99": "5.5", "P999": "6.1" } },
+              { "name": 4, "uid": "163197567", "values": { "age": 4, "P01": "2.8", "P1": "3.2", "P3": "3.4", "P5": "3.5", "P10": "3.7", "P15": "3.8", "P25": 4, "P50": "4.4", "P75": "4.8", "P85": 5, "P90": "5.2", "P95": "5.4", "P97": "5.6", "P99": "5.9", "P999": "6.5" } },
+              { "name": 5, "uid": "2239250885", "values": { "age": 5, "P01": 3, "P1": "3.4", "P3": "3.6", "P5": "3.7", "P10": "3.9", "P15": "4.1", "P25": "4.3", "P50": "4.7", "P75": "5.1", "P85": "5.3", "P90": "5.5", "P95": "5.8", "P97": "5.9", "P99": "6.3", "P999": "6.9" } },
+              { "name": 6, "uid": "1861435883", "values": { "age": 6, "P01": "3.2", "P1": "3.6", "P3": "3.8", "P5": 4, "P10": "4.2", "P15": "4.3", "P25": "4.5", "P50": "4.9", "P75": "5.4", "P85": "5.6", "P90": "5.8", "P95": "6.1", "P97": "6.3", "P99": "6.6", "P999": "7.2" } },
+              { "name": 7, "uid": "3846148424", "values": { "age": 7, "P01": "3.4", "P1": "3.8", "P3": "4.1", "P5": "4.2", "P10": "4.4", "P15": "4.5", "P25": "4.8", "P50": "5.2", "P75": "5.6", "P85": "5.9", "P90": "6.1", "P95": "6.4", "P97": "6.5", "P99": "6.9", "P999": "7.6" } },
+              { "name": 8, "uid": "2001806356", "values": { "age": 8, "P01": "3.6", "P1": 4, "P3": "4.3", "P5": "4.4", "P10": "4.6", "P15": "4.7", "P25": 5, "P50": "5.4", "P75": "5.9", "P85": "6.2", "P90": "6.3", "P95": "6.6", "P97": "6.8", "P99": "7.2", "P999": "7.9" } },
+              { "name": 9, "uid": "1714284403", "values": { "age": 9, "P01": "3.8", "P1": "4.2", "P3": "4.4", "P5": "4.6", "P10": "4.8", "P15": "4.9", "P25": "5.2", "P50": "5.6", "P75": "6.1", "P85": "6.4", "P90": "6.6", "P95": "6.9", "P97": "7.1", "P99": "7.4", "P999": "8.1" } },
+              { "name": 10, "uid": "316784701", "values": { "age": 10, "P01": 4, "P1": "4.4", "P3": "4.6", "P5": "4.8", "P10": 5, "P15": "5.1", "P25": "5.4", "P50": "5.8", "P75": "6.3", "P85": "6.6", "P90": "6.8", "P95": "7.1", "P97": "7.3", "P99": "7.7", "P999": "8.4" } },
+              { "name": 11, "uid": "834857604", "values": { "age": 11, "P01": "4.1", "P1": "4.5", "P3": "4.8", "P5": "4.9", "P10": "5.2", "P15": "5.3", "P25": "5.6", "P50": 6, "P75": "6.5", "P85": "6.8", "P90": 7, "P95": "7.3", "P97": "7.5", "P99": "7.9", "P999": "8.6" } },
+              { "name": 12, "uid": "1982219379", "values": { "age": 12, "P01": "4.2", "P1": "4.7", "P3": "4.9", "P5": "5.1", "P10": "5.3", "P15": "5.5", "P25": "5.7", "P50": "6.2", "P75": "6.7", "P85": 7, "P90": "7.2", "P95": "7.5", "P97": "7.7", "P99": "8.1", "P999": "8.8" } },
+              { "name": 13, "uid": "2585205816", "values": { "age": 13, "P01": "4.4", "P1": "4.8", "P3": "5.1", "P5": "5.2", "P10": "5.5", "P15": "5.6", "P25": "5.9", "P50": "6.4", "P75": "6.9", "P85": "7.2", "P90": "7.4", "P95": "7.7", "P97": "7.9", "P99": "8.3", "P999": "9.1" } }
+          ];
+
+          const boys_to_5y = [
+              { "name": "a", "uid": "174380932", "values": { "age": 0, "P01": 2, "P1": "2.3", "P3": "2.5", "P5": "2.6", "P10": "2.8", "P15": "2.9", "P25": 3, "P50": "3.3", "P75": "3.7", "P85": "3.9", "P90": 4, "P95": "4.2", "P97": "4.3", "P99": "4.6", "P999": "5.1" } },
+              { "name": 1, "uid": "1393043846", "values": { "age": 1, "P01": "2.9", "P1": "3.2", "P3": "3.4", "P5": "3.6", "P10": "3.8", "P15": "3.9", "P25": "4.1", "P50": "4.5", "P75": "4.9", "P85": "5.1", "P90": "5.3", "P95": "5.5", "P97": "5.7", "P99": 6, "P999": "6.6" } },
+              { "name": 2, "uid": "3408545268", "values": { "age": 2, "P01": "3.7", "P1": "4.1", "P3": "4.4", "P5": "4.5", "P10": "4.7", "P15": "4.9", "P25": "5.1", "P50": "5.6", "P75": 6, "P85": "6.3", "P90": "6.5", "P95": "6.8", "P97": 7, "P99": "7.4", "P999": "8.1" } },
+              { "name": 3, "uid": "3641033609", "values": { "age": 3, "P01": "4.4", "P1": "4.8", "P3": "5.1", "P5": "5.2", "P10": "5.5", "P15": "5.6", "P25": "5.9", "P50": "6.4", "P75": "6.9", "P85": "7.2", "P90": "7.4", "P95": "7.7", "P97": "7.9", "P99": "8.3", "P999": "9.1" } },
+              { "name": 4, "uid": "1456690596", "values": { "age": 4, "P01": "4.9", "P1": "5.4", "P3": "5.6", "P5": "5.8", "P10": 6, "P15": "6.2", "P25": "6.5", "P50": 7, "P75": "7.6", "P85": "7.9", "P90": "8.1", "P95": "8.4", "P97": "8.6", "P99": "9.1", "P999": "9.8" } },
+              { "name": 5, "uid": "3471436701", "values": { "age": 5, "P01": "5.3", "P1": "5.8", "P3": "6.1", "P5": "6.2", "P10": "6.5", "P15": "6.7", "P25": 7, "P50": "7.5", "P75": "8.1", "P85": "8.4", "P90": "8.6", "P95": 9, "P97": "9.2", "P99": "9.7", "P999": "10.5" } },
+              { "name": 6, "uid": "1670941587", "values": { "age": 6, "P01": "5.6", "P1": "6.1", "P3": "6.4", "P5": "6.6", "P10": "6.9", "P15": "7.1", "P25": "7.4", "P50": "7.9", "P75": "8.5", "P85": "8.9", "P90": "9.1", "P95": "9.5", "P97": "9.7", "P99": "10.2", "P999": "11.1" } },
+              { "name": 7, "uid": "1355367027", "values": { "age": 7, "P01": "5.9", "P1": "6.4", "P3": "6.7", "P5": "6.9", "P10": "7.2", "P15": "7.4", "P25": "7.7", "P50": "8.3", "P75": "8.9", "P85": "9.3", "P90": "9.5", "P95": "9.9", "P97": "10.2", "P99": "10.7", "P999": "11.5" } },
+              { "name": 8, "uid": "9139636", "values": { "age": 8, "P01": "6.1", "P1": "6.7", "P3": 7, "P5": "7.2", "P10": "7.5", "P15": "7.7", "P25": 8, "P50": "8.6", "P75": "9.3", "P85": "9.6", "P90": "9.9", "P95": "10.3", "P97": "10.5", "P99": "11.1", "P999": 12 } },
+              { "name": 9, "uid": "3536012642", "values": { "age": 9, "P01": "6.3", "P1": "6.9", "P3": "7.2", "P5": "7.4", "P10": "7.7", "P15": "7.9", "P25": "8.3", "P50": "8.9", "P75": "9.6", "P85": 10, "P90": "10.2", "P95": "10.6", "P97": "10.9", "P99": "11.4", "P999": "12.4" } },
+              { "name": 10, "uid": "643284964", "values": { "age": 10, "P01": "6.5", "P1": "7.1", "P3": "7.5", "P5": "7.7", "P10": 8, "P15": "8.2", "P25": "8.5", "P50": "9.2", "P75": "9.9", "P85": "10.3", "P90": "10.5", "P95": "10.9", "P97": "11.2", "P99": "11.8", "P999": "12.8" } },
+              { "name": 11, "uid": "3093453099", "values": { "age": 11, "P01": "6.7", "P1": "7.3", "P3": "7.7", "P5": "7.9", "P10": "8.2", "P15": "8.4", "P25": "8.7", "P50": "9.4", "P75": "10.1", "P85": "10.5", "P90": "10.8", "P95": "11.2", "P97": "11.5", "P99": "12.1", "P999": "13.1" } },
+              { "name": 12, "uid": "190355866", "values": { "age": 12, "P01": "6.9", "P1": "7.5", "P3": "7.8", "P5": "8.1", "P10": "8.4", "P15": "8.6", "P25": 9, "P50": "9.6", "P75": "10.4", "P85": "10.8", "P90": "11.1", "P95": "11.5", "P97": "11.8", "P99": "12.4", "P999": "13.5" } },
+              { "name": 13, "uid": "1493861541", "values": { "age": 13, "P01": 7, "P1": "7.6", "P3": 8, "P5": "8.2", "P10": "8.6", "P15": "8.8", "P25": "9.2", "P50": "9.9", "P75": "10.6", "P85": "11.1", "P90": "11.4", "P95": "11.8", "P97": "12.1", "P99": "12.7", "P999": "13.8" } },
+              { "name": 14, "uid": "2725543586", "values": { "age": 14, "P01": "7.2", "P1": "7.8", "P3": "8.2", "P5": "8.4", "P10": "8.8", "P15": 9, "P25": "9.4", "P50": "10.1", "P75": "10.9", "P85": "11.3", "P90": "11.6", "P95": "12.1", "P97": "12.4", "P99": 13, "P999": "14.1" } },
+              { "name": 15, "uid": "2781236091", "values": { "age": 15, "P01": "7.3", "P1": 8, "P3": "8.4", "P5": "8.6", "P10": 9, "P15": "9.2", "P25": "9.6", "P50": "10.3", "P75": "11.1", "P85": "11.6", "P90": "11.9", "P95": "12.3", "P97": "12.7", "P99": "13.3", "P999": "14.5" } },
+              { "name": 16, "uid": "1561580394", "values": { "age": 16, "P01": "7.5", "P1": "8.1", "P3": "8.5", "P5": "8.8", "P10": "9.1", "P15": "9.4", "P25": "9.8", "P50": "10.5", "P75": "11.3", "P85": "11.8", "P90": "12.1", "P95": "12.6", "P97": "12.9", "P99": "13.6", "P999": "14.8" } },
+              { "name": 17, "uid": "510295962", "values": { "age": 17, "P01": "7.6", "P1": "8.3", "P3": "8.7", "P5": "8.9", "P10": "9.3", "P15": "9.6", "P25": 10, "P50": "10.7", "P75": "11.6", "P85": 12, "P90": "12.4", "P95": "12.9", "P97": "13.2", "P99": "13.9", "P999": "15.1" } },
+              { "name": 18, "uid": "3259109840", "values": { "age": 18, "P01": "7.7", "P1": "8.4", "P3": "8.9", "P5": "9.1", "P10": "9.5", "P15": "9.7", "P25": "10.1", "P50": "10.9", "P75": "11.8", "P85": "12.3", "P90": "12.6", "P95": "13.1", "P97": "13.5", "P99": "14.2", "P999": "15.4" } },
+              { "name": 19, "uid": "73934774", "values": { "age": 19, "P01": "7.9", "P1": "8.6", "P3": 9, "P5": "9.3", "P10": "9.7", "P15": "9.9", "P25": "10.3", "P50": "11.1", "P75": 12, "P85": "12.5", "P90": "12.9", "P95": "13.4", "P97": "13.7", "P99": "14.4", "P999": "15.7" } },
+              { "name": 20, "uid": "2494669100", "values": { "age": 20, "P01": 8, "P1": "8.7", "P3": "9.2", "P5": "9.4", "P10": "9.8", "P15": "10.1", "P25": "10.5", "P50": "11.3", "P75": "12.2", "P85": "12.7", "P90": "13.1", "P95": "13.6", "P97": 14, "P99": "14.7", "P999": 16 } },
+              { "name": 21, "uid": "1549215921", "values": { "age": 21, "P01": "8.2", "P1": "8.9", "P3": "9.3", "P5": "9.6", "P10": 10, "P15": "10.3", "P25": "10.7", "P50": "11.5", "P75": "12.5", "P85": 13, "P90": "13.3", "P95": "13.9", "P97": "14.3", "P99": 15, "P999": "16.4" } },
+              { "name": 22, "uid": "1604773991", "values": { "age": 22, "P01": "8.3", "P1": 9, "P3": "9.5", "P5": "9.8", "P10": "10.2", "P15": "10.5", "P25": "10.9", "P50": "11.8", "P75": "12.7", "P85": "13.2", "P90": "13.6", "P95": "14.2", "P97": "14.5", "P99": "15.3", "P999": "16.7" } },
+              { "name": 23, "uid": "524159043", "values": { "age": 23, "P01": "8.4", "P1": "9.2", "P3": "9.7", "P5": "9.9", "P10": "10.3", "P15": "10.6", "P25": "11.1", "P50": 12, "P75": "12.9", "P85": "13.4", "P90": "13.8", "P95": "14.4", "P97": "14.8", "P99": "15.6", "P999": 17 } },
+              { "name": 24, "uid": "227731272", "values": { "age": 24, "P01": "8.5", "P1": "9.3", "P3": "9.8", "P5": "10.1", "P10": "10.5", "P15": "10.8", "P25": "11.3", "P50": "12.2", "P75": "13.1", "P85": "13.7", "P90": "14.1", "P95": "14.7", "P97": "15.1", "P99": "15.9", "P999": "17.3" } },
+              { "name": 25, "uid": "2229866116", "values": { "age": 25, "P01": "8.7", "P1": "9.5", "P3": 10, "P5": "10.2", "P10": "10.7", "P15": 11, "P25": "11.4", "P50": "12.4", "P75": "13.3", "P85": "13.9", "P90": "14.3", "P95": "14.9", "P97": "15.3", "P99": "16.1", "P999": "17.6" } },
+              { "name": 26, "uid": "630704040", "values": { "age": 26, "P01": "8.8", "P1": "9.6", "P3": "10.1", "P5": "10.4", "P10": "10.8", "P15": "11.1", "P25": "11.6", "P50": "12.5", "P75": "13.6", "P85": "14.1", "P90": "14.6", "P95": "15.2", "P97": "15.6", "P99": "16.4", "P999": 18 } },
+              { "name": 27, "uid": "4073619105", "values": { "age": 27, "P01": "8.9", "P1": "9.7", "P3": "10.2", "P5": "10.5", "P10": 11, "P15": "11.3", "P25": "11.8", "P50": "12.7", "P75": "13.8", "P85": "14.4", "P90": "14.8", "P95": "15.4", "P97": "15.9", "P99": "16.7", "P999": "18.3" } },
+              { "name": 28, "uid": "2086572634", "values": { "age": 28, "P01": 9, "P1": "9.9", "P3": "10.4", "P5": "10.7", "P10": "11.1", "P15": "11.5", "P25": 12, "P50": "12.9", "P75": 14, "P85": "14.6", "P90": 15, "P95": "15.7", "P97": "16.1", "P99": 17, "P999": "18.6" } },
+              { "name": 29, "uid": "2507550460", "values": { "age": 29, "P01": "9.2", "P1": 10, "P3": "10.5", "P5": "10.8", "P10": "11.3", "P15": "11.6", "P25": "12.1", "P50": "13.1", "P75": "14.2", "P85": "14.8", "P90": "15.2", "P95": "15.9", "P97": "16.4", "P99": "17.3", "P999": "18.9" } },
+              { "name": 30, "uid": "1164010091", "values": { "age": 30, "P01": "9.3", "P1": "10.1", "P3": "10.7", "P5": 11, "P10": "11.4", "P15": "11.8", "P25": "12.3", "P50": "13.3", "P75": "14.4", "P85": 15, "P90": "15.5", "P95": "16.2", "P97": "16.6", "P99": "17.5", "P999": "19.2" } },
+              { "name": 31, "uid": "3228793166", "values": { "age": 31, "P01": "9.4", "P1": "10.3", "P3": "10.8", "P5": "11.1", "P10": "11.6", "P15": "11.9", "P25": "12.4", "P50": "13.5", "P75": "14.6", "P85": "15.2", "P90": "15.7", "P95": "16.4", "P97": "16.9", "P99": "17.8", "P999": "19.5" } },
+              { "name": 32, "uid": "2440582334", "values": { "age": 32, "P01": "9.5", "P1": "10.4", "P3": "10.9", "P5": "11.2", "P10": "11.7", "P15": "12.1", "P25": "12.6", "P50": "13.7", "P75": "14.8", "P85": "15.5", "P90": "15.9", "P95": "16.6", "P97": "17.1", "P99": 18, "P999": "19.8" } },
+              { "name": 33, "uid": "79372125", "values": { "age": 33, "P01": "9.6", "P1": "10.5", "P3": "11.1", "P5": "11.4", "P10": "11.9", "P15": "12.2", "P25": "12.8", "P50": "13.8", "P75": 15, "P85": "15.7", "P90": "16.1", "P95": "16.9", "P97": "17.3", "P99": "18.3", "P999": "20.1" } },
+              { "name": 34, "uid": "2362803091", "values": { "age": 34, "P01": "9.7", "P1": "10.6", "P3": "11.2", "P5": "11.5", "P10": 12, "P15": "12.4", "P25": "12.9", "P50": 14, "P75": "15.2", "P85": "15.9", "P90": "16.3", "P95": "17.1", "P97": "17.6", "P99": "18.6", "P999": "20.4" } },
+              { "name": 35, "uid": "2023835620", "values": { "age": 35, "P01": "9.8", "P1": "10.7", "P3": "11.3", "P5": "11.6", "P10": "12.2", "P15": "12.5", "P25": "13.1", "P50": "14.2", "P75": "15.4", "P85": "16.1", "P90": "16.6", "P95": "17.3", "P97": "17.8", "P99": "18.8", "P999": "20.7" } },
+              { "name": 36, "uid": "2993730527", "values": { "age": 36, "P01": "9.9", "P1": "10.8", "P3": "11.4", "P5": "11.8", "P10": "12.3", "P15": "12.7", "P25": "13.2", "P50": "14.3", "P75": "15.6", "P85": "16.3", "P90": "16.8", "P95": "17.5", "P97": 18, "P99": "19.1", "P999": 21 } },
+              { "name": 37, "uid": "538042987", "values": { "age": 37, "P01": 10, "P1": 11, "P3": "11.6", "P5": "11.9", "P10": "12.4", "P15": "12.8", "P25": "13.4", "P50": "14.5", "P75": "15.8", "P85": "16.5", "P90": 17, "P95": "17.8", "P97": "18.3", "P99": "19.3", "P999": "21.2" } },
+              { "name": 38, "uid": "2477976915", "values": { "age": 38, "P01": "10.1", "P1": "11.1", "P3": "11.7", "P5": 12, "P10": "12.6", "P15": "12.9", "P25": "13.5", "P50": "14.7", "P75": "15.9", "P85": "16.7", "P90": "17.2", "P95": 18, "P97": "18.5", "P99": "19.6", "P999": "21.5" } },
+              { "name": 39, "uid": "1933586597", "values": { "age": 39, "P01": "10.2", "P1": "11.2", "P3": "11.8", "P5": "12.2", "P10": "12.7", "P15": "13.1", "P25": "13.7", "P50": "14.8", "P75": "16.1", "P85": "16.9", "P90": "17.4", "P95": "18.2", "P97": "18.7", "P99": "19.8", "P999": "21.8" } },
+              { "name": 40, "uid": "113334890", "values": { "age": 40, "P01": "10.3", "P1": "11.3", "P3": "11.9", "P5": "12.3", "P10": "12.8", "P15": "13.2", "P25": "13.8", "P50": 15, "P75": "16.3", "P85": "17.1", "P90": "17.6", "P95": "18.4", "P97": 19, "P99": "20.1", "P999": "22.1" } },
+              { "name": 41, "uid": "909726333", "values": { "age": 41, "P01": "10.4", "P1": "11.4", "P3": "12.1", "P5": "12.4", "P10": 13, "P15": "13.4", "P25": 14, "P50": "15.2", "P75": "16.5", "P85": "17.3", "P90": "17.8", "P95": "18.6", "P97": "19.2", "P99": "20.3", "P999": "22.4" } },
+              { "name": 42, "uid": "2372119879", "values": { "age": 42, "P01": "10.5", "P1": "11.5", "P3": "12.2", "P5": "12.5", "P10": "13.1", "P15": "13.5", "P25": "14.1", "P50": "15.3", "P75": "16.7", "P85": "17.5", "P90": 18, "P95": "18.9", "P97": "19.4", "P99": "20.6", "P999": "22.7" } },
+              { "name": 43, "uid": "1733486684", "values": { "age": 43, "P01": "10.6", "P1": "11.7", "P3": "12.3", "P5": "12.7", "P10": "13.2", "P15": "13.6", "P25": "14.3", "P50": "15.5", "P75": "16.9", "P85": "17.7", "P90": "18.2", "P95": "19.1", "P97": "19.7", "P99": "20.8", "P999": 23 } },
+              { "name": 44, "uid": "3599131016", "values": { "age": 44, "P01": "10.7", "P1": "11.8", "P3": "12.4", "P5": "12.8", "P10": "13.4", "P15": "13.8", "P25": "14.4", "P50": "15.7", "P75": "17.1", "P85": "17.9", "P90": "18.4", "P95": "19.3", "P97": "19.9", "P99": "21.1", "P999": "23.3" } },
+              { "name": 45, "uid": "182517539", "values": { "age": 45, "P01": "10.8", "P1": "11.9", "P3": "12.5", "P5": "12.9", "P10": "13.5", "P15": "13.9", "P25": "14.6", "P50": "15.8", "P75": "17.3", "P85": "18.1", "P90": "18.6", "P95": "19.5", "P97": "20.1", "P99": "21.3", "P999": "23.6" } },
+              { "name": 46, "uid": "1609782514", "values": { "age": 46, "P01": "10.9", "P1": 12, "P3": "12.7", "P5": 13, "P10": "13.6", "P15": "14.1", "P25": "14.7", "P50": 16, "P75": "17.4", "P85": "18.3", "P90": "18.9", "P95": "19.8", "P97": "20.4", "P99": "21.6", "P999": "23.9" } },
+              { "name": 47, "uid": "3663334905", "values": { "age": 47, "P01": 11, "P1": "12.1", "P3": "12.8", "P5": "13.2", "P10": "13.8", "P15": "14.2", "P25": "14.9", "P50": "16.2", "P75": "17.6", "P85": "18.5", "P90": "19.1", "P95": 20, "P97": "20.6", "P99": "21.9", "P999": "24.2" } },
+              { "name": 48, "uid": "3032606303", "values": { "age": 48, "P01": "11.1", "P1": "12.2", "P3": "12.9", "P5": "13.3", "P10": "13.9", "P15": "14.3", "P25": 15, "P50": "16.3", "P75": "17.8", "P85": "18.7", "P90": "19.3", "P95": "20.2", "P97": "20.9", "P99": "22.1", "P999": "24.5" } },
+              { "name": 49, "uid": "3408935369", "values": { "age": 49, "P01": "11.2", "P1": "12.3", "P3": 13, "P5": "13.4", "P10": 14, "P15": "14.5", "P25": "15.2", "P50": "16.5", "P75": 18, "P85": "18.9", "P90": "19.5", "P95": "20.4", "P97": "21.1", "P99": "22.4", "P999": "24.8" } },
+              { "name": 50, "uid": "1589457419", "values": { "age": 50, "P01": "11.3", "P1": "12.4", "P3": "13.1", "P5": "13.5", "P10": "14.2", "P15": "14.6", "P25": "15.3", "P50": "16.7", "P75": "18.2", "P85": "19.1", "P90": "19.7", "P95": "20.7", "P97": "21.3", "P99": "22.6", "P999": "25.1" } },
+              { "name": 51, "uid": "2469851358", "values": { "age": 51, "P01": "11.4", "P1": "12.5", "P3": "13.3", "P5": "13.7", "P10": "14.3", "P15": "14.7", "P25": "15.4", "P50": "16.8", "P75": "18.4", "P85": "19.3", "P90": "19.9", "P95": "20.9", "P97": "21.6", "P99": "22.9", "P999": "25.4" } },
+              { "name": 52, "uid": "2105380869", "values": { "age": 52, "P01": "11.5", "P1": "12.6", "P3": "13.4", "P5": "13.8", "P10": "14.4", "P15": "14.9", "P25": "15.6", "P50": 17, "P75": "18.6", "P85": "19.5", "P90": "20.1", "P95": "21.1", "P97": "21.8", "P99": "23.2", "P999": "25.7" } },
+              { "name": 53, "uid": "3127741612", "values": { "age": 53, "P01": "11.6", "P1": "12.7", "P3": "13.5", "P5": "13.9", "P10": "14.6", "P15": 15, "P25": "15.7", "P50": "17.2", "P75": "18.8", "P85": "19.7", "P90": "20.3", "P95": "21.4", "P97": "22.1", "P99": "23.4", "P999": 26 } },
+              { "name": 54, "uid": "3412750668", "values": { "age": 54, "P01": "11.7", "P1": "12.9", "P3": "13.6", "P5": 14, "P10": "14.7", "P15": "15.2", "P25": "15.9", "P50": "17.3", "P75": 19, "P85": "19.9", "P90": "20.6", "P95": "21.6", "P97": "22.3", "P99": "23.7", "P999": "26.3" } },
+              { "name": 55, "uid": "988126842", "values": { "age": 55, "P01": "11.8", "P1": 13, "P3": "13.7", "P5": "14.1", "P10": "14.8", "P15": "15.3", "P25": 16, "P50": "17.5", "P75": "19.2", "P85": "20.1", "P90": "20.8", "P95": "21.8", "P97": "22.5", "P99": 24, "P999": "26.6" } },
+              { "name": 56, "uid": "2605626522", "values": { "age": 56, "P01": "11.9", "P1": "13.1", "P3": "13.8", "P5": "14.3", "P10": "14.9", "P15": "15.4", "P25": "16.2", "P50": "17.7", "P75": "19.3", "P85": "20.3", "P90": 21, "P95": "22.1", "P97": "22.8", "P99": "24.2", "P999": 27 } },
+              { "name": 57, "uid": "446950455", "values": { "age": 57, "P01": 12, "P1": "13.2", "P3": "13.9", "P5": "14.4", "P10": "15.1", "P15": "15.6", "P25": "16.3", "P50": "17.8", "P75": "19.5", "P85": "20.5", "P90": "21.2", "P95": "22.3", "P97": 23, "P99": "24.5", "P999": "27.3" } },
+              { "name": 58, "uid": "882269578", "values": { "age": 58, "P01": 12, "P1": "13.3", "P3": "14.1", "P5": "14.5", "P10": "15.2", "P15": "15.7", "P25": "16.5", "P50": 18, "P75": "19.7", "P85": "20.7", "P90": "21.4", "P95": "22.5", "P97": "23.3", "P99": "24.8", "P999": "27.6" } },
+              { "name": 59, "uid": "3274138806", "values": { "age": 59, "P01": "12.1", "P1": "13.4", "P3": "14.2", "P5": "14.6", "P10": "15.3", "P15": "15.8", "P25": "16.6", "P50": "18.2", "P75": "19.9", "P85": "20.9", "P90": "21.6", "P95": "22.8", "P97": "23.5", "P99": 25, "P999": "27.9" } },
+              { "name": 60, "uid": "2229502958", "values": { "age": 60, "P01": "12.2", "P1": "13.5", "P3": "14.3", "P5": "14.7", "P10": "15.5", "P15": 16, "P25": "16.7", "P50": "18.3", "P75": "20.1", "P85": "21.1", "P90": "21.9", "P95": 23, "P97": "23.8", "P99": "25.3", "P999": "28.2" } }
+          ];
+
+          const convertedAge = umar(age_unit, age);
+          const convertedWeight = wazan(w_unit, weight);
+
+          let result = {};
+          
+          if (isNaN(convertedWeight)) {
+              result.error = 'Please! Check your input.';
+              return result;
+          }
+
+          if (isNaN(convertedAge)) {
+              result.error = 'Please! Check your input.';
+              return result;
+          }
+
+          if (convertedAge > 0 && convertedAge <= 5) {
+              const ageInMonths = convertedAge * 12;
+              let take_row = null;
+
+              if (gender == 0) { // Girls
+                  if (ageInMonths <= 13 * 0.23) {
+                      for (let i = 0; i < girls_to_13w.length; i++) {
+                          if ((ageInMonths <= 0.23 * girls_to_13w[i].values.age) && 
+                              (i === 0 || ageInMonths > 0.23 * girls_to_13w[i-1].values.age)) {
+                              take_row = girls_to_13w[i].values;
+                              break;
+                          }
+                      }
+                  } else {
+                      for (let i = 0; i < girls_to_5y.length; i++) {
+                          if ((ageInMonths <= girls_to_5y[i].values.age) && 
+                              (i == 0 || ageInMonths > girls_to_5y[i-1].values.age)) {
+                              take_row = girls_to_5y[i].values;
+                              break;
+                          }
+                      }
+                  }
+              } else if (gender == 1) { // Boys
+                  if (ageInMonths <= 13 * 0.23) {
+                      for (let i = 0; i < boys_to_13w.length; i++) {
+                          if ((ageInMonths <= 0.23 * boys_to_13w[i].values.age) && 
+                              (i == 0 || ageInMonths > 0.23 * boys_to_13w[i-1].values.age)) {
+                              take_row = boys_to_13w[i].values;
+                              break;
+                          }
+                      }
+                  } else {
+                      for (let i = 0; i < boys_to_5y.length; i++) {
+                          if ((ageInMonths <= boys_to_5y[i].values.age) && 
+                              (i == 0 || ageInMonths > boys_to_5y[i-1].values.age)) {
+                              take_row = boys_to_5y[i].values;
+                              break;
+                          }
+                      }
+                  }
+              }
+
+              if (!take_row) {
+                  result.error = 'No matching data found for the given parameters.';
+                  return result;
+              }
+
+              // Convert string values to numbers in take_row
+              Object.keys(take_row).forEach(key => {
+                  if (typeof take_row[key] == 'string') {
+                      take_row[key] = parseFloat(take_row[key]);
+                  }
+              });
+
+              let first_ans = 0;
+              let percentile = 0;
+              let line = '';
+              let image = '';
+
+              // Calculate percentile value
+              if (convertedWeight <= take_row.P01) {
+                  first_ans = 0.1;
+              } else if (convertedWeight <= take_row.P1) {
+                  first_ans = ((convertedWeight - take_row.P01) / (take_row.P1 - take_row.P01) * (1 - 0.1) + 0.1);
+              } else if (convertedWeight <= take_row.P3) {
+                  first_ans = ((convertedWeight - take_row.P1) / (take_row.P3 - take_row.P1) * (3 - 1) + 1);
+              } else if (convertedWeight <= take_row.P5) {
+                  first_ans = ((convertedWeight - take_row.P3) / (take_row.P5 - take_row.P3) * 2 + 3);
+              } else if (convertedWeight <= take_row.P10) {
+                  first_ans = ((convertedWeight - take_row.P5) / (take_row.P10 - take_row.P5) * 5 + 5);
+              } else if (convertedWeight <= take_row.P15) {
+                  first_ans = ((convertedWeight - take_row.P10) / (take_row.P15 - take_row.P10) * 5 + 10);
+              } else if (convertedWeight <= take_row.P25) {
+                  first_ans = ((convertedWeight - take_row.P15) / (take_row.P25 - take_row.P15) * 10 + 10);
+              } else if (convertedWeight <= take_row.P50) {
+                  first_ans = ((convertedWeight - take_row.P25) / (take_row.P50 - take_row.P25) * 25 + 25);
+              } else if (convertedWeight <= take_row.P75) {
+                  first_ans = ((convertedWeight - take_row.P50) / (take_row.P75 - take_row.P50) * 25 + 50);
+              } else if (convertedWeight <= take_row.P85) {
+                  first_ans = ((convertedWeight - take_row.P75) / (take_row.P85 - take_row.P75) * 10 + 75);
+              } else if (convertedWeight <= take_row.P90) {
+                  first_ans = ((convertedWeight - take_row.P85) / (take_row.P90 - take_row.P85) * 5 + 85);
+              } else if (convertedWeight <= take_row.P95) {
+                  first_ans = ((convertedWeight - take_row.P90) / (take_row.P95 - take_row.P90) * 5 + 90);
+              } else if (convertedWeight <= take_row.P97) {
+                  first_ans = ((convertedWeight - take_row.P95) / (take_row.P97 - take_row.P95) * 2 + 95);
+              } else if (convertedWeight <= take_row.P99) {
+                  first_ans = ((convertedWeight - take_row.P97) / (take_row.P99 - take_row.P97) * 2 + 97);
+              } else if (convertedWeight <= take_row.P999) {
+                  first_ans = ((convertedWeight - take_row.P99) / (take_row.P999 - take_row.P99) * 0.99 + 99);
+              } else {
+                  first_ans = 100;
+              }
+
+              first_ans = Math.round(first_ans * 100) / 100;
+
+              // Determine percentile category
+              if (convertedWeight <= take_row.P01) {
+                  percentile = 0.1;
+                  line = 'The result is below <b> 0.1 percentile </b><br /><br />It seems that your child may be short for their age. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              } else if (convertedWeight <= take_row.P1) {
+                  percentile = 1;
+                  line = 'Between <b>0.1</b> and <b>1st percentile</b><br /><br />It seems that your child may be short for their age. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              } else if (convertedWeight <= take_row.P3) {
+                  percentile = 3;
+                  line = 'Between <b>1st</b> and <b>3rd percentile</b><br /><br />It seems that your child may be short for their age. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              } else if (convertedWeight <= take_row.P5) {
+                  percentile = 5;
+                  line = 'Between the <b>3rd</b> and <b>5th percentiles</b>';
+              } else if (convertedWeight <= take_row.P10) {
+                  percentile = 10;
+                  line = 'Between the <b>5th</b> and <b>10th percentiles</b>';
+              } else if (convertedWeight <= take_row.P15) {
+                  percentile = 15;
+                  line = 'Between the <b>10th</b> and <b>15th percentiles<b>';
+              } else if (convertedWeight <= take_row.P25) {
+                  percentile = 25;
+                  line = 'Between the <b>15th</b> and <b>25th percentiles</b>';
+              } else if (convertedWeight <= take_row.P50) {
+                  percentile = 50;
+                  line = 'Between the <b>25th</b> and <b>50th percentiles</b>';
+              } else if (convertedWeight <= take_row.P75) {
+                  percentile = 75;
+                  line = 'Between the <b>50th</b> and <b>75th percentiles</b>';
+              } else if (convertedWeight <= take_row.P85) {
+                  percentile = 85;
+                  line = 'Between the <b>75th</b> and <b>85th percentiles</b>';
+              } else if (convertedWeight <= take_row.P90) {
+                  percentile = 90;
+                  line = 'Between the <b>85th</b> and <b>90th percentiles</b><br\\>';
+              } else if (convertedWeight <= take_row.P95) {
+                  percentile = 95;
+                  line = 'Between the <b>90th</b> and <b>95th percentiles</b><br\\>';
+              } else if (convertedWeight <= take_row.P97) {
+                  percentile = 97;
+                  line = 'Between the <b>95th</b> and <b>97th percentiles</b><br\\>';
+              } else if (convertedWeight <= take_row.P99) {
+                  percentile = 99;
+                  line = 'Between the <b>97th</b> and <b>99th percentiles</b><br /><br />It seems that your child is taller than their peers. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              } else if (convertedWeight <= take_row.P999) {
+                  percentile = 99.9;
+                  line = 'Between the <b> 99th</b> and <b>99.9th percentiles</b><br /><br />It seems that your child is taller than their peers. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              } else {
+                  percentile = 100;
+                  line = 'The result is above the <b>99.9th percentile</b><br /><br />It seems that your child is taller than their peers. Check if they have always been in those ranges. <b>If they have entered these ranges recently, consult a doctor.</b>';
+              }
+
+              // Determine image based on percentile
+              if (percentile < 3) {
+                  image = "image_1";
+              } else if (percentile == 3) {
+                  image = "image_2";
+              } else if (percentile < 4) {
+                  image = "image_3";
+              } else if (percentile < 5) {
+                  image = "image_4";
+              } else if (percentile == 5) {
+                  image = "image_5";
+              } else if (percentile < 10) {
+                  image = "image_6";
+              } else if (percentile < 15) {
+                  image = "image_7";
+              } else if (percentile == 15) {
+                  image = "image_8";
+              } else if (percentile < 20) {
+                  image = "image_9";
+              } else if (percentile < 25) {
+                  image = "image_10";
+              } else if (percentile == 25) {
+                  image = "image_11";
+              } else if (percentile < 37) {
+                  image = "image_12";
+              } else if (percentile < 50) {
+                  image = "image_13";
+              } else if (percentile == 50) {
+                  image = "image_14";
+              } else if (percentile < 63) {
+                  image = "image_15";
+              } else if (percentile < 75) {
+                  image = "image_16";
+              } else if (percentile == 75) {
+                  image = "image_17";
+              } else if (percentile < 80) {
+                  image = "image_18";
+              } else if (percentile < 85) {
+                  image = "image_19";
+              } else if (percentile == 85) {
+                  image = "image_20";
+              } else if (percentile < 90) {
+                  image = "image_21";
+              } else if (percentile < 95) {
+                  image = "image_22";
+              } else if (percentile == 95) {
+                  image = "image_23";
+              } else if (percentile < 96) {
+                  image = "image_24";
+              } else if (percentile < 97) {
+                  image = "image_25";
+              } else if (percentile == 97) {
+                  image = "image_26";
+              } else if (percentile > 97) {
+                  image = "image_27";
+              }
+
+              result.tech_first_ans = first_ans;
+              result.tech_line = line;
+              result.tech_image = image;
+
+          } else {
+              result.error = 'This BMI percentile calculator is only for children up to the age of 5.';
+          }
+
+          return result;
+      }
+        
+           /**
+    * getCalculationHeightCalculator: Service Method
+    * POST: /api/calculators-lol/weight-percentile-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationHeightCalculator(body) {
+      const result = {};
+      const submit = body.tech_calculator_n || body.tech_calculator_name;
+
+      if (submit == 'calculator1') {
+        // Khamis-Roche Height Calculator
+        const m_height_ft = body['tech_m-height-ft'];
+        const m_height_in = body['tech_m-height-in'];
+        const m_height_cm = body['tech_m-height-cm'];
+        const m_unit_h = body.tech_mother_1_unit;
+
+        const f_height_ft = body['tech_f-height-ft'];
+        const f_height_in = body['tech_f-height-in'];
+        const f_height_cm = body['tech_f-height-cm'];
+        const f_unit_h = body.tech_father_1_unit;
+
+        const c_height_ft = body['tech_c-height-ft'];
+        const c_height_in = body['tech_c-height-in'];
+        const c_height_cm = body['tech_c-height-cm'];
+        const c_unit_h = body.tech_child_unit || body.tech_c_unit_h;
+
+        const c_weight_lbs = body['tech_c-weight-lbs'];
+        const c_weight_kg = body['tech_c-weight-kg'];
+        const c_unit_w = body.tech_c_unit_w;
+
+        const gender = body.tech_gender;
+        const age = body.tech_age;
+
+        const data = [
+          {
+            "4": [-0.087235, 1.23812, 0.50286, -10.2567],
+            "4.5": [-0.074454, 1.15964, 0.52887, -10.719],
+            "5": [-0.064778, 1.10674, 0.53919, -11.0213],
+            "5.5": [-0.05776, 1.0748, 0.53691, -11.1556],
+            "6": [-0.052947, 1.05923, 0.52513, -11.1138],
+            "6.5": [-0.049892, 1.05542, 0.50692, -11.0221],
+            "7": [-0.048144, 1.05877, 0.48538, -10.9984],
+            "7.5": [-0.047256, 1.06467, 0.46361, -11.0214],
+            "8": [-0.046778, 1.06853, 0.44469, -11.0696],
+            "8.5": [-0.046261, 1.06572, 0.43171, -11.122],
+            "9": [-0.045254, 1.05166, 0.42776, -11.1571],
+            "9.5": [-0.043311, 1.02174, 0.43593, -11.1405],
+            "10": [-0.039981, 0.97135, 0.45932, -12.0222],
+            "10.5": [-0.034814, 0.89589, 0.50101, -10.8286],
+            "11": [-0.02905, 0.81239, 0.54781, -10.4917],
+            "11.5": [-0.024167, 0.74134, 0.58409, -10.0065],
+            "12": [-0.020076, 0.68325, 0.60927, -9.3522],
+            "12.5": [-0.016681, 0.63869, 0.62279, -8.6055],
+            "13": [-0.013895, 0.60818, 0.62407, -7.8632],
+            "13.5": [-0.011624, 0.59228, 0.61253, -7.1348],
+            "14": [-0.009776, 0.59151, 0.58762, -6.4299],
+            "14.5": [-0.008261, 0.60643, 0.54875, -5.7578],
+            "15": [-0.006988, 0.63757, 0.49536, -5.1282],
+            "15.5": [-0.005863, 0.68548, 0.42687, -4.5092],
+            "16": [-0.004795, 0.75069, 0.34271, -3.9292],
+            "16.5": [-0.003695, 0.83375, 0.24231, -3.4873],
+            "17": [-0.00247, 0.9352, 0.1251, -3.283],
+            "17.5": [-0.001027, 1.05558, -0.0095, -3.4156]
+          },
+          {
+            "4": [-0.19435, 1.24768, 0.44774, -8.1325],
+            "4.5": [-0.18519, 1.22177, 0.41381, -6.47656],
+            "5": [-0.1753, 1.19932, 0.38467, -5.13583],
+            "5.5": [-0.16484, 1.1788, 0.36039, -4.13791],
+            "6": [-0.154, 1.15866, 0.34105, -3.51039],
+            "6.5": [-0.14294, 1.13737, 0.32672, -3.14322],
+            "7": [-0.13184, 1.11342, 0.31748, -2.87645],
+            "7.5": [-0.12086, 1.08525, 0.3134, -2.66291],
+            "8": [-0.11019, 1.05135, 0.31457, -2.45559],
+            "8.5": [-0.09999, 1.01018, 0.32105, -2.20728],
+            "9": [-0.09044, 0.9602, 0.33291, -1.87098],
+            "9.5": [-0.08171, 0.89989, 0.35025, -1.0633],
+            "10": [-0.07397, 0.82771, 0.37312, 0.33468],
+            "10.5": [-0.06739, 0.74213, 0.40161, 1.97366],
+            "11": [-0.06136, 0.67173, 0.42042, 3.50436],
+            "11.5": [-0.05518, 0.6415, 0.41686, 4.57747],
+            "12": [-0.04894, 0.64452, 0.3949, 4.84365],
+            "12.5": [-0.04272, 0.67386, 0.3585, 4.27869],
+            "13": [-0.03661, 0.7226, 0.31163, 3.21417],
+            "13.5": [-0.03067, 0.78383, 0.25826, 1.83456],
+            "14": [-0.025, 0.85062, 0.20235, 0.32425],
+            "14.5": [-0.01967, 0.91605, 0.14787, -1.13224],
+            "15": [-0.01477, 0.97319, 0.0988, -2.35055],
+            "15.5": [-0.01037, 1.01514, 0.05909, -3.10326],
+            "16": [-0.00655, 1.03496, 0.03272, -3.17885],
+            "16.5": [-0.0034, 1.02573, 0.02364, -2.41657],
+            "17": [-0.001, 0.98054, 0.03584, -0.65579],
+            "17.5": [0.00057, 0.89246, 0.07327, 2.26429]
+          }
+        ];
+
+        let m_height, f_height, c_height, c_weight;
+
+        // Convert mother's height to inches
+        if (m_unit_h == 'ft/in') {
+          if (!m_height_ft || !isFinite(m_height_ft) || !m_height_in || !isFinite(m_height_in)) {
+            result.error = "Please check mother's height input.";
+            return result;
+          }
+          m_height = (parseFloat(m_height_ft) * 12) + parseFloat(m_height_in);
+        } else {
+          if (!m_height_cm || !isFinite(m_height_cm)) {
+            result.error = "Please check mother's height input.";
+            return result;
+          }
+          m_height = parseFloat(m_height_cm) / 2.54;
+        }
+
+        // Convert father's height to inches
+        if (f_unit_h == 'ft/in') {
+          if (!f_height_ft || !isFinite(f_height_ft) || !f_height_in || !isFinite(f_height_in)) {
+            result.error = "Please check father's height input.";
+            return result;
+          }
+          f_height = (parseFloat(f_height_ft) * 12) + parseFloat(f_height_in);
+        } else {
+          if (!f_height_cm || !isFinite(f_height_cm)) {
+            result.error = "Please check father's height input.";
+            return result;
+          }
+          f_height = parseFloat(f_height_cm) / 2.54;
+        }
+
+        // Convert child's height to inches
+        if (c_unit_h == 'ft/in') {
+          if (!c_height_ft || !isFinite(c_height_ft) || !c_height_in || !isFinite(c_height_in)) {
+            result.error = "Please check child's height input.";
+            return result;
+          }
+          c_height = (parseFloat(c_height_ft) * 12) + parseFloat(c_height_in);
+        } else {
+          if (!c_height_cm || !isFinite(c_height_cm)) {
+            result.error = "Please check child's height input.";
+            return result;
+          }
+          c_height = parseFloat(c_height_cm) / 2.54;
+        }
+
+        // Convert child's weight to pounds
+        if (c_unit_w == 'lbs') {
+          if (!c_weight_lbs || !isFinite(c_weight_lbs)) {
+            result.error = "Please check child's weight input.";
+            return result;
+          }
+          c_weight = parseFloat(c_weight_lbs);
+        } else {
+          if (!c_weight_kg || !isFinite(c_weight_kg)) {
+            result.error = "Please check child's weight input.";
+            return result;
+          }
+          c_weight = parseFloat(c_weight_kg) * 2.20462;
+        }
+
+        // Validation
+        if (m_height <= 0) {
+          result.error = "Mother's height must be greater than zero.";
+          return result;
+        }
+        if (f_height <= 0) {
+          result.error = "Father's height must be greater than zero.";
+          return result;
+        }
+        if (c_weight <= 0) {
+          result.error = "Child's weight must be greater than zero.";
+          return result;
+        }
+        if (c_height <= 0) {
+          result.error = "Child's height must be greater than zero.";
+          return result;
+        }
+
+        // Calculate Khamis-Roche height (in inches)
+        const d = data[parseInt(gender)][age];
+        const khamis_height = d[0] * c_weight + d[1] * c_height + (d[2] * (m_height + f_height)) / 2 + d[3];
+        const f_ans = (khamis_height < c_height) ? c_height : khamis_height;
+        const final_ans_inches = Math.round(f_ans);
+
+        // Gender and margin setup
+        let sex, margin;
+        if (gender == 0) {
+          sex = "boys";
+          margin = 2.1; // inches
+        } else {
+          sex = "girls";
+          margin = 1.7; // inches
+        }
+
+        // Determine output format based on child's height unit
+        const output_unit = (c_unit_h == 'ft/in') ? 'imperial' : 'metric';
+        let final_ans, minHeight, maxHeight;
+
+        if (output_unit == 'imperial') {
+          const final_ans_in = Math.round(final_ans_inches % 12);
+          const final_ans_feet = Math.floor(final_ans_inches / 12);
+          final_ans = final_ans_feet + 'ft ' + final_ans_in + 'in';
+
+          const minH = Math.round(f_ans - margin);
+          const minHeight_in = Math.round(minH % 12);
+          const minHeight_feet = Math.floor(minH / 12);
+          minHeight = minHeight_feet + 'ft ' + minHeight_in + 'in';
+
+          const maxH = Math.round(f_ans + margin);
+          const maxHeight_in = Math.round(maxH % 12);
+          const maxHeight_feet = Math.floor(maxH / 12);
+          maxHeight = maxHeight_feet + 'ft ' + maxHeight_in + 'in';
+        } else {
+          final_ans = Math.round(final_ans_inches * 2.54) + ' cm';
+          minHeight = Math.round((f_ans - margin) * 2.54) + ' cm';
+          maxHeight = Math.round((f_ans + margin) * 2.54) + ' cm';
+          margin = Math.round(margin * 2.54 * 100) / 100;
+        }
+
+        // Set response parameters
+        result.tech_click_val = output_unit;
+        result.tech_submit = submit;
+        result.tech_final_ans = final_ans;
+        result.tech_minHeight = minHeight;
+        result.tech_maxHeight = maxHeight;
+        result.tech_sex = sex;
+        result.tech_mother_h = m_height_cm || (m_height * 2.54);
+        result.tech_father_h = f_height_cm || (f_height * 2.54);
+        result.tech_gender = gender;
+        result.tech_margin = margin;
+        result.tech_disable = "disable";
+
+        return result;
+
+      } else {
+        // Mid-Parental Height Calculator
+        const m_height_ft = body['tech_m-height-ft'];
+        const m_height_in = body['tech_m-height-in'];
+        const f_height_ft = body['tech_f-height-ft'];
+        const f_height_in = body['tech_f-height-in'];
+        const m_height_cm = body['tech_height-cm'];
+        const f_height_cm = body['tech_f-height-cm'];
+        const mother_entry_unit = body.tech_mother_entry_unit;
+        const father_entry_unit = body.tech_father_entry_unit;
+
+        const ft_and_in_to_cm = (ft, inch) => {
+          return (ft * 30.48) + (inch * 2.54);
+        };
+
+        const cm_to_ft_and_in = (cm) => {
+          const inches = cm / 2.54;
+          const feet = Math.floor(inches / 12);
+          const inch = inches % 12;
+          return feet + 'ft ' + Math.floor(inch) + 'in';
+        };
+
+        let m_height, f_height;
+
+        // Process mother's height
+        if (mother_entry_unit === 'ft/in') {
+          if (!m_height_ft || !m_height_in) {
+            result.error = "Please! Check your input for mother's height.";
+            return result;
+          }
+          m_height = ft_and_in_to_cm(parseFloat(m_height_ft), parseFloat(m_height_in));
+        } else {
+          if (!m_height_cm) {
+            result.error = "Please! Check your input for mother's height.";
+            return result;
+          }
+          m_height = parseFloat(m_height_cm);
+        }
+
+        // Process father's height
+        if (father_entry_unit === 'ft/in') {
+          if (!f_height_ft || !f_height_in) {
+            result.error = "Please! Check your input for father's height.";
+            return result;
+          }
+          f_height = ft_and_in_to_cm(parseFloat(f_height_ft), parseFloat(f_height_in));
+        } else {
+          if (!f_height_cm) {
+            result.error = "Please! Check your input for father's height.";
+            return result;
+          }
+          f_height = parseFloat(f_height_cm);
+        }
+
+        const new_m_height = m_height;
+        const new_f_height = f_height;
+
+        if (isFinite(m_height) && isFinite(f_height)) {
+          if (m_height > 0) {
+            if (f_height > 0) {
+              const margin = 4;
+              const midparental_height = (m_height + f_height) / 2;
+              const girls_height = midparental_height - 6.5;
+              const boys_height = midparental_height + 6.5;
+
+              const boy_mph = (new_f_height + new_m_height + 13) / 2;
+              const girl_mph = (new_f_height + new_m_height - 13) / 2;
+
+              let final_ans_boy = boy_mph;
+              let final_ans_girl = girl_mph;
+
+              let minHeightGirl = girls_height - margin;
+              let maxHeightGirl = girls_height + margin;
+              let minHeightBoy = boys_height - margin;
+              let maxHeightBoy = boys_height + margin;
+
+              const output_unit = mother_entry_unit;
+              if (output_unit === 'ft/in') {
+                final_ans_boy = cm_to_ft_and_in(final_ans_boy);
+                final_ans_girl = cm_to_ft_and_in(final_ans_girl);
+                minHeightGirl = cm_to_ft_and_in(minHeightGirl);
+                maxHeightGirl = cm_to_ft_and_in(maxHeightGirl);
+                minHeightBoy = cm_to_ft_and_in(minHeightBoy);
+                maxHeightBoy = cm_to_ft_and_in(maxHeightBoy);
+              } else {
+                minHeightGirl = Math.round(minHeightGirl * 100) / 100;
+                maxHeightGirl = Math.round(maxHeightGirl * 100) / 100;
+                minHeightBoy = Math.round(minHeightBoy * 100) / 100;
+                maxHeightBoy = Math.round(maxHeightBoy * 100) / 100;
+              }
+
+              result.tech_margin = margin;
+              result.tech_submit = submit;
+              result.tech_final_ans_boy = final_ans_boy;
+              result.tech_final_ans_girl = final_ans_girl;
+              result.tech_girls_height = girl_mph;
+              result.tech_boys_height = boy_mph;
+              result.tech_minHeightGirl = minHeightGirl;
+              result.tech_maxHeightGirl = maxHeightGirl;
+              result.tech_minHeightBoy = minHeightBoy;
+              result.tech_maxHeightBoy = maxHeightBoy;
+              result.tech_mother_height = new_m_height;
+              result.tech_father_height = new_f_height;
+              result.tech_mother_entry_unit = mother_entry_unit;
+              result.tech_father_entry_unit = father_entry_unit;
+              result.tech_disable = "disable";
+
+              return result;
+            } else {
+              result.error = "Father's height must be greater than zero.";
+              return result;
+            }
+          } else {
+            result.error = "Mother's height must be greater than zero.";
+            return result;
+          }
+        } else {
+          result.error = 'Please! Check your input.';
+          return result;
+        }
       }
     }
 
+
+     /**
+    * getCalculationPaceCalculator: Service Method
+    * POST: /api/calculators-lol/pace-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+      async getCalculationPaceCalculator(body) {
+        // Helper functions
+        const gethours = (total_sec = '') => {
+            return String(Math.floor(total_sec / 3600)).padStart(2, "0");
+        };
+
+        const getmins = (total_sec = '') => {
+            const mins = total_sec - (gethours(total_sec) * 3600);
+            return String(Math.floor(mins / 60)).padStart(2, "0");
+        };
+
+        const getsecs = (value = '') => {
+            return String(Math.round(value - (gethours(value) * 3600) - (getmins(value) * 60))).padStart(2, "0");
+        };
+
+        const gettime = (seconds) => {
+            const hour = gethours(seconds);
+            const mins = getmins(seconds);
+            const sec = getsecs(seconds);
+            return `${hour} : ${mins} : ${sec}`;
+        };
+
+        const request = body;
+        const type = request.tech_type;
+        const time = request.tech_time;
+        const dis = request.tech_dis;
+        const dis_unit = request.tech_dis_unit;
+        const event = request.tech_event;
+        let pace = request.tech_pace;
+        const per = request.tech_per;
+
+        const result = { };
+
+        try { 
+
+        if (request.tech_calculator_name == 'calculator3') {
+              if (!request.tech_from) {
+                  result.error = 'Please! Enter Valid Elapsed Time.';
+                  return result;
+              }
+
+              const pace = request.tech_from;
+              const to = request.tech_to;
+              const per = request.tech_fromu;
+              
+              if (per == '1' || per == '2') {
+                  const paceArr = pace.split(':');
+                  let pace_check = true;
+                  
+                  // Check if all parts are numeric
+                  paceArr.forEach(value => {
+                      if (isNaN(parseFloat(value))) {
+                          pace_check = false;
+                      }
+                  });
+
+                  if (!pace_check) {
+                      result.error = 'Please! Enter Valid pace.';
+                      return result;
+                  }
+
+                  let hour, min, sec, tsec, thour, tmin;
+
+                  if (paceArr.length === 3) {
+                      hour = parseFloat(paceArr[0]);
+                      min = parseFloat(paceArr[1]);
+                      sec = parseFloat(paceArr[2]);
+                      tsec = (hour * 60 * 60) + (min * 60) + sec;
+                      thour = hour + (min / 60) + (sec / (60 * 60));
+                      tmin = (hour * 60) + min + (sec / 60);
+                  } else if (paceArr.length === 2) {
+                      min = parseFloat(paceArr[0]);
+                      sec = parseFloat(paceArr[1]);
+                      tsec = (min * 60) + sec;
+                      thour = (min / 60) + (sec / (60 * 60));
+                      tmin = min + (sec / 60);
+                  } else if (paceArr.length === 1) {
+                      sec = parseFloat(paceArr[0]);
+                      tsec = sec;
+                      thour = (sec / (60 * 60));
+                      tmin = (sec / 60);
+                  }
+
+                  // Rest of the calculation logic for per=1 or per=2
+                  if (per == '1') {
+                      switch (to) {
+                          case '1':
+                              result.tech_res = gettime(tsec);
+                              break;
+                          case '2':
+                              result.tech_res = gettime(tsec * 0.621371);
+                              break;
+                          case '3':
+                              result.tech_res = Number((1 / thour).toFixed(3));
+                              break;
+                          case '4':
+                              result.tech_res = Number((1 / thour * 1.609344).toFixed(3));
+                              break;
+                          case '5':
+                              result.tech_res = Number((1 / thour * 26.8224).toFixed(3));
+                              break;
+                          case '6':
+                              result.tech_res = Number((1 / thour / 2.237).toFixed(3));
+                              break;
+                          case '7':
+                              result.tech_res = Number((1 / thour * 29.3333).toFixed(3));
+                              break;
+                          case '8':
+                              result.tech_res = Number((1 / thour * 0.488889).toFixed(3));
+                              break;
+                      }
+                  } else {
+                      tsec = tsec * 1.609344;
+                      thour = thour * 1.609344;
+                      
+                      switch (to) {
+                          case '1':
+                              result.tech_res = gettime(tsec);
+                              break;
+                          case '2':
+                              result.tech_res = gettime(tsec * 0.621371);
+                              break;
+                          case '3':
+                              result.tech_res = Number((1 / thour).toFixed(3));
+                              break;
+                          case '4':
+                              result.tech_res = Number((1 / thour * 1.609344).toFixed(3));
+                              break;
+                          case '5':
+                              result.tech_res = Number((1 / thour * 26.8224).toFixed(3));
+                              break;
+                          case '6':
+                              result.tech_res = Number((1 / thour / 2.237).toFixed(3));
+                              break;
+                          case '7':
+                              result.tech_res = Number((1 / thour * 29.3333).toFixed(3));
+                              break;
+                          case '8':
+                              result.tech_res = Number((1 / thour * 0.488889).toFixed(3));
+                              break;
+                      }
+                  }
+              } else {
+                  // This section is for per=3,4,5,6,7,8 where pace should be a number
+                  // Convert to number first
+                  const paceNum = parseFloat(pace);
+                  // FIXED: Corrected the condition - should be OR not AND
+                  if (paceNum <= 0 || isNaN(paceNum)) {
+                      result.error = 'Please! Enter positive value of pace.';
+                      return result;
+                  }
+
+                  let tsec, thour;
+
+                  switch (per) {
+                      case '3':
+                          tsec = (60 / paceNum) * 60;
+                          thour = (60 / paceNum) / 60;
+                          break;
+                      case '4':
+                          tsec = ((60 / paceNum) * 60) * 1.609344;
+                          thour = ((60 / paceNum) / 60) * 1.609344;
+                          break;
+                      case '5':
+                          tsec = (26.8224 / paceNum) * 60 * 60;
+                          thour = (26.8224 / paceNum);
+                          break;
+                      case '6':
+                          tsec = (26.8224 / paceNum) * 60;
+                          thour = (26.8224 / paceNum) / 60;
+                          break;
+                      case '7':
+                          tsec = (29.3333 / paceNum) * 60 * 60;
+                          thour = (29.3333 / paceNum);
+                          break;
+                      case '8':
+                          tsec = (29.3333 / paceNum) * 60;
+                          thour = (29.3333 / paceNum) / 60;
+                          break;
+                  }
+
+                  switch (to) {
+                      case '1':
+                          result.tech_res = gettime(tsec);
+                          break;
+                      case '2':
+                          result.tech_res = gettime(tsec * 0.621371);
+                          break;
+                      case '3':
+                          result.tech_res = Number((1 / thour).toFixed(3));
+                          break;
+                      case '4':
+                          result.tech_res = Number((1 / thour * 1.609344).toFixed(3));
+                          break;
+                      case '5':
+                          result.tech_res = Number((1 / thour * 26.8224).toFixed(3));
+                          break;
+                      case '6':
+                          result.tech_res = Number((1 / thour / 2.237).toFixed(3));
+                          break;
+                      case '7':
+                          result.tech_res = Number((1 / thour * 29.3333).toFixed(3));
+                          break;
+                      case '8':
+                          result.tech_res = Number((1 / thour * 0.488889).toFixed(3));
+                          break;
+                  }
+              }
+
+              return result;
+          } else if (request.tech_calculator_name == 'calculator4') {
+                if (isNaN(request.tech_fdis) || !request.tech_ftime || isNaN(request.tech_ffdis)) {
+                    result.error = 'Please! Check your input.';
+                    return result;
+                }
+
+                const time = request.tech_ftime;
+                const dis = parseFloat(request.tech_fdis);
+                const dis_unit = request.tech_fdis_unit;
+                const fdis = parseFloat(request.tech_ffdis);
+                const fdis_unit = request.tech_ffdis_unit;
+
+                const timeArr = time.split(':');
+                let time_check = true;
+                
+                timeArr.forEach(value => {
+                    if (isNaN(value)) {
+                        time_check = false;
+                    }
+                });
+
+                if (!time_check) {
+                    result.error = 'Please! Enter Valid Elapsed Time.';
+                    return result;
+                }
+
+                let hour, min, sec, tsec, thour, tmin;
+
+                if (timeArr.length == 3) {
+                    hour = parseFloat(timeArr[0]);
+                    min = parseFloat(timeArr[1]);
+                    sec = parseFloat(timeArr[2]);
+                    tsec = (hour * 60 * 60) + (min * 60) + sec;
+                    thour = hour + (min / 60) + (sec / (60 * 60));
+                    tmin = (hour * 60) + min + (sec / 60);
+                } else if (timeArr.length == 2) {
+                    min = parseFloat(timeArr[0]);
+                    sec = parseFloat(timeArr[1]);
+                    tsec = (min * 60) + sec;
+                    thour = (min / 60) + (sec / (60 * 60));
+                    tmin = min + (sec / 60);
+                } else if (timeArr.length == 1) {
+                    sec = parseFloat(timeArr[0]);
+                    tsec = sec;
+                    thour = (sec / (60 * 60));
+                    tmin = (sec / 60);
+                }
+
+                let dis_mi, dis_km, dis_m, dis_yd;
+
+                switch (dis_unit) {
+                    case 'mi':
+                        dis_mi = dis;
+                        dis_km = dis * 1.609344;
+                        dis_m = dis * 1609.344;
+                        dis_yd = dis * 1760;
+                        break;
+                    case 'km':
+                        dis_mi = dis * 0.621371;
+                        dis_km = dis;
+                        dis_m = dis * 1000;
+                        dis_yd = dis * 1093.613;
+                        break;
+                    case 'm':
+                        dis_mi = dis * 0.000621371;
+                        dis_km = dis / 1000;
+                        dis_m = dis;
+                        dis_yd = dis * 1.093613;
+                        break;
+                    case 'yd':
+                        dis_mi = dis * 0.000568182;
+                        dis_km = dis * 0.0009144;
+                        dis_m = dis * 0.9144;
+                        dis_yd = dis;
+                        break;
+                }
+
+                result.tech_mi_h = Number((dis_mi / thour).toFixed(2));
+                result.tech_km_h = Number((dis_km / thour).toFixed(2));
+                result.tech_m_m = Number((dis_m / tmin).toFixed(2));
+                result.tech_m_s = Number((dis_m / tsec).toFixed(2));
+                result.tech_yd_m = Number((dis_yd / tmin).toFixed(2));
+                result.tech_yd_s = Number((dis_yd / tsec).toFixed(2));
+                
+                result.tech_pacekm = tsec / dis_km;
+                result.tech_pace = tsec / dis_mi;
+
+                let main;
+                switch (fdis_unit) {
+                    case 'mi':
+                        main = tsec / dis_mi;
+                        result.tech_main = gettime(main * fdis);
+                        break;
+                    case 'km':
+                        main = tsec / dis_km;
+                        result.tech_main = gettime(main * fdis);
+                        break;
+                    case 'm':
+                        main = tsec / dis_m;
+                        result.tech_main = gettime(main * fdis);
+                        break;
+                    case 'yd':
+                        main = tsec / dis_yd;
+                        result.tech_main = gettime(main * fdis);
+                        break;
+                }
+
+                return result;
+
+            } else if (request.tech_calculator_name == 'calculator2') {
+                let check = false;
+                let per_dis = 0;
+                let per_time = 0;
+                let table = '';
+                let atime = 0;
+                const mile_secs = [];
+                let stime = 0;
+
+                for (let i = 1; i <= 8; i++) {
+                    const timeField = request[`tech_time${i}`];
+                    const disField = request[`tech_dis${i}`];
+                    
+                    if (timeField && !isNaN(disField)) {
+                        check = true;
+                        const time = timeField;
+                        const dis = parseFloat(disField);
+                        const dis_unit = request[`tech_dis_unit${i}`];
+
+                        const timeArr = time.split(':');
+                        let time_check = true;
+                        
+                        timeArr.forEach(value => {
+                            if (isNaN(value)) {
+                                time_check = false;
+                            }
+                        });
+
+                        if (!time_check) {
+                            result.error = `Please! Enter Valid Time for element #${i}.`;
+                            return result;
+                        }
+
+                        let hour, min, sec, tsec, thour, tmin;
+
+                        if (timeArr.length == 3) {
+                            hour = parseFloat(timeArr[0]);
+                            min = parseFloat(timeArr[1]);
+                            sec = parseFloat(timeArr[2]);
+                            tsec = (hour * 60 * 60) + (min * 60) + sec;
+                            thour = hour + (min / 60) + (sec / (60 * 60));
+                            tmin = (hour * 60) + min + (sec / 60);
+                        } else if (timeArr.length == 2) {
+                            min = parseFloat(timeArr[0]);
+                            sec = parseFloat(timeArr[1]);
+                            tsec = (min * 60) + sec;
+                            thour = (min / 60) + (sec / (60 * 60));
+                            tmin = min + (sec / 60);
+                        } else if (timeArr.length == 1) {
+                            sec = parseFloat(timeArr[0]);
+                            tsec = sec;
+                            thour = (sec / (60 * 60));
+                            tmin = (sec / 60);
+                        }
+
+                        let dis_mi, dis_km, dis_m, dis_yd;
+
+                        switch (dis_unit) {
+                            case 'mi':
+                                dis_mi = dis;
+                                dis_km = dis * 1.609344;
+                                dis_m = dis * 1609.344;
+                                dis_yd = dis * 1760;
+                                break;
+                            case 'km':
+                                dis_mi = dis * 0.621371;
+                                dis_km = dis;
+                                dis_m = dis * 1000;
+                                dis_yd = dis * 1093.613;
+                                break;
+                            case 'm':
+                                dis_mi = dis * 0.000621371;
+                                dis_km = dis / 1000;
+                                dis_m = dis;
+                                dis_yd = dis * 1.093613;
+                                break;
+                            case 'yd':
+                                dis_mi = dis * 0.000568182;
+                                dis_km = dis * 0.0009144;
+                                dis_m = dis * 0.9144;
+                                dis_yd = dis;
+                                break;
+                        }
+
+                        if (per_time >= tsec) {
+                            result.error = `The time of element #${i} must be greater than the last time.`;
+                            return result;
+                        }
+
+                        let dis_main, pace;
+                        const base_dis_unit = request.tech_dis_unit1;
+
+                        switch (base_dis_unit) {
+                            case 'km':
+                                if (per_dis >= dis_km) {
+                                    result.error = `The distance of element ${i} must be greater than the above distance.`;
+                                    return result;
+                                }
+                                dis_km = dis_km - per_dis;
+                                dis_main = dis_km;
+                                tsec = tsec - per_time;
+                                per_dis = per_dis + dis_km;
+                                per_time = per_time + tsec;
+                                dis_mi = dis_km * 0.621371;
+                                pace = tsec / dis_mi;
+                                break;
+                            case 'mi':
+                                if (per_dis >= dis_mi) {
+                                    result.error = `The distance of element ${i} must be greater than the above distance.`;
+                                    return result;
+                                }
+                                dis_mi = dis_mi - per_dis;
+                                dis_main = dis_mi;
+                                tsec = tsec - per_time;
+                                per_dis = per_dis + dis_mi;
+                                per_time = per_time + tsec;
+                                pace = tsec / dis_mi;
+                                break;
+                            case 'm':
+                                if (per_dis >= dis_m) {
+                                    result.error = `The distance of element ${i} must be greater than the above distance.`;
+                                    return result;
+                                }
+                                dis_m = dis_m - per_dis;
+                                dis_main = dis_m;
+                                tsec = tsec - per_time;
+                                per_dis = per_dis + dis_m;
+                                per_time = per_time + tsec;
+                                dis_mi = dis_m * 0.000621371;
+                                pace = tsec / dis_mi;
+                                break;
+                            case 'yd':
+                                if (per_dis >= dis_yd) {
+                                    result.error = `The distance of element ${i} must be greater than the above distance.`;
+                                    return result;
+                                }
+                                dis_yd = dis_yd - per_dis;
+                                dis_main = dis_yd;
+                                tsec = tsec - per_time;
+                                per_dis = per_dis + dis_yd;
+                                per_time = per_time + tsec;
+                                dis_mi = dis_yd * 0.000568182;
+                                pace = tsec / dis_mi;
+                                break;
+                        }
+
+                        atime = (atime + pace);
+                        stime = atime / i;
+                        table += `<tr><td class="border-b py-2">${i}</td><td class="border-b py-2">${Number(dis_main.toFixed(2))}</td><td class="border-b py-2">${gettime(tsec)}</td><td class="border-b py-2">${gettime(pace)}</td><td class="border-b py-2">${gettime(stime)}</td></tr>`;
+                        mile_secs.push(Number(pace.toFixed(2)));
+                    }
+                }
+
+                if (check) {
+                    result.tech_table = table;
+                    result.tech_stime = stime;
+                    result.tech_mile_secs = mile_secs;
+                    return result;
+                }
+
+            } else if (request.tech_calculator_name == 'calculator1') {
+                if (type == 'pace') {
+                    if (!time || isNaN(dis)) {
+                        result.error = 'Please! Check your input.';
+                        return result;
+                    }
+
+                    const timeArr = time.split(':');
+                    let time_check = true;
+                    
+                    timeArr.forEach(value => {
+                        if (isNaN(value)) {
+                            time_check = false;
+                        }
+                    });
+
+                    if (!time_check) {
+                        result.error = 'Please! Enter Valid Time.';
+                        return result;
+                    }
+
+                    let hour, min, sec, tsec, thour, tmin;
+
+                    if (timeArr.length == 3) {
+                        hour = parseFloat(timeArr[0]);
+                        min = parseFloat(timeArr[1]);
+                        sec = parseFloat(timeArr[2]);
+                        tsec = (hour * 60 * 60) + (min * 60) + sec;
+                        thour = hour + (min / 60) + (sec / (60 * 60));
+                        tmin = (hour * 60) + min + (sec / 60);
+                    } else if (timeArr.length == 2) {
+                        min = parseFloat(timeArr[0]);
+                        sec = parseFloat(timeArr[1]);
+                        tsec = (min * 60) + sec;
+                        thour = (min / 60) + (sec / (60 * 60));
+                        tmin = min + (sec / 60);
+                    } else if (timeArr.length === 1) {
+                        sec = parseFloat(timeArr[0]);
+                        tsec = sec;
+                        thour = (sec / (60 * 60));
+                        tmin = (sec / 60);
+                    }
+
+                    let dis_mi, dis_km, dis_m, dis_yd;
+
+                    switch (dis_unit) {
+                        case 'mi':
+                            dis_mi = parseFloat(dis);
+                            dis_km = dis * 1.609344;
+                            dis_m = dis * 1609.344;
+                            dis_yd = dis * 1760;
+                            break;
+                        case 'km':
+                            dis_mi = dis * 0.621371;
+                            dis_km = parseFloat(dis);
+                            dis_m = dis * 1000;
+                            dis_yd = dis * 1093.613;
+                            break;
+                        case 'm':
+                            dis_mi = dis * 0.000621371;
+                            dis_km = dis / 1000;
+                            dis_m = parseFloat(dis);
+                            dis_yd = dis * 1.093613;
+                            break;
+                        case 'yd':
+                            dis_mi = dis * 0.000568182;
+                            dis_km = dis * 0.0009144;
+                            dis_m = dis * 0.9144;
+                            dis_yd = parseFloat(dis);
+                            break;
+                    }
+
+                    result.tech_mi_h = Number((dis_mi / thour).toFixed(2));
+                    result.tech_km_h = Number((dis_km / thour).toFixed(2));
+                    result.tech_m_m = Number((dis_m / tmin).toFixed(2));
+                    result.tech_m_s = Number((dis_m / tsec).toFixed(2));
+                    
+                    const pacekm = tsec / dis_km;
+                    const P_hour_km = gethours(pacekm);
+                    const P_min_km = getmins(pacekm);
+                    const P_sec_km = getsecs(pacekm);
+
+                    const pace_val = tsec / dis_mi;
+                    const P_hour_mi = gethours(pace_val);
+                    const P_min_mi = getmins(pace_val);
+                    const P_sec_mi = getsecs(pace_val);
+                    
+                    result.tech_pace_mi = `${P_hour_mi} : ${P_min_mi} : ${P_sec_mi}`;
+                    result.tech_pace_km = `${P_hour_km} : ${P_min_km} : ${P_sec_km}`;
+                    result.tech_dis_km = dis_km;
+                    result.tech_dis_mi = dis_mi;
+                    result.tech_pacekm = pacekm;
+                    result.tech_pace = pace_val;
+                    result.tech_share = pace_val;
+                    return result;
+
+                } else if (type == 'time') {
+                    if (!pace || isNaN(dis)) {
+                        result.error = 'Please! Check your input.';
+                        return result;
+                    }
+
+                    let dis_mi, dis_km, dis_m, dis_yd;
+
+                    switch (dis_unit) {
+                        case 'mi':
+                            dis_mi = parseFloat(dis);
+                            dis_km = dis * 1.609344;
+                            dis_m = dis * 1609.344;
+                            dis_yd = dis * 1760;
+                            break;
+                        case 'km':
+                            dis_km = parseFloat(dis);
+                            dis_mi = dis * 0.621371;
+                            dis_m = dis * 1000;
+                            dis_yd = dis * 1093.613;
+                            break;
+                        case 'm':
+                            dis_m = parseFloat(dis);
+                            dis_mi = dis * 0.000621371;
+                            dis_km = dis / 1000;
+                            dis_yd = dis * 1.093613;
+                            break;
+                        case 'yd':
+                            dis_yd = parseFloat(dis);
+                            dis_mi = dis * 0.000568182;
+                            dis_km = dis * 0.0009144;
+                            dis_m = dis * 0.9144;
+                            break;
+                    }
+
+                    let timeres, pacekm, pace_val;
+
+                    if (per == '1' || per == '2') {
+                        const paceArr = pace.split(':');
+                        let pace_check = true;
+                        
+                        paceArr.forEach(value => {
+                            if (isNaN(value)) {
+                                pace_check = false;
+                            }
+                        });
+
+                        if (!pace_check) {
+                            result.error = 'Please! Enter Valid pace.';
+                            return result;
+                        }
+
+                        let phour, pmin, psec, ptsec, pthour, ptmin;
+
+                        if (paceArr.length == 3) {
+                            phour = parseFloat(paceArr[0]);
+                            pmin = parseFloat(paceArr[1]);
+                            psec = parseFloat(paceArr[2]);
+                            ptsec = (phour * 60 * 60) + (pmin * 60) + psec;
+                            pthour = phour + (pmin / 60) + (psec / (60 * 60));
+                            ptmin = (phour * 60) + pmin + (psec / 60);
+                        } else if (paceArr.length == 2) {
+                            pmin = parseFloat(paceArr[0]);
+                            psec = parseFloat(paceArr[1]);
+                            ptsec = (pmin * 60) + psec;
+                            pthour = (pmin / 60) + (psec / (60 * 60));
+                            ptmin = pmin + (psec / 60);
+                        } else if (paceArr.length == 1) {
+                            psec = parseFloat(paceArr[0]);
+                            ptsec = psec;
+                            pthour = (psec / (60 * 60));
+                            ptmin = (psec / 60);
+                        }
+
+                        if (per == '1') {
+                            timeres = dis_mi * ptsec;
+                            pacekm = ptsec * 0.621371;
+                            pace_val = ptsec;
+                        } else {
+                            timeres = dis_km * ptsec;
+                            pace_val = ptsec * 1.609344;
+                            pacekm = ptsec;
+                        }
+                    } else {
+                        if ((pace < 0 && pace == 0) || isNaN(pace)) {
+                            result.error = 'Please! Enter positive value of pace.';
+                            return result;
+                        }
+
+                        pace = parseFloat(pace);
+                        let tsec, thour;
+
+                        switch (per) {
+                            case '3':
+                                tsec = dis_mi / pace;
+                                timeres = tsec * 3600;
+                                pace_val = timeres / dis_mi;
+                                pacekm = pace_val * 0.621371;
+                                break;
+                            case '4':
+                                tsec = dis_km / pace;
+                                timeres = tsec * 3600;
+                                pacekm = timeres / dis_km;
+                                pace_val = pacekm * 1.609344;
+                                break;
+                            case '5':
+                                tsec = dis_m / pace;
+                                timeres = tsec * 60;
+                                pacekm = timeres / dis_km;
+                                pace_val = pacekm * 1.609344;
+                                break;
+                            case '6':
+                                tsec = dis_m / pace;
+                                timeres = tsec;
+                                pacekm = timeres / dis_km;
+                                pace_val = pacekm * 1.609344;
+                                break;
+                            case '7':
+                                tsec = dis_yd / pace;
+                                timeres = tsec * 60;
+                                pacekm = timeres / dis_km;
+                                pace_val = pacekm * 1.609344;
+                                break;
+                            case '8':
+                                tsec = dis_yd / pace;
+                                timeres = tsec;
+                                pacekm = timeres / dis_km;
+                                pace_val = pacekm * 1.609344;
+                                break;
+                        }
+                    }
+
+                    result.tech_dis_km = dis_km;
+                    result.tech_dis_mi = dis_mi;
+                    result.tech_timeres = timeres;
+                    result.tech_pacekm = pacekm;
+                    result.tech_pace = pace_val;
+                    result.tech_share = pace_val;
+                    return result;
+
+                } else if (type == 'distance') {
+                    if (!time || !pace) {
+                        result.error = 'Please! Check your input.';
+                        return result;
+                    }
+
+                    const timeArr = time.split(':');
+                    let time_check = true;
+                    
+                    timeArr.forEach(value => {
+                        if (isNaN(value)) {
+                            time_check = false;
+                        }
+                    });
+
+                    if (!time_check) {
+                        result.error = 'Please! Enter Valid Time.';
+                        return result;
+                    }
+
+                    let hour, min, sec, tsec, thour, tmin;
+
+                    if (timeArr.length === 3) {
+                        hour = parseFloat(timeArr[0]);
+                        min = parseFloat(timeArr[1]);
+                        sec = parseFloat(timeArr[2]);
+                        tsec = (hour * 60 * 60) + (min * 60) + sec;
+                        thour = hour + (min / 60) + (sec / (60 * 60));
+                        tmin = (hour * 60) + min + (sec / 60);
+                    } else if (timeArr.length == 2) {
+                        min = parseFloat(timeArr[0]);
+                        sec = parseFloat(timeArr[1]);
+                        tsec = (min * 60) + sec;
+                        thour = (min / 60) + (sec / (60 * 60));
+                        tmin = min + (sec / 60);
+                    } else if (timeArr.length == 1) {
+                        sec = parseFloat(timeArr[0]);
+                        tsec = sec;
+                        thour = (sec / (60 * 60));
+                        tmin = (sec / 60);
+                    }
+
+                    let dis_km, dis_mi, dis_m, dis_yd, pacekm, pace_val;
+
+                    if (per == '1' || per == '2') {
+                        const paceArr = pace.split(':');
+                        let pace_check = true;
+                        
+                        paceArr.forEach(value => {
+                            if (isNaN(value)) {
+                                pace_check = false;
+                            }
+                        });
+
+                        if (!pace_check) {
+                            result.error = 'Please! Enter Valid pace.';
+                            return result;
+                        }
+
+                        let phour, pmin, psec, ptsec, pthour, ptmin;
+
+                        if (paceArr.length == 3) {
+                            phour = parseFloat(paceArr[0]);
+                            pmin = parseFloat(paceArr[1]);
+                            psec = parseFloat(paceArr[2]);
+                            ptsec = (phour * 60 * 60) + (pmin * 60) + psec;
+                            pthour = phour + (pmin / 60) + (psec / (60 * 60));
+                            ptmin = (phour * 60) + pmin + (psec / 60);
+                        } else if (paceArr.length == 2) {
+                            pmin = parseFloat(paceArr[0]);
+                            psec = parseFloat(paceArr[1]);
+                            ptsec = (pmin * 60) + psec;
+                            pthour = (pmin / 60) + (psec / (60 * 60));
+                            ptmin = pmin + (psec / 60);
+                        } else if (paceArr.length == 1) {
+                            psec = parseFloat(paceArr[0]);
+                            ptsec = psec;
+                            pthour = (psec / (60 * 60));
+                            ptmin = (psec / 60);
+                        }
+
+                        if (per == '1') {
+                            dis_mi = Number((tsec / ptsec).toFixed(3));
+                            dis_km = Number((dis_mi * 1.609344).toFixed(3));
+                            dis_m = Number((dis_mi * 1609.344).toFixed(3));
+                            dis_yd = Number((dis_mi * 1760).toFixed(3));
+                            pacekm = ptsec * 0.621371;
+                            pace_val = ptsec;
+                        } else {
+                            dis_km = Number((tsec / ptsec).toFixed(3));
+                            dis_mi = Number((dis_km * 0.621371).toFixed(3));
+                            dis_m = Number((dis_km * 1000).toFixed(3));
+                            dis_yd = Number((dis_km * 1093.613).toFixed(3));
+                            pace_val = ptsec * 1.609344;
+                            pacekm = ptsec;
+                        }
+                    } else {
+                        if ((pace < 0 && pace == 0) || isNaN(pace)) {
+                            result.error = 'Please! Enter positive value of pace.';
+                            return result;
+                        }
+
+                        pace = parseFloat(pace);
+
+                        switch (per) {
+                            case '3':
+                                dis_mi = pace * thour;
+                                dis_km = Number((dis_mi * 1.609344).toFixed(3));
+                                dis_m = Number((dis_mi * 1609.344).toFixed(3));
+                                dis_yd = Number((dis_mi * 1760).toFixed(3));
+                                pace_val = tsec / dis_mi;
+                                pacekm = pace_val * 0.621371;
+                                break;
+                            case '4':
+                                dis_km = pace * thour;
+                                dis_mi = Number((dis_km * 0.621371).toFixed(3));
+                                dis_m = Number((dis_km * 1000).toFixed(3));
+                                dis_yd = Number((dis_km * 1093.613).toFixed(3));
+                                pacekm = tsec / dis_km;
+                                pace_val = pacekm * 1.609344;
+                                break;
+                            case '5':
+                                dis_m = pace * tmin;
+                                dis_mi = Number((dis_m * 0.000621371).toFixed(3));
+                                dis_km = Number((dis_m / 1000).toFixed(3));
+                                dis_yd = Number((dis_m * 1.093613).toFixed(3));
+                                pacekm = tsec / dis_km;
+                                pace_val = pacekm * 1.609344;
+                                break;
+                            case '6':
+                                dis_m = pace * tsec;
+                                dis_mi = Number((dis_m * 0.000621371).toFixed(3));
+                                dis_km = Number((dis_m / 1000).toFixed(3));
+                                dis_yd = Number((dis_m * 1.093613).toFixed(3));
+                                pacekm = tsec / dis_km;
+                                pace_val = pacekm * 1.609344;
+                                break;
+                            case '7':
+                                dis_yd = pace * tmin;
+                                dis_mi = Number((dis_yd * 0.000568182).toFixed(3));
+                                dis_km = Number((dis_yd * 0.0009144).toFixed(3));
+                                dis_m = Number((dis_yd * 0.9144).toFixed(3));
+                                pacekm = tsec / dis_km;
+                                pace_val = pacekm * 1.609344;
+                                break;
+                            case '8':
+                                dis_yd = pace * tsec;
+                                dis_mi = Number((dis_yd * 0.000568182).toFixed(3));
+                                dis_km = Number((dis_yd * 0.0009144).toFixed(3));
+                                dis_m = Number((dis_yd * 0.9144).toFixed(3));
+                                pacekm = tsec / dis_km;
+                                pace_val = pacekm * 1.609344;
+                                break;
+                        }
+                    }
+
+                    result.tech_dis_km = dis_km;
+                    result.tech_dis_m = dis_m;
+                    result.tech_dis_mi = dis_mi;
+                    result.tech_dis_yd = dis_yd;
+                    result.tech_pacekm = pacekm;
+                    result.tech_pace = pace_val;
+                    result.tech_share = pace_val;
+                    return result;
+                }
+            } 
+
+            // If no calculator matched
+            result.error = 'Invalid calculator name';
+            return result;
+
+        } catch (error) {
+            result.error = `Calculation error: ${error.message}`;
+            return result;
+        }
+    }
+
+     /**
+    * getCalculationBodyFatPercentageCalculator: Service Method
+    * POST: /api/calculators-lol/body-fat-percentage-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+     async getCalculationBodyFatPercentageCalculator(body) {
+          // Helper functions
+          const isNumeric = (value) => {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+          };
+
+          const round = (value, decimals) => {
+            return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+          };
+
+          const convertMeasurements = (request, fields) => {
+            const result = {};
+            
+            fields.forEach(field => {
+              const unitField = `unit_${field}`;
+              const value = parseFloat(request[field]);
+              
+              if (request[unitField] === 'in') {
+                result[field] = value * 25.4;
+              } else if (request[unitField] === 'cm') {
+                result[field] = value * 10;
+              } else {
+                result[field] = value;
+              }
+            });
+            
+            return result;
+          };
+
+          const calculateBodyFatResults = (body_fat, weight, request, category, color, left) => {
+            const body_fat_w = round(body_fat / 100 * weight, 2);
+            const lbm = round(weight - body_fat_w, 2);
+            
+            let fat_weight = weight * (body_fat / 100);
+            let fat_weight_result = fat_weight;
+            
+            if (request.unit !== 'kg') {
+              fat_weight_result = fat_weight * 2.205;
+            }
+
+            const param = {};
+            param.body_fat = body_fat;
+            param.color = color;
+            param.left = left;
+            param.category = category;
+            param.lbm = lbm + " " + request.unit;
+            param.body_fat_w = body_fat_w + " " + request.unit;
+            param.RESULT = 1;
+            param.fat_weight = round(fat_weight, 2);
+            param.fat_weight_unit = request.unit;
+
+            return param;
+          };
+
+          // Main calculation logic
+          const handleSimpleCalculator = (request) => {
+            const param = {};
+            
+            if (isNumeric(request.age) && 
+                isNumeric(request.weight) && 
+                isNumeric(request.gender) && 
+                isNumeric(request.neck) && 
+                isNumeric(request.waist) && 
+                (isNumeric(request['height-ft']) || isNumeric(request['height-in']) || isNumeric(request['height-cm']))) {
+              
+              if (request.gender === 'Female' && (!request.hip || request.hip === '')) {
+                param.error = 'Please fill all fields.';
+                return param;
+              }
+
+              let age = parseFloat(request.age);
+              let height_ft = parseFloat(request['height-ft']) || 0;
+              let height_in = parseFloat(request['height-in']) || 0;
+              let height_cm = parseFloat(request['height-cm']) || 0;
+              let weight = parseFloat(request.weight);
+
+              // Weight conversion
+              if (request.unit === "lbs") {
+                weight = weight / 2.205;
+              }
+
+              // Height conversion
+              if (request.unit_ft_in === 'ft/in') {
+                height_cm = height_ft * 30.48;
+                if (height_in !== null && !isNaN(height_in)) {
+                  height_in = height_in * 2.54;
+                  height_cm = height_cm + height_in;
+                }
+              }
+
+              let Waist_in = parseFloat(request.waist);
+              let Hip_in = parseFloat(request.hip) || 0;
+              let neck_in = parseFloat(request.neck);
+              
+              let Waist = parseFloat(request.waist);
+              let Hip = parseFloat(request.hip) || 0;
+              let neck = parseFloat(request.neck);
+
+              // Unit conversions
+              if (request.unit_n === 'In') {
+                neck = neck * 2.54;
+              }
+              if (request.unit_w === 'In') {
+                Waist = Waist * 2.54;
+              }
+              if (request.unit_hip === 'In') {
+                Hip = Hip * 2.54;
+              }
+              if (request.unit_n === 'cm') {
+                neck_in = neck_in / 2.54;
+              }
+              if (request.unit_w === 'cm') {
+                Waist_in = Waist_in / 2.54;
+              }
+              if (request.unit_hip === 'cm') {
+                Hip_in = Hip_in / 2.54;
+              }
+
+              const height_meters = height_cm / 100;
+              const height_inch = height_cm / 2.54;
+              const BMI = weight / (height_meters * height_meters);
+              const weight_lbs = weight * 2.205;
+
+              let body_fat, army, ymca, child_body_fat, adult_body_fat, category, color, left;
+
+              if (request.gender === 'Female') {
+                body_fat = round(495 / (1.29579 - 0.35004 * Math.log10(Waist + Hip - neck) + 0.22100 * Math.log10(height_cm)) - 450, 2);
+                army = round((163.205 * Math.log10(Waist_in + Hip_in - neck_in)) - (97.684 * Math.log10(height_inch)) - 78.387, 2);
+                ymca = round(((((4.15 * Waist_in) - (0.082 * weight_lbs)) - 76.76) / weight_lbs) * 100, 2);
+                child_body_fat = round((1.51 * BMI) - (0.70 * age) - (3.6 * 0) + 1.4, 2);
+                adult_body_fat = round((1.20 * BMI) + (0.23 * age) - (10.8 * 0) - 5.4, 2);
+
+                if (body_fat <= 9) {
+                  category = "N/A";
+                  color = "red";
+                  left = "-2%";
+                } else if (body_fat > 9 && body_fat <= 13) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 13 && body_fat <= 20) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 20 && body_fat <= 24) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 24 && body_fat <= 31) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              } else {
+                body_fat = round(495 / (1.0324 - 0.19077 * Math.log10(Waist - neck) + 0.15456 * Math.log10(height_cm)) - 450, 2);
+                army = round((86.010 * Math.log10(Waist_in - neck_in)) - (70.041 * Math.log10(height_inch)) + 36.76, 2);
+                ymca = round(((((4.15 * Waist_in) - (0.082 * weight_lbs)) - 98.42) / weight_lbs) * 100, 2);
+                child_body_fat = round((1.51 * BMI) - (0.70 * age) - (3.6 * 1) + 1.4, 2);
+                adult_body_fat = round((1.20 * BMI) + (0.23 * age) - (10.8 * 1) - 5.4, 2);
+
+                if (body_fat < 2) {
+                  category = "N/A";
+                  color = "red";
+                  left = "0%";
+                } else if (body_fat >= 2 && body_fat <= 5) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 5 && body_fat <= 13) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 13 && body_fat <= 17) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 17 && body_fat <= 24) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              }
+
+              const BAI = round((Hip / Math.pow(height_meters, 1.5)) - 18, 2);
+              const fat_mass = round((army / 100) * weight, 2);
+              const lean_mass = round(weight - fat_mass, 2);
+
+              param.body_fat = body_fat;
+              param.army = army;
+              param.ymca = ymca;
+              param.color = color;
+              param.left = left;
+              param.child_body_fat = child_body_fat;
+              param.adult_body_fat = adult_body_fat;
+              param.BAI = BAI;
+              param.fat_mass = fat_mass;
+              param.category = category;
+              param.lean_mass = lean_mass;
+              param.RESULT = 1;
+
+              return param;
+            } else {
+              param.error = 'Please fill all fields.';
+              return param;
+            }
+          };
+
+          const handleMethod1 = (request) => {
+            const param = {};
+            
+            if (isNumeric(request.neck) && isNumeric(request.waist) && isNumeric(request.weight)) {
+              const age = parseFloat(request.age);
+              let weight = parseFloat(request.weight);
+              const height_ft = parseFloat(request['height-ft']) || 0;
+              const height_in = parseFloat(request['height-in']) || 0;
+              const height_cm = parseFloat(request['height-cm']) || 0;
+              
+              let Waist_in = parseFloat(request.waist);
+              let Hip_in = parseFloat(request.hip) || 0;
+              let neck_in = parseFloat(request.neck);
+              const hightUnit = request.hightUnit;
+
+              // Unit conversions
+              let Waist_cm, Hip_cm, neck_cm;
+
+              if (request.unit_n === 'cm') {
+                neck_in = request.neck / 2.54;
+                neck_cm = parseFloat(request.neck);
+              } else {
+                neck_in = parseFloat(request.neck);
+                neck_cm = neck_in * 2.54;
+              }
+
+              if (request.unit_w === 'cm') {
+                Waist_in = request.waist / 2.54;
+                Waist_cm = parseFloat(request.waist);
+              } else {
+                Waist_in = parseFloat(request.waist);
+                Waist_cm = Waist_in * 2.54;
+              }
+
+              if (request.unit_hip === 'cm') {
+                Hip_in = request.hip / 2.54;
+                Hip_cm = parseFloat(request.hip);
+              } else {
+                Hip_in = parseFloat(request.hip);
+                Hip_cm = Hip_in * 2.54;
+              }
+
+              // Height handling
+              let height_in_cm, height_in_in;
+              if (hightUnit === "cm") {
+                if (!height_cm) {
+                  param.error = 'Please enter height in cm.';
+                  return param;
+                }
+                height_in_cm = height_cm;
+                height_in_in = height_cm / 2.54;
+              } else {
+                if (!height_ft && !height_in) {
+                  param.error = 'Please enter height in ft/in.';
+                  return param;
+                }
+                height_in_in = (height_ft * 12) + height_in;
+                height_in_cm = height_in_in * 2.54;
+              }
+
+              const height_meters = height_in_cm / 100;
+              const BMI = weight / (height_meters * height_meters);
+              
+              let weight_lbs, weight_kg;
+              if (request.unit === "lbs") {
+                weight_lbs = weight;
+                weight_kg = weight / 2.205;
+              } else {
+                weight_lbs = weight * 2.205;
+                weight_kg = weight;
+              }
+
+              if (request.gender === 'Female') {
+                if (!request.hip || request.hip === '') {
+                  param.error = 'Please fill all fields.';
+                  return param;
+                }
+              }
+
+              let body_fat, fat_weight, category, color, left;
+              let army, ymca, child_body_fat, adult_body_fat;
+
+              if (request.gender === 'Female') {
+                if (request.unit === "lbs") {
+                  body_fat = (163.205 * Math.log10(Waist_in + Hip_in - neck_in)) - (97.684 * Math.log10(height_in_in)) - 78.387;
+                  fat_weight = (body_fat / 100) * weight_lbs;
+                } else {
+                  body_fat = (495 / (1.29579 - (0.35004 * Math.log10(Waist_cm + Hip_cm - neck_cm)) + (0.22100 * Math.log10(height_in_cm)))) - 450;
+                  fat_weight = (body_fat / 100) * weight_kg;
+                }
+
+                // Additional calculations
+                army = round((163.205 * Math.log10(Waist_in + Hip_in - neck_in)) - (97.684 * Math.log10(height_in_in)) - 78.387, 2);
+                ymca = round(((((4.15 * Waist_in) - (0.082 * weight_lbs)) - 76.76) / weight_lbs) * 100, 2);
+                child_body_fat = round((1.51 * BMI) - (0.70 * age) - (3.6 * 0) + 1.4, 2);
+                adult_body_fat = round((1.20 * BMI) + (0.23 * age) - (10.8 * 0) - 5.4, 2);
+
+                if (body_fat <= 9) {
+                  category = "N/A";
+                  color = "red";
+                  left = "-2%";
+                } else if (body_fat > 9 && body_fat <= 13) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 13 && body_fat <= 20) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 20 && body_fat <= 24) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 24 && body_fat <= 31) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              } else {
+                if (request.unit === "lbs") {
+                  body_fat = (86.010 * Math.log10(Waist_in - neck_in)) - (70.041 * Math.log10(height_in_in)) + 36.76;
+                  fat_weight = (body_fat / 100) * weight_lbs;
+                } else {
+                  body_fat = (495 / (1.0324 - (0.19077 * Math.log10(Waist_cm - neck_cm)) + (0.15456 * Math.log10(height_in_cm)))) - 450;
+                  fat_weight = (body_fat / 100) * weight_kg;
+                }
+
+                // Additional calculations
+                army = round((86.010 * Math.log10(Waist_in - neck_in)) - (70.041 * Math.log10(height_in_in)) + 36.76, 2);
+                ymca = round(((((4.15 * Waist_in) - (0.082 * weight_lbs)) - 98.42) / weight_lbs) * 100, 2);
+                child_body_fat = round((1.51 * BMI) - (0.70 * age) - (3.6 * 1) + 1.4, 2);
+                adult_body_fat = round((1.20 * BMI) + (0.23 * age) - (10.8 * 1) - 5.4, 2);
+
+                if (body_fat < 2) {
+                  category = "N/A";
+                  color = "red";
+                  left = "0%";
+                } else if (body_fat > 1 && body_fat <= 5) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 5 && body_fat <= 13) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 13 && body_fat <= 17) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 17 && body_fat <= 24) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              }
+
+              let Hip = 0;
+              if (request.unit_hip === 'cm') {
+                Hip = parseFloat(request.hip);
+              } else {
+                Hip = parseFloat(request.hip) * 2.54;
+              }
+
+              const BAI = round((Hip / Math.pow(height_meters, 1.5)) - 18, 2);
+              body_fat = round(body_fat, 2);
+              const fat_mass = round((army / 100) * weight, 2);
+              const lean_mass = round(weight - fat_mass, 2);
+
+              param.body_fat = body_fat;
+              param.army = body_fat;
+              param.ymca = ymca;
+              param.color = color;
+              param.left = left;
+              param.child_body_fat = child_body_fat;
+              param.adult_body_fat = adult_body_fat;
+              param.BAI = BAI;
+              param.fat_mass = fat_mass;
+              param.category = category;
+              param.lean_mass = lean_mass;
+              param.RESULT = 1;
+              param.fat_weight = round(fat_weight, 2);
+              param.fat_weight_unit = request.unit;
+
+              return param;
+            } else {
+              param.error = 'Please fill all fields.';
+              return param;
+            }
+          };
+
+          const handleMethod2 = (request) => {
+            const param = {};
+            
+            if (isNumeric(request.chest) && isNumeric(request.abd) && 
+                isNumeric(request.thigh) && isNumeric(request.tricep) && 
+                isNumeric(request.sub) && isNumeric(request.sup) && 
+                isNumeric(request.mid)) {
+              
+              const measurements = convertMeasurements(request, [
+                'chest', 'abd', 'thigh', 'tricep', 'sub', 'sup', 'mid'
+              ]);
+
+              const sum = Object.values(measurements).reduce((a, b) => a + b, 0);
+              const weight = parseFloat(request.weight);
+              const age = parseFloat(request.age);
+
+              let body_fat, category, color, left;
+
+              if (request.gender === 'Male') {
+                const body_den = 1.112 - (0.00043499 * sum) + (0.00000055 * Math.pow(sum, 2)) - (0.00028826 * age);
+                body_fat = round((495 / body_den) - 450, 2);
+                
+                if (body_fat < 2) {
+                  category = "N/A";
+                  color = "red";
+                  left = "0%";
+                } else if (body_fat > 1 && body_fat <= 5) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 5 && body_fat <= 13) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 13 && body_fat <= 17) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 17 && body_fat <= 24) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              } else {
+                const body_den = 1.097 - (0.00046971 * sum) + (0.00000056 * Math.pow(sum, 2)) - (0.00012828 * age);
+                body_fat = round((495 / body_den) - 450, 2);
+                
+                if (body_fat <= 9) {
+                  category = "N/A";
+                  color = "red";
+                  left = "-2%";
+                } else if (body_fat > 9 && body_fat <= 13) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 13 && body_fat <= 20) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 20 && body_fat <= 24) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 24 && body_fat <= 31) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              }
+
+              const body_fat_w = round(body_fat / 100 * weight, 2);
+              const lbm = round(weight - body_fat_w, 2);
+              
+              let fat_weight = weight * (body_fat / 100);
+              let fat_weight_result = fat_weight;
+              
+              if (request.unit !== 'kg') {
+                fat_weight_result = fat_weight * 2.205;
+              }
+
+              param.body_fat = body_fat;
+              param.color = color;
+              param.left = left;
+              param.category = category;
+              param.lbm = lbm + " " + request.unit;
+              param.body_fat_w = body_fat_w + " " + request.unit;
+              param.RESULT = 1;
+              param.fat_weight = round(fat_weight, 2);
+              param.fat_weight_unit = request.unit;
+
+              return param;
+            } else {
+              param.error = 'Please fill all fields.';
+              return param;
+            }
+          };
+
+          const handleMethod3 = (request) => {
+            const param = {};
+            
+            if (isNumeric(request.abd) && isNumeric(request.thigh) && 
+                isNumeric(request.tricep) && isNumeric(request.sup)) {
+              
+              const measurements = convertMeasurements(request, ['abd', 'thigh', 'tricep', 'sup']);
+              const sum = Object.values(measurements).reduce((a, b) => a + b, 0);
+              const weight = parseFloat(request.weight);
+              const age = parseFloat(request.age);
+
+              let body_fat, category, color, left;
+
+              if (request.gender === 'Male') {
+                body_fat = round((0.29288 * sum) - (0.0005 * Math.pow(sum, 2)) + (0.15845 * age) - 5.76377, 2);
+                
+                if (body_fat < 2) {
+                  category = "N/A";
+                  color = "red";
+                  left = "0%";
+                } else if (body_fat > 1 && body_fat <= 5) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 5 && body_fat <= 13) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 13 && body_fat <= 17) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 17 && body_fat <= 24) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              } else {
+                body_fat = round((0.29669 * sum) - (0.00043 * Math.pow(sum, 2)) + (0.02963 * age) + 1.4072, 2);
+                
+                if (body_fat <= 9) {
+                  category = "N/A";
+                  color = "red";
+                  left = "-2%";
+                } else if (body_fat > 9 && body_fat <= 13) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 13 && body_fat <= 20) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 20 && body_fat <= 24) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 24 && body_fat <= 31) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              }
+
+              return calculateBodyFatResults(body_fat, weight, request, category, color, left);
+            } else {
+              param.error = 'Please fill all fields.';
+              return param;
+            }
+          };
+
+          const handleMethod4 = (request) => {
+            const param = {};
+            
+            if (isNumeric(request.thigh) && isNumeric(request.tricep) && isNumeric(request.sup)) {
+              const measurements = convertMeasurements(request, ['thigh', 'tricep', 'sup']);
+              const sum = Object.values(measurements).reduce((a, b) => a + b, 0);
+              const weight = parseFloat(request.weight);
+              const age = parseFloat(request.age);
+
+              let body_fat, category, color, left;
+
+              if (request.gender === 'Male') {
+                const body_den = 1.10938 - (0.0008267 * sum) + (0.0000016 * Math.pow(sum, 2)) - (0.0002574 * age);
+                body_fat = round((495 / body_den) - 450, 2);
+                
+                if (body_fat < 2) {
+                  category = "N/A";
+                  color = "red";
+                  left = "0%";
+                } else if (body_fat > 1 && body_fat <= 5) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 5 && body_fat <= 13) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 13 && body_fat <= 17) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 17 && body_fat <= 24) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              } else {
+                const body_den = 1.0994921 - (0.0009929 * sum) + (0.0000023 * Math.pow(sum, 2)) - (0.0001392 * age);
+                body_fat = round((495 / body_den) - 450, 2);
+                
+                if (body_fat <= 9) {
+                  category = "N/A";
+                  color = "red";
+                  left = "-2%";
+                } else if (body_fat > 9 && body_fat <= 13) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 13 && body_fat <= 20) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 20 && body_fat <= 24) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 24 && body_fat <= 31) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              }
+
+              return calculateBodyFatResults(body_fat, weight, request, category, color, left);
+            } else {
+              param.error = 'Please fill all fields.';
+              return param;
+            }
+          };
+
+          const handleMethod5 = (request) => {
+            const param = {};
+            
+            if (isNumeric(request.chest) && isNumeric(request.abd) && 
+                isNumeric(request.thigh) && isNumeric(request.tricep) && 
+                isNumeric(request.sub) && isNumeric(request.sup) && 
+                isNumeric(request.bicep) && isNumeric(request.back) && 
+                isNumeric(request.calf)) {
+              
+              const measurements = convertMeasurements(request, [
+                'chest', 'abd', 'thigh', 'tricep', 'sub', 'sup', 'bicep', 'back', 'calf'
+              ]);
+
+              const sum = Object.values(measurements).reduce((a, b) => a + b, 0);
+              let weight = parseFloat(request.weight);
+              
+              if (request.unit === "kg") {
+                weight = weight * 2.205;
+              }
+              
+              const body_fat = round((27 * sum) / weight, 2);
+              let category, color, left;
+
+              if (request.gender === 'Male') {
+                if (body_fat < 2) {
+                  category = "N/A";
+                  color = "red";
+                  left = "0%";
+                } else if (body_fat > 1 && body_fat <= 5) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 5 && body_fat <= 13) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 13 && body_fat <= 17) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 17 && body_fat <= 24) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              } else {
+                if (body_fat <= 9) {
+                  category = "N/A";
+                  color = "red";
+                  left = "-2%";
+                } else if (body_fat > 9 && body_fat <= 13) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 13 && body_fat <= 20) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 20 && body_fat <= 24) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 24 && body_fat <= 31) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              }
+
+              const body_fat_w = round(body_fat / 100 * weight, 2);
+              const lbm = round(weight - body_fat_w, 2);
+              
+              let fat_weight = weight * (body_fat / 100);
+              let fat_weight_result = fat_weight;
+              
+              if (request.unit !== 'kg') {
+                fat_weight_result = fat_weight * 2.205;
+              }
+
+              param.body_fat = body_fat;
+              param.color = color;
+              param.left = left;
+              param.category = category;
+              param.lbm = lbm + " lbs";
+              param.body_fat_w = body_fat_w + " lbs";
+              param.RESULT = 1;
+              param.fat_weight = round(fat_weight_result, 2);
+              param.fat_weight_unit = request.unit;
+
+              return param;
+            } else {
+              param.error = 'Please fill all fields.';
+              return param;
+            }
+          };
+
+          const handleMethod6 = (request) => {
+            const param = {};
+            
+            if (isNumeric(request.tricep) && isNumeric(request.sub) && 
+                isNumeric(request.sup) && isNumeric(request.bicep)) {
+              
+              const measurements = convertMeasurements(request, ['tricep', 'sub', 'sup', 'bicep']);
+              const sum = Object.values(measurements).reduce((a, b) => a + b, 0);
+              const weight = parseFloat(request.weight);
+              const age = parseFloat(request.age);
+
+              let body_fat, category, color, left;
+
+              if (request.gender === 'Male') {
+                let body_den;
+                const l = Math.log10(sum);
+                
+                if (age < 17) {
+                  body_den = 1.1533 - (0.0643 * l);
+                } else if (age >= 17 && age <= 19) {
+                  body_den = 1.1620 - (0.0630 * l);
+                } else if (age >= 20 && age <= 29) {
+                  body_den = 1.1631 - (0.0632 * l);
+                } else if (age >= 30 && age <= 39) {
+                  body_den = 1.1422 - (0.0544 * l);
+                } else if (age >= 40 && age <= 49) {
+                  body_den = 1.1620 - (0.0700 * l);
+                } else {
+                  body_den = 1.1715 - (0.0779 * l);
+                }
+                
+                body_fat = round((495 / body_den) - 450, 2);
+                
+                if (body_fat < 2) {
+                  category = "N/A";
+                  color = "red";
+                  left = "0%";
+                } else if (body_fat > 1 && body_fat <= 5) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 5 && body_fat <= 13) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 13 && body_fat <= 17) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 17 && body_fat <= 24) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              } else {
+                let body_den;
+                const l = Math.log10(sum);
+                
+                if (age < 17) {
+                  body_den = 1.1369 - (0.0598 * l);
+                } else if (age >= 17 && age <= 19) {
+                  body_den = 1.1549 - (0.0678 * l);
+                } else if (age >= 20 && age <= 29) {
+                  body_den = 1.1599 - (0.0717 * l);
+                } else if (age >= 30 && age <= 39) {
+                  body_den = 1.1423 - (0.0632 * l);
+                } else if (age >= 40 && age <= 49) {
+                  body_den = 1.1333 - (0.0612 * l);
+                } else {
+                  body_den = 1.1339 - (0.0645 * l);
+                }
+                
+                body_fat = round((495 / body_den) - 450, 2);
+                
+                if (body_fat <= 9) {
+                  category = "N/A";
+                  color = "red";
+                  left = "-2%";
+                } else if (body_fat > 9 && body_fat <= 13) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (body_fat > 13 && body_fat <= 20) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (body_fat > 20 && body_fat <= 24) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (body_fat > 24 && body_fat <= 31) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              }
+
+              return calculateBodyFatResults(body_fat, weight, request, category, color, left);
+            } else {
+              param.error = 'Please fill all fields.';
+              return param;
+            }
+          };
+
+          const handleMethod7 = (request) => {
+            const param = {};
+            
+            if (isNumeric(request.weight) && 
+                (isNumeric(request['height-ft']) || isNumeric(request['height-cm'])) && 
+                isNumeric(request.age) && request.gender) {
+              
+              let weight = parseFloat(request.weight);
+              if (request.unit === 'lbs') {
+                weight = weight * 0.453592;
+              }
+
+              let height = 0;
+              if (request.hightUnit === 'ft/in') {
+                const feet = parseFloat(request['height-ft']);
+                const inches = parseFloat(request['height-in']) || 0;
+                height = (feet * 12 + inches) * 0.0254;
+              } else if (request.hightUnit === 'cm') {
+                height = parseFloat(request['height-cm']) / 100;
+              }
+
+              const bmi = round(weight / (height * height), 2);
+              const age = parseFloat(request.age);
+              const gender = request.gender.toLowerCase();
+
+              let bfp;
+              if (gender === 'male') {
+                if (age <= 18) {
+                  bfp = round((1.51 * bmi) + (0.70 * age) - 2.2, 2);
+                } else {
+                  bfp = round((1.20 * bmi) + (0.23 * age) - 16.2, 2);
+                }
+              } else if (gender === 'female') {
+                if (age <= 18) {
+                  bfp = round((1.51 * bmi) + (0.70 * age) - 1.4, 2);
+                } else {
+                  bfp = round((1.20 * bmi) + (0.23 * age) - 5.4, 2);
+                }
+              } else {
+                bfp = 0;
+              }
+
+              let category, color, left;
+              if (request.gender === 'Male') {
+                if (bfp < 2) {
+                  category = "N/A";
+                  color = "red";
+                  left = "0%";
+                } else if (bfp > 1 && bfp <= 5) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (bfp > 5 && bfp <= 13) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (bfp > 13 && bfp <= 17) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (bfp > 17 && bfp <= 24) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              } else {
+                if (bfp <= 9) {
+                  category = "N/A";
+                  color = "red";
+                  left = "-2%";
+                } else if (bfp > 9 && bfp <= 13) {
+                  category = "Essential fat";
+                  param.Essential = "blue text-white";
+                  color = "#0D47A1";
+                  left = "2%";
+                } else if (bfp > 13 && bfp <= 20) {
+                  category = "Athletes";
+                  param.Athletes = "teal text-white";
+                  color = "#00897B";
+                  left = "20%";
+                } else if (bfp > 20 && bfp <= 24) {
+                  category = "Fitness";
+                  param.Fitness = "green text-white";
+                  color = "#00C853";
+                  left = "40%";
+                } else if (bfp > 24 && bfp <= 31) {
+                  category = "Average";
+                  param.Average = "yellow text-white";
+                  color = "#FFEA00";
+                  left = "60%";
+                } else {
+                  category = "Obese";
+                  param.Obese = "red text-white";
+                  color = "#FF1744";
+                  left = "80%";
+                }
+              }
+
+              const body_fat_w = round((bfp / 100) * weight, 2);
+              const lbm = round(weight - body_fat_w, 2);
+
+              const fat_weight_kg = weight * (bfp / 100);
+              const fat_weight_lbs = fat_weight_kg * 2.205;
+
+              param.fat_weight = request.unit === 'kg' ? round(fat_weight_kg, 2) : round(fat_weight_lbs, 2);
+              param.fat_weight_unit = request.unit;
+              param.body_fat = bfp;
+              param.color = color;
+              param.left = left;
+              param.category = category;
+              param.lbm = lbm + " kg";
+              param.body_fat_w = body_fat_w + " kg";
+              param.RESULT = 1;
+
+              return param;
+            } else {
+              param.error = 'Please fill all fields.';
+              return param;
+            }
+          };
+
+          const handleAdvancedCalculator = (request) => {
+            // Store data (in Node.js you might want to use sessions instead of cookies)
+            Object.keys(request).forEach(key => {
+              // Session storage logic would go here
+            });
+
+            switch (request.method) {
+              case '1':
+                return handleMethod1(request);
+              case '2':
+                return handleMethod2(request);
+              case '3':
+                return handleMethod3(request);
+              case '4':
+                return handleMethod4(request);
+              case '5':
+                return handleMethod5(request);
+              case '6':
+                return handleMethod6(request);
+              case '7':
+                return handleMethod7(request);
+              default:
+                const param = {};
+                param.error = 'Invalid method';
+                return param;
+            }
+          };
+
+          // Main execution
+          try {
+            if (body.calculator_type === 'simple') {
+              return handleSimpleCalculator(body);
+            } else {
+              return handleAdvancedCalculator(body);
+            }
+          } catch (error) {
+            return { error: 'Calculation failed: ' + error.message };
+          }
+        }
+    
 
 
 }
