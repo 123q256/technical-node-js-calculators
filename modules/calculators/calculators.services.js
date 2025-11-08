@@ -89448,9 +89448,9 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               const unitField = `unit_${field}`;
               const value = parseFloat(request[field]);
               
-              if (request[unitField] === 'in') {
+              if (request[unitField] == 'in') {
                 result[field] = value * 25.4;
-              } else if (request[unitField] === 'cm') {
+              } else if (request[unitField] == 'cm') {
                 result[field] = value * 10;
               } else {
                 result[field] = value;
@@ -89467,20 +89467,19 @@ async getCalculationJumpRopeCalorieCalculator(body) {
             let fat_weight = weight * (body_fat / 100);
             let fat_weight_result = fat_weight;
             
-            if (request.unit !== 'kg') {
+            if (request.unit != 'kg') {
               fat_weight_result = fat_weight * 2.205;
             }
 
             const param = {};
-            param.body_fat = body_fat;
-            param.color = color;
-            param.left = left;
-            param.category = category;
-            param.lbm = lbm + " " + request.unit;
-            param.body_fat_w = body_fat_w + " " + request.unit;
-            param.RESULT = 1;
-            param.fat_weight = round(fat_weight, 2);
-            param.fat_weight_unit = request.unit;
+            param.tech_body_fat = body_fat;
+            param.tech_color = color;
+            param.tech_left = left;
+            param.tech_category = category;
+            param.tech_lbm = lbm + " " + request.unit;
+            param.tech_body_fat_w = body_fat_w + " " + request.unit;
+            param.tech_fat_weight = round(fat_weight, 2);
+            param.tech_fat_weight_unit = request.unit;
 
             return param;
           };
@@ -89496,7 +89495,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                 isNumeric(request.waist) && 
                 (isNumeric(request['height-ft']) || isNumeric(request['height-in']) || isNumeric(request['height-cm']))) {
               
-              if (request.gender === 'Female' && (!request.hip || request.hip === '')) {
+              if (request.gender == 'Female' && (!request.hip || request.hip == '')) {
                 param.error = 'Please fill all fields.';
                 return param;
               }
@@ -89508,12 +89507,12 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               let weight = parseFloat(request.weight);
 
               // Weight conversion
-              if (request.unit === "lbs") {
+              if (request.unit == "lbs") {
                 weight = weight / 2.205;
               }
 
               // Height conversion
-              if (request.unit_ft_in === 'ft/in') {
+              if (request.unit_ft_in == 'ft/in') {
                 height_cm = height_ft * 30.48;
                 if (height_in !== null && !isNaN(height_in)) {
                   height_in = height_in * 2.54;
@@ -89530,22 +89529,22 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               let neck = parseFloat(request.neck);
 
               // Unit conversions
-              if (request.unit_n === 'In') {
+              if (request.unit_n == 'In') {
                 neck = neck * 2.54;
               }
-              if (request.unit_w === 'In') {
+              if (request.unit_w == 'In') {
                 Waist = Waist * 2.54;
               }
-              if (request.unit_hip === 'In') {
+              if (request.unit_hip == 'In') {
                 Hip = Hip * 2.54;
               }
-              if (request.unit_n === 'cm') {
+              if (request.unit_n == 'cm') {
                 neck_in = neck_in / 2.54;
               }
-              if (request.unit_w === 'cm') {
+              if (request.unit_w == 'cm') {
                 Waist_in = Waist_in / 2.54;
               }
-              if (request.unit_hip === 'cm') {
+              if (request.unit_hip == 'cm') {
                 Hip_in = Hip_in / 2.54;
               }
 
@@ -89556,7 +89555,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
 
               let body_fat, army, ymca, child_body_fat, adult_body_fat, category, color, left;
 
-              if (request.gender === 'Female') {
+              if (request.gender == 'Female') {
                 body_fat = round(495 / (1.29579 - 0.35004 * Math.log10(Waist + Hip - neck) + 0.22100 * Math.log10(height_cm)) - 450, 2);
                 army = round((163.205 * Math.log10(Waist_in + Hip_in - neck_in)) - (97.684 * Math.log10(height_inch)) - 78.387, 2);
                 ymca = round(((((4.15 * Waist_in) - (0.082 * weight_lbs)) - 76.76) / weight_lbs) * 100, 2);
@@ -89569,27 +89568,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "-2%";
                 } else if (body_fat > 9 && body_fat <= 13) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 13 && body_fat <= 20) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 20 && body_fat <= 24) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 24 && body_fat <= 31) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -89606,27 +89605,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "0%";
                 } else if (body_fat >= 2 && body_fat <= 5) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 5 && body_fat <= 13) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 13 && body_fat <= 17) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 17 && body_fat <= 24) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -89636,18 +89635,17 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               const fat_mass = round((army / 100) * weight, 2);
               const lean_mass = round(weight - fat_mass, 2);
 
-              param.body_fat = body_fat;
-              param.army = army;
-              param.ymca = ymca;
-              param.color = color;
-              param.left = left;
-              param.child_body_fat = child_body_fat;
-              param.adult_body_fat = adult_body_fat;
-              param.BAI = BAI;
-              param.fat_mass = fat_mass;
-              param.category = category;
-              param.lean_mass = lean_mass;
-              param.RESULT = 1;
+              param.tech_body_fat = body_fat;
+              param.tech_army = army;
+              param.tech_ymca = ymca;
+              param.tech_color = color;
+              param.tech_left = left;
+              param.tech_child_body_fat = child_body_fat;
+              param.tech_adult_body_fat = adult_body_fat;
+              param.tech_BAI = BAI;
+              param.tech_fat_mass = fat_mass;
+              param.tech_category = category;
+              param.tech_lean_mass = lean_mass;
 
               return param;
             } else {
@@ -89674,7 +89672,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               // Unit conversions
               let Waist_cm, Hip_cm, neck_cm;
 
-              if (request.unit_n === 'cm') {
+              if (request.unit_n == 'cm') {
                 neck_in = request.neck / 2.54;
                 neck_cm = parseFloat(request.neck);
               } else {
@@ -89682,7 +89680,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                 neck_cm = neck_in * 2.54;
               }
 
-              if (request.unit_w === 'cm') {
+              if (request.unit_w == 'cm') {
                 Waist_in = request.waist / 2.54;
                 Waist_cm = parseFloat(request.waist);
               } else {
@@ -89690,7 +89688,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                 Waist_cm = Waist_in * 2.54;
               }
 
-              if (request.unit_hip === 'cm') {
+              if (request.unit_hip == 'cm') {
                 Hip_in = request.hip / 2.54;
                 Hip_cm = parseFloat(request.hip);
               } else {
@@ -89700,7 +89698,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
 
               // Height handling
               let height_in_cm, height_in_in;
-              if (hightUnit === "cm") {
+              if (hightUnit == "cm") {
                 if (!height_cm) {
                   param.error = 'Please enter height in cm.';
                   return param;
@@ -89720,7 +89718,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               const BMI = weight / (height_meters * height_meters);
               
               let weight_lbs, weight_kg;
-              if (request.unit === "lbs") {
+              if (request.unit == "lbs") {
                 weight_lbs = weight;
                 weight_kg = weight / 2.205;
               } else {
@@ -89728,8 +89726,8 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                 weight_kg = weight;
               }
 
-              if (request.gender === 'Female') {
-                if (!request.hip || request.hip === '') {
+              if (request.gender == 'Female') {
+                if (!request.hip || request.hip == '') {
                   param.error = 'Please fill all fields.';
                   return param;
                 }
@@ -89738,8 +89736,8 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               let body_fat, fat_weight, category, color, left;
               let army, ymca, child_body_fat, adult_body_fat;
 
-              if (request.gender === 'Female') {
-                if (request.unit === "lbs") {
+              if (request.gender == 'Female') {
+                if (request.unit == "lbs") {
                   body_fat = (163.205 * Math.log10(Waist_in + Hip_in - neck_in)) - (97.684 * Math.log10(height_in_in)) - 78.387;
                   fat_weight = (body_fat / 100) * weight_lbs;
                 } else {
@@ -89759,32 +89757,32 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "-2%";
                 } else if (body_fat > 9 && body_fat <= 13) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 13 && body_fat <= 20) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 20 && body_fat <= 24) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 24 && body_fat <= 31) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
               } else {
-                if (request.unit === "lbs") {
+                if (request.unit == "lbs") {
                   body_fat = (86.010 * Math.log10(Waist_in - neck_in)) - (70.041 * Math.log10(height_in_in)) + 36.76;
                   fat_weight = (body_fat / 100) * weight_lbs;
                 } else {
@@ -89804,34 +89802,34 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "0%";
                 } else if (body_fat > 1 && body_fat <= 5) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 5 && body_fat <= 13) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 13 && body_fat <= 17) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 17 && body_fat <= 24) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
               }
 
               let Hip = 0;
-              if (request.unit_hip === 'cm') {
+              if (request.unit_hip == 'cm') {
                 Hip = parseFloat(request.hip);
               } else {
                 Hip = parseFloat(request.hip) * 2.54;
@@ -89842,20 +89840,19 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               const fat_mass = round((army / 100) * weight, 2);
               const lean_mass = round(weight - fat_mass, 2);
 
-              param.body_fat = body_fat;
-              param.army = body_fat;
-              param.ymca = ymca;
-              param.color = color;
-              param.left = left;
-              param.child_body_fat = child_body_fat;
-              param.adult_body_fat = adult_body_fat;
-              param.BAI = BAI;
-              param.fat_mass = fat_mass;
-              param.category = category;
-              param.lean_mass = lean_mass;
-              param.RESULT = 1;
-              param.fat_weight = round(fat_weight, 2);
-              param.fat_weight_unit = request.unit;
+              param.tech_body_fat = body_fat;
+              param.tech_army = body_fat;
+              param.tech_ymca = ymca;
+              param.tech_color = color;
+              param.tech_left = left;
+              param.tech_child_body_fat = child_body_fat;
+              param.tech_adult_body_fat = adult_body_fat;
+              param.tech_BAI = BAI;
+              param.tech_fat_mass = fat_mass;
+              param.tech_category = category;
+              param.tech_lean_mass = lean_mass;
+              param.tech_fat_weight = round(fat_weight, 2);
+              param.tech_fat_weight_unit = request.unit;
 
               return param;
             } else {
@@ -89882,7 +89879,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
 
               let body_fat, category, color, left;
 
-              if (request.gender === 'Male') {
+              if (request.gender == 'Male') {
                 const body_den = 1.112 - (0.00043499 * sum) + (0.00000055 * Math.pow(sum, 2)) - (0.00028826 * age);
                 body_fat = round((495 / body_den) - 450, 2);
                 
@@ -89892,27 +89889,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "0%";
                 } else if (body_fat > 1 && body_fat <= 5) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 5 && body_fat <= 13) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 13 && body_fat <= 17) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 17 && body_fat <= 24) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -89926,27 +89923,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "-2%";
                 } else if (body_fat > 9 && body_fat <= 13) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 13 && body_fat <= 20) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 20 && body_fat <= 24) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 24 && body_fat <= 31) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -89958,19 +89955,18 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               let fat_weight = weight * (body_fat / 100);
               let fat_weight_result = fat_weight;
               
-              if (request.unit !== 'kg') {
+              if (request.unit != 'kg') {
                 fat_weight_result = fat_weight * 2.205;
               }
 
-              param.body_fat = body_fat;
-              param.color = color;
-              param.left = left;
-              param.category = category;
-              param.lbm = lbm + " " + request.unit;
-              param.body_fat_w = body_fat_w + " " + request.unit;
-              param.RESULT = 1;
-              param.fat_weight = round(fat_weight, 2);
-              param.fat_weight_unit = request.unit;
+              param.tech_body_fat = body_fat;
+              param.tech_color = color;
+              param.tech_left = left;
+              param.tech_category = category;
+              param.tech_lbm = lbm + " " + request.unit;
+              param.tech_body_fat_w = body_fat_w + " " + request.unit;
+              param.tech_fat_weight = round(fat_weight, 2);
+              param.tech_fat_weight_unit = request.unit;
 
               return param;
             } else {
@@ -89992,7 +89988,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
 
               let body_fat, category, color, left;
 
-              if (request.gender === 'Male') {
+              if (request.gender == 'Male') {
                 body_fat = round((0.29288 * sum) - (0.0005 * Math.pow(sum, 2)) + (0.15845 * age) - 5.76377, 2);
                 
                 if (body_fat < 2) {
@@ -90001,27 +89997,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "0%";
                 } else if (body_fat > 1 && body_fat <= 5) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 5 && body_fat <= 13) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 13 && body_fat <= 17) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 17 && body_fat <= 24) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -90034,27 +90030,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "-2%";
                 } else if (body_fat > 9 && body_fat <= 13) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 13 && body_fat <= 20) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 20 && body_fat <= 24) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 24 && body_fat <= 31) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -90078,7 +90074,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
 
               let body_fat, category, color, left;
 
-              if (request.gender === 'Male') {
+              if (request.gender == 'Male') {
                 const body_den = 1.10938 - (0.0008267 * sum) + (0.0000016 * Math.pow(sum, 2)) - (0.0002574 * age);
                 body_fat = round((495 / body_den) - 450, 2);
                 
@@ -90088,27 +90084,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "0%";
                 } else if (body_fat > 1 && body_fat <= 5) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 5 && body_fat <= 13) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 13 && body_fat <= 17) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 17 && body_fat <= 24) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -90122,27 +90118,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "-2%";
                 } else if (body_fat > 9 && body_fat <= 13) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 13 && body_fat <= 20) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 20 && body_fat <= 24) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 24 && body_fat <= 31) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -90171,41 +90167,41 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               const sum = Object.values(measurements).reduce((a, b) => a + b, 0);
               let weight = parseFloat(request.weight);
               
-              if (request.unit === "kg") {
+              if (request.unit == "kg") {
                 weight = weight * 2.205;
               }
               
               const body_fat = round((27 * sum) / weight, 2);
               let category, color, left;
 
-              if (request.gender === 'Male') {
+              if (request.gender == 'Male') {
                 if (body_fat < 2) {
                   category = "N/A";
                   color = "red";
                   left = "0%";
                 } else if (body_fat > 1 && body_fat <= 5) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 5 && body_fat <= 13) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 13 && body_fat <= 17) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 17 && body_fat <= 24) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -90216,27 +90212,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "-2%";
                 } else if (body_fat > 9 && body_fat <= 13) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 13 && body_fat <= 20) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 20 && body_fat <= 24) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 24 && body_fat <= 31) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -90248,19 +90244,18 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               let fat_weight = weight * (body_fat / 100);
               let fat_weight_result = fat_weight;
               
-              if (request.unit !== 'kg') {
+              if (request.unit != 'kg') {
                 fat_weight_result = fat_weight * 2.205;
               }
 
-              param.body_fat = body_fat;
-              param.color = color;
-              param.left = left;
-              param.category = category;
-              param.lbm = lbm + " lbs";
-              param.body_fat_w = body_fat_w + " lbs";
-              param.RESULT = 1;
-              param.fat_weight = round(fat_weight_result, 2);
-              param.fat_weight_unit = request.unit;
+              param.tech_body_fat = body_fat;
+              param.tech_color = color;
+              param.tech_left = left;
+              param.tech_category = category;
+              param.tech_lbm = lbm + " lbs";
+              param.tech_body_fat_w = body_fat_w + " lbs";
+              param.tech_fat_weight = round(fat_weight_result, 2);
+              param.tech_fat_weight_unit = request.unit;
 
               return param;
             } else {
@@ -90282,7 +90277,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
 
               let body_fat, category, color, left;
 
-              if (request.gender === 'Male') {
+              if (request.gender == 'Male') {
                 let body_den;
                 const l = Math.log10(sum);
                 
@@ -90308,27 +90303,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "0%";
                 } else if (body_fat > 1 && body_fat <= 5) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 5 && body_fat <= 13) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 13 && body_fat <= 17) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 17 && body_fat <= 24) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -90358,27 +90353,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "-2%";
                 } else if (body_fat > 9 && body_fat <= 13) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (body_fat > 13 && body_fat <= 20) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (body_fat > 20 && body_fat <= 24) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (body_fat > 24 && body_fat <= 31) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -90399,16 +90394,16 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                 isNumeric(request.age) && request.gender) {
               
               let weight = parseFloat(request.weight);
-              if (request.unit === 'lbs') {
+              if (request.unit == 'lbs') {
                 weight = weight * 0.453592;
               }
 
               let height = 0;
-              if (request.hightUnit === 'ft/in') {
+              if (request.hightUnit == 'ft/in') {
                 const feet = parseFloat(request['height-ft']);
                 const inches = parseFloat(request['height-in']) || 0;
                 height = (feet * 12 + inches) * 0.0254;
-              } else if (request.hightUnit === 'cm') {
+              } else if (request.hightUnit == 'cm') {
                 height = parseFloat(request['height-cm']) / 100;
               }
 
@@ -90417,13 +90412,13 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               const gender = request.gender.toLowerCase();
 
               let bfp;
-              if (gender === 'male') {
+              if (gender == 'male') {
                 if (age <= 18) {
                   bfp = round((1.51 * bmi) + (0.70 * age) - 2.2, 2);
                 } else {
                   bfp = round((1.20 * bmi) + (0.23 * age) - 16.2, 2);
                 }
-              } else if (gender === 'female') {
+              } else if (gender == 'female') {
                 if (age <= 18) {
                   bfp = round((1.51 * bmi) + (0.70 * age) - 1.4, 2);
                 } else {
@@ -90434,34 +90429,34 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               }
 
               let category, color, left;
-              if (request.gender === 'Male') {
+              if (request.gender == 'Male') {
                 if (bfp < 2) {
                   category = "N/A";
                   color = "red";
                   left = "0%";
                 } else if (bfp > 1 && bfp <= 5) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (bfp > 5 && bfp <= 13) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (bfp > 13 && bfp <= 17) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (bfp > 17 && bfp <= 24) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -90472,27 +90467,27 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                   left = "-2%";
                 } else if (bfp > 9 && bfp <= 13) {
                   category = "Essential fat";
-                  param.Essential = "blue text-white";
+                  param.tech_Essential = "blue text-white";
                   color = "#0D47A1";
                   left = "2%";
                 } else if (bfp > 13 && bfp <= 20) {
                   category = "Athletes";
-                  param.Athletes = "teal text-white";
+                  param.tech_Athletes = "teal text-white";
                   color = "#00897B";
                   left = "20%";
                 } else if (bfp > 20 && bfp <= 24) {
                   category = "Fitness";
-                  param.Fitness = "green text-white";
+                  param.tech_Fitness = "green text-white";
                   color = "#00C853";
                   left = "40%";
                 } else if (bfp > 24 && bfp <= 31) {
                   category = "Average";
-                  param.Average = "yellow text-white";
+                  param.tech_Average = "yellow text-white";
                   color = "#FFEA00";
                   left = "60%";
                 } else {
                   category = "Obese";
-                  param.Obese = "red text-white";
+                  param.tech_Obese = "red text-white";
                   color = "#FF1744";
                   left = "80%";
                 }
@@ -90504,15 +90499,14 @@ async getCalculationJumpRopeCalorieCalculator(body) {
               const fat_weight_kg = weight * (bfp / 100);
               const fat_weight_lbs = fat_weight_kg * 2.205;
 
-              param.fat_weight = request.unit === 'kg' ? round(fat_weight_kg, 2) : round(fat_weight_lbs, 2);
-              param.fat_weight_unit = request.unit;
-              param.body_fat = bfp;
-              param.color = color;
-              param.left = left;
-              param.category = category;
-              param.lbm = lbm + " kg";
-              param.body_fat_w = body_fat_w + " kg";
-              param.RESULT = 1;
+              param.tech_fat_weight = request.unit == 'kg' ? round(fat_weight_kg, 2) : round(fat_weight_lbs, 2);
+              param.tech_fat_weight_unit = request.unit;
+              param.tech_body_fat = bfp;
+              param.tech_color = color;
+              param.tech_left = left;
+              param.tech_category = category;
+              param.tech_lbm = lbm + " kg";
+              param.tech_body_fat_w = body_fat_w + " kg";
 
               return param;
             } else {
@@ -90548,10 +90542,9 @@ async getCalculationJumpRopeCalorieCalculator(body) {
                 return param;
             }
           };
-
           // Main execution
           try {
-            if (body.calculator_type === 'simple') {
+            if (body.calculator_type == 'simple') {
               return handleSimpleCalculator(body);
             } else {
               return handleAdvancedCalculator(body);
@@ -90562,6 +90555,5591 @@ async getCalculationJumpRopeCalorieCalculator(body) {
         }
     
 
+      /**
+    * getCalculationPercentageCalculator: Service Method
+    * POST: /api/calculators-lol/percentage-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationPercentageCalculator(body) {
+      const result = {};
+      
+      // Check locale (assuming you have a way to get locale in your app)
+      const locale = body.tech_locale || 'en'; // default to 'en' if not provided
+      
+      if (locale == 'id') {
+        // Indonesian locale calculations
+        const angka_1 = body.tech_angka_1;
+        const angka_2 = body.tech_angka_2;
+        const angka_3 = body.tech_angka_3;
+        const angka_4 = body.tech_angka_4;
+        const pembilang_1 = body.tech_pembilang_1;
+        const penyebut_1 = body.tech_penyebut_1;
+        const perubahan_1 = body.tech_perubahan_1;
+        const perubahan_2 = body.tech_perubahan_2;
+        const calc_type = body.tech_submit;
+        
+        let hasil_1, hasil_2, hasil_3, hasil_4;
+        
+        if (calc_type == '1') {
+          if (!isNaN(angka_1) && !isNaN(angka_2)) {
+            hasil_1 = (angka_1 / 100) * angka_2;
+          } else {
+            result.error = 'Please! Fill both input fields.';
+            return result;
+          }
+        } else if (calc_type == '2') {
+          if (!isNaN(pembilang_1) && !isNaN(penyebut_1)) {
+            hasil_2 = (pembilang_1 / penyebut_1) * 100;
+          } else {
+            result.error = 'Please! Fill both input fields.';
+            return result;
+          }
+        } else if (calc_type == '3') {
+          if (!isNaN(angka_3) && !isNaN(angka_4)) {
+            hasil_3 = (angka_3 / angka_4) * 100;
+          } else {
+            result.error = 'Please! Fill both input fields.';
+            return result;
+          }
+        } else if (calc_type == '4') {
+          if (!isNaN(perubahan_1) && !isNaN(perubahan_2)) {
+            hasil_4 = ((perubahan_2 - perubahan_1) / perubahan_1) * 100;
+          } else {
+            result.error = 'Please! Fill both input fields.';
+            return result;
+          }
+        }
+        
+        result.tech_hasil_1 = hasil_1;
+        result.tech_hasil_2 = hasil_2;
+        result.tech_hasil_3 = hasil_3;
+        result.tech_hasil_4 = hasil_4;
+        result.tech_disable = 'zain';
+        return result;
+        
+      } else {
+        // English locale calculations
+        const method = body.tech_method;
+        const p = parseFloat(body.tech_p);
+        const x = parseFloat(body.tech_x);
+        
+        if (method == '1') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = Math.round((p / 100) * x * 100) / 100;
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '2') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = (Math.round((p / x) * 100 * 100) / 100) + '%';
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '3') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = Math.round((p / (x / 100)) * 100) / 100;
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '4') {
+          if (!isNaN(x) && !isNaN(p)) {
+            result.tech_ans = (Math.round((x / p) * 100 * 100) / 100) + '%';
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '5') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = Math.round((x / (p / 100)) * 100) / 100;
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '6') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = Math.round((p / 100) * x * 100) / 100;
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '7') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = Math.round((p / (x / 100)) * 100) / 100;
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '8') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = Math.round((x / 100) * p * 100) / 100;
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '9') {
+          if (!isNaN(x) && !isNaN(p)) {
+            result.tech_ans = (Math.round((p / x) * 100 * 100) / 100) + '%';
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '10') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = Math.round(p * (1 + (x / 100)) * 100) / 100;
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '11') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = (Math.round(((x / p) - 1) * 100 * 100) / 100) + '%';
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '12') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = Math.round((x / (1 + (p / 100))) * 100) / 100;
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '13') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = Math.round(p * (1 - (x / 100)) * 100) / 100;
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '14') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = (Math.round((1 - (x / p)) * 100 * 100) / 100) + '%';
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        } else if (method == '15') {
+          if (!isNaN(p) && !isNaN(x)) {
+            result.tech_ans = Math.round((x / (1 - (p / 100))) * 100) / 100;
+            return result;
+          } else {
+            result.error = 'Please! Check Your Input.';
+            return result;
+          }
+        }
+      }
+      
+      return result;
+    }
+
+    /**
+    * getCalculationFractionCalculator: Service Method
+    * POST: /api/calculators-lol/fraction-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationFractionCalculator(body) {
+      const param = {};
+      const request = body;
+      const calculate_type = request.tech_calculate_type;
+
+      // Helper Functions
+      function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+
+        if (a < b) {
+          [a, b] = [b, a];
+        }
+        if (b === 0) {
+          return 1;
+        }
+        let r = a % b;
+        while (r > 0) {
+          a = b;
+          b = r;
+          r = a % b;
+        }
+        return b;
+      }
+
+      function lcmofn(numbers, n) {
+        let ans = numbers[0];
+        for (let i = 1; i < n; i++) {
+          ans = ((numbers[i] * ans)) / (gcd(numbers[i], ans));
+        }
+        return ans;
+      }
+
+      function reduce(num, den) {
+        const g = gcd(num, den);
+        return [num / g, den / g];
+      }
+
+      if (calculate_type == 'fraction_type') {
+        const fraction_types = request.tech_fraction_types;
+        let a1 = request.tech_a1;
+        let b1 = request.tech_b1;
+        let N1 = request.tech_N1;
+        let N2 = request.tech_N2;
+        let N3 = request.tech_N3;
+        let N4 = request.tech_N4;
+        let D1 = request.tech_D1;
+        let D2 = request.tech_D2;
+        let D3 = request.tech_D3;
+        let D4 = request.tech_D4;
+        const action = request.tech_action;
+        const action1 = request.tech_action1;
+        const action2 = request.tech_action2;
+
+        if (fraction_types == "simple_frac") {
+          if (D1 == 0 || D2 == 0) {
+            param.error = 'Denominator can not be 0.';
+            return param;
+          }
+          if (!isNaN(N1) && !isNaN(D1) && !isNaN(N2) && !isNaN(D2)) {
+            if (N1 == 0 || N2 == 0) {
+              param.error = 'Please provide none zero numbers.';
+              return param;
+            }
+            if (D1 == 0 || D2 == 0) {
+              param.error = 'Denominator can not be 0';
+              return param;
+            }
+
+            let totalN, totalD;
+            if (action == '+') {
+              totalN = (N1 * D2) + (N2 * D1);
+              totalD = (D1 * D2);
+            } else if (action == '-') {
+              totalN = (N1 * D2) - (N2 * D1);
+              totalD = (D1 * D2);
+            } else if (action == '÷') {
+              totalN = (N1 * D2);
+              totalD = (N2 * D1);
+            } else if (action == '×' || action == 'of') {
+              totalN = (N1 * N2);
+              totalD = (D1 * D2);
+            } else if (action == '^') {
+              totalN = Math.pow(N1, (N2 / D2));
+              totalD = Math.pow(D1, (N2 / D2));
+            }
+
+            const g = gcd(totalN, totalD);
+            const [upr, btm] = reduce(totalN, totalD);
+            const lcd = lcmofn([D1, D2], 2);
+
+            param.tech_lcd = lcd;
+            param.tech_upr = upr;
+            param.tech_btm = btm;
+            param.tech_totalN = totalN;
+            param.tech_totalD = totalD;
+            param.tech_g = g;
+            return param;
+          } else {
+            param.error = 'Please! Enter valid Input.';
+            return param;
+          }
+        } else if (fraction_types == "three_frac") {
+          if (D1 == 0 || D2 == 0 || D3 == 0) {
+            param.error = 'Denominator can not be 0.';
+            return param;
+          }
+          if (!isNaN(N1) && !isNaN(D1) && !isNaN(N2) && !isNaN(D2) && !isNaN(N3) && !isNaN(D3) && D1 !== 0 && D2 !== 0 && D3 !== 0) {
+            if (N1 == 0 || N2 == 0 || N3 == 0) {
+              param.error = 'Please provide none zero numbers.';
+              return param;
+            }
+            if (D1 == 0 || D2 == 0 || D3 == 0) {
+              param.error = 'Denominator can not be 0';
+              return param;
+            }
+
+            let totalN, totalD;
+            if ((action == '+' || action == '-') && (action1 == '+' || action1 == '-')) {
+              const arr = [D1, D2, D3];
+              const lcm = lcmofn(arr, 3);
+              let first = action == '+' ? 
+                (N1 * (lcm / D1)) + (N2 * (lcm / D2)) : 
+                (N1 * (lcm / D1)) - (N2 * (lcm / D2));
+              let second = action1 == '+' ? 
+                first + (N3 * (lcm / D3)) : 
+                first - (N3 * (lcm / D3));
+              totalN = second;
+              totalD = lcm;
+            } else if ((action == '÷' || action == '×') && (action1 == '÷' || action1 == '×')) {
+              if (action == '÷') {
+                [N2, D2] = [D2, N2];
+              }
+              if (action1 == '÷') {
+                [N3, D3] = [D3, N3];
+              }
+              totalN = N1 * N2 * N3;
+              totalD = D1 * D2 * D3;
+            } else if ((action == '÷' || action == '×') && (action1 == '+' || action1 == '-')) {
+              if (action == '÷') {
+                [N2, D2] = [D2, N2];
+              }
+              N2 = N1 * N2;
+              D2 = D1 * D2;
+              if (action1 == '+') {
+                totalN = (N2 * D3) + (N3 * D2);
+                totalD = (D2 * D3);
+              } else if (action1 == '-') {
+                totalN = (N2 * D3) - (N3 * D2);
+                totalD = (D2 * D3);
+              }
+            } else if ((action1 == '÷' || action1 == '×') && (action == '+' || action == '-')) {
+              if (action1 == '÷') {
+                [N3, D3] = [D3, N3];
+              }
+              N2 = N3 * N2;
+              D2 = D3 * D2;
+              if (action == '+') {
+                totalN = (N2 * D1) + (N1 * D2);
+                totalD = (D2 * D1);
+              } else if (action == '-') {
+                totalN = (N2 * D1) - (N1 * D2);
+                totalD = (D2 * D1);
+              }
+            }
+
+            const g = gcd(totalN, totalD);
+            const [upr, btm] = reduce(totalN, totalD);
+            const lcd = lcmofn([D1, D2, D3], 3);
+
+            param.tech_lcd = lcd;
+            param.tech_upr = upr;
+            param.tech_btm = btm;
+            param.tech_totalN = totalN;
+            param.tech_totalD = totalD;
+            param.tech_g = g;
+            return param;
+          } else {
+            param.error = 'Please! Enter valid Input.';
+            return param;
+          }
+        } else if (fraction_types == "four_frac") {
+          if (D1 == 0 || D2 == 0 || D3 == 0 || D4 == 0) {
+            param.error = 'Denominator can not be 0.';
+            return param;
+          }
+          if (!isNaN(N1) && !isNaN(D1) && !isNaN(N2) && !isNaN(D2) && !isNaN(N3) && !isNaN(D3) && !isNaN(N4) && !isNaN(D4) && D1 !== 0 && D2 !== 0 && D3 !== 0 && D4 !== 0) {
+            if (N1 == 0 || N2 == 0 || N3 == 0 || N4 == 0) {
+              param.error = 'Please provide none zero numbers.';
+              return param;
+            }
+            if (D1 == 0 || D2 == 0 || D3 == 0 || D4 == 0) {
+              param.error = 'Denominator can not be 0';
+              return param;
+            }
+
+            let totalN, totalD;
+            if ((action == '+' || action == '-') && (action1 == '+' || action1 == '-') && (action2 == '+' || action2 == '-')) {
+              const arr = [D1, D2, D3, D4];
+              const lcm = lcmofn(arr, 4);
+              let first = action == '+' ? 
+                (N1 * (lcm / D1)) + (N2 * (lcm / D2)) : 
+                (N1 * (lcm / D1)) - (N2 * (lcm / D2));
+              let second = action1 == '+' ? 
+                first + (N3 * (lcm / D3)) : 
+                first - (N3 * (lcm / D3));
+              let third = action2 == '+' ? 
+                second + (N4 * (lcm / D4)) : 
+                second - (N4 * (lcm / D4));
+              totalN = third;
+              totalD = lcm;
+            } else if ((action == '÷' || action == '×') && (action1 == '÷' || action1 == '×') && (action2 == '÷' || action2 == '×')) {
+              if (action === '÷') {
+                [N2, D2] = [D2, N2];
+              }
+              if (action1 === '÷') {
+                [N3, D3] = [D3, N3];
+              }
+              if (action2 === '÷') {
+                [N4, D4] = [D4, N4];
+              }
+              totalN = N1 * N2 * N3 * N4;
+              totalD = D1 * D2 * D3 * D4;
+            } else if ((action == '÷' || action == '×') && (action1 == '+' || action1 == '-') && (action2 == '+' || action2 == '-')) {
+              if (action == '÷') {
+                [N2, D2] = [D2, N2];
+              }
+              N2 = N1 * N2;
+              D2 = D1 * D2;
+              if (action1 == '+') {
+                N3 = (N2 * D3) + (N3 * D2);
+                D3 = (D2 * D3);
+              } else if (action1 == '-') {
+                N3 = (N2 * D3) - (N3 * D2);
+                D3 = (D2 * D3);
+              }
+              if (action2 == '+') {
+                totalN = (N3 * D4) + (N4 * D3);
+                totalD = (D3 * D4);
+              } else if (action2 == '-') {
+                totalN = (N3 * D4) - (N4 * D3);
+                totalD = (D3 * D4);
+              }
+            } else if ((action == '+' || action == '-') && (action1 == '÷' || action1 == '×') && (action2 == '+' || action2 == '-')) {
+              if (action1 == '÷') {
+                [N3, D3] = [D3, N3];
+              }
+              N3 = N3 * N2;
+              D3 = D3 * D2;
+              if (action == '+') {
+                N3 = (N1 * D3) + (N3 * D1);
+                D3 = (D3 * D1);
+              } else if (action == '-') {
+                N3 = (N1 * D3) - (N3 * D1);
+                D3 = (D3 * D1);
+              }
+              if (action2 == '+') {
+                totalN = (N3 * D4) + (N4 * D3);
+                totalD = (D3 * D4);
+              } else if (action2 == '-') {
+                totalN = (N3 * D4) - (N4 * D3);
+                totalD = (D3 * D4);
+              }
+            } else if ((action == '+' || action == '-') && (action1 == '+' || action1 == '-') && (action2 == '÷' || action2 == '×')) {
+              if (action2 == '÷') {
+                [N4, D4] = [D4, N4];
+              }
+              N3 = N3 * N4;
+              D3 = D3 * D4;
+              if (action == '+') {
+                N2 = (N1 * D2) + (N2 * D1);
+                D2 = (D1 * D2);
+              } else if (action == '-') {
+                N2 = (N1 * D2) - (N2 * D1);
+                D2 = (D1 * D2);
+              }
+              if (action1 == '+') {
+                totalN = (N2 * D3) + (N3 * D2);
+                totalD = (D2 * D3);
+              } else if (action1 == '-') {
+                totalN = (N2 * D3) - (N3 * D2);
+                totalD = (D2 * D3);
+              }
+            } else if ((action == '÷' || action == '×') && (action1 == '÷' || action1 == '×') && (action2 == '+' || action2 == '-')) {
+              if (action1 == '÷') {
+                [N3, D3] = [D3, N3];
+              }
+              N2 = N2 * N3;
+              D2 = D2 * D3;
+              if (action == '÷') {
+                [N2, D2] = [D2, N2];
+              }
+              N1 = N1 * N2;
+              D1 = D1 * D2;
+              if (action2 == '+') {
+                totalN = (N1 * D4) + (N4 * D1);
+                totalD = (D1 * D4);
+              } else if (action2 == '-') {
+                totalN = (N1 * D4) - (N4 * D1);
+                totalD = (D1 * D4);
+              }
+            } else if ((action == '÷' || action == '×') && (action1 == '+' || action1 == '-') && (action2 == '÷' || action2 == '×')) {
+              if (action == '÷') {
+                [N2, D2] = [D2, N2];
+              }
+              N2 = N1 * N2;
+              D2 = D1 * D2;
+              if (action2 == '÷') {
+                [N4, D4] = [D4, N4];
+              }
+              N3 = N3 * N4;
+              D3 = D3 * D4;
+              if (action1 == '+') {
+                totalN = (N2 * D3) + (N3 * D2);
+                totalD = (D2 * D3);
+              } else if (action1 == '-') {
+                totalN = (N2 * D3) - (N3 * D2);
+                totalD = (D2 * D3);
+              }
+            } else if ((action == '+' || action == '-') && (action1 == '÷' || action1 == '×') && (action2 == '÷' || action2 == '×')) {
+              if (action1 == '÷') {
+                [N3, D3] = [D3, N3];
+              }
+              if (action2 == '÷') {
+                [N4, D4] = [D4, N4];
+              }
+              N3 = N3 * N4;
+              D3 = D3 * D4;
+              N2 = N2 * N3;
+              D2 = D2 * D3;
+              if (action == '+') {
+                totalN = (N1 * D2) + (N2 * D1);
+                totalD = (D1 * D2);
+              } else if (action == '-') {
+                totalN = (N1 * D2) - (N2 * D1);
+                totalD = (D1 * D2);
+              }
+            }
+
+            const g = gcd(totalN, totalD);
+            const [upr, btm] = reduce(totalN, totalD);
+            const lcd = lcmofn([D1, D2, D3, D4], 4);
+
+            param.tech_lcd = lcd;
+            param.tech_upr = upr;
+            param.tech_btm = btm;
+            param.tech_totalN = totalN;
+            param.tech_totalD = totalD;
+            param.tech_g = g;
+            return param;
+          } else {
+            param.error = 'Please! Enter valid Input.';
+            return param;
+          }
+        } else {
+          if (parseFloat(request.tech_du1) == 0) {
+            param.error = 'Denominator can not be 0.';
+            return param;
+          }
+          if (!isNaN(request.tech_neo2) && !isNaN(request.tech_du1)) {
+            let totalN = parseFloat(request.tech_neo2);
+            let totalD = parseFloat(request.tech_du1);
+            if (!isNaN(request.tech_ne1)) {
+              const val1 = parseFloat(request.tech_ne1);
+              if (val1 < 0 && totalN > 0) {
+                totalN = totalN * (-1);
+              }
+              totalN = (totalD * val1) + totalN;
+            }
+
+            const g = gcd(totalN, totalD);
+            const [upr, btm] = reduce(totalN, totalD);
+            param.tech_upr = upr;
+            param.tech_totalN = totalN;
+            param.tech_totalD = totalD;
+            param.tech_g = g;
+            param.tech_btm = btm;
+            return param;
+          }
+        }
+      } else {
+        if (!isNaN(request.tech_nu1) && !isNaN(request.tech_de1) && !isNaN(request.tech_nu2) && !isNaN(request.tech_de2)) {
+      let N1 = parseFloat(request.tech_nu1);
+      let D1 = parseFloat(request.tech_de1);
+      let N2 = parseFloat(request.tech_nu2);
+      let D2 = parseFloat(request.tech_de2);
+      
+          if (D1 == 0 || D2 == 0) {
+            param.error = 'Denominator can not be 0';
+            return param;
+          }
+
+          if (!isNaN(request.tech_s1)) {
+            const val1 = parseFloat(request.tech_s1);
+            if (val1 < 0 && N1 > 0) {
+              N1 = N1 * (-1);
+            }
+            N1 = (D1 * val1) + N1;
+          }
+          if (!isNaN(request.tech_s2)) {
+            const val2 = parseFloat(request.tech_s2);
+            if (val2 < 0 && N2 > 0) {
+              N2 = N2 * (-1);
+            }
+            N2 = (D2 * val2) + N2;
+          }
+
+          const action = request.tech_actions;
+          let totalN, totalD;
+
+          if (action == '+') {
+            totalN = (N1 * D2) + (N2 * D1);
+            totalD = (D1 * D2);
+          } else if (action == '-') {
+            totalN = (N1 * D2) - (N2 * D1);
+            totalD = (D1 * D2);
+          } else if (action == '÷') {
+            totalN = (N1 * D2);
+            totalD = (N2 * D1);
+          } else if (action == '×') {
+            totalN = (N1 * N2);
+            totalD = (D1 * D2);
+          }
+
+          const g = gcd(totalN, totalD);
+          const [upr, btm] = reduce(totalN, totalD);
+          const lcd = lcmofn([D1, D2], 2);
+
+          param.tech_upr = upr;
+          param.tech_N1 = N1;
+          param.tech_N2 = N2;
+          param.tech_D1 = D1;
+          param.tech_D2 = D2;
+          param.tech_totalN = totalN;
+          param.tech_totalD = totalD;
+          param.tech_g = g;
+          param.tech_btm = btm;
+          param.tech_lcd = lcd;
+          return param;
+        } else {
+          param.error = 'Please fill all fields.';
+          return param;
+        }
+      }
+    }
+
+      /**
+    * getCalculationIntegralCalculator: Service Method
+    * POST: /api/calculators-lol/integral-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationIntegralCalculator(body) {
+        let EnterEq = body.tech_EnterEq;
+        let ub = body.tech_ub;
+        let lb = body.tech_lb;
+        let form = body.tech_form;
+        let wrt = body.tech_with;
+
+        const param = {};
+
+        // Input validation
+        if (!EnterEq) {
+            param.error = 'Please! Check Your Input.';
+            return param;
+        }
+
+        // Regex validation
+        const invalidPattern = /[<>&]/i;
+        if (invalidPattern.test(EnterEq)) {
+            param.error = 'Please! Check Your Input.';
+            return param;
+        }
+
+        // Additional security validation
+        const securityPattern = /\<|\>|\&|php|print_r|print|echo|script|=|&|%/i;
+        if (securityPattern.test(EnterEq)) {
+            param.error = 'Please! Check Your Input.';
+            return param;
+        }
+
+        // Check for definite integral bounds
+        if (form === 'def') {
+            if (!ub || !lb) {
+                param.error = 'Please! Check Your Input.';
+                return param;
+            }
+        }
+
+        // Process equation
+        let parem = EnterEq;
+        parem = parem.replace(/ /g, '');
+        parem = parem.replace(/\+/g, 'plus');
+        parem = parem.replace(/{/g, '(');
+        parem = parem.replace(/}/g, ')');
+        parem = parem.replace(/e\^/g, 'exp');
+        parem = parem.replace(/exp\^/g, 'exp');
+        parem = parem.replace(/\^/g, '**');
+        parem = parem.replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+
+        const parem1 = wrt ? wrt.trim() : '';
+
+        try {
+            const axios = require('axios');
+            let formData;
+
+            if (form === 'def') {
+                const ubProcessed = ub.replace(/\+/g, 'plus');
+                const lbProcessed = lb.replace(/\+/g, 'plus');
+
+                formData = {
+                    equ: parem,
+                    wrt: parem1,
+                    ub: ubProcessed,
+                    lb: lbProcessed
+                };
+            } else {
+                formData = {
+                    equ: parem,
+                    wrt: parem1
+                };
+            }
+
+            const response = await axios.post('http://167.172.134.148/new-integral', formData, {
+                timeout: 120000,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+
+            const buffer = response.data;
+
+            param.tech_buffer = buffer[0];
+            param.tech_ans = buffer[1];
+            param.tech_enter = buffer[2];
+            if (form === 'def') {
+                param.tech_defi = buffer[3];
+            }
+
+            return param;
+
+        } catch (error) {
+            param.error = 'Please! Check Your Input.';
+            return param;
+        }
+    }
+
+         /**
+    * getCalculationCircumferenceCalculator: Service Method
+    * POST: /api/calculators-lol/circumference-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationCircumferenceCalculator(body) {
+      // Helper function to check if value is numeric
+      const isNumeric = (value) => {
+          if (value == null || value == undefined || value == '') {
+              return false;
+          }
+          return !isNaN(parseFloat(value)) && isFinite(value);
+      };
+
+      // Helper function to round numbers
+      const round = (value, decimals) => {
+          return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+      };
+
+          let radius = body.tech_radius;
+          let diameter = body.tech_diameter;
+          let circumference = body.tech_circumference;
+          let area = body.tech_area;
+          let s_area = body.tech_s_area;
+          let vol = body.tech_vol;
+          let unit_r = body.tech_unit_r;
+          let unit_d = body.tech_unit_d;
+          let unit_c = body.tech_unit_c;
+          let unit_a = body.tech_unit_a;
+          let unit_sa = body.tech_unit_sa;
+          let unit_v = body.tech_unit_v;
+
+      const param = {};
+
+      // Check if at least one numeric value is provided
+      if (!isNumeric(radius) && !isNumeric(diameter) && !isNumeric(circumference) && 
+          !isNumeric(area) && !isNumeric(s_area) && !isNumeric(vol)) {
+          param.error = 'Please enter any one value.';
+          return param;
+      }
+
+      // Process Radius
+      if (isNumeric(radius)) {
+          if (!diameter && !circumference && !area && !s_area && !vol) {
+              let Radius = parseFloat(radius);
+              
+              // Unit conversion for radius
+              if (unit_r == 'mm') Radius = Radius / 10;
+              if (unit_r == 'm') Radius = Radius * 100;
+              if (unit_r == 'ft') Radius = Radius * 30.48;
+              if (unit_r == 'in') Radius = Radius * 2.54;
+              if (unit_r == 'km') Radius = Radius * 100000;
+              if (unit_r == 'yd') Radius = Radius * 91.44;
+              if (unit_r == 'mi') Radius = Radius * 160934;
+
+              const Diameter = 2 * Radius;
+              const Circumference = 2 * 3.14159 * Radius;
+              const Area = 3.14159 * Math.pow(Radius, 2);
+
+              param.tech_Radius = round(Radius, 5);
+              param.tech_Diameter = round(Diameter, 5);
+              param.tech_Circumference = round(Circumference, 5);
+              param.tech_Area = round(Area, 5);
+              return param;
+          } else {
+              param.error = 'You can enter only one value.';
+              return param;
+          }
+      }
+
+      // Process Diameter
+      if (isNumeric(diameter)) {
+          if (!radius && !circumference && !area && !s_area && !vol) {
+              let Diameter = parseFloat(diameter);
+              
+              // Unit conversion for diameter
+              if (unit_d == 'mm') Diameter = Diameter / 10;
+              if (unit_d == 'm') Diameter = Diameter * 100;
+              if (unit_d == 'ft') Diameter = Diameter * 30.48;
+              if (unit_d == 'in') Diameter = Diameter * 2.54;
+              if (unit_d == 'km') Diameter = Diameter * 100000;
+              if (unit_d == 'yd') Diameter = Diameter * 91.44;
+              if (unit_d == 'mi') Diameter = Diameter * 160934;
+
+              const Radius = Diameter / 2;
+              const Circumference = 2 * 3.14159 * Radius;
+              const Area = 3.14159 * Math.pow(Radius, 2);
+
+              param.tech_Radius = round(Radius, 5);
+              param.tech_Diameter = round(Diameter, 5);
+              param.tech_Circumference = round(Circumference, 5);
+              param.tech_Area = round(Area, 5);
+              return param;
+          } else {
+              param.error = 'You can enter only one value.';
+              return param;
+          }
+      }
+
+      // Process Circumference
+      if (isNumeric(circumference)) {
+          if (!radius && !diameter && !area && !s_area && !vol) {
+              let Circumference = parseFloat(circumference);
+              
+              // Unit conversion for circumference
+              if (unit_c == 'mm') Circumference = Circumference / 10;
+              if (unit_c == 'm') Circumference = Circumference * 100;
+              if (unit_c == 'ft') Circumference = Circumference * 30.48;
+              if (unit_c == 'in') Circumference = Circumference * 2.54;
+              if (unit_c == 'km') Circumference = Circumference * 100000;
+              if (unit_c == 'yd') Circumference = Circumference * 91.44;
+              if (unit_c == 'mi') Circumference = Circumference * 160934;
+
+              const Radius = Circumference / (2 * 3.14159);
+              const Diameter = 2 * Radius;
+              const Area = 3.14159 * Math.pow(Radius, 2);
+
+              param.tech_Radius = round(Radius, 5);
+              param.tech_Diameter = round(Diameter, 5);
+              param.tech_Circumference = round(Circumference, 5);
+              param.tech_Area = round(Area, 5);
+              return param;
+          } else {
+              param.error = 'You can enter only one value.';
+              return param;
+          }
+      }
+
+      // Process Area
+      if (isNumeric(area)) {
+          if (!radius && !diameter && !circumference && !s_area && !vol) {
+              let Area = parseFloat(area);
+              
+              // Unit conversion for area
+              if (unit_a == 'mm²') Area = Area / 100;
+              if (unit_a == 'm²') Area = Area * 10000;
+              if (unit_a == 'ft²') Area = Area * 929.03;
+              if (unit_a == 'km²') Area = Area * 1e+10;
+              if (unit_a == 'in²') Area = Area * 6.452;
+              if (unit_a == 'mi²') Area = Area * 2.59e+10;
+              if (unit_a == 'yd²') Area = Area * 8361.27;
+
+              const Radius = Math.sqrt(Area / 3.14159);
+              const Diameter = 2 * Radius;
+              const Circumference = 2 * 3.14159 * Radius;
+
+              param.tech_Radius = round(Radius, 5);
+              param.tech_Diameter = round(Diameter, 5);
+              param.tech_Circumference = round(Circumference, 5);
+              param.tech_Area = round(Area, 5);
+              return param;
+          } else {
+              param.error = 'You can enter only one value.';
+              return param;
+          }
+      }
+
+      // Process Surface Area
+      if (isNumeric(s_area)) {
+          if (!radius && !diameter && !circumference && !area && !vol) {
+              let S_Area = parseFloat(s_area);
+              
+              // Unit conversion for surface area
+              if (unit_sa == 'mm²') S_Area = S_Area / 100;
+              if (unit_sa == 'm²') S_Area = S_Area * 10000;
+              if (unit_sa == 'ft²') S_Area = S_Area * 929.03;
+              if (unit_sa == 'km²') S_Area = S_Area * 1e+10;
+              if (unit_sa == 'in²') S_Area = S_Area * 6.452;
+              if (unit_sa == 'mi²') S_Area = S_Area * 2.59e+10;
+              if (unit_sa == 'yd²') S_Area = S_Area * 8361.27;
+
+              const Radius = Math.sqrt(S_Area / (4 * 3.14159));
+
+              param.tech_Radius = round(Radius, 5);
+              return param;
+          } else {
+              param.error = 'You can enter only one value.';
+              return param;
+          }
+      }
+
+      // Process Volume
+      if (isNumeric(vol)) {
+          if (!radius && !diameter && !circumference && !area && !s_area) {
+              let Vol = parseFloat(vol);
+              
+              // Unit conversion for volume
+              if (unit_v == 'm³') Vol = Vol * 1e+6;
+              if (unit_v == 'ft³') Vol = Vol * 28316.8;
+              if (unit_v == 'in³') Vol = Vol * 16.387;
+              if (unit_v == 'km³') Vol = Vol * 1000000000000000;
+              if (unit_v == 'yd³') Vol = Vol * 764555;
+              if (unit_v == 'mi³') Vol = Vol * 4168181818124979;
+
+              const Radius = Math.pow(((Vol * 3) / (4 * 3.14159)), 1/3);
+
+              param.tech_Radius = round(Radius, 5);
+              return param;
+          } else {
+              param.error = 'You can enter only one value.';
+              return param;
+          }
+      }
+
+      param.error = 'Please enter any one value.';
+      return param;
+  }
+
+
+      /**
+    * getCalculationLCMCalculator: Service Method
+    * POST: /api/calculators-lol/lcm-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationLCMCalculator(body) {
+        // Helper function to calculate GCD
+        const gcd = (a, b) => {
+            if (b == 0) return a;
+            return gcd(b, a % b);
+        };
+
+        // Helper function to calculate LCM of array
+        const lcmOfArray = (numbers) => {
+            let ans = numbers[0];
+            for (let i = 1; i < numbers.length; i++) {
+                ans = ((numbers[i] * ans)) / (gcd(numbers[i], ans));
+            }
+            return ans;
+        };
+
+        // Helper function for conditional plural
+        const condPlural = (word, count) => {
+            return count > 1 ? word + 's' : word;
+        };
+
+        let x = body.tech_x;
+        let method = body.tech_method;
+        const param = {};
+        let check = true;
+
+        // Check if x is empty
+        if (!x) {
+            check = false;
+        }
+
+        // Parse and validate numbers
+        const numbers = x.split(',')
+            .map(n => n.trim())
+            .filter(n => n !== '')
+            .map(n => parseFloat(n));
+
+        // Validation checks
+        for (let value of numbers) {
+            // Check for decimal numbers
+            const list = value.toString().split(".");
+            if (list.length === 2 && list[1] !== '0') {
+                param.error = "Please! Enter numeric values.";
+                return param;
+            }
+
+            // Check if number is greater than 100000
+            if (value > 100000) {
+                param.error = "A number can't be greater than 100000.";
+                return param;
+            }
+
+            // Check for negative numbers
+            if (value < 0) {
+                param.error = "Please! Enter Only Positive Numbers.";
+                return param;
+            }
+        }
+
+        // Check maximum 15 numbers
+        if (numbers.length > 15) {
+            param.error = "Please! Enter 15 numbers at most.";
+            return param;
+        }
+
+        if (!check) {
+            param.error = "Please fill all fields.";
+            return param;
+        }
+
+        const n = numbers.length;
+        const lcm = lcmOfArray(numbers);
+
+        // Method: none (just calculate LCM)
+        if (method == 'none') {
+            param.tech_lcm = lcm;
+            return param;
+        }
+
+        // Method: lm (Listing Multiples)
+        if (method == 'lm') {
+            const bruteForce = (newNumberList, lcm, decimalLength) => {
+                let stepSolution = '';
+                
+                if (decimalLength > 0) {
+                    stepSolution += '<i> • As not all of your numbers are integers, you first need to shift the decimal ' +
+                        decimalLength + condPlural(' place', decimalLength) + ' to the right. This means we\'ll search for the LCM of the positive integers:<br></i>LCM(' + 
+                        newNumberList.join(', ') + '),<i><br> and, at the end, we\'ll move the decimal point of the result ' + 
+                        decimalLength + condPlural(' place', decimalLength) + ' to the left.</i><br>';
+                }
+
+                const lcmLong = lcm * Math.pow(10, decimalLength);
+
+                for (let i = 0; i < newNumberList.length; i++) {
+                    stepSolution += '• <b>Multiples of ' + newNumberList[i].toFixed(decimalLength) + ': </b>';
+                    
+                    if ((lcmLong / newNumberList[i]) + 4 < 100) {
+                        for (let j = 1; j < (lcmLong / newNumberList[i]) + 4; j++) {
+                            if (newNumberList[i] * j == lcmLong) {
+                                stepSolution += '<b>' + (newNumberList[i] * j).toFixed(decimalLength) + '</b>, ';
+                            } else if (j == (lcmLong / newNumberList[i]) + 3) {
+                                stepSolution += (newNumberList[i] * j).toFixed(decimalLength) + ' ...';
+                            } else {
+                                stepSolution += (newNumberList[i] * j).toFixed(decimalLength) + ', ';
+                            }
+                        }
+                    } else {
+                        const N_numbers = 10; // must be even
+                        
+                        for (let j = 1; j < N_numbers; j++) {
+                            if (j == N_numbers - 1) {
+                                stepSolution += (newNumberList[i] * j).toFixed(decimalLength) + ', ..., ';
+                            } else {
+                                stepSolution += (newNumberList[i] * j).toFixed(decimalLength) + ', ';
+                            }
+                        }
+                        
+                        for (let j = Math.round((lcmLong / newNumberList[i]) / 2) - (N_numbers / 2); 
+                            j < (lcmLong / newNumberList[i]) / 2 + Math.round(N_numbers / 2); j++) {
+                            if (j == Math.round((lcmLong / newNumberList[i]) / 2) + (N_numbers / 2 - 1)) {
+                                stepSolution += (newNumberList[i] * j).toFixed(decimalLength) + ', ..., ';
+                            } else {
+                                stepSolution += (newNumberList[i] * j).toFixed(decimalLength) + ', ';
+                            }
+                        }
+                        
+                        for (let j = (lcmLong / newNumberList[i]) - Math.round(N_numbers / 2); 
+                            j < (lcmLong / newNumberList[i]) + Math.round(N_numbers / 2); j++) {
+                            if (newNumberList[i] * j == lcmLong) {
+                                stepSolution += '<b>' + (newNumberList[i] * j).toFixed(decimalLength) + '</b>, ';
+                            } else if (j == (lcmLong / newNumberList[i]) + Math.round(N_numbers / 2 - 1)) {
+                                stepSolution += (newNumberList[i] * j).toFixed(decimalLength) + ' ...';
+                            } else {
+                                stepSolution += (newNumberList[i] * j).toFixed(decimalLength) + ', ';
+                            }
+                        }
+                    }
+                    stepSolution += '<br><br>';
+                }
+
+                if (decimalLength > 0) {
+                    stepSolution += 'Thus, <br><br><b>LCM(' + newNumberList.join(', ') + ') = ' + lcm + '</b>';
+                }
+
+                return stepSolution;
+            };
+
+            const sl = bruteForce(numbers, lcm, 0);
+            param.tech_sl = sl;
+            param.tech_lcm = lcm;
+            return param;
+        }
+
+        // Method: Pf (Prime Factorization)
+        if (method == 'Pf') {
+            let sl = '';
+            let ss = '';
+
+            // Prime factorization for each number
+            for (let value of numbers) {
+                let x = value;
+                sl += "<p class='mt-2'> Prime Factors of " + value + " = ";
+                const arr = [];
+                
+                for (let i = 2; x > 1; i++) {
+                    while (x % i === 0) {
+                        x = x / i;
+                        arr.push(i);
+                    }
+                }
+
+                for (let j = 0; j < arr.length; j++) {
+                    if (j !== arr.length - 1) {
+                        sl += arr[j] + " x ";
+                    } else {
+                        sl += arr[j] + " </p>";
+                    }
+                }
+            }
+
+            // Prime factorization of LCM
+            let s = lcm;
+            const arr1 = [];
+            
+            for (let i = 2; s > 1; i++) {
+                while (s % i === 0) {
+                    s = s / i;
+                    arr1.push(i);
+                }
+            }
+
+            for (let j = 0; j < arr1.length; j++) {
+                if (j !== arr1.length - 1) {
+                    ss += arr1[j] + " x ";
+                } else {
+                    ss += arr1[j];
+                }
+            }
+
+            param.tech_lcm = lcm;
+            param.tech_sl = sl;
+            param.tech_ss = ss;
+            return param;
+        }
+
+        // Method: gcf (Greatest Common Factor Method)
+        if (method == 'gcf') {
+            let lce = '';
+
+            for (let i = 0; i < numbers.length - 1; i++) {
+                if (i === 0) {
+                    const a = numbers[0];
+                    const b = numbers[1];
+                    lce += "LCM of (" + a + "," + b + ") = ";
+                    const lc = (a * b) / (gcd(a, b));
+                    lce += " " + lc + " ";
+                } else {
+                    const a = lcm;
+                    const b = numbers[i + 1];
+                    lce += "<p class='mt-2'>LCM of (" + a + "," + b + ") = ";
+                    const lc = (a * b) / (gcd(a, b));
+                    lce += " " + lc + " </p>";
+                }
+            }
+
+            param.tech_lcm = lcm;
+            param.tech_lce = lce;
+            return param;
+        }
+
+        // Method: cl or dm (Cake/Ladder Method and Division Method)
+        if (method == 'cl' || method == 'dm') {
+            let sl = '';
+            const sd = [];
+            const fd = [];
+            const ev = [...numbers];
+            let arr = [...numbers];
+            
+            const final_arr = new Array(numbers.length).fill(1);
+            let final_arr_c = [...arr];
+
+            while (JSON.stringify(final_arr) !== JSON.stringify(final_arr_c)) {
+                let arr1 = [];
+                let p = 2;
+
+                // Try dividing by p
+                for (let value of arr) {
+                    if (value % p === 0) {
+                        arr1.push(value / p);
+                    } else {
+                        arr1.push(value);
+                    }
+                }
+
+                final_arr_c = [...arr1];
+
+                // Find next prime that divides at least one number
+                while (JSON.stringify(arr) === JSON.stringify(arr1)) {
+                    arr1 = [];
+                    p++;
+                    for (let value of arr) {
+                        if (value % p === 0) {
+                            arr1.push(value / p);
+                        } else {
+                            arr1.push(value);
+                        }
+                    }
+                }
+
+                if (JSON.stringify(arr) !== JSON.stringify(arr1)) {
+                    arr = [...arr1];
+                    fd.push(p);
+                    sl += " (" + p + ") ";
+                    for (let value1 of arr1) {
+                        sd.push(value1);
+                    }
+                }
+
+                final_arr_c = [...arr1];
+            }
+
+            param.tech_lcm = lcm;
+            param.tech_sd = sd;
+            param.tech_fd = fd;
+            param.tech_sl = sl;
+            param.tech_ev = ev;
+            return param;
+        }
+
+        param.error = "Please fill all fields.";
+        return param;
+    }
+
+          /**
+    * getCalculationGCFCalculator: Service Method
+    * POST: /api/calculators-lol/gcf-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationGCFCalculator(body) {
+      // Helper function to calculate GCD
+      const gcd = (a, b) => {
+          if (a == 0) return b;
+          return gcd(b % a, a);
+      };
+
+      // Helper function to find GCD of array
+      const findGCD = (arr) => {
+          let result = arr[0];
+          
+          for (let i = 1; i < arr.length; i++) {
+              result = gcd(arr[i], result);
+              
+              if (result === 1) {
+                  return 1;
+              }
+          }
+          return result;
+      };
+
+      let x = body.tech_x;
+      let method = body.tech_method;
+      const param = {};
+      let check = true;
+
+      // Check if x is empty
+      if (!x) {
+          check = false;
+      }
+
+      // Parse and validate numbers
+      const numbers = x.split(',')
+          .map(n => n.trim())
+          .filter(n => n != '')
+          .map(n => parseFloat(n));
+
+      // Validation checks
+      for (let value of numbers) {
+          if (isNaN(value)) {
+              check = false;
+          } else {
+              if (value > 1000000) {
+                  param.error = 'Number must be less than or equal to 1000000.';
+                  return param;
+              }
+          }
+      }
+
+      if (!check) {
+          param.error = 'Please! Check Your Input.';
+          return param;
+      }
+
+      // Check minimum 2 numbers
+      if (numbers.length == 1) {
+          param.error = 'Please! Enter at least two numbers.';
+          return param;
+      }
+
+      // Check maximum 15 numbers
+      if (numbers.length > 15) {
+          param.error = 'You can enter up to 15 numbers.';
+          return param;
+      }
+
+      const arr = numbers;
+      const n = arr.length;
+      const gcf = findGCD(arr);
+
+      // Method: none (just calculate GCF)
+      if (method == 'none') {
+          param.tech_gcf = gcf;
+          return param;
+      }
+
+      // Method: lm (Listing Multiples/Factors)
+      if (method == 'lm') {
+          let sl = '';
+          let bl = '';
+
+          // List factors for each number
+          for (let value of arr) {
+              sl += "<p class='mt-2'> Multiples of " + value + " = ";
+              
+              for (let i = 1; i <= value; i++) {
+                  if (value % i === 0) {
+                      if (i !== value) {
+                          sl += i + ", ";
+                      } else {
+                          sl += i;
+                          sl += "</p>";
+                      }
+                  }
+              }
+          }
+
+          // List factors of GCF
+          for (let j = 1; j <= gcf; j++) {
+              if (gcf % j === 0) {
+                  if (j !== gcf) {
+                      bl += j + ", ";
+                  } else {
+                      bl += j;
+                  }
+              }
+          }
+
+          param.tech_gcf = gcf;
+          param.tech_sl = sl;
+          param.tech_bl = bl;
+          return param;
+      }
+
+      // Method: Pf (Prime Factorization)
+      if (method == 'Pf') {
+          let al = '';
+          let ss = '';
+          let se = '';
+
+          // Prime factorization for each number
+          for (let value of arr) {
+              let x = value;
+              al += "<p class='mt-2'>Prime Factors of " + x + " = ";
+              const primeFactors = [];
+              
+              for (let i = 2; x > 1; i++) {
+                  while (x % i === 0) {
+                      x = x / i;
+                      primeFactors.push(i);
+                  }
+              }
+
+              for (let j = 0; j < primeFactors.length; j++) {
+                  if (j !== primeFactors.length - 1) {
+                      al += " " + primeFactors[j] + " x ";
+                  } else {
+                      al += " " + primeFactors[j] + " </p>";
+                  }
+              }
+          }
+
+          // Prime factorization of GCF
+          if (gcf == 1) {
+              se = " There is No Common prime factorization . This means that the only common factor is 1 ";
+          } else {
+              let s = gcf;
+              const arr1 = [];
+              
+              for (let i = 2; s > 1; i++) {
+                  while (s % i === 0) {
+                      s = s / i;
+                      arr1.push(i);
+                  }
+              }
+
+              for (let j = 0; j < arr1.length; j++) {
+                  if (j !== arr1.length - 1) {
+                      ss += arr1[j] + " x ";
+                  } else {
+                      ss += arr1[j];
+                  }
+              }
+          }
+
+          param.tech_gcf = gcf;
+          param.tech_al = al;
+          param.tech_se = se;
+          param.tech_ss = ss;
+          return param;
+      }
+
+      // Method: ea (Euclidean Algorithm)
+      if (method == 'ea') {
+          let sg = '';
+          let i = '';
+          let mi = '';
+          let l = '';
+          let j = 0;
+          let k = 0;
+          const arr1 = [];
+          const arr2 = [];
+
+          // Sort array
+          const sortedArr = [...arr].sort((a, b) => a - b);
+          
+          for (let value of sortedArr) {
+              sg += value + "  ";
+          }
+
+          const sm = Math.min(...sortedArr);
+
+          // First iteration
+          for (let value of sortedArr) {
+              if (value !== sm) {
+                  let x = value;
+                  j = x % sm;
+                  i += "<p class='mt-2'> => " + x + " mod of " + sm + " = " + j + " </p>";
+                  arr1.push(j);
+              }
+              mi += " " + j + " ";
+          }
+
+          let si = '';
+          if (j == 0) {
+              si = gcf.toString();
+          } else {
+              si = mi + sm;
+          }
+
+          // Second iteration
+          if (j != 0 && arr1.length > 0) {
+              const smi = Math.min(...arr1);
+              
+              for (let value1 of arr1) {
+                  if (value1 !== smi) {
+                      let x = value1;
+                      k = x % smi;
+                      l += "<br/> => " + x + " mod of " + smi + " = " + k;
+                      arr2.push(k);
+                  } else {
+                      let x = sm;
+                      k = x % smi;
+                      l += "<br/> => " + x + " mod of " + smi + " = " + k;
+                  }
+              }
+          }
+
+          // Third iteration if needed
+          if (k != 0 && arr2.length > 0) {
+              const smi = Math.min(...arr2);
+              
+              for (let value2 of arr2) {
+                  if (value2 !== smi) {
+                      let x = value2;
+                      k = x % smi;
+                      l += "<br/> => " + x + " mod of " + smi + " = " + k;
+                      arr2.push(k);
+                  } else {
+                      let x = sm;
+                      k = x % smi;
+                      l += "<br/> => " + x + " mod of " + smi + " = " + k;
+                  }
+              }
+          }
+
+          param.tech_gcf = gcf;
+          param.tech_sg = sg;
+          param.tech_sm = sm;
+          param.tech_i = i;
+          param.tech_mi = mi;
+          param.tech_si = si;
+          param.tech_l = l;
+          return param;
+      }
+
+      // Method: bs (Basic/Binary Search)
+      if (method == 'bs') {
+          param.tech_numbers = numbers;
+          param.tech_gcf = gcf;
+          return param;
+      }
+
+      param.error = 'Please! Check Your Input.';
+      return param;
+  }
+
+     /**
+    * getCalculationFactorialCalculator: Service Method
+    * POST: /api/calculators-lol/factorial-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationFactorialCalculator(body) {
+      let to_calculate = body.tech_to_calculate;
+      let nvalue = body.tech_nvalue;
+      let mvalue = body.tech_mvalue;
+      const result = {};
+
+      // Factorial calculation helper function
+      function calculateFactorial(number) {
+        let factorial = 1;
+        for (let i = 1; i <= number; i++) {
+          factorial = factorial * i;
+        }
+        return factorial;
+      }
+
+      // Generate factorial string representation
+      function generateFactorialString(n) {
+        let str = '';
+        for (let i = 1; i <= n; i++) {
+          if (i !== n) {
+            str += ` ${i} *`;
+          } else {
+            str += ` ${i} `;
+          }
+        }
+        return str;
+      }
+
+      // Check if number is too large
+      function isInfinite(num) {
+        return !isFinite(num);
+      }
+
+      // Single Factorial (f)
+      if (to_calculate == 'f') {
+        if (!isNaN(nvalue) && nvalue !== null && nvalue !== '') {
+          const n = Number(nvalue);
+          
+          if (n > 170) {
+            result.error = 'The factorial for a given number is too large, so try another value.';
+            return result;
+          }
+
+          const fa = calculateFactorial(n);
+          const a = generateFactorialString(n);
+
+          if (isInfinite(fa)) {
+            result.error = 'The factorial for a given number is too large, so try another value.';
+            return result;
+          }
+
+          result.tech_fa = fa;
+          result.tech_a = a;
+          return result;
+        } else {
+          result.error = 'Please! Check Your Input.';
+          return result;
+        }
+      }
+
+      // Addition of Factorials (af)
+      if (to_calculate == 'af') {
+        if (!isNaN(nvalue) && !isNaN(mvalue) && nvalue !== null && mvalue !== null) {
+          const n = Number(nvalue);
+          const m = Number(mvalue);
+
+          if (n > 170 || m > 170) {
+            result.error = 'The factorial for a given number is too large, so try another value.';
+            return result;
+          }
+
+          const fa = calculateFactorial(n);
+          const fam = calculateFactorial(m);
+          const a = generateFactorialString(n);
+          const b = generateFactorialString(m);
+
+          if (isInfinite(fa) || isInfinite(fam)) {
+            result.error = 'The factorial for a given number is too large, so try another value.';
+            return result;
+          }
+
+          const add = fa + fam;
+          result.tech_fa = fa;
+          result.tech_fam = fam;
+          result.tech_a = a;
+          result.tech_b = b;
+          result.tech_add = add;
+          return result;
+        } else {
+          result.error = 'Please! Check Your Input.';
+          return result;
+        }
+      }
+
+      // Subtraction of Factorials (sf)
+      if (to_calculate == 'sf') {
+        if (!isNaN(nvalue) && !isNaN(mvalue) && nvalue !== null && mvalue !== null) {
+          const n = Number(nvalue);
+          const m = Number(mvalue);
+
+          if (n > 170 || m > 170) {
+            result.error = 'The factorial for a given number is too large, so try another value.';
+            return result;
+          }
+
+          const fa = calculateFactorial(n);
+          const fam = calculateFactorial(m);
+          const a = generateFactorialString(n);
+          const b = generateFactorialString(m);
+
+          if (isInfinite(fa) || isInfinite(fam)) {
+            result.error = 'The factorial for a given number is too large, so try another value.';
+            return result;
+          }
+
+          const sub = fa - fam;
+          result.tech_fa = fa;
+          result.tech_fam = fam;
+          result.tech_a = a;
+          result.tech_b = b;
+          result.tech_sub = sub;
+          return result;
+        } else {
+          result.error = 'Please! Check Your Input.';
+          return result;
+        }
+      }
+
+      // Multiplication of Factorials (mf)
+      if (to_calculate == 'mf') {
+        if (!isNaN(nvalue) && !isNaN(mvalue) && nvalue !== null && mvalue !== null) {
+          const n = Number(nvalue);
+          const m = Number(mvalue);
+
+          if (n > 170 || m > 170) {
+            result.error = 'The factorial for a given number is too large, so try another value.';
+            return result;
+          }
+
+          const fa = calculateFactorial(n);
+          const fam = calculateFactorial(m);
+          const a = generateFactorialString(n);
+          const b = generateFactorialString(m);
+
+          if (isInfinite(fa) || isInfinite(fam)) {
+            result.error = 'The factorial for a given number is too large, so try another value.';
+            return result;
+          }
+
+          const mul = fa * fam;
+          result.tech_fa = fa;
+          result.tech_fam = fam;
+          result.tech_a = a;
+          result.tech_b = b;
+          result.tech_mul = mul;
+          return result;
+        } else {
+          result.error = 'Please! Check Your Input.';
+          return result;
+        }
+      }
+
+      // Division of Factorials (df)
+      if (to_calculate == 'df') {
+        if (!isNaN(nvalue) && !isNaN(mvalue) && nvalue !== null && mvalue !== null) {
+          const n = Number(nvalue);
+          const m = Number(mvalue);
+
+          if (n > 170 || m > 170) {
+            result.error = 'The factorial for a given number is too large, so try another value.';
+            return result;
+          }
+
+          const fa = calculateFactorial(n);
+          const fam = calculateFactorial(m);
+          const a = generateFactorialString(n);
+          const b = generateFactorialString(m);
+
+          if (isInfinite(fa) || isInfinite(fam)) {
+            result.error = 'The factorial for a given number is too large, so try another value.';
+            return result;
+          }
+
+          const div = fa / fam;
+          result.tech_fa = fa;
+          result.tech_fam = fam;
+          result.tech_a = a;
+          result.tech_b = b;
+          result.tech_div = div;
+          return result;
+        } else {
+          result.error = 'Please! Check Your Input.';
+          return result;
+        }
+      }
+
+      // If no valid operation is found
+      result.error = 'Invalid operation type.';
+      return result;
+    }
+
+
+       /**
+    * getCalculationRatioCalculator: Service Method
+    * POST: /api/calculators-lol/ratio-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationRatioCalculator(body) {
+      // Extract and trim input values
+      const a = body.tech_a ? String(body.tech_a).trim() : '';
+      const b = body.tech_b ? String(body.tech_b).trim() : '';
+      const c = body.tech_c ? String(body.tech_c).trim() : '';
+      const c1 = body.tech_c1 ? String(body.tech_c1).trim() : '';
+      const d = body.tech_d ? String(body.tech_d).trim() : '';
+      const e = body.tech_e ? String(body.tech_e).trim() : '';
+      const f = body.tech_f ? String(body.tech_f).trim() : '';
+      const i = body.tech_i ? String(body.tech_i).trim() : '';
+      const ratio_of = body.tech_ratio_of ? String(body.tech_ratio_of).trim() : '';
+      const method = body.tech_method ? String(body.tech_method).trim() : '';
+      const method1 = body.tech_method1 ? String(body.tech_method1).trim() : '';
+
+      const result = {};
+
+      // Helper function to check if value is numeric
+      function isNumeric(value) {
+        return value != '' && value !== null && !isNaN(value);
+      }
+
+      // Helper function to check if value is empty
+      function isEmpty(value) {
+        return value == '' || value == null || value == undefined;
+      }
+
+      // Helper function to check if value is double/float
+      function isDouble(value) {
+        return typeof value == 'number' && !Number.isInteger(value);
+      }
+
+      // GCD function for two numbers
+      function gcd(a, b) {
+        return b ? gcd(b, a % b) : a;
+      }
+
+      // GCD function for array of numbers
+      function gcdArray(arr) {
+        return arr.reduce((carry, item) => {
+          return item ? gcd(item, carry % item) : carry;
+        }, arr[0]);
+      }
+
+      // Ratio of 2 numbers (r2)
+      if (method == '0' && ratio_of == 'r2') {
+        if (isNumeric(a) && isNumeric(b) && isNumeric(c) && isNumeric(d)) {
+          result.error = 'Please Enter 3 numbers & left 1 field empty!';
+          return result;
+        } else if (isEmpty(a) && isNumeric(b) && isNumeric(c) && isNumeric(d)) {
+          const a_val = (Number(b) * Number(c)) / Number(d);
+          result.tech_a_val = a_val;
+        } else if (isNumeric(a) && isEmpty(b) && isNumeric(c) && isNumeric(d)) {
+          const b_val = (Number(a) * Number(d)) / Number(c);
+          result.tech_b_val = b_val;
+        } else if (isNumeric(a) && isNumeric(b) && isEmpty(c) && isNumeric(d)) {
+          const c_val = (Number(a) * Number(d)) / Number(b);
+          result.tech_c_val = c_val;
+        } else if (isNumeric(a) && isNumeric(b) && isNumeric(c) && isEmpty(d)) {
+          const d_val = (Number(b) * Number(c)) / Number(a);
+          result.tech_d_val = d_val;
+        } else {
+          result.error = 'Please Check Input!';
+          return result;
+        }
+        result.tech_r2 = 'r2';
+        return result;
+      } 
+      
+      else if (method == '1' && ratio_of == 'r2') {
+        if (isNumeric(a) && isNumeric(b) && isNumeric(i)) {
+          const a_val1 = Number(a) * Number(i);
+          const b_val1 = Number(b) * Number(i);
+          result.tech_a_val1 = a_val1;
+          result.tech_b_val1 = b_val1;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r2 = 'r2';
+        return result;
+      } 
+      
+      else if (method == '2' && ratio_of == 'r2') {
+        if (isNumeric(a) && isNumeric(b) && isNumeric(i)) {
+          const a_val2 = Number(a) / Number(i);
+          const b_val2 = Number(b) / Number(i);
+          result.tech_a_val2 = a_val2;
+          result.tech_b_val2 = b_val2;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r2 = 'r2';
+        return result;
+      } 
+      
+      else if (method == '3' && ratio_of == 'r2') {
+        if (isNumeric(a) && isNumeric(b)) {
+          const gcf = gcd(Number(a), Number(b));
+          const a_val3 = Number(a) / gcf;
+          const b_val3 = Number(b) / gcf;
+          
+          if (gcf == 1) {
+            result.tech_gcf = 'gcf';
+          }
+          result.tech_a_val3 = a_val3;
+          result.tech_b_val3 = b_val3;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r2 = 'r2';
+        return result;
+      } 
+      
+      else if (method == '4' && ratio_of == 'r2') {
+        if (isNumeric(a) && isNumeric(b)) {
+          const a_val4 = Number(a) / Number(a);
+          const b_val4 = Number(b) / Number(a);
+          result.tech_a_val4 = a_val4;
+          result.tech_b_val4 = b_val4;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r2 = 'r2';
+        return result;
+      } 
+      
+      else if (method == '5' && ratio_of == 'r2') {
+        if (isNumeric(a) && isNumeric(b)) {
+          const a_val5 = Number(a) / Number(b);
+          const b_val5 = Number(b) / Number(b);
+          result.tech_a_val5 = a_val5;
+          result.tech_b_val5 = b_val5;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r2 = 'r2';
+        return result;
+      }
+
+      // Ratio of 3 numbers (r3)
+      else if (method1 == '0' && ratio_of == 'r3') {
+        if ((isNumeric(a) && isNumeric(b) && isNumeric(c1) && isNumeric(d) && isNumeric(e) && isNumeric(f)) ||
+            (isNumeric(a) && isNumeric(b) && isNumeric(c1) && isNumeric(d) && isNumeric(e)) ||
+            (isNumeric(a) && isNumeric(b) && isNumeric(c1) && isNumeric(d) && isNumeric(f)) ||
+            (isNumeric(a) && isNumeric(b) && isNumeric(c1) && isNumeric(e) && isNumeric(f))) {
+          result.error = 'Please Check Input!';
+          return result;
+        } else if (isNumeric(a) && isNumeric(b) && isNumeric(c1) && isNumeric(d)) {
+          const x = Number(d) / Number(a);
+          const e_val = Number(b) * x;
+          const f_val = Number(c1) * x;
+          
+          if (isDouble(e_val) || isDouble(f_val)) {
+            result.tech_dbl = 'dbl';
+          }
+          result.tech_r3 = 'r3';
+          result.tech_e_val = Math.round(e_val * 100000) / 100000; // round to 5 decimal places
+          result.tech_f_val = Math.round(f_val * 100000) / 100000;
+          return result;
+        } else {
+          result.error = 'Please Check Input!';
+          return result;
+        }
+      } 
+      
+      else if (method1 == '1' && ratio_of == 'r3') {
+        if (isNumeric(a) && isNumeric(b) && isNumeric(c1) && isNumeric(i)) {
+          const a_val1 = Number(a) * Number(i);
+          const b_val1 = Number(b) * Number(i);
+          const c_val1 = Number(c1) * Number(i);
+          
+          if (isDouble(a_val1) || isDouble(b_val1) || isDouble(c_val1)) {
+            result.tech_dbl = 'dbl';
+          }
+          result.tech_a_val1 = a_val1;
+          result.tech_b_val1 = b_val1;
+          result.tech_c_val1 = c_val1;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r3 = 'r3';
+        return result;
+      } 
+      
+      else if (method1 == '2' && ratio_of == 'r3') {
+        if (isNumeric(a) && isNumeric(b) && isNumeric(c1) && isNumeric(i)) {
+          const a_val2 = Number(a) / Number(i);
+          const b_val2 = Number(b) / Number(i);
+          const c_val2 = Number(c1) / Number(i);
+          
+          if (isDouble(a_val2) || isDouble(b_val2) || isDouble(c_val2)) {
+            result.tech_dbl = 'dbl';
+          }
+          result.tech_a_val2 = a_val2;
+          result.tech_b_val2 = b_val2;
+          result.tech_c_val2 = c_val2;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r3 = 'r3';
+        return result;
+      } 
+      
+      else if (method1 == '3' && ratio_of == 'r3') {
+        if (isNumeric(a) && isNumeric(b) && isNumeric(c1)) {
+          const arr = [Number(a), Number(b), Number(c1)];
+          const gcf = gcdArray(arr);
+          
+          const a_val3 = Number(a) / gcf;
+          const b_val3 = Number(b) / gcf;
+          const c_val3 = Number(c1) / gcf;
+          
+          if (gcf == 1) {
+            result.tech_gcf = 'gcf';
+          }
+          if (isDouble(a_val3) || isDouble(b_val3) || isDouble(c_val3)) {
+            result.tech_dbl = 'dbl';
+          }
+          result.tech_a_val3 = a_val3;
+          result.tech_b_val3 = b_val3;
+          result.tech_c_val3 = c_val3;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r3 = 'r3';
+        return result;
+      } 
+      
+      else if (method1 == '4' && ratio_of == 'r3') {
+        if (isNumeric(a) && isNumeric(b) && isNumeric(c1)) {
+          const a_val4 = Number(a) / Number(a);
+          const b_val4 = Number(b) / Number(a);
+          const c_val4 = Number(c1) / Number(a);
+          
+          if (isDouble(a_val4) || isDouble(b_val4) || isDouble(c_val4)) {
+            result.tech_dbl = 'dbl';
+          }
+          result.tech_a_val4 = a_val4;
+          result.tech_b_val4 = b_val4;
+          result.tech_c_val4 = c_val4;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r3 = 'r3';
+        return result;
+      } 
+      
+      else if (method1 == '5' && ratio_of == 'r3') {
+        if (isNumeric(a) && isNumeric(b) && isNumeric(c1)) {
+          const a_val5 = Number(a) / Number(b);
+          const b_val5 = Number(b) / Number(b);
+          const c_val5 = Number(c1) / Number(b);
+          
+          if (isDouble(a_val5) || isDouble(b_val5) || isDouble(c_val5)) {
+            result.tech_dbl = 'dbl';
+          }
+          result.tech_a_val5 = a_val5;
+          result.tech_b_val5 = b_val5;
+          result.tech_c_val5 = c_val5;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r3 = 'r3';
+        return result;
+      } 
+      
+      else if (method1 == '6' && ratio_of == 'r3') {
+        if (isNumeric(a) && isNumeric(b) && isNumeric(c1)) {
+          const a_val6 = Number(a) / Number(c1);
+          const b_val6 = Number(b) / Number(c1);
+          const c_val6 = Number(c1) / Number(c1);
+          
+          if (isDouble(a_val6) || isDouble(b_val6) || isDouble(c_val6)) {
+            result.tech_dbl = 'dbl';
+          }
+          result.tech_a_val6 = a_val6;
+          result.tech_b_val6 = b_val6;
+          result.tech_c_val6 = c_val6;
+        } else {
+          result.error = 'Please Fill All The Fields!';
+          return result;
+        }
+        result.tech_r3 = 'r3';
+        return result;
+      } 
+      
+      else {
+        result.error = 'Please Check Input!';
+        return result;
+      }
+    }
+
+        /**
+    * getCalculationIntervalNotationCalculator: Service Method
+    * POST: /api/calculators-lol/interval-notation-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationIntervalNotationCalculator(body) {
+        let i = body.tech_i;
+        const x = body.tech_x;
+        const result = {};
+
+        // Validation: Check for invalid characters (similar to regex in PHP)
+        const invalidCharsRegex = /[<>&]/;
+        if (!i || invalidCharsRegex.test(i)) {
+          result.error = 'Please Enter Valid Input.';
+          return result;
+        }
+
+        if (i && x) {
+          // Clean up the input string
+          i = i.replace(/ /g, '');
+          i = i.replace(/,,/g, ',');
+          i = i.replace(/,\(/g, '(');
+          i = i.replace(/,,\(/g, '(');
+          i = i.replace(/\(,/g, '(');
+          i = i.replace(/\(,,/g, '(');
+          i = i.replace(/,\[/g, '[');
+          i = i.replace(/,,\[/g, '[');
+          i = i.replace(/\[,/g, '[');
+          i = i.replace(/\[,,/g, '[');
+          i = i.replace(/,\)/g, ')');
+          i = i.replace(/,,\)/g, ')');
+          i = i.replace(/\),/g, ')');
+          i = i.replace(/\),,/g, ')');
+          i = i.replace(/,\]/g, ']');
+          i = i.replace(/,,\]/g, ']');
+          i = i.replace(/\],/g, ']');
+          i = i.replace(/\],,/g, ']');
+
+          // Check for multiple commas
+          const commaMatches = i.match(/,/g);
+          if (commaMatches && commaMatches.length > 1) {
+            result.error = 'Please Enter Valid Input.';
+            return result;
+          }
+
+          // Split by comma
+          const arr = i.split(',');
+          
+          // Extract opening bracket
+          const arr0Match = arr[0].match(/\(|\[/);
+          if (!arr0Match) {
+            result.error = 'Please Enter Valid Input.';
+            return result;
+          }
+          
+          // Extract closing bracket
+          const arr1Match = arr[1].match(/\)|\]/);
+          if (!arr1Match) {
+            result.error = 'Please Enter Valid Input.';
+            return result;
+          }
+
+          const arr0 = arr[0];
+          const arr1 = arr[1];
+          
+          const arr00 = arr0.split(arr0Match[0]);
+          const arr11 = arr1.split(arr1Match[0]);
+
+          // Validate format
+          if (arr00[0] != '') {
+            result.error = 'Please Enter Valid Input.';
+            return result;
+          }
+          if (arr11[1] !== '' && arr11[1] !== undefined) {
+            result.error = 'Please Enter Valid Input.';
+            return result;
+          }
+
+          const l = Number(arr00[1]);
+          const r = Number(arr11[0]);
+
+          if (!isNaN(l) && !isNaN(r)) {
+            let lo, lc, ro, rc;
+
+            // Check left bracket type
+            const leftParenMatches = i.match(/\(/g);
+            if (leftParenMatches) {
+              if (leftParenMatches.length > 1) {
+                result.error = 'Please Enter Valid Input.';
+                return result;
+              } else {
+                lo = 'left open';
+              }
+            } else {
+              const leftBracketMatches = i.match(/\[/g);
+              if (leftBracketMatches) {
+                if (leftBracketMatches.length > 1) {
+                  result.error = 'Please Enter Valid Input.';
+                  return result;
+                } else {
+                  lc = 'left closed';
+                }
+              }
+            }
+
+            // Check right bracket type
+            const rightParenMatches = i.match(/\)/g);
+            if (rightParenMatches) {
+              if (rightParenMatches.length > 1) {
+                result.error = 'Please Enter Valid Input.';
+                return result;
+              } else {
+                ro = 'right open';
+              }
+            } else {
+              const rightBracketMatches = i.match(/\]/g);
+              if (rightBracketMatches) {
+                if (rightBracketMatches.length > 1) {
+                  result.error = 'Please Enter Valid Input.';
+                  return result;
+                } else {
+                  rc = 'right closed';
+                }
+              }
+            }
+
+            result.tech_l = l;
+            result.tech_r = r;
+
+            let set = [];
+
+            // Left open Right open
+            if (lo && ro) {
+              if (l > r) {
+                if (l < 0 && r < 0) {
+                  for (let idx = r + 1; idx <= l - 1; idx++) {
+                    set.push(idx);
+                  }
+                } else if (l < 0) {
+                  for (let idx = l + 1; idx <= r - 1; idx++) {
+                    set.push(idx);
+                  }
+                } else {
+                  for (let idx = r + 1; idx <= l - 1; idx++) {
+                    set.push(idx);
+                  }
+                }
+              } else {
+                if (l < 0 && r < 0) {
+                  for (let idx = l + 1; idx <= r - 1; idx++) {
+                    set.push(idx);
+                  }
+                } else if (l < 0) {
+                  for (let idx = r + 1; idx <= l - 1; idx++) {
+                    set.push(idx);
+                  }
+                } else {
+                  for (let idx = l + 1; idx <= r - 1; idx++) {
+                    set.push(idx);
+                  }
+                }
+              }
+              result.tech_lo_ro = 'lo_ro';
+              result.tech_set = set;
+            }
+            // Left open Right closed
+            else if (lo && rc) {
+              if (l > r) {
+                if (l < 0 && r < 0) {
+                  for (let idx = r; idx <= l - 1; idx++) {
+                    set.push(idx);
+                  }
+                } else if (r < 0) {
+                  for (let idx = r; idx <= l - 1; idx++) {
+                    set.push(idx);
+                  }
+                } else {
+                  for (let idx = r; idx <= l - 1; idx++) {
+                    set.push(idx);
+                  }
+                }
+              } else {
+                if (l < 0 && r < 0) {
+                  for (let idx = l + 1; idx <= r; idx++) {
+                    set.push(idx);
+                  }
+                } else if (r < 0) {
+                  for (let idx = r + 1; idx <= l - 1; idx++) {
+                    set.push(idx);
+                  }
+                } else {
+                  for (let idx = l + 1; idx <= r; idx++) {
+                    set.push(idx);
+                  }
+                }
+              }
+              result.tech_lo_rc = 'lo_rc';
+              result.tech_set = set;
+            }
+            // Left closed Right open
+            else if (lc && ro) {
+              if (l > r) {
+                if (l < 0 && r < 0) {
+                  for (let idx = r + 1; idx <= l; idx++) {
+                    set.push(idx);
+                  }
+                } else if (r < 0) {
+                  for (let idx = r + 1; idx <= l; idx++) {
+                    set.push(idx);
+                  }
+                } else {
+                  for (let idx = r + 1; idx <= l; idx++) {
+                    set.push(idx);
+                  }
+                }
+              } else {
+                if (l < 0 && r < 0) {
+                  for (let idx = l; idx <= r - 1; idx++) {
+                    set.push(idx);
+                  }
+                } else if (l < 0) {
+                  for (let idx = l; idx <= r - 1; idx++) {
+                    set.push(idx);
+                  }
+                } else {
+                  for (let idx = l; idx <= r - 1; idx++) {
+                    set.push(idx);
+                  }
+                }
+              }
+              result.tech_lc_ro = 'lc_ro';
+              result.tech_set = set;
+            }
+            // Left closed Right closed
+            else if (lc && rc) {
+              if (l > r) {
+                if (l < 0) {
+                  for (let idx = r; idx <= l; idx++) {
+                    set.push(idx);
+                  }
+                } else {
+                  for (let idx = r; idx <= l; idx++) {
+                    set.push(idx);
+                  }
+                }
+              } else {
+                if (l < 0 && r < 0) {
+                  for (let idx = l; idx <= r; idx++) {
+                    set.push(idx);
+                  }
+                } else if (l < 0) {
+                  for (let idx = l; idx <= r; idx++) {
+                    set.push(idx);
+                  }
+                } else {
+                  for (let idx = l; idx <= r; idx++) {
+                    set.push(idx);
+                  }
+                }
+              }
+              result.tech_lc_rc = 'lc_rc';
+              result.tech_set = set;
+            }
+          } else {
+            result.error = 'Please Enter Valid Input.';
+            return result;
+          }
+
+          return result;
+        } else {
+          result.error = 'Please Enter Valid Input.';
+          return result;
+        }
+      }
+
+     /**
+    * getCalculationFactoringCalculator: Service Method
+    * POST: /api/calculators-lol/factoring-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+
+      async  getCalculationFactoringCalculator(body) {
+          let submit = body.tech_type;
+          let num1 = body.tech_num1;
+          let num2 = body.tech_num2;
+          let eq = body.tech_eq;
+
+          const param = {};
+
+          // Helper function to find divisors
+          function printDivisors(n) {
+              const divi = [];
+              for (let i = 1; i <= n; i++) {
+                  if (n % i === 0) {
+                      divi.push(i.toString());
+                  }
+              }
+              return divi;
+          }
+
+          if (submit == "factor") {
+              if (!isNaN(num1) || !isNaN(num2)) {
+                  // Process num1
+                  if (!isNaN(num1) && num1) {
+                      let newnum = parseInt(num1);
+                      if (newnum > 10000000) {
+                          param.error = 'Number is too large.';
+                          return param;
+                      }
+
+                      let newtext = "";
+                      let csv = "";
+                      let chk = 2;
+                      let prime = 0;
+
+                      while ((chk * chk) <= newnum) {
+                          if (newnum % chk == 0) {
+                              newtext += chk;
+                              csv += chk;
+                              newnum = newnum / chk;
+                              if (newnum !== 1) {
+                                  newtext += " × ";
+                                  csv += " , ";
+                              }
+                          } else {
+                              chk++;
+                          }
+                      }
+
+                      if (newnum != 1) {
+                          newtext += newnum;
+                          csv += newnum;
+                      }
+
+                      if (newtext == num1.toString()) {
+                          newtext += " is a Prime number.";
+                          prime = 1;
+                      }
+
+                      if (prime != 1) {
+                          let number = parseInt(num1);
+                          const divid = newtext.split(' × ');
+                          let tree = `<tr><td class='py-2 text-center'>${number}</td><td class='py-2'>&nbsp;</td></tr>`;
+                          
+                          divid.forEach(value => {
+                              if (parseInt(value) !== number) {
+                                  number = number / parseInt(value);
+                                  tree += `<tr><td class='py-2'>| </td><td class='py-2'>\\ </td></tr><tr><td class='py-2'>${number}</td><td class='py-2'>${value}</td></tr>`;
+                              }
+                          });
+                          param.tech_tree1 = tree;
+                      }
+
+                      param.tech_Factors1 = newtext;
+                      param.tech_csv1 = csv;
+                  }
+
+                  // Process num2
+                  if (!isNaN(num2) && num2) {
+                      let newnum2 = parseInt(num2);
+                      if (newnum2 > 10000000) {
+                          param.error = 'Number is too large.';
+                          return param;
+                      }
+
+                      let newtext2 = "";
+                      let csv2 = "";
+                      let chk2 = 2;
+                      let prime2 = 0;
+
+                      while ((chk2 * chk2) <= newnum2) {
+                          if (newnum2 % chk2 == 0) {
+                              newtext2 += chk2;
+                              csv2 += chk2;
+                              newnum2 = newnum2 / chk2;
+                              if (newnum2 != 1) {
+                                  newtext2 += " × ";
+                                  csv2 += " , ";
+                              }
+                          } else {
+                              chk2++;
+                          }
+                      }
+
+                      if (newnum2 != 1) {
+                          newtext2 += newnum2;
+                          csv2 += newnum2;
+                      }
+
+                      if (newtext2 == num2.toString()) {
+                          newtext2 += " is a Prime number.";
+                          prime2 = 1;
+                      }
+
+                      if (prime2 != 1) {
+                          let number2 = parseInt(num2);
+                          const divid2 = newtext2.split(' × ');
+                          let tree2 = `<tr><td class='py-2 text-center'>${number2}</td><td class='py-2'>&nbsp;</td></tr>`;
+                          
+                          divid2.forEach(value2 => {
+                              if (parseInt(value2) != number2) {
+                                  number2 = number2 / parseInt(value2);
+                                  tree2 += `<tr><td class='py-2'>| </td><td class='py-2'>\\ </td></tr><tr><td class='py-2'>${number2}</td><td class='py-2'>${value2}</td></tr>`;
+                              }
+                          });
+                          param.tech_tree2 = tree2;
+                      }
+
+                      param.tech_Factors2 = newtext2;
+                      param.tech_csv2 = csv2;
+                  }
+                  param.tech_submit = submit;
+              } else {
+                  param.error = 'Please Enter a Number.';
+                  return param;
+              }
+          } else {
+              // Equation factoring
+              const variables_list = [];
+              const letters = ['x', 'a', 'b', 'c', 'd', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y', 'z'];
+              
+              letters.forEach(letter => {
+                  const regex = new RegExp(letter, 'i');
+                  if (regex.test(eq)) {
+                      variables_list.push(letter);
+                  }
+              });
+
+              if (variables_list.length == 1) {
+                  // Validate input
+                  if (/<|>|&|php|print_r|print|echo|script|=|%/i.test(eq)) {
+                      param.error = 'Please! Check Your Input.';
+                      return param;
+                  }
+
+                  let parem = eq;
+                  parem = parem.replace(/\s/g, '');
+                  parem = parem.replace(/\+/g, 'plus');
+                  parem = parem.replace(/%20/g, '');
+                  parem = parem.replace(/\{/g, '(');
+                  parem = parem.replace(/\}/g, ')');
+                  parem = parem.replace(/e\^/g, 'exp');
+                  parem = parem.replace(/exp\^/g, 'exp');
+                  parem = parem.replace(/\^/g, '**');
+                  parem = parem.replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+
+                  try {
+                      const response = await axios.post('http://167.172.134.148/new_factoring', 
+                          new URLSearchParams({
+                              equ: parem
+                          }), 
+                          {
+                              timeout: 120000,
+                              headers: {
+                                  'Content-Type': 'application/x-www-form-urlencoded'
+                              }
+                          }
+                      );
+
+                      const buffer = response.data;
+                      const factors = buffer[0];
+                      const eq_enter = buffer[1];
+                      const all_coeffs = buffer[2];
+                      const eq_degree = buffer[3];
+
+                      if (eq_degree == "2") {
+                          const matches = all_coeffs.match(/(\+|-){0,1}\d+\.{0,1}\d*/g);
+                          const eq_coeff_ans = matches;
+                          const a = parseFloat(matches[0]);
+                          const b = parseFloat(matches[1]);
+                          const c = parseFloat(matches[2]);
+
+                          if (a == 0) {
+                              param.error = 'Please! Check Your Input.';
+                              return param;
+                          }
+
+                          if (c != 0) {
+                              const step1 = Math.abs(a * c);
+                              const divisors_ans = printDivisors(step1);
+                              let new_array = [...divisors_ans];
+                              let median = 0;
+
+                              if (divisors_ans.length % 2 != 0) {
+                                  const length = divisors_ans.length;
+                                  const half_length = length / 2;
+                                  const median_index = Math.floor(half_length);
+                                  median = parseInt(divisors_ans[median_index]);
+                                  new_array.splice(median_index, 1);
+                              }
+
+                              const toote = new_array.length / 2;
+                              const step2_array_first = new_array.slice(0, toote);
+                              const step2_array_second = new_array.slice(toote).reverse();
+
+                              if (median > 0) {
+                                  step2_array_first.push(median.toString());
+                                  step2_array_second.push(median.toString());
+                              }
+
+                              const step2_ans_array = [];
+                              step2_array_first.forEach((value, key) => {
+                                  step2_ans_array.push(parseInt(value) * parseInt(step2_array_second[key]));
+                              });
+
+                              const step3_array_first = [];
+                              const step3_array_second = [];
+                              step2_array_first.forEach((value, key) => {
+                                  step3_array_first.push(value);
+                                  step3_array_first.push("-" + value);
+                                  step3_array_second.push(step2_array_second[key]);
+                                  step3_array_second.push("-" + step2_array_second[key]);
+                              });
+
+                              const step3_ans_array = [];
+                              let pair1, pair2;
+
+                              step3_array_first.forEach((value, key) => {
+                                  const val1 = parseInt(value);
+                                  const val2 = parseInt(step3_array_second[key]);
+                                  
+                                  if (c < 0) {
+                                      step3_ans_array.push(val1 - val2);
+                                      if ((val1 - val2) === b) {
+                                          pair1 = val1;
+                                          pair2 = val2;
+                                      }
+                                  } else {
+                                      step3_ans_array.push(val1 + val2);
+                                      if ((val1 + val2) === b) {
+                                          pair1 = val1;
+                                          pair2 = val2;
+                                      }
+                                  }
+                              });
+
+                              const square = Math.pow(b, 2) - (4 * a * c);
+
+                              param.tech_divisors_ans = divisors_ans;
+                              param.tech_step2_array_first = step2_array_first;
+                              param.tech_step2_array_second = step2_array_second;
+                              param.tech_step2_ans_array = step2_ans_array;
+                              param.tech_step3_array_first = step3_array_first;
+                              param.tech_step3_array_second = step3_array_second;
+                              param.tech_step3_ans_array = step3_ans_array;
+                              param.tech_median = median;
+                              param.tech_square = square;
+
+                              if (pair1 !== undefined) param.tech_pair1 = pair1;
+                              if (pair2 !== undefined) param.tech_pair2 = pair2;
+                          }
+
+                          const variable_ans = variables_list.join("");
+                          param.tech_a = Math.floor(a);
+                          param.tech_b = Math.floor(b);
+                          param.tech_c = Math.floor(c);
+                          param.tech_variable_ans = variable_ans;
+                      } else {
+                          param.tech_ans = buffer[0];
+                          param.tech_enter = buffer[1];
+                      }
+
+                      param.tech_factors = factors;
+                      param.tech_eq_enter = eq_enter;
+                      param.tech_all_coeffs = all_coeffs;
+                      param.tech_eq_degree = eq_degree;
+
+                  } catch (error) {
+                      param.error = 'Please! Check Your Input.';
+                      return param;
+                  }
+              } else {
+                  param.error = 'Please! Enter Valid Equation.';
+                  return param;
+              }
+          }
+
+          param.tech_submit = submit;
+          return param;
+      }
+
+       /**
+    * getCalculationLinearApproximationCalculator: Service Method
+    * POST: /api/calculators-lol/linear-approximation-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+
+    async  getCalculationLinearApproximationCalculator(body) {
+              let type = body.tech_type;
+              let EnterEq = body.tech_EnterEq;
+              let EnterEq1 = body.tech_EnterEq1;
+              let point = body.tech_point;
+
+        const result = {};
+
+        try {
+            if (type == '1') {
+                let eq = EnterEq;
+                let pt = point;
+
+
+                // Input validation
+                if (pregMatch(/<|>|&|php|print_r|print|echo|script|=|&|%/i, eq)) {
+                    result.error = "Please Enter Valid Input.";
+                    return result;
+                }
+
+                if (!pt || !eq) {
+                    result.error = "Please Enter Valid Input.";
+                    return result;
+                }
+
+                // Parameter processing - FIXED VERSION
+                let parem = processEquationFixed(eq);
+                pt = processPoint(pt);
+
+
+                try {
+                    const response = await axios.post('http://167.172.134.148/new-linear', {
+                        equ: parem,
+                        wrt: 'x',
+                        point: pt
+                    }, {
+                        timeout: 120000,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    });
+
+                    const buffer = response.data;
+                      console.log(buffer[0]);
+                    if (Array.isArray(buffer) && buffer.length >= 5) {
+                        result.tech_fun = Math.round(buffer[0]);
+                        result.tech_deri = buffer[1];
+                        result.tech_res = buffer[2];
+                        result.tech_enter = buffer[3];
+                        result.tech_simple = buffer[4];
+                    } else {
+                        result.error = 'Invalid response format from API';
+                    }
+                    
+                    return result;
+
+                } catch (error) {
+                    console.error('API Error Details:', error.response?.data || error.message);
+                    result.error = 'Please! Check Your Input.';
+                    return result;
+                }
+
+            } else if (type == '2') {
+                // ... same as before for type 2
+                let eq = EnterEq;
+                let eq1 = EnterEq1;
+                let pt = point;
+
+                // console.log('Type 2 Request:', { eq, eq1, pt });
+
+                if (pregMatch(/<|>|&|php|print_r|print|echo|script|=|&|%/i, eq) || 
+                    pregMatch(/<|>|&|php|print_r|print|echo|script|=|&|%/i, eq1)) {
+                    result.error = "Please Enter Valid Input.";
+                    return result;
+                }
+
+                if (!pt || !eq || !eq1) {
+                    result.error = "Please Enter Valid Input.";
+                    return result;
+                }
+
+                let parem = processEquationFixed(eq);
+                let parem1 = processEquationFixed(eq1);
+                pt = processPoint(pt);
+
+                // console.log('Processed params Type 2:', { parem, parem1, pt });
+
+                try {
+                    const response = await axios.get('http://167.172.134.148/linear1', {
+                        params: {
+                            equ: parem,
+                            equ1: parem1,
+                            point: pt
+                        },
+                        timeout: 120000
+                    });
+
+                    console.log('API Response Type 2:', response.data);
+
+                    const buffer = response.data.split('@@@');
+                    
+                    if (buffer.length >= 10) {
+                        result.tech_deri = buffer[0];
+                        result.tech_deri1 = buffer[1];
+                        result.tech_fun = buffer[2];
+                        result.tech_fun1 = round(parseFloat(buffer[3]), 8);
+                        result.tech_res = buffer[4];
+                        result.tech_enter = buffer[5];
+                        result.tech_enter1 = buffer[6];
+                        result.tech_simple = buffer[7];
+                        result.tech_uper = round(parseFloat(buffer[8]), 8);
+                        result.tech_lower = round(parseFloat(buffer[9]), 8);
+                    } else {
+                        result.error = 'Invalid response format from API';
+                    }
+                    
+                    return result;
+
+                } catch (error) {
+                    console.error('API Error Type 2:', error.response?.data || error.message);
+                    result.error = 'Please! Check Your Input.';
+                    return result;
+                }
+
+            } else if (type == '3') {
+                // ... same as before for type 3
+                let eq = EnterEq;
+                let pt = point;
+
+                // console.log('Type 3 Request:', { eq, pt });
+
+                if (pregMatch(/<|>|&|php|print_r|print|echo|script|=|&|%/i, eq)) {
+                    result.error = "Please Enter Valid Input.";
+                    return result;
+                }
+
+                if (!eq || !pt) {
+                    result.error = "Please Enter Valid Input.";
+                    return result;
+                }
+
+                let parem = processEquationFixed(eq);
+                pt = processPoint(pt);
+
+                // console.log('Processed params Type 3:', { parem, pt });
+
+                try {
+                    const response = await axios.get('http://167.172.134.148/linear2', {
+                        params: {
+                            equ: parem,
+                            point: pt
+                        },
+                        timeout: 120000
+                    });
+
+                    // console.log('API Response Type 3:', response.data);
+
+                    const buffer = response.data.split('@@@');
+                    
+                    if (buffer.length >= 6) {
+                        const pointVal = round(parseFloat(buffer[2]), 8);
+                        const funDeri = round(parseFloat(buffer[3]), 8);
+                        const sinr = round(parseFloat(buffer[4]), 15);
+                        const cosr = round(parseFloat(buffer[5]), 15);
+                        const soc = ((funDeri * sinr) + (pointVal * cosr)) / ((funDeri * cosr) - (pointVal * sinr));
+                        const final = (pointVal * sinr) - (soc * (pointVal * cosr));
+
+                        result.tech_enter = buffer[0];
+                        result.tech_deri = buffer[1];
+                        result.tech_point = pointVal;
+                        result.tech_fun_deri = funDeri;
+                        result.tech_sinr = sinr;
+                        result.tech_cosr = cosr;
+                        result.tech_soc = soc;
+                        result.tech_final = final;
+                    } else {
+                        result.error = 'Invalid response format from API';
+                    }
+                    
+                    return result;
+
+                } catch (error) {
+                    console.error('API Error Type 3:', error.response?.data || error.message);
+                    result.error = 'Please! Check Your Input.';
+                    return result;
+                }
+            } else {
+                result.error = "Invalid type specified";
+                return result;
+            }
+
+        } catch (error) {
+            console.error('Unexpected Error:', error);
+            result.error = 'An unexpected error occurred.';
+            return result;
+        }
+        
+        // FIXED Equation Processing Function
+        function processEquationFixed(eq) {
+            if (!eq) return '';
+            
+            return eq
+                .replace(/ /g, '')
+                .replace(/%20/g, '')
+                .replace(/{/g, '(')
+                .replace(/}/g, ')')
+                .replace(/e\^/g, 'exp')
+                .replace(/exp\^/g, 'exp')
+                .replace(/\^/g, '**')
+                .replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+            // NOTE: + ko plus nahi replace karna - yehi problem hai
+        }
+        
+        // Alternative: Agar API ko plus ki jarurat hai toh sirf specific cases mein replace karein
+        function processEquationAlternative(eq) {
+            if (!eq) return '';
+            
+            let processed = eq
+                .replace(/ /g, '')
+                .replace(/%20/g, '')
+                .replace(/{/g, '(')
+                .replace(/}/g, ')')
+                .replace(/e\^/g, 'exp')
+                .replace(/exp\^/g, 'exp')
+                .replace(/\^/g, '**')
+                .replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+            
+            // Sirf mathematical plus signs ko replace karein, variable names mein nahi
+            processed = processed.replace(/(\d)(\+)(\d)/g, '$1plus$3');
+            
+            return processed;
+        }
+        
+        // Helper functions
+        function pregMatch(pattern, string) {
+            return new RegExp(pattern.source || pattern).test(string);
+        }
+        
+        function processPoint(point) {
+            if (!point) return '';
+            
+            return point
+                .replace(/inf/g, 'oo')
+                .replace(/∞/g, 'oo')
+                .replace(/e/g, '2.71828')
+                .replace(/E/g, '2.71828');
+        }
+        
+        function round(value, decimals) {
+            if (isNaN(value)) return value;
+            return Number(Math.round(parseFloat(value) + 'e' + decimals) + 'e-' + decimals);
+        }
+    }
+
+   /**
+    * getCalculationAverageTateOfChangeCalculator: Service Method
+    * POST: /api/calculators-lol/average-rate-of-change-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+
+ async getCalculationAverageTateOfChangeCalculator(body) {
+        let x = body.tech_x;
+        let x1 = body.tech_x1;
+        let x2 = body.tech_x2;
+      
+      // Validation regex check
+      if (/[<>&]|php|print_r|print|echo|script|=|sin|cos|tan|arcsin|arccos|arctan|&|%/i.test(x)) {
+          return {
+              error: 'Please! Check Your Input.'
+          };
+      }
+      
+      // Check if x1 and x2 are numeric and x is not empty
+      if (!isNaN(parseFloat(x1)) && !isNaN(parseFloat(x2)) && x && x.trim() !== '') {
+          let parem = x;
+          
+          // String replacements
+          parem = parem.replace(/\s/g, '');
+          parem = parem.replace(/\+/g, 'plus');
+          parem = parem.replace(/%20/g, '');
+          parem = parem.replace(/\{/g, '(');
+          parem = parem.replace(/\}/g, ')');
+          parem = parem.replace(/e\^/g, 'exp');
+          parem = parem.replace(/exp\^/g, 'exp');
+          parem = parem.replace(/\^/g, '**');
+          parem = parem.replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+          
+          try {
+              const axios = require('axios');
+              
+              const response = await axios.post('http://167.172.134.148/new-arocc', 
+                  new URLSearchParams({
+                      equ: parem,
+                      x1: x1,
+                      x2: x2
+                  }), 
+                  {
+                      timeout: 120000,
+                      headers: {
+                          'Content-Type': 'application/x-www-form-urlencoded'
+                      }
+                  }
+              );
+              
+              const buffer = response.data;
+              
+              return {
+                  tech_eq: buffer[0],
+                  tech_fx1: Math.round(buffer[1] * 100) / 100,
+                  tech_fx2: Math.round(buffer[2] * 100) / 100,
+                  tech_ans: Math.round(buffer[3] * 1000) / 1000,
+              };
+              
+          } catch (error) {
+              return {
+                  error: 'Please! Check Your Input.'
+              };
+          }
+      } else {
+          return {
+              error: 'Please! Check Your Input.'
+          };
+      }
+  }
+
+   /**
+    * getCalculationEulersMethodCalculator: Service Method
+    * POST: /api/calculators-lol/eulers-method-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+
+    async getCalculationEulersMethodCalculator(body) {
+      let EnterEq = body.tech_EnterEq;
+      let steps = body.tech_steps;
+      let size = body.tech_size;
+      let ini = body.tech_ini;
+      let con = body.tech_con;
+      let find = body.tech_find;
+      
+      // Validation check
+      if (!EnterEq || EnterEq.trim() == '') {
+          return {
+              error: 'Please! Check Your Input.'
+          };
+      }
+      
+      // Check equation for variables
+      let check_eq = EnterEq.replace(/\s/g, '');
+      check_eq = check_eq.replace(/sqrt/g, '');
+      check_eq = check_eq.replace(/exp/g, '');
+      check_eq = check_eq.replace(/y=/g, '');
+      check_eq = check_eq.replace(/f\(x\)=/g, '');
+      check_eq = check_eq.replace(/y′=/g, '');
+      check_eq = check_eq.replace(/y'=/g, '');
+      
+      let check = '';
+      let one = '';
+      let two = '';
+      
+      if (/x/i.test(check_eq) && /y/i.test(check_eq)) {
+          one = 'x';
+          two = 'y';
+          check = 'xy';
+      }
+      
+      let check2 = '';
+      if (/t/i.test(check_eq) && /y/i.test(check_eq)) {
+          check2 = 'ty';
+          one = 't';
+          two = 'y';
+      }
+      
+      // Check for conflicting variables
+      if (check == 'xy' && check2 == 'ty') {
+          return {
+              error: 'Equestion contain more variables.'
+          };
+      }
+      
+      if (check2 == '' && check == '') {
+          return {
+              error: 'Please check equation.'
+          };
+      }
+      
+      // Check if all parameters are numeric
+      if (!isNaN(parseFloat(size)) && !isNaN(parseFloat(ini)) && 
+          !isNaN(parseFloat(con)) && !isNaN(parseFloat(find))) {
+          
+          let parem = EnterEq;
+          parem = parem.replace(/\s/g, '');
+          parem = parem.replace(/y=/g, '');
+          parem = parem.replace(/f\(x\)=/g, '');
+          parem = parem.replace(/y′=/g, '');
+          parem = parem.replace(/y'=/g, '');
+          parem = parem.replace(/\+/g, 'plus');
+          parem = parem.replace(/\{/g, '(');
+          parem = parem.replace(/\}/g, ')');
+          parem = parem.replace(/e\^x/g, 'exp(x)');
+          parem = parem.replace(/e\^y/g, 'exp(y)');
+          parem = parem.replace(/e\^/g, 'exp');
+          parem = parem.replace(/exp\^/g, 'exp');
+          parem = parem.replace(/\^/g, '**');
+          
+          let end = parseFloat(ini);
+          let h;
+          
+          // Calculate step size
+          if (steps == 'h') {
+              if (parseFloat(size) > parseFloat(find)) {
+                  return {
+                      error: 'Step Size cannot be greater than t1.'
+                  };
+              }
+              h = parseFloat(size);
+          } else {
+              if (parseFloat(ini) >= parseFloat(find)) {
+                  return {
+                      error: 't1 value should be greater than the initial value.'
+                  };
+              }
+              h = (parseFloat(find) - parseFloat(ini)) / parseFloat(size);
+          }
+          
+          // Calculate length/iterations - YE LINE CHANGE HUI HAI
+          let length = 0;
+          let tempEnd = parseFloat(ini);
+          // Floating point precision ke liye tolerance add kiya
+          const tolerance = 1e-10;
+          while (tempEnd < parseFloat(find) - tolerance) {
+              tempEnd = tempEnd + h;
+              length++;
+          }
+          
+          if (length > 100) {
+              if (steps == 'h') {
+                  return {
+                      error: 'Step Size too small.'
+                  };
+              } else {
+                  return {
+                      error: 'Number of steps too large.'
+                  };
+              }
+          }
+          
+          try {
+              const axios = require('axios');
+              
+              const response = await axios.post('http://167.172.134.148/new-eulers',
+                  new URLSearchParams({
+                      equ: parem,
+                      one: one,
+                      two: two,
+                      ini: parseFloat(ini).toString(),
+                      h: h.toString(),
+                      con: parseFloat(con).toString(),
+                      find: parseFloat(find).toString()
+                  }),
+                  {
+                      timeout: 120000,
+                      headers: {
+                          'Content-Type': 'application/x-www-form-urlencoded'
+                      }
+                  }
+              );
+              
+              const buffer = response.data;
+              const steps_arr = buffer[0].split('HA');
+              const steps1_arr = buffer[1].split('HA');
+              
+              return {
+                  tech_steps: steps_arr,
+                  tech_steps1: steps1_arr,
+                  tech_ans: buffer[2],
+                  tech_enter: buffer[3],
+                  tech_one: one,
+                  tech_two: two,
+                  tech_ini: parseFloat(ini).toString(),
+                  tech_h: h,
+                  tech_con: parseFloat(con).toString(),
+                  tech_step: steps,
+                  tech_find: parseFloat(find).toString(),
+              };
+              
+          } catch (error) {
+              console.error('API Error:', error.message);
+              return {
+                  error: 'Please! Check Your Input.'
+              };
+          }
+      } else {
+          return {
+              error: 'Please! Check Your Input.'
+          };
+      }
+  }
+
+    /**
+    * getCalculationTriangleCalculator: Service Method
+    * POST: /api/calculators-lol/triangle-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+
+    async getCalculationTriangleCalculator(body) {
+      // Helper function to convert decimal degrees to DMS
+          function DDtoDMS(dec) {
+              const vars = dec.toString().split(".");
+              const deg = parseInt(vars[0]);
+              let tempma = parseFloat("0." + (vars[1] || "0"));
+              
+              tempma = tempma * 3600;
+              const min = Math.floor(tempma / 60);
+              const sec = Math.round(tempma - (min * 60));
+              
+              return { deg: deg, min: min, sec: sec };
+          }
+          
+          let a = body.tech_a;
+          let b = body.tech_b;
+          let c = body.tech_c;
+          let A = body.tech_A;
+          let B = body.tech_B;
+          let C = body.tech_C;
+          let unit = body.tech_unit;
+          
+          // Convert empty strings to null/undefined
+          a = a == '' ? null : a;
+          b = b == '' ? null : b;
+          c = c == '' ? null : c;
+          A = A == '' ? null : A;
+          B = B == '' ? null : B;
+          C = C == '' ? null : C;
+          
+          let check = false;
+          let comb = 0;
+          let Ar, Ad, At, Br, Bd, Bt, Cr, Cd, Ct;
+          let area, peri, semi, ha, hb, hc, ma, mb, mc, inr, circ;
+          let result = {};
+          
+          // Helper function to convert degrees to radians
+          const deg2rad = (deg) => deg * (Math.PI / 180);
+          
+          // Helper function to convert radians to degrees
+          const rad2deg = (rad) => rad * (180 / Math.PI);
+          
+          // Case 1: Three sides given (SSS)
+          if (a != null && !isNaN(a) && b != null && !isNaN(b) && c != null && !isNaN(c) && 
+              (A == null || A == '') && (B == null || B == '') && (C == null || C == '')) {
+              
+              a = parseFloat(a);
+              b = parseFloat(b);
+              c = parseFloat(c);
+              
+              A = (Math.pow(b, 2) + Math.pow(c, 2) - Math.pow(a, 2)) / (2 * b * c);
+              Ar = Math.acos(A);
+              Ad = rad2deg(Ar);
+              At = DDtoDMS(Ad);
+              
+              B = (Math.pow(a, 2) + Math.pow(c, 2) - Math.pow(b, 2)) / (2 * a * c);
+              Br = Math.acos(B);
+              Bd = rad2deg(Br);
+              Bt = DDtoDMS(Bd);
+              
+              C = (Math.pow(a, 2) + Math.pow(b, 2) - Math.pow(c, 2)) / (2 * a * b);
+              Cr = Math.acos(C);
+              Cd = rad2deg(Cr);
+              Ct = DDtoDMS(Cd);
+              
+              check = true;
+              comb = 1;
+          }
+          // Case 2: Two sides and one angle (a, b, A) - SSA
+          else if (a != null && !isNaN(a) && b != null && !isNaN(b) && (c == null || c == '') && 
+                  A != null && A !== '' && (B == null || B == '') && (C == null || C == '')) {
+              
+              a = parseFloat(a);
+              b = parseFloat(b);
+              
+              // Process angle A
+              if (unit == '1') {
+                  Ad = parseFloat(A);
+                  At = DDtoDMS(Ad);
+                  Ar = deg2rad(Ad);
+              } else {
+                  const Ac = A.split('/');
+                  if (Ac.length == 2) {
+                      if (Ac[0] == 'pi' || Ac[0] == 'pi()') {
+                          if (!isNaN(Ac[1])) {
+                              Ad = 180 / parseFloat(Ac[1]);
+                              Ar = deg2rad(Ad);
+                              At = DDtoDMS(Ad);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(A)) {
+                      Ar = parseFloat(A);
+                      Ad = rad2deg(Ar);
+                      At = DDtoDMS(Ad);
+                  }
+              }
+              
+              if (Ad >= 180) {
+                  return { error: 'Angle ∠A is too big.' };
+              }
+              
+              Br = Math.asin(b * Math.sin(Ar) / a);
+              
+              if (isNaN(Br) || !isFinite(Br)) {
+                  return { error: "These three values can't be used to develop a valid triangle." };
+              } else {
+                  Bd = rad2deg(Br);
+                  Bt = DDtoDMS(Bd);
+                  Cd = 180 - Ad - Bd;
+                  Cr = deg2rad(Cd);
+                  Ct = DDtoDMS(Cd);
+                  c = Math.round((a * Math.sin(Cr)) / Math.sin(Ar) * 100000) / 100000;
+                  
+                  const B1 = Math.asin((b * Math.sin(Ar)) / a);
+                  const Bd1 = 180 - rad2deg(B1);
+                  const Bt1 = DDtoDMS(Bd1);
+                  const Br1 = deg2rad(Bd1);
+                  const Cd1 = 180 - Bd1 - Ad;
+                  
+                  if (Cd1 > 0) {
+                      const Ct1 = DDtoDMS(Cd1);
+                      const Cr1 = deg2rad(Cd1);
+                      const c1 = (a * Math.sin(Cr1)) / Math.sin(Ar);
+                      const area1 = Math.round((a * b * Math.sin(Cr)) / 2 * 100000) / 100000;
+                      const peri1 = a + b + c1;
+                      const semi1 = Math.round((a + b + c1) / 2 * 100000) / 100000;
+                      const ha1 = Math.round((2 * area1) / a * 100000) / 100000;
+                      const hb1 = Math.round((2 * area1) / b * 100000) / 100000;
+                      const hc1 = Math.round((2 * area1) / c1 * 100000) / 100000;
+                      const ma1 = Math.round(Math.sqrt(Math.pow(a / 2, 2) + Math.pow(c1, 2) - (a * c1 * Math.cos(Br1))) * 100000) / 100000;
+                      const mb1 = Math.round(Math.sqrt(Math.pow(b / 2, 2) + Math.pow(a, 2) - (a * b * Math.cos(Cr1))) * 100000) / 100000;
+                      const mc1 = Math.round(Math.sqrt(Math.pow(c1 / 2, 2) + Math.pow(b, 2) - (b * c1 * Math.cos(Ar))) * 100000) / 100000;
+                      const inr1 = Math.round(area1 / semi1 * 100000) / 100000;
+                      const circ1 = Math.round(a / (2 * Math.sin(Ar)) * 100000) / 100000;
+                      
+                      result.comb2 = 2;
+                      result.c1 = c1;
+                      result.Br1 = Br1;
+                      result.Bd1 = Bd1;
+                      result.Bt1 = Bt1;
+                      result.Cr1 = Cr1;
+                      result.Cd1 = Cd1;
+                      result.Ct1 = Ct1;
+                      result.area1 = area1;
+                      result.peri1 = peri1;
+                      result.semi1 = semi1;
+                      result.ha1 = ha1;
+                      result.hb1 = hb1;
+                      result.hc1 = hc1;
+                      result.ma1 = ma1;
+                      result.mb1 = mb1;
+                      result.mc1 = mc1;
+                      result.inr1 = inr1;
+                      result.circ1 = circ1;
+                  }
+                  
+                  check = true;
+                  comb = 2;
+              }
+          }
+          // Case 3: Two sides and one angle (a, b, B) - SSA
+          else if (a != null && !isNaN(a) && b != null && !isNaN(b) && (c == null || c == '') && 
+                  (A == null || A == '') && B != null && B != '' && (C == null || C == '')) {
+              
+              a = parseFloat(a);
+              b = parseFloat(b);
+              
+              // Process angle B
+              if (unit == '1') {
+                  Bd = parseFloat(B);
+                  Bt = DDtoDMS(Bd);
+                  Br = deg2rad(Bd);
+              } else {
+                  const Bc = B.split('/');
+                  if (Bc.length == 2) {
+                      if (Bc[0] == 'pi' || Bc[0] == 'pi()') {
+                          if (!isNaN(Bc[1])) {
+                              Bd = 180 / parseFloat(Bc[1]);
+                              Br = deg2rad(Bd);
+                              Bt = DDtoDMS(Bd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(B)) {
+                      Br = parseFloat(B);
+                      Bd = rad2deg(Br);
+                      Bt = DDtoDMS(Bd);
+                  }
+              }
+              
+              if (Bd >= 180) {
+                  return { error: 'Angle ∠B is too big.' };
+              }
+              
+              A = Math.asin((a * Math.sin(Br)) / b);
+              Ar = A;
+              Ad = rad2deg(Ar);
+              At = DDtoDMS(Ad);
+              Cd = 180 - Ad - Bd;
+              Ct = DDtoDMS(Cd);
+              Cr = deg2rad(Cd);
+              c = Math.round((b * Math.sin(Cr)) / Math.sin(Br) * 100000) / 100000;
+              comb = 3;
+              check = true;
+          }
+          // Case 4: Two sides and included angle (a, b, C) - SAS
+          else if (a != null && !isNaN(a) && b != null && !isNaN(b) && (c == null || c == '') && 
+                  (A == null || A == '') && (B == null || B == '') && C != null && C != '') {
+              
+              a = parseFloat(a);
+              b = parseFloat(b);
+              
+              // Process angle C
+              if (unit == '1') {
+                  Cd = parseFloat(C);
+                  Ct = DDtoDMS(Cd);
+                  Cr = deg2rad(Cd);
+              } else {
+                  const Cc = C.split('/');
+                  if (Cc.length == 2) {
+                      if (Cc[0] == 'pi' || Cc[0] == 'pi()') {
+                          if (!isNaN(Cc[1])) {
+                              Cd = 180 / parseFloat(Cc[1]);
+                              Cr = deg2rad(Cd);
+                              Ct = DDtoDMS(Cd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(C)) {
+                      Cr = parseFloat(C);
+                      Cd = rad2deg(Cr);
+                      Ct = DDtoDMS(Cd);
+                  }
+              }
+              
+              if (Cd >= 180) {
+                  return { error: 'Angle ∠C is too big.' };
+              }
+              
+              c = Math.round(Math.sqrt(Math.pow(b, 2) + Math.pow(a, 2) - (2 * b * a * Math.cos(Cr))) * 100000) / 100000;
+              B = Math.acos((Math.pow(c, 2) + Math.pow(a, 2) - Math.pow(b, 2)) / (2 * c * a));
+              Br = B;
+              Bd = rad2deg(Br);
+              Bt = DDtoDMS(Bd);
+              A = Math.acos((Math.pow(c, 2) + Math.pow(b, 2) - Math.pow(a, 2)) / (2 * c * b));
+              Ar = A;
+              Ad = rad2deg(Ar);
+              At = DDtoDMS(Ad);
+              comb = 4;
+              check = true;
+          }
+          // Case 5: One side and two angles (a, A, B) - AAS
+          else if (a != null && !isNaN(a) && (b == null || b == '') && (c == null || c == '') && 
+                  A != null && A != '' && B != null && B != '' && (C == null || C == '')) {
+              
+              a = parseFloat(a);
+              
+              // Process angle B
+              if (unit == '1') {
+                  Bd = parseFloat(B);
+                  Bt = DDtoDMS(Bd);
+                  Br = deg2rad(Bd);
+              } else {
+                  const Bc = B.split('/');
+                  if (Bc.length == 2) {
+                      if (Bc[0] == 'pi' || Bc[0] == 'pi()') {
+                          if (!isNaN(Bc[1])) {
+                              Bd = 180 / parseFloat(Bc[1]);
+                              Br = deg2rad(Bd);
+                              Bt = DDtoDMS(Bd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(B)) {
+                      Br = parseFloat(B);
+                      Bd = rad2deg(Br);
+                      Bt = DDtoDMS(Bd);
+                  }
+              }
+              
+              if (Bd >= 180) {
+                  return { error: 'Angle ∠B is too big.' };
+              }
+              
+              // Process angle A
+              if (unit == '1') {
+                  Ad = parseFloat(A);
+                  At = DDtoDMS(Ad);
+                  Ar = deg2rad(Ad);
+              } else {
+                  const Ac = A.split('/');
+                  if (Ac.length == 2) {
+                      if (Ac[0] == 'pi' || Ac[0] == 'pi()') {
+                          if (!isNaN(Ac[1])) {
+                              Ad = 180 / parseFloat(Ac[1]);
+                              Ar = deg2rad(Ad);
+                              At = DDtoDMS(Ad);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(A)) {
+                      Ar = parseFloat(A);
+                      Ad = rad2deg(Ar);
+                      At = DDtoDMS(Ad);
+                  }
+              }
+              
+              if (Ad >= 180) {
+                  return { error: 'Angle ∠A is too big.' };
+              }
+              
+              if ((Ad + Bd) >= 180) {
+                  return { error: "These three values can't be used to develop a valid triangle." };
+              }
+              
+              Cd = 180 - Ad - Bd;
+              Cr = deg2rad(Cd);
+              Ct = DDtoDMS(Cd);
+              b = Math.round((a * Math.sin(Br)) / Math.sin(Ar) * 100000) / 100000;
+              c = Math.round((a * Math.sin(Cr)) / Math.sin(Ar) * 100000) / 100000;
+              comb = 5;
+              check = true;
+          }
+          // Case 6: One side and two angles (b, A, B) - AAS
+          else if ((a == null || a == '') && b != null && !isNaN(b) && (c == null || c == '') && 
+                  A != null && A != '' && B != null && B !== '' && (C == null || C == '')) {
+              
+              b = parseFloat(b);
+              
+              // Process angle B
+              if (unit == '1') {
+                  Bd = parseFloat(B);
+                  Bt = DDtoDMS(Bd);
+                  Br = deg2rad(Bd);
+              } else {
+                  const Bc = B.split('/');
+                  if (Bc.length == 2) {
+                      if (Bc[0] == 'pi' || Bc[0] == 'pi()') {
+                          if (!isNaN(Bc[1])) {
+                              Bd = 180 / parseFloat(Bc[1]);
+                              Br = deg2rad(Bd);
+                              Bt = DDtoDMS(Bd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(B)) {
+                      Br = parseFloat(B);
+                      Bd = rad2deg(Br);
+                      Bt = DDtoDMS(Bd);
+                  }
+              }
+              
+              if (Bd >= 180) {
+                  return { error: 'Angle ∠B is too big.' };
+              }
+              
+              // Process angle A
+              if (unit == '1') {
+                  Ad = parseFloat(A);
+                  At = DDtoDMS(Ad);
+                  Ar = deg2rad(Ad);
+              } else {
+                  const Ac = A.split('/');
+                  if (Ac.length == 2) {
+                      if (Ac[0] == 'pi' || Ac[0] == 'pi()') {
+                          if (!isNaN(Ac[1])) {
+                              Ad = 180 / parseFloat(Ac[1]);
+                              Ar = deg2rad(Ad);
+                              At = DDtoDMS(Ad);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(A)) {
+                      Ar = parseFloat(A);
+                      Ad = rad2deg(Ar);
+                      At = DDtoDMS(Ad);
+                  }
+              }
+              
+              if (Ad >= 180) {
+                  return { error: 'Angle ∠A is too big.' };
+              }
+              
+              if ((Ad + Bd) >= 180) {
+                  return { error: "These three values can't be used to develop a valid triangle." };
+              }
+              
+              Cd = 180 - Ad - Bd;
+              Cr = deg2rad(Cd);
+              Ct = DDtoDMS(Cd);
+              a = Math.round((b * Math.sin(Ar)) / Math.sin(Br) * 100000) / 100000;
+              c = Math.round((b * Math.sin(Cr)) / Math.sin(Br) * 100000) / 100000;
+              comb = 6;
+              check = true;
+          }
+          // Case 7: One side and two angles (c, A, B) - AAS
+          else if ((a == null || a == '') && (b == null || b == '') && c != null && !isNaN(c) && 
+                  A != null && A != '' && B != null && B != '' && (C == null || C == '')) {
+              
+              c = parseFloat(c);
+              
+              // Process angle B
+              if (unit == '1') {
+                  Bd = parseFloat(B);
+                  Bt = DDtoDMS(Bd);
+                  Br = deg2rad(Bd);
+              } else {
+                  const Bc = B.split('/');
+                  if (Bc.length == 2) {
+                      if (Bc[0] == 'pi' || Bc[0] == 'pi()') {
+                          if (!isNaN(Bc[1])) {
+                              Bd = 180 / parseFloat(Bc[1]);
+                              Br = deg2rad(Bd);
+                              Bt = DDtoDMS(Bd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(B)) {
+                      Br = parseFloat(B);
+                      Bd = rad2deg(Br);
+                      Bt = DDtoDMS(Bd);
+                  }
+              }
+              
+              if (Bd >= 180) {
+                  return { error: 'Angle ∠B is too big.' };
+              }
+              
+              // Process angle A
+              if (unit == '1') {
+                  Ad = parseFloat(A);
+                  At = DDtoDMS(Ad);
+                  Ar = deg2rad(Ad);
+              } else {
+                  const Ac = A.split('/');
+                  if (Ac.length == 2) {
+                      if (Ac[0] == 'pi' || Ac[0] == 'pi()') {
+                          if (!isNaN(Ac[1])) {
+                              Ad = 180 / parseFloat(Ac[1]);
+                              Ar = deg2rad(Ad);
+                              At = DDtoDMS(Ad);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(A)) {
+                      Ar = parseFloat(A);
+                      Ad = rad2deg(Ar);
+                      At = DDtoDMS(Ad);
+                  }
+              }
+              
+              if (Ad >= 180) {
+                  return { error: 'Angle ∠A is too big.' };
+              }
+              
+              if ((Ad + Bd) >= 180) {
+                  return { error: "These three values can't be used to develop a valid triangle." };
+              }
+              
+              Cd = 180 - Ad - Bd;
+              Cr = deg2rad(Cd);
+              Ct = DDtoDMS(Cd);
+              a = Math.round((c * Math.sin(Ar)) / Math.sin(Cr) * 100000) / 100000;
+              b = Math.round((c * Math.sin(Br)) / Math.sin(Cr) * 100000) / 100000;
+              comb = 7;
+              check = true;
+          }
+          // Case 8: One side and two angles (a, A, C) - AAS
+          else if (a != null && !isNaN(a) && (b == null || b == '') && (c == null || c == '') && 
+                  A != null && A != '' && (B == null || B == '') && C != null && C != '') {
+              
+              a = parseFloat(a);
+              
+              // Process angle A
+              if (unit == '1') {
+                  Ad = parseFloat(A);
+                  At = DDtoDMS(Ad);
+                  Ar = deg2rad(Ad);
+              } else {
+                  const Ac = A.split('/');
+                  if (Ac.length == 2) {
+                      if (Ac[0] == 'pi' || Ac[0] == 'pi()') {
+                          if (!isNaN(Ac[1])) {
+                              Ad = 180 / parseFloat(Ac[1]);
+                              Ar = deg2rad(Ad);
+                              At = DDtoDMS(Ad);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(A)) {
+                      Ar = parseFloat(A);
+                      Ad = rad2deg(Ar);
+                      At = DDtoDMS(Ad);
+                  }
+              }
+              
+              if (Ad >= 180) {
+                  return { error: 'Angle ∠A is too big.' };
+              }
+              
+              // Process angle C
+              if (unit == '1') {
+                  Cd = parseFloat(C);
+                  Ct = DDtoDMS(Cd);
+                  Cr = deg2rad(Cd);
+              } else {
+                  const Cc = C.split('/');
+                  if (Cc.length == 2) {
+                      if (Cc[0] == 'pi' || Cc[0] == 'pi()') {
+                          if (!isNaN(Cc[1])) {
+                              Cd = 180 / parseFloat(Cc[1]);
+                              Cr = deg2rad(Cd);
+                              Ct = DDtoDMS(Cd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(C)) {
+                      Cr = parseFloat(C);
+                      Cd = rad2deg(Cr);
+                      Ct = DDtoDMS(Cd);
+                  }
+              }
+              
+              if (Cd >= 180) {
+                  return { error: "Angle ∠C is too big." };
+              }
+              
+              if ((Ad + Cd) >= 180) {
+                  return { error: "These three values can't be used to develop a valid triangle." };
+              }
+              
+              Bd = 180 - Ad - Cd;
+              Br = deg2rad(Bd);
+              Bt = DDtoDMS(Bd);
+              b = Math.round((a * Math.sin(Br)) / Math.sin(Ar) * 100000) / 100000;
+              c = Math.round((a * Math.sin(Cr)) / Math.sin(Ar) * 100000) / 100000;
+              comb = 8;
+              check = true;
+          }
+          // Case 9: One side and two angles (b, A, C) - AAS
+          else if ((a == null || a == '') && b != null && !isNaN(b) && (c == null || c == '') && 
+                  A != null && A != '' && (B == null || B == '') && C != null && C != '') {
+              
+              b = parseFloat(b);
+              
+              // Process angle A
+              if (unit == '1') {
+                  Ad = parseFloat(A);
+                  At = DDtoDMS(Ad);
+                  Ar = deg2rad(Ad);
+              } else {
+                  const Ac = A.split('/');
+                  if (Ac.length == 2) {
+                      if (Ac[0] == 'pi' || Ac[0] == 'pi()') {
+                          if (!isNaN(Ac[1])) {
+                              Ad = 180 / parseFloat(Ac[1]);
+                              Ar = deg2rad(Ad);
+                              At = DDtoDMS(Ad);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(A)) {
+                      Ar = parseFloat(A);
+                      Ad = rad2deg(Ar);
+                      At = DDtoDMS(Ad);
+                  }
+              }
+              
+              if (Ad >= 180) {
+                  return { error: 'Angle ∠A is too big.' };
+              }
+              
+              // Process angle C
+              if (unit == '1') {
+                  Cd = parseFloat(C);
+                  Ct = DDtoDMS(Cd);
+                  Cr = deg2rad(Cd);
+              } else {
+                  const Cc = C.split('/');
+                  if (Cc.length == 2) {
+                      if (Cc[0] == 'pi' || Cc[0] == 'pi()') {
+                          if (!isNaN(Cc[1])) {
+                              Cd = 180 / parseFloat(Cc[1]);
+                              Cr = deg2rad(Cd);
+                              Ct = DDtoDMS(Cd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(C)) {
+                      Cr = parseFloat(C);
+                      Cd = rad2deg(Cr);
+                      Ct = DDtoDMS(Cd);
+                  }
+              }
+              
+              if (Cd >= 180) {
+                  return { error: "Angle ∠C is too big." };
+              }
+              
+              if ((Ad + Cd) >= 180) {
+                  return { error: "These three values can't be used to develop a valid triangle." };
+              }
+              
+              Bd = 180 - Ad - Cd;
+              Br = deg2rad(Bd);
+              Bt = DDtoDMS(Bd);
+              a = Math.round((b * Math.sin(Ar)) / Math.sin(Br) * 100000) / 100000;
+              c = Math.round((b * Math.sin(Cr)) / Math.sin(Br) * 100000) / 100000;
+              comb = 9;
+              check = true;
+          }
+          // Case 10: One side and two angles (c, A, C) - AAS
+          else if ((a == null || a == '') && (b == null || b == '') && c != null && !isNaN(c) && 
+                  A != null && A != '' && (B == null || B == '') && C != null && C != '') {
+              
+              c = parseFloat(c);
+              
+              // Process angle A
+              if (unit == '1') {
+                  Ad = parseFloat(A);
+                  At = DDtoDMS(Ad);
+                  Ar = deg2rad(Ad);
+              } else {
+                  const Ac = A.split('/');
+                  if (Ac.length == 2) {
+                      if (Ac[0] == 'pi' || Ac[0] == 'pi()') {
+                          if (!isNaN(Ac[1])) {
+                              Ad = 180 / parseFloat(Ac[1]);
+                              Ar = deg2rad(Ad);
+                              At = DDtoDMS(Ad);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(A)) {
+                      Ar = parseFloat(A);
+                      Ad = rad2deg(Ar);
+                      At = DDtoDMS(Ad);
+                  }
+              }
+              
+              if (Ad >= 180) {
+                  return { error: 'Angle ∠A is too big.' };
+              }
+              
+              // Process angle C
+              if (unit == '1') {
+                  Cd = parseFloat(C);
+                  Ct = DDtoDMS(Cd);
+                  Cr = deg2rad(Cd);
+              } else {
+                  const Cc = C.split('/');
+                  if (Cc.length == 2) {
+                      if (Cc[0] == 'pi' || Cc[0] == 'pi()') {
+                          if (!isNaN(Cc[1])) {
+                              Cd = 180 / parseFloat(Cc[1]);
+                              Cr = deg2rad(Cd);
+                              Ct = DDtoDMS(Cd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(C)) {
+                      Cr = parseFloat(C);
+                      Cd = rad2deg(Cr);
+                      Ct = DDtoDMS(Cd);
+                  }
+              }
+              
+              if ((Ad + Cd) >= 180) {
+                  return { error: "These three values can't be used to develop a valid triangle." };
+              }
+              if (Cd >= 180) {
+                  return { error: "Angle ∠C is too big." };
+              }
+              
+              Bd = 180 - Ad - Cd;
+              Br = deg2rad(Bd);
+              Bt = DDtoDMS(Bd);
+              a = Math.round((c * Math.sin(Ar)) / Math.sin(Cr) * 100000) / 100000;
+              b = Math.round((c * Math.sin(Br)) / Math.sin(Cr) * 100000) / 100000;
+              comb = 10;
+              check = true;
+          }
+          // Case 11: One side and two angles (a, B, C) - AAS
+          else if (a != null && !isNaN(a) && (b == null || b == '') && (c == null || c == '') && 
+                  (A == null || A == '') && B != null && B != '' && C != null && C != '') {
+              
+              a = parseFloat(a);
+              
+              // Process angle C
+              if (unit == '1') {
+                  Cd = parseFloat(C);
+                  Ct = DDtoDMS(Cd);
+                  Cr = deg2rad(Cd);
+              } else {
+                  const Cc = C.split('/');
+                  if (Cc.length == 2) {
+                      if (Cc[0] == 'pi' || Cc[0] == 'pi()') {
+                          if (!isNaN(Cc[1])) {
+                              Cd = 180 / parseFloat(Cc[1]);
+                              Cr = deg2rad(Cd);
+                              Ct = DDtoDMS(Cd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(C)) {
+                      Cr = parseFloat(C);
+                      Cd = rad2deg(Cr);
+                      Ct = DDtoDMS(Cd);
+                  }
+              }
+              
+              if (Cd >= 180) {
+                  return { error: "Angle ∠C is too big." };
+              }
+              
+              // Process angle B
+              if (unit == '1') {
+                  Bd = parseFloat(B);
+                  Bt = DDtoDMS(Bd);
+                  Br = deg2rad(Bd);
+              } else {
+                  const Bc = B.split('/');
+                  if (Bc.length == 2) {
+                      if (Bc[0] == 'pi' || Bc[0] == 'pi()') {
+                          if (!isNaN(Bc[1])) {
+                              Bd = 180 / parseFloat(Bc[1]);
+                              Br = deg2rad(Bd);
+                              Bt = DDtoDMS(Bd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(B)) {
+                      Br = parseFloat(B);
+                      Bd = rad2deg(Br);
+                      Bt = DDtoDMS(Bd);
+                  }
+              }
+              
+              if (Bd >= 180) {
+                  return { error: 'Angle ∠B is too big.' };
+              }
+              
+              if ((Bd + Cd) >= 180) {
+                  return { error: "These three values can't be used to develop a valid triangle." };
+              }
+              
+              Ad = 180 - Bd - Cd;
+              Ar = deg2rad(Ad);
+              At = DDtoDMS(Ad);
+              b = Math.round((a * Math.sin(Br)) / Math.sin(Ar) * 100000) / 100000;
+              c = Math.round((a * Math.sin(Cr)) / Math.sin(Ar) * 100000) / 100000;
+              comb = 11;
+              check = true;
+          }
+          // Case 12: One side and two angles (b, B, C) - AAS
+          else if ((a == null || a == '') && b != null && !isNaN(b) && (c == null || c == '') && 
+                  (A == null || A == '') && B != null && B != '' && C != null && C != '') {
+              
+              b = parseFloat(b);
+              
+              // Process angle C
+              if (unit == '1') {
+                  Cd = parseFloat(C);
+                  Ct = DDtoDMS(Cd);
+                  Cr = deg2rad(Cd);
+              } else {
+                  const Cc = C.split('/');
+                  if (Cc.length == 2) {
+                      if (Cc[0] == 'pi' || Cc[0] == 'pi()') {
+                          if (!isNaN(Cc[1])) {
+                              Cd = 180 / parseFloat(Cc[1]);
+                              Cr = deg2rad(Cd);
+                              Ct = DDtoDMS(Cd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(C)) {
+                      Cr = parseFloat(C);
+                      Cd = rad2deg(Cr);
+                      Ct = DDtoDMS(Cd);
+                  }
+              }
+              
+              if (Cd >= 180) {
+                  return { error: "Angle ∠C is too big." };
+              }
+              
+              // Process angle B
+              if (unit == '1') {
+                  Bd = parseFloat(B);
+                  Bt = DDtoDMS(Bd);
+                  Br = deg2rad(Bd);
+              } else {
+                  const Bc = B.split('/');
+                  if (Bc.length == 2) {
+                      if (Bc[0] == 'pi' || Bc[0] == 'pi()') {
+                          if (!isNaN(Bc[1])) {
+                              Bd = 180 / parseFloat(Bc[1]);
+                              Br = deg2rad(Bd);
+                              Bt = DDtoDMS(Bd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(B)) {
+                      Br = parseFloat(B);
+                      Bd = rad2deg(Br);
+                      Bt = DDtoDMS(Bd);
+                  }
+              }
+              
+              if (Bd >= 180) {
+                  return { error: 'Angle ∠B is too big.' };
+              }
+              
+              if ((Bd + Cd) >= 180) {
+                  return { error: "These three values can't be used to develop a valid triangle." };
+              }
+              
+              Ad = 180 - Bd - Cd;
+              Ar = deg2rad(Ad);
+              At = DDtoDMS(Ad);
+              a = Math.round((b * Math.sin(Ar)) / Math.sin(Br) * 100000) / 100000;
+              c = Math.round((b * Math.sin(Cr)) / Math.sin(Br) * 100000) / 100000;
+              comb = 12;
+              check = true;
+          }
+          // Case 13: One side and two angles (c, B, C) - AAS
+          else if ((a == null || a == '') && (b == null || b == '') && c != null && !isNaN(c) && 
+                  (A == null || A == '') && B != null && B != '' && C != null && C != '') {
+              
+              c = parseFloat(c);
+              
+              // Process angle C
+              if (unit == '1') {
+                  Cd = parseFloat(C);
+                  Ct = DDtoDMS(Cd);
+                  Cr = deg2rad(Cd);
+              } else {
+                  const Cc = C.split('/');
+                  if (Cc.length == 2) {
+                      if (Cc[0] == 'pi' || Cc[0] == 'pi()') {
+                          if (!isNaN(Cc[1])) {
+                              Cd = 180 / parseFloat(Cc[1]);
+                              Cr = deg2rad(Cd);
+                              Ct = DDtoDMS(Cd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(C)) {
+                      Cr = parseFloat(C);
+                      Cd = rad2deg(Cr);
+                      Ct = DDtoDMS(Cd);
+                  }
+              }
+              
+              if (Cd >= 180) {
+                  return { error: "Angle ∠C is too big." };
+              }
+              
+              // Process angle B
+              if (unit == '1') {
+                  Bd = parseFloat(B);
+                  Bt = DDtoDMS(Bd);
+                  Br = deg2rad(Bd);
+              } else {
+                  const Bc = B.split('/');
+                  if (Bc.length == 2) {
+                      if (Bc[0] == 'pi' || Bc[0] == 'pi()') {
+                          if (!isNaN(Bc[1])) {
+                              Bd = 180 / parseFloat(Bc[1]);
+                              Br = deg2rad(Bd);
+                              Bt = DDtoDMS(Bd);
+                          } else {
+                              return { error: 'Please! Check Your Input.' };
+                          }
+                      }
+                  } else if (!isNaN(B)) {
+                      Br = parseFloat(B);
+                      Bd = rad2deg(Br);
+                      Bt = DDtoDMS(Bd);
+                  }
+              }
+              
+              if (Bd >= 180) {
+                  return { error: 'Angle ∠B is too big.' };
+              }
+              
+              if ((Bd + Cd) >= 180) {
+                  return { error: "These three values can't be used to develop a valid triangle." };
+              }
+              
+              Ad = 180 - Bd - Cd;
+              Ar = deg2rad(Ad);
+              At = DDtoDMS(Ad);
+              a = Math.round((c * Math.sin(Ar)) / Math.sin(Cr) * 100000) / 100000;
+              b = Math.round((c * Math.sin(Br)) / Math.sin(Cr) * 100000) / 100000;
+              comb = 13;
+              check = true;
+          }
+          
+          // Calculate additional properties if triangle is valid
+          if (check === true) {
+              area = Math.round((a * b * Math.sin(Cr)) / 2 * 100000) / 100000;
+              peri = a + b + c;
+              semi = Math.round((a + b + c) / 2 * 100000) / 100000;
+              ha = Math.round((2 * area) / a * 100000) / 100000;
+              hb = Math.round((2 * area) / b * 100000) / 100000;
+              hc = Math.round((2 * area) / c * 100000) / 100000;
+              ma = Math.round(Math.sqrt(Math.pow(a / 2, 2) + Math.pow(c, 2) - (a * c * Math.cos(Br))) * 100000) / 100000;
+              mb = Math.round(Math.sqrt(Math.pow(b / 2, 2) + Math.pow(a, 2) - (a * b * Math.cos(Cr))) * 100000) / 100000;
+              mc = Math.round(Math.sqrt(Math.pow(c / 2, 2) + Math.pow(b, 2) - (b * c * Math.cos(Ar))) * 100000) / 100000;
+              inr = Math.round(area / semi * 100000) / 100000;
+              circ = Math.round(a / (2 * Math.sin(Ar)) * 100000) / 100000;
+              
+              result.tech_a = a;
+              result.tech_b = b;
+              result.tech_c = c;
+              result.tech_Ar = Ar;
+              result.tech_Ad = Ad;
+              result.tech_At = At;
+              result.tech_Br = Br;
+              result.tech_Bd = Bd;
+              result.tech_Bt = Bt;
+              result.tech_Cr = Cr;
+              result.tech_Cd = Cd;
+              result.tech_Ct = Ct;
+              result.tech_area = area;
+              result.tech_peri = peri;
+              result.tech_semi = semi;
+              result.tech_ha = ha;
+              result.tech_hb = hb;
+              result.tech_hc = hc;
+              result.tech_ma = ma;
+              result.tech_mb = mb;
+              result.tech_mc = mc;
+              result.tech_inr = inr;
+              result.tech_circ = circ;
+              result.tech_comb = comb;
+              
+              return result;
+          } else {
+              return { error: "Please! Check Your Input." };
+          }
+      }
+
+
+      /**
+    * getCalculationTangentPlaneCalculator: Service Method
+    * POST: /api/calculators-lol/tangent-plane-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    async getCalculationTangentPlaneCalculator(body) {
+      let eq = body.tech_eq;
+        let x = body.tech_x;
+        let y = body.tech_y;
+        let z = body.tech_z;
+        let type = body.tech_type;
+        
+        // Validation check
+        if (!eq || eq.trim() == '') {
+            return {
+                error: 'Please Enter Valid Input.'
+            };
+        }
+        
+        // Check for invalid characters
+        if (/[<>&]|php|print_r|print|echo|script|&|%/i.test(eq)) {
+            return {
+                error: 'Please Enter Valid Input.'
+            };
+        }
+        
+        // Check if x and y are numeric and submit type exists
+        if (!isNaN(parseFloat(x)) && !isNaN(parseFloat(y)) && type) {
+            let parem = eq;
+            parem = parem.replace(/\s/g, '');
+            parem = parem.replace(/%20/g, '');
+            parem = parem.replace(/\+/g, 'plus');
+            parem = parem.replace(/\{/g, '(');
+            parem = parem.replace(/\}/g, ')');
+            parem = parem.replace(/e\^/g, 'exp');
+            parem = parem.replace(/exp\^/g, 'exp');
+            parem = parem.replace(/\^/g, '**');
+            parem = parem.replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+            
+            // Split by = sign
+            const paremParts = parem.split('=');
+            let finalEq;
+            
+            if (paremParts.length == 2) {
+                finalEq = '(' + paremParts[0] + ')-(' + paremParts[1] + ')';
+            } else {
+                finalEq = paremParts[0];
+            }
+            
+            try {
+                const axios = require('axios');
+                let response;
+                
+                if (type == 'two') {
+                    response = await axios.get('http://167.172.134.148/tpc', {
+                        params: {
+                            eq: finalEq,
+                            x: x,
+                            y: y,
+                            method: type
+                        },
+                        timeout: 120000
+                    });
+                } else if (type == 'three') {
+                    response = await axios.get('http://167.172.134.148/tpc', {
+                        params: {
+                            eq: finalEq,
+                            x: x,
+                            y: y,
+                            z: z,
+                            method: type
+                        },
+                        timeout: 120000
+                    });
+                } else {
+                    return {
+                        error: 'Please! Check Your Input.'
+                    };
+                }
+                
+                const buffer = response.data;
+                const bufferParts = buffer.split("@@@");
+                
+                let result = {};
+                
+                if (type == 'two') {
+                    result.tech_eq = bufferParts[0];
+                    result.tech_t = bufferParts[1];
+                    result.tech_diffa = bufferParts[2];
+                    result.tech_diffb = bufferParts[3];
+                    result.tech_stepsx = bufferParts[4];
+                    result.tech_stepsy = bufferParts[5];
+                    result.tech_a = bufferParts[6];
+                    result.tech_b = bufferParts[7];
+                    result.tech_c = bufferParts[8];
+                } else if (type == 'three') {
+                    result.tech_eq = bufferParts[0];
+                    result.tech_t = bufferParts[1];
+                    result.tech_diffa = bufferParts[2];
+                    result.tech_diffb = bufferParts[3];
+                    result.tech_diffc = bufferParts[4];
+                    result.tech_stepsx = bufferParts[5];
+                    result.tech_stepsy = bufferParts[6];
+                    result.tech_stepsz = bufferParts[7];
+                    result.tech_a = bufferParts[8];
+                    result.tech_b = bufferParts[9];
+                    result.tech_c = bufferParts[10];
+                    result.tech_ans = bufferParts[11];
+                }
+                
+                return result;
+                
+            } catch (error) {
+                console.error('API Error:', error.message);
+                return {
+                    error: 'Please! Check Your Input.'
+                };
+            }
+        } else {
+            return {
+                error: 'Please Enter Valid Input.'
+            };
+        }
+    }
+
+        /**
+    * getCalculationPerimeterCalculator: Service Method
+    * POST: /api/calculators-lol/perimeter-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    async getCalculationPerimeterCalculator(body) {
+        // Helper function to convert units to cm
+        function convertToCm(value, unit) {
+            value = parseFloat(value);
+            switch(unit) {
+                case 'mm':
+                    return value * 0.1;
+                case 'm':
+                    return value * 100;
+                case 'in':
+                    return value * 2.54;
+                case 'ft':
+                    return value * 30.48;
+                case 'yd':
+                    return value * 91.44;
+                case 'cm':
+                default:
+                    return value;
+            }
+        }
+        
+        // Helper function to convert degrees to radians
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+        
+        let shape = body.tech_shape;
+        let given = body.tech_given;
+        let givena = body.tech_givena;
+        let r = body.tech_r;
+        let r_unit = body.tech_r_unit;
+        let b = body.tech_b;
+        let b_unit = body.tech_b_unit;
+        let c = body.tech_c;
+        let c_unit = body.tech_c_unit;
+        let d = body.tech_d;
+        let d_unit = body.tech_d_unit;
+        let angle = body.tech_angle;
+        let angle_unit = body.tech_angle_unit;
+        let angleb = body.tech_angleb;
+        let angleb_unit = body.tech_angleb_unit;
+        let nbr = body.tech_nbr;
+        
+        let peri;
+        
+        // Shape 1: Square
+        if (shape == '1') {
+            if (r && !isNaN(parseFloat(r))) {
+                const rVal = parseFloat(r);
+                peri = Math.round((rVal * 4) * 1000) / 1000 + ' ' + r_unit;
+                return {
+                    tech_peri: peri,
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        // Shape 2: Rectangle
+        else if (shape == '2') {
+            if (r && !isNaN(parseFloat(r)) && b && !isNaN(parseFloat(b))) {
+                let rVal = parseFloat(r);
+                let bVal = parseFloat(b);
+                
+                if (r_unit === b_unit) {
+                    peri = Math.round(2 * (rVal + bVal) * 1000) / 1000 + ' ' + r_unit;
+                } else {
+                    rVal = convertToCm(rVal, r_unit);
+                    bVal = convertToCm(bVal, b_unit);
+                    peri = Math.round(2 * (rVal + bVal) * 1000) / 1000 + ' cm';
+                }
+                return {
+                    tech_peri: peri,
+                   
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        // Shape 3: Triangle
+        else if (shape == '3') {
+            if (given == '1') {
+                // Three sides given
+                if (r && !isNaN(parseFloat(r)) && b && !isNaN(parseFloat(b)) && c && !isNaN(parseFloat(c))) {
+                    let rVal = parseFloat(r);
+                    let bVal = parseFloat(b);
+                    let cVal = parseFloat(c);
+                    
+                    if (r_unit == b_unit && r_unit == c_unit) {
+                        peri = Math.round((rVal + bVal + cVal) * 1000) / 1000 + ' ' + r_unit;
+                    } else {
+                        rVal = convertToCm(rVal, r_unit);
+                        bVal = convertToCm(bVal, b_unit);
+                        cVal = convertToCm(cVal, c_unit);
+                        peri = Math.round((rVal + bVal + cVal) * 1000) / 1000 + ' cm';
+                    }
+                    return {
+                        tech_peri: peri,
+                    };
+                } else {
+                    return { error: 'Please! Check Your Input' };
+                }
+            } else if (given == '2') {
+                // Two sides and included angle
+                if (r && !isNaN(parseFloat(r)) && b && !isNaN(parseFloat(b)) && angleb && !isNaN(parseFloat(angleb))) {
+                    let rVal = parseFloat(r);
+                    let bVal = parseFloat(b);
+                    let anglebVal = parseFloat(angleb);
+                    
+                    if (angleb_unit == 'deg') {
+                        anglebVal = deg2rad(anglebVal);
+                    }
+                    
+                    if (r_unit == b_unit) {
+                        peri = Math.round((rVal + bVal + Math.sqrt(Math.pow(rVal, 2) + Math.pow(bVal, 2) - (2 * rVal * bVal) * Math.cos(anglebVal))) * 1000) / 1000 + ' ' + r_unit;
+                    } else {
+                        rVal = convertToCm(rVal, r_unit);
+                        bVal = convertToCm(bVal, b_unit);
+                        peri = Math.round((rVal + bVal + Math.sqrt(Math.pow(rVal, 2) + Math.pow(bVal, 2) - (2 * rVal * bVal) * Math.cos(anglebVal))) * 1000) / 1000 + ' cm';
+                    }
+                    return {
+                        tech_peri: peri,
+                    };
+                } else {
+                    return { error: 'Please! Check Your Input' };
+                }
+            } else if (given == '3') {
+                // One side and two angles
+                if (r && !isNaN(parseFloat(r)) && angle && !isNaN(parseFloat(angle)) && angleb && !isNaN(parseFloat(angleb))) {
+                    let rVal = parseFloat(r);
+                    let angleVal = parseFloat(angle);
+                    let anglebVal = parseFloat(angleb);
+                    
+                    if (angleb_unit == 'deg') {
+                        anglebVal = deg2rad(anglebVal);
+                    }
+                    if (angle_unit == 'deg') {
+                        angleVal = deg2rad(angleVal);
+                    }
+                    
+                    peri = Math.round((rVal + (rVal / Math.sin(angleVal + anglebVal)) * (Math.sin(angleVal) + Math.sin(anglebVal))) * 1000) / 1000 + ' ' + r_unit;
+                    return {
+                        tech_peri: peri,
+                    };
+                } else {
+                    return { error: 'Please! Check Your Input' };
+                }
+            }
+        }
+        // Shape 4: Circle
+        else if (shape == '4') {
+            if (r && !isNaN(parseFloat(r))) {
+                const rVal = parseFloat(r);
+                peri = Math.round((2 * Math.PI * rVal) * 1000) / 1000 + ' ' + r_unit;
+                return {
+                    tech_peri: peri,
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        // Shape 5: Semicircle
+        else if (shape == '5') {
+            if (r && !isNaN(parseFloat(r))) {
+                const rVal = parseFloat(r);
+                peri = Math.round((rVal * Math.PI + 2 * rVal) * 1000) / 1000 + ' ' + r_unit;
+                return {
+                    tech_peri: peri,
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        // Shape 6: Sector
+        else if (shape == '6') {
+            if (r && !isNaN(parseFloat(r)) && angle && !isNaN(parseFloat(angle))) {
+                let rVal = parseFloat(r);
+                let angleVal = parseFloat(angle);
+                
+                if (angle_unit == 'deg') {
+                    angleVal = deg2rad(angleVal);
+                }
+                
+                peri = Math.round(rVal * (angleVal + 2) * 1000) / 1000 + ' ' + r_unit;
+                return {
+                    tech_peri: peri,
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        // Shape 7: Ellipse
+        else if (shape == '7') {
+            if (r && !isNaN(parseFloat(r)) && b && !isNaN(parseFloat(b))) {
+                let rVal = parseFloat(r);
+                let bVal = parseFloat(b);
+                
+                if (r_unit === b_unit) {
+                    peri = Math.round(Math.PI * (3 * (rVal + bVal) - Math.sqrt(((3 * rVal) + bVal) * (rVal + (3 * bVal)))) * 1000) / 1000 + ' ' + r_unit;
+                } else {
+                    rVal = convertToCm(rVal, r_unit);
+                    bVal = convertToCm(bVal, b_unit);
+                    peri = Math.round(Math.PI * (3 * (rVal + bVal) - Math.sqrt(((3 * rVal) + bVal) * (rVal + (3 * bVal)))) * 1000) / 1000 + ' cm';
+                }
+                return {
+                    tech_peri: peri,
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        // Shape 8: Quadrilateral (4 sides)
+        else if (shape == '8') {
+            if (r && !isNaN(parseFloat(r)) && b && !isNaN(parseFloat(b)) && 
+                c && !isNaN(parseFloat(c)) && d && !isNaN(parseFloat(d))) {
+                
+                let rVal = convertToCm(parseFloat(r), r_unit);
+                let bVal = convertToCm(parseFloat(b), b_unit);
+                let cVal = convertToCm(parseFloat(c), c_unit);
+                let dVal = convertToCm(parseFloat(d), d_unit);
+                
+                peri = Math.round((rVal + bVal + cVal + dVal) * 1000) / 1000 + ' cm';
+                return {
+                    tech_peri: peri,
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        // Shape 9: Parallelogram
+        else if (shape == '9') {
+            if (givena == '1') {
+                // Two sides given
+                if (r && !isNaN(parseFloat(r)) && b && !isNaN(parseFloat(b))) {
+                    let rVal = parseFloat(r);
+                    let bVal = parseFloat(b);
+                    
+                    if (r_unit == b_unit) {
+                        peri = Math.round(2 * (rVal + bVal) * 1000) / 1000 + ' ' + r_unit;
+                    } else {
+                        rVal = convertToCm(rVal, r_unit);
+                        bVal = convertToCm(bVal, b_unit);
+                        peri = Math.round(2 * (rVal + bVal) * 1000) / 1000 + ' cm';
+                    }
+                    return {
+                        tech_peri: peri,
+                    };
+                } else {
+                    return { error: 'Please! Check Your Input' };
+                }
+            } else if (givena == '2') {
+                // Side and diagonals
+                if (r && !isNaN(parseFloat(r)) && b && !isNaN(parseFloat(b)) && c && !isNaN(parseFloat(c))) {
+                    let rVal = parseFloat(r);
+                    let bVal = parseFloat(b);
+                    let cVal = parseFloat(c);
+                    
+                    if (r_unit == b_unit && r_unit == c_unit) {
+                        peri = Math.round((2 * Math.pow(rVal, 2) + Math.sqrt((2 * Math.pow(bVal, 2)) + (2 * Math.pow(cVal, 2)) - (4 * Math.pow(rVal, 2)))) * 1000) / 1000 + ' ' + r_unit;
+                    } else {
+                        rVal = convertToCm(rVal, r_unit);
+                        bVal = convertToCm(bVal, b_unit);
+                        cVal = convertToCm(cVal, c_unit);
+                        peri = Math.round((Math.pow(rVal, 2) + Math.sqrt((2 * Math.pow(bVal, 2)) + (2 * Math.pow(cVal, 2)) - (4 * Math.pow(rVal, 2)))) * 1000) / 1000 + ' cm';
+                    }
+                    return {
+                        tech_peri: peri,
+                    };
+                } else {
+                    return { error: 'Please! Check Your Input' };
+                }
+            } else if (givena == '3') {
+                // Side, height and angle
+                if (r && !isNaN(parseFloat(r)) && b && !isNaN(parseFloat(b)) && angle && !isNaN(parseFloat(angle))) {
+                    let rVal = parseFloat(r);
+                    let bVal = parseFloat(b);
+                    let angleVal = parseFloat(angle);
+                    
+                    if (angle_unit == 'deg') {
+                        angleVal = deg2rad(angleVal);
+                    }
+                    
+                    if (r_unit == b_unit) {
+                        peri = Math.round(2 * (rVal + (bVal / Math.sin(angleVal))) * 1000) / 1000 + ' ' + r_unit;
+                    } else {
+                        rVal = convertToCm(rVal, r_unit);
+                        bVal = convertToCm(bVal, b_unit);
+                        peri = Math.round(2 * (rVal + (bVal / Math.sin(angleVal))) * 1000) / 1000 + ' cm';
+                    }
+                    return {
+                        tech_peri: peri,
+                    };
+                } else {
+                    return { error: 'Please! Check Your Input' };
+                }
+            }
+        }
+        // Shape 10: Rhombus
+        else if (shape == '10') {
+            if (r && !isNaN(parseFloat(r))) {
+                const rVal = parseFloat(r);
+                peri = Math.round((rVal * 4) * 1000) / 1000 + ' ' + r_unit;
+                return {
+                    tech_peri: peri,
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        // Shape 11: Trapezoid
+        else if (shape == '11') {
+            if (r && !isNaN(parseFloat(r)) && b && !isNaN(parseFloat(b))) {
+                let rVal = parseFloat(r);
+                let bVal = parseFloat(b);
+                
+                if (r_unit == b_unit) {
+                    peri = Math.round(2 * (rVal + bVal) * 1000) / 1000 + ' ' + r_unit;
+                } else {
+                    rVal = convertToCm(rVal, r_unit);
+                    bVal = convertToCm(bVal, b_unit);
+                    peri = Math.round(2 * (rVal + bVal) * 1000) / 1000 + ' cm';
+                }
+                return {
+                    tech_peri: peri,
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        // Shape 12: Annulus (Ring)
+        else if (shape == '12') {
+            if (r && !isNaN(parseFloat(r)) && b && !isNaN(parseFloat(b))) {
+                let rVal = parseFloat(r);
+                let bVal = parseFloat(b);
+                
+                if (r_unit === b_unit) {
+                    peri = Math.round(2 * Math.PI * (rVal + bVal) * 1000) / 1000 + ' ' + r_unit;
+                } else {
+                    rVal = convertToCm(rVal, r_unit);
+                    bVal = convertToCm(bVal, b_unit);
+                    peri = Math.round(2 * Math.PI * (rVal + bVal) * 1000) / 1000 + ' cm';
+                }
+                return {
+                    tech_peri: peri,
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        // Shape 13: Regular Polygon
+        else if (shape == '13') {
+            if (r && !isNaN(parseFloat(r)) && nbr && !isNaN(parseFloat(nbr))) {
+                const rVal = parseFloat(r);
+                const nbrVal = parseFloat(nbr);
+                peri = Math.round((rVal * nbrVal) * 1000) / 1000 + ' ' + r_unit;
+                return {
+                    tech_peri: peri,
+                };
+            } else {
+                return { error: 'Please! Check Your Input' };
+            }
+        }
+        
+        return { error: 'Please! Check Your Input' };
+    }
+
+      /**
+    * getCalculationAxisOfSymmetryCalculator: Service Method
+    * POST: /api/calculators-lol/axis-of-symmetry-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async  getCalculationAxisOfSymmetryCalculator(body) {
+      try {
+        let eq = body.tech_eq;
+
+        let param = {};
+
+        // ✅ Input validation
+        if (!eq || /[<>&]/.test(eq)) {
+          param.error = "Please! Check Your Input.";
+          return param;
+        }
+
+        // ✅ GCD function
+        function new_gcd(a, b) {
+          return b === 0 ? a : new_gcd(b, a % b);
+        }
+
+        // ✅ Divide or Factorize function
+        function divideOrFactorize(numerator, denominator) {
+          const commonDivisor = new_gcd(numerator, denominator);
+          if (commonDivisor > 1) {
+            numerator /= commonDivisor;
+            denominator /= commonDivisor;
+          }
+          return { numerator, denominator };
+        }
+
+        // ✅ Expression cleaning
+        let parem = eq
+          .replace(/\s+/g, "")
+          .replace(/%20/g, "")
+          .replace(/\+/g, "plus")
+          .replace(/{/g, "(")
+          .replace(/}/g, ")")
+          .replace(/e\^/g, "exp")
+          .replace(/exp\^/g, "exp")
+          .replace(/\^/g, "**")
+          .replace(/e\^sqrt\(x\)/g, "exp(2*x)");
+
+        // ✅ External API request
+        const response = await axios.post(
+          "http://167.172.134.148/axis",
+          new URLSearchParams({ equ: parem }),
+          { timeout: 120000 }
+        );
+
+        let buffer = response.data.split("@@@");
+
+        // ✅ Validation check
+        if (buffer[5] === "False") {
+          param.error =
+            "The expression provided needs to be a valid univariate quadratic expression in x.";
+          return param;
+        }
+
+        // ✅ Extracted values
+        let input_eq = buffer[0];
+        let coeff_a = parseFloat(buffer[1]);
+        let coeff_b = parseFloat(buffer[2]);
+        let coeff_c = parseFloat(buffer[3]);
+        let expand_eq = buffer[4];
+
+        // ✅ Calculate answer
+        let ans = coeff_b / (2 * coeff_a);
+        let asal_jawab;
+
+        if (Number.isInteger(ans)) {
+          asal_jawab = (coeff_b / (2 * coeff_a)) * -1;
+        } else {
+          let result = divideOrFactorize(coeff_b, 2 * coeff_a);
+          if (result.denominator === 1 || result.denominator === 0) {
+            asal_jawab = result.numerator * -1;
+          } else {
+            if (
+              (result.numerator < 0 && result.denominator < 0) ||
+              (result.numerator > 0 && result.denominator > 0)
+            ) {
+              asal_jawab = `- \\frac{${result.numerator}}{${result.denominator}}`;
+            } else {
+              asal_jawab = `\\frac{${result.numerator}}{${result.denominator}}`;
+            }
+          }
+        }
+
+        // ✅ Final response
+        param.tech_input_eq = input_eq;
+        param.tech_coeff_a = coeff_a;
+        param.tech_coeff_b = coeff_b;
+        param.tech_coeff_c = coeff_c;
+        param.tech_expand_eq = expand_eq;
+        param.tech_asal_jawab = asal_jawab;
+
+        return param;
+      } catch (error) {
+        return { error: "Please! Check Your Input." };
+      }
+    }
+
+      /**
+    * getCalculationDistributivePropertyCalculator: Service Method
+    * POST: /api/calculators-lol/distributive-property-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationDistributivePropertyCalculator(body) {
+      try {
+        let EnterEq = body.tech_EnterEq;
+
+        let param = {};
+
+        // ✅ Input validation
+        if (!EnterEq || EnterEq.trim() === "") {
+          param.error = "Please! Check Your Input.";
+          return param;
+        }
+
+        // ✅ Original input cleanup (for display)
+        let input = EnterEq.replace(/\s+/g, "")
+          .replace(/\)\(/g, ")*(")
+          .replace(/plus/g, "+");
+
+        // ✅ Expression cleanup for backend request
+        let parem = EnterEq
+          .replace(/\s+/g, "")
+          .replace(/\)\(/g, ")*(")
+          .replace(/\+/g, "plus")
+          .replace(/{/g, "(")
+          .replace(/}/g, ")")
+          .replace(/e\^/g, "exp")
+          .replace(/exp\^/g, "exp")
+          .replace(/\^/g, "**")
+          .replace(/e\^sqrt\(x\)/g, "exp(2*x)");
+
+        // ✅ External API call
+        const response = await axios.get(
+          `http://167.172.134.148/distributive?equ=${encodeURIComponent(parem)}`,
+          { timeout: 120000 }
+        );
+
+        let buffer = response.data?.toString().trim();
+
+        // ✅ Response check
+        if (!isNaN(buffer)) {
+          param.tech_input = input;
+          param.tech_ans = buffer;
+          return param;
+        } else {
+          param.error = "Please! Check Your Input.";
+          return param;
+        }
+      } catch (error) {
+        return { error: "Please! Check Your Input." };
+      }
+    }
+
+         /**
+    * getCalculationRationalExpressionCalculator: Service Method
+    * POST: /api/calculators-lol/rational-expression-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationRationalExpressionCalculator(body) {
+        
+        // Helper function for string replacements
+        function processExpression(expr) {
+            let processed = expr;
+            processed = processed.replace(/ /g, '');
+            processed = processed.replace(/\+/g, 'plus');
+            processed = processed.replace(/{/g, '(');
+            processed = processed.replace(/}/g, ')');
+            processed = processed.replace(/xe\^/g, 'x*e^');
+            processed = processed.replace(/ye\^/g, 'y*e^');
+            processed = processed.replace(/e\^/g, 'exp');
+            processed = processed.replace(/exp\^/g, 'exp');
+            processed = processed.replace(/\^/g, '**');
+            processed = processed.replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+            return processed;
+        }
+
+        // Input validation function
+        function validateInput(input) {
+            if (!input || !/^[^<>&]*$/i.test(input)) {
+                return false;
+            }
+            if (/<|>|&|php|print_r|print|echo|script|=|%|&/i.test(input)) {
+                return false;
+            }
+            return true;
+        }
+
+        const to = body.tech_to;
+        const to_cal = body.tech_to_cal;
+
+        if (to == '1') {
+            const n1 = body.tech_n1;
+            const d1 = body.tech_d1;
+
+            // Validation
+            if (!validateInput(n1) || !validateInput(d1)) {
+                return {
+                    status: "success",
+                    payload: {
+                        error: 'Please! Check Your Input.'
+                    }
+                };
+            }
+
+            const xeq = processExpression(n1);
+            const yeq = processExpression(d1);
+            const equ = "(" + xeq + ")/(" + yeq + ")";
+
+            try {
+                const response = await axios.get('http://167.172.134.148/rational', {
+                    params: {
+                        xeq: xeq,
+                        to: "1",
+                        yeq: yeq
+                    },
+                    timeout: 120000
+                });
+
+                const buffer = response.data.split("@@@");
+                
+                return {
+                    status: "success",
+                    payload: {
+                        tech_enter: buffer[0],
+                        tech_up: buffer[1],
+                        tech_ress: buffer[2],
+                        tech_down: buffer[3],
+                    }
+                };
+            } catch (error) {
+                return {
+                    status: "success",
+                    payload: {
+                        error: 'Please! Check Your Input.'
+                    }
+                };
+            }
+        } else if (to == '2') {
+            if (to_cal == 'two') {
+                const n1 = body.tech_n11;
+                const d1 = body.tech_d11;
+                const n2 = body.tech_n22;
+                const d2 = body.tech_d22;
+                const action = body.tech_action;
+
+                // Validation
+                if (!validateInput(n1) || !validateInput(d1) || !validateInput(n2) || !validateInput(d2)) {
+                    return {
+                        status: "success",
+                        payload: {
+                            error: 'Please! Check Your Input.'
+                        }
+                    };
+                }
+
+                const xeq = processExpression(n1);
+                const yeq = processExpression(d1);
+                const xeq1 = processExpression(n2);
+                const yeq1 = processExpression(d2);
+
+                try {
+                    const response = await axios.get('http://167.172.134.148/rational', {
+                        params: {
+                            xeq: xeq,
+                            yeq: yeq,
+                            xeq1: xeq1,
+                            yeq1: yeq1,
+                            to: "2",
+                            cal: "2",
+                            action: action
+                        },
+                        timeout: 120000
+                    });
+
+                    const buffer = response.data.split("@@@");
+                    let lcm = null;
+                    
+                    if (buffer[2]) {
+                        const lcmParts = buffer[2].split('}{');
+                        if (lcmParts.length === 2) {
+                            lcm = lcmParts[1].slice(0, -1);
+                        }
+                    }
+
+                    const processedAction = action.replace(/plus/g, '+').replace(/div/g, '÷');
+                    const result = {
+                            tech_up: buffer[0],
+                            tech_down: buffer[1],
+                            tech_ans: buffer[2],
+                            tech_action: processedAction,
+                    };
+
+                    if (lcm) {
+                        result.tech_lcm = lcm;
+                    }
+
+                    if (processedAction == '+' || processedAction == '-') {
+                        result.tech_left = buffer[3];
+                        result.tech_right = buffer[4];
+                        result.tech_top = buffer[5];
+                        result.tech_bottom = buffer[6];
+                    } else {
+                        result.tech_top = buffer[3];
+                        result.tech_bottom = buffer[4];
+                    }
+
+                    return result;
+                } catch (error) {
+                    return {
+                        status: "success",
+                        payload: {
+                            error: 'Please! Check Your Input.'
+                        }
+                    };
+                }
+            } else {
+                const n1 = body.tech_n13;
+                const d1 = body.tech_d13;
+                const n2 = body.tech_n23;
+                const d2 = body.tech_d23;
+                const n3 = body.tech_n33;
+                const d3 = body.tech_d33;
+                const action1 = body.tech_action1;
+                const action2 = body.tech_action2;
+
+                // Validation
+                if (!validateInput(n1) || !validateInput(d1) || !validateInput(n2) || 
+                    !validateInput(d2) || !validateInput(n3) || !validateInput(d3)) {
+                    return {
+                        status: "success",
+                        payload: {
+                            error: 'Please! Check Your Input.'
+                        }
+                    };
+                }
+
+                const xeq = processExpression(n1);
+                const yeq = processExpression(d1);
+                const xeq1 = processExpression(n2);
+                const yeq1 = processExpression(d2);
+                const xeq2 = processExpression(n3);
+                const yeq2 = processExpression(d3);
+
+                try {
+                    const response = await axios.get('http://167.172.134.148/rational', {
+                        params: {
+                            xeq: xeq,
+                            yeq: yeq,
+                            xeq1: xeq1,
+                            yeq1: yeq1,
+                            xeq2: xeq2,
+                            yeq2: yeq2,
+                            to: "2",
+                            cal: "3",
+                            action: action1,
+                            action1: action2
+                        },
+                        timeout: 120000
+                    });
+
+                    const buffer = response.data.split("@@@");
+                    let lcm = null;
+                    let lcm1 = null;
+                    
+                    if (buffer[1]) {
+                        const lcmParts = buffer[1].split('}{');
+                        if (lcmParts.length > 1) {
+                            lcm = lcmParts[1].slice(0, -1);
+                        }
+                    }
+
+                    const processedAction = action1.replace(/plus/g, '+').replace(/div/g, '÷');
+                    const processedAction1 = action2.replace(/plus/g, '+').replace(/div/g, '÷');
+
+                    const result = {
+                        status: "success",
+                        payload: {
+                            ans: buffer[1],
+                            up: buffer[2],
+                            down: buffer[3],
+                            thr: buffer[4],
+                            action: processedAction,
+                            action1: processedAction1,
+                            RESULT: 1
+                        }
+                    };
+
+                    if (lcm) {
+                        result.payload.lcm = lcm;
+                    }
+
+                    if ((processedAction == '+' || processedAction == '-') && 
+                        (processedAction1 == '+' || processedAction1 == '-')) {
+                        result.payload.left = buffer[5];
+                        result.payload.center = buffer[6];
+                        result.payload.right = buffer[7];
+                        result.payload.top = buffer[8];
+                    } else if ((processedAction == '*' || processedAction == '÷') && 
+                              (processedAction1 == '*' || processedAction1 == '÷')) {
+                        result.payload.up1 = buffer[5];
+                        result.payload.up2 = buffer[6];
+                        result.payload.down1 = buffer[7];
+                        result.payload.down2 = buffer[8];
+                    } else {
+                        result.payload.up1 = buffer[5];
+                        result.payload.ansl = buffer[6];
+                        result.payload.down1 = buffer[7];
+                        result.payload.top = buffer[8];
+                        result.payload.left = buffer[9];
+                        result.payload.right = buffer[10];
+                        
+                        if (buffer[6]) {
+                            const lcm1Parts = buffer[6].split('}{');
+                            if (lcm1Parts.length > 1) {
+                                lcm1 = lcm1Parts[1].slice(0, -1);
+                                result.payload.lcm1 = lcm1;
+                            }
+                        }
+                    }
+
+                    return result;
+                } catch (error) {
+                    return {
+                        status: "success",
+                        payload: {
+                            error: 'Please! Check Your Input.'
+                        }
+                    };
+                }
+            }
+        } else if (to == '3') {
+            const expr = body.tech_expr;
+
+            if (!validateInput(expr)) {
+                return {
+                    status: "success",
+                    payload: {
+                        error: 'Please Enter Valid Input.'
+                    }
+                };
+            }
+
+            const xeq = processExpression(expr);
+
+            try {
+                const response = await axios.get('http://167.172.134.148/rational', {
+                    params: {
+                        xeq: xeq,
+                        to: "3"
+                    },
+                    timeout: 120000
+                });
+
+                const buffer = response.data.split("@@@");
+                
+                return {
+                    status: "success",
+                    payload: {
+                        tech_enter: buffer[0],
+                        tech_ans: buffer[1],
+                    }
+                };
+            } catch (error) {
+                return {
+                    status: "success",
+                    payload: {
+                        error: 'Please! Check Your Input.'
+                    }
+                };
+            }
+        }
+
+        // Default return if no valid 'to' value
+        return {
+            status: "success",
+            payload: {
+                error: 'Invalid operation type.'
+            }
+        };
+    }
+
+
+      /**
+    * getCalculationAreaOfASectorCalculator: Service Method
+    * POST: /api/calculators-lol/area-of-a-sector-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationAreaOfASectorCalculator(body) {
+        // Helper function to convert degrees to radians
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+
+        // Helper function for unit conversion
+        function convertToCm(value, unit) {
+            switch(unit) {
+                case 'in':
+                    return value * 2.54;
+                case 'm':
+                    return value * 100;
+                case 'ft':
+                    return value * 30.48;
+                case 'yd':
+                    return value * 91.44;
+                default:
+                    return value;
+            }
+        }
+
+        function convertAreaToCm2(value, unit) {
+            switch(unit) {
+                case 'in':
+                    return value * 6.45;
+                case 'm':
+                    return value * 10000;
+                case 'ft':
+                    return value * 929;
+                case 'yd':
+                    return value * 8361;
+                default:
+                    return value;
+            }
+        }
+            let angle = body.tech_angle;
+            let angle_unit = body.tech_angle_unit;
+            let rad = body.tech_rad;
+            let rad_unit = body.tech_rad_unit;
+            let diameter = body.tech_diameter;
+            let diameter_unit = body.tech_diameter_unit;
+            let area = body.tech_area;
+            let area_unit = body.tech_area_unit;
+            let arc = body.tech_arc;
+            let arc_unit = body.tech_arc_unit;
+            let c = body.tech_c;
+            let c_unit = body.tech_c_unit;
+
+        // Convert string values to numbers where applicable
+        const numAngle = angle ? parseFloat(angle) : null;
+        const numRad = rad ? parseFloat(rad) : null;
+        const numDiameter = diameter ? parseFloat(diameter) : null;
+        const numArea = area ? parseFloat(area) : null;
+        const numArc = arc ? parseFloat(arc) : null;
+        const numC = c ? parseFloat(c) : null;
+
+        // Case 1: angle and radius provided
+        if (numAngle != null && numRad != null && 
+            numDiameter == null && numArea == null && 
+            numArc == null && numC == null) {
+            
+            let processedAngle = numAngle;
+            if (angle_unit == 'deg') {
+                processedAngle = deg2rad(processedAngle);
+            }
+
+            const calculatedArea = (processedAngle * Math.pow(numRad, 2)) / 2;
+            const calculatedDia = numRad * 2;
+            const calculatedArc = processedAngle * numRad;
+            const calculatedC = 2 * numRad * Math.sin(processedAngle / 2);
+
+            return {
+                status: "success",
+                payload: {
+                 mode: 1,
+                tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                tech_unit: rad_unit,
+                tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+                }
+            };
+        }
+        // Case 2: angle and diameter provided
+        else if (numAngle != null && numRad == null && 
+                numDiameter != null && numArea == null && 
+                numArc == null && numC == null) {
+            
+            let processedAngle = numAngle;
+            if (angle_unit == 'deg') {
+                processedAngle = deg2rad(processedAngle);
+            }
+
+            const calculatedRad = numDiameter / 2;
+            const calculatedArea = (processedAngle * Math.pow(calculatedRad, 2)) / 2;
+            const calculatedArc = processedAngle * calculatedRad;
+            const calculatedC = 2 * calculatedRad * Math.sin(processedAngle / 2);
+
+            return {
+                status: "success",
+                payload: {
+                  tech_mode: 2,
+                  tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                  tech_unit: diameter_unit,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                  tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+                }
+            };
+        }
+        // Case 3: radius and area provided
+        else if (numAngle == null && numRad != null && 
+                numDiameter == null && numArea != null && 
+                numArc == null && numC == null) {
+            
+            const checkUnit = area_unit.replace('²', '');
+            let unit = rad_unit;
+            let processedRad = numRad;
+            let processedArea = numArea;
+
+            if (checkUnit != rad_unit) {
+                unit = 'cm';
+                processedRad = convertToCm(numRad, rad_unit);
+                processedArea = convertAreaToCm2(numArea, checkUnit);
+            }
+
+            const calculatedAngle = (processedArea * 2) / Math.pow(processedRad, 2);
+            const calculatedArc = calculatedAngle * processedRad;
+            const calculatedC = 2 * processedRad * Math.sin(calculatedAngle / 2);
+            const calculatedDia = processedRad * 2;
+
+            return {
+                status: "success",
+                payload: {
+                 tech_mode: 3,
+                  tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                  tech_unit: unit,
+                  tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                  tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+                }
+            };
+        }
+        // Case 4: angle and area provided
+        else if (numAngle != null && numRad == null && 
+                numDiameter == null && numArea != null && 
+                numArc == null && numC == null) {
+            
+            const unit = area_unit.replace('²', '');
+            let processedAngle = numAngle;
+            if (angle_unit == 'deg') {
+                processedAngle = deg2rad(processedAngle);
+            }
+
+            const calculatedRad = Math.sqrt((2 * numArea) / processedAngle);
+            const calculatedArc = processedAngle * calculatedRad;
+            const calculatedC = 2 * calculatedRad * Math.sin(processedAngle / 2);
+            const calculatedDia = calculatedRad * 2;
+
+            return {
+                status: "success",
+                payload: {
+                 tech_mode: 4,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_unit: unit,
+                  tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                  tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+                }
+            };
+        }
+        // Case 5: angle and arc provided
+        else if (numAngle != null && numRad == null && 
+                numDiameter == null && numArea == null && 
+                numArc != null && numC == null) {
+            
+            let processedAngle = numAngle;
+            if (angle_unit == 'deg') {
+                processedAngle = deg2rad(processedAngle);
+            }
+
+            const calculatedRad = numArc / processedAngle;
+            const calculatedDia = calculatedRad * 2;
+            const calculatedArea = (processedAngle * Math.pow(calculatedRad, 2)) / 2;
+            const calculatedC = 2 * calculatedRad * Math.sin(processedAngle / 2);
+
+            return {
+                status: "success",
+                payload: {
+                 tech_mode: 5,
+                tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                utech_nit: arc_unit,
+                tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+                }
+            };
+        }
+        // Case 6: angle and chord length provided
+        else if (numAngle != null && numRad == null && 
+                numDiameter == null && numArea == null && 
+                numArc == null && numC !== null) {
+            
+            let processedAngle = numAngle;
+            if (angle_unit == 'deg') {
+                processedAngle = deg2rad(processedAngle);
+            }
+
+            const calculatedRad = numC / (2 * Math.sin(processedAngle / 2));
+            const calculatedDia = calculatedRad * 2;
+            const calculatedArea = (processedAngle * Math.pow(calculatedRad, 2)) / 2;
+            const calculatedArc = processedAngle * calculatedRad;
+
+            return {
+                status: "success",
+                payload: {
+                  tech_mode: 6,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_unit: c_unit,
+                  tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                  tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+
+                }
+            };
+        }
+        // Case 7: radius and arc provided
+        else if (numAngle == null && numRad != null && 
+                numDiameter == null && numArea == null && 
+                numArc != null && numC == null) {
+            
+            let unit = rad_unit;
+            let processedRad = numRad;
+            let processedArc = numArc;
+
+            if (arc_unit != rad_unit) {
+                unit = 'cm';
+                processedRad = convertToCm(numRad, rad_unit);
+                processedArc = convertToCm(numArc, arc_unit);
+            }
+
+            const calculatedAngle = processedArc / processedRad;
+            const calculatedArea = (calculatedAngle * Math.pow(processedRad, 2)) / 2;
+            const calculatedC = 2 * processedRad * Math.sin(calculatedAngle / 2);
+            const calculatedDia = processedRad * 2;
+
+            return {
+                status: "success",
+                payload: {
+                   tech_mode: 7,
+                tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                tech_unit: unit,
+                tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+                }
+            };
+        }
+        // Case 8: radius and chord length provided
+        else if (numAngle == null && numRad != null && 
+                numDiameter == null && numArea == null && 
+                numArc == null && numC != null) {
+            
+            let unit = rad_unit;
+            let processedRad = numRad;
+            let processedC = numC;
+
+            if (c_unit != rad_unit) {
+                unit = 'cm';
+                processedRad = convertToCm(numRad, rad_unit);
+                processedC = convertToCm(numC, c_unit);
+            }
+
+            const calculatedDia = processedRad * 2;
+            const calculatedAngle = 2 * Math.asin(processedC / (2 * processedRad));
+            const calculatedArea = (calculatedAngle * Math.pow(processedRad, 2)) / 2;
+            const calculatedArc = calculatedAngle * processedRad;
+            console.log(calculatedAngle);
+            return {
+                status: "success",
+                payload: {
+                    tech_mode: 8,
+                    tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                    tech_unit: unit,
+                    tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                    tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                    tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                }
+            };
+        }
+        // Case 9: diameter and area provided
+        else if (numAngle == null && numRad == null && 
+                numDiameter != null && numArea != null && 
+                numArc == null && numC == null) {
+            
+            const checkUnit = area_unit.replace('²', '');
+            let unit = diameter_unit;
+            let processedDiameter = numDiameter;
+            let processedArea = numArea;
+
+            if (checkUnit != diameter_unit) {
+                unit = 'cm';
+                processedDiameter = convertToCm(numDiameter, diameter_unit);
+                processedArea = convertAreaToCm2(numArea, checkUnit);
+            }
+
+            const calculatedRad = processedDiameter / 2;
+            const calculatedAngle = (processedArea * 2) / Math.pow(calculatedRad, 2);
+            const calculatedArc = calculatedAngle * calculatedRad;
+            const calculatedC = 2 * calculatedRad * Math.sin(calculatedAngle / 2);
+
+            return {
+                status: "success",
+                payload: {
+                    tech_mode: 9,
+                tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                  tech_unit: unit,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                  tech_x: isNaN(calculatedC) ? "NaN" : calculatedC,
+                }
+            };
+        }
+        // Case 10: diameter and arc provided
+        else if (numAngle == null && numRad == null && 
+                numDiameter != null && numArea == null && 
+                numArc != null && numC == null) {
+            
+            let unit = diameter_unit;
+            let processedDiameter = numDiameter;
+            let processedArc = numArc;
+
+            if (diameter_unit != arc_unit) {
+                unit = 'cm';
+                processedDiameter = convertToCm(numDiameter, diameter_unit);
+                processedArc = convertToCm(numArc, arc_unit);
+            }
+
+            const calculatedRad = processedDiameter / 2;
+            const calculatedAngle = processedArc / calculatedRad;
+            const calculatedArea = (calculatedAngle * Math.pow(calculatedRad, 2)) / 2;
+            const calculatedC = 2 * calculatedRad * Math.sin(calculatedAngle / 2);
+
+            return {
+                status: "success",
+                payload: {
+                    tech_mode: 10,
+                  tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                  tech_unit: unit,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                  tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+                }
+            };
+        }
+        // Case 11: diameter and chord length provided
+        else if (numAngle == null && numRad == null && 
+                numDiameter != null && numArea == null && 
+                numArc == null && numC != null) {
+            
+            let unit = diameter_unit;
+            let processedDiameter = numDiameter;
+            let processedC = numC;
+
+            if (c_unit != diameter_unit) {
+                unit = 'cm';
+                processedDiameter = convertToCm(numDiameter, diameter_unit);
+                processedC = convertToCm(numC, c_unit);
+            }
+
+            const calculatedRad = processedDiameter / 2;
+            const calculatedAngle = 2 * Math.asin(processedC / (2 * calculatedRad));
+            const calculatedArea = (calculatedAngle * Math.pow(calculatedRad, 2)) / 2;
+            const calculatedArc = calculatedAngle * calculatedRad;
+
+            return {
+                status: "success",
+                payload: {
+                    tech_mode: 11,
+                   tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                  tech_unit: unit,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+
+                }
+            };
+        }
+        // Case 12: area and arc provided
+        else if (numAngle == null && numRad == null && 
+                numDiameter == null && numArea != null && 
+                numArc != null && numC == null) {
+            
+            const checkUnit = area_unit.replace('²', '');
+            let unit = arc_unit;
+            let processedArea = numArea;
+            let processedArc = numArc;
+
+            if (checkUnit != arc_unit) {
+                unit = 'cm';
+                processedArc = convertToCm(numArc, arc_unit);
+                processedArea = convertAreaToCm2(numArea, checkUnit);
+            }
+
+            const calculatedAngle = Math.pow(processedArc, 2) / (processedArea * 2);
+            const calculatedRad = processedArc / calculatedAngle;
+            const calculatedDia = calculatedRad * 2;
+            const calculatedC = 2 * calculatedRad * Math.sin(calculatedAngle / 2);
+
+            return {
+                status: "success",
+                payload: {
+                 tech_mode: 12,
+                tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                tech_unit: unit,
+                tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+                }
+            };
+        }
+        // Case 13: area and chord length provided (not supported)
+        else if (numAngle == null && numRad == null && 
+                numDiameter == null && numArea != null && 
+                numArc == null && numC != null) {
+            
+            return {
+                status: "success",
+                payload: {
+                    error: 'Please Try with other values.'
+                }
+            };
+        }
+        // Case 14: arc and chord length provided (not supported)
+        else if (numAngle == null && numRad == null && 
+                numDiameter == null && numArea == null && 
+                numArc !== null && numC != null) {
+            
+            return {
+                status: "success",
+                payload: {
+                    error: 'Please Try with other values.'
+                }
+            };
+        }
+        // Default case: invalid input
+        else {
+            return {
+                status: "success",
+                payload: {
+                    error: 'Please! Check Your Input.'
+                }
+            };
+        }
+    }
 
 }
 
