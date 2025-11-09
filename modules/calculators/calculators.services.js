@@ -96141,6 +96141,4553 @@ async getCalculationJumpRopeCalorieCalculator(body) {
         }
     }
 
+     /**
+    * getCalculationParallelogramCalculator: Service Method
+    * POST: /api/calculators-lol/parallelogram-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async getCalculationParallelogramCalculator(body) {
+      const unit = body.tech_unit;
+      const rad = body.tech_rad1;
+      const side1 = body.tech_side1;
+      const side2 = body.tech_side2;
+      const pi = body.tech_pi;
+      const method = body.tech_slct1;
+
+      const param = {};
+
+      if (method == "1") {
+          if (rad > 0 && rad < 90) {
+           const c1 = 180;
+            const c2 = c1 - rad;
+            param.tech_rad = isNaN(rad) ? "NaN" : rad;
+            param.tech_c2 = isNaN(c2) ? "NaN" : c2;
+              return param;
+          } else {
+              param.error = "For a Parallelogram 0 < A < 90°";
+              return param;
+          }
+      } else if (method == "2") {
+          if (rad >= 91 && rad <= 179) {
+             const c1 = 180;
+            const c2 = c1 - rad;
+            param.tech_rad = isNaN(rad) ? "NaN" : rad;
+            param.tech_c1 = isNaN(c1) ? "NaN" : c1;
+
+              return param;
+          } else {
+              param.error = "For a Parallelogram 90° < B < 180°";
+              return param;
+          }
+      } else if (method == "3") {
+          if (rad <= 89 && rad >= 1) {
+           const c1 = 180;
+            const c2 = c1 - rad;
+            const hValue = side1 * Math.sin((rad * Math.PI) / 180);
+            const h = (isNaN(hValue) ? "NaN" : hValue) + " " + unit;
+            param.tech_h = h;
+            param.tech_c2 = isNaN(c2) ? "NaN" : c2;
+
+              return param;
+          } else {
+              param.error = "For a Parallelogram 0 < A < 90°";
+              return param;
+          }
+      } else if (method == "4") {
+          if (rad <= 89 && rad >= 1) {
+            const aValue = side1 / Math.sin((rad * Math.PI) / 180);
+            const bValue = 180 - rad;
+            param.tech_a = isNaN(aValue) ? "NaN" : aValue;
+            param.tech_b = isNaN(bValue) ? "NaN" : bValue;
+            return param;
+
+          } else {
+              param.error = "For a Parallelogram 0 < A < 90°";
+              return param;
+          }
+      } else if (method == "5") {
+          if (rad > 0 && side1 > 0) {
+              if (side1 <= rad * 2) {
+                  param.error = "Perimeter (P) must be at least 2 times side length (a).";
+                  return param;
+              } else {
+                 const bValue = (side1 - 2 * rad) / 2;
+                param.tech_b = isNaN(bValue) ? "NaN" : bValue;
+                return param;
+
+              }
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "6") {
+          if (side1 <= rad * 2) {
+              param.error = "Perimeter (P) must be at least 2 times side length (a).";
+              return param;
+          } else {
+         const aValue = (side1 - 2 * rad) / 2;
+          param.tech_a = isNaN(aValue) ? "NaN" : aValue;
+          return param;
+
+          }
+      } else if (method == "7") {
+          if (rad > 0 && side1 > 0) {
+             const pValue = 2 * rad + 2 * side1;
+            param.tech_p = isNaN(pValue) ? "NaN" : pValue;
+            return param;
+
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "8") {
+          if (rad > 0 && side1 > 0) {
+           const hValue = side1 / rad;
+          param.tech_h = isNaN(hValue) ? "NaN" : hValue;
+          return param;
+
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "9") {
+          if (rad > 0 && side1 > 0) {
+            const bValue = side1 / rad;
+            param.tech_b = isNaN(bValue) ? "NaN" : bValue;
+            return param;
+
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "10") {
+          if (rad > 0 && side1 > 0) {
+            const kValue = rad * side1;
+            param.tech_k = isNaN(kValue) ? "NaN" : kValue;
+            return param;
+
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "11") {
+          if (side1 > 0 && side2 > 0) {
+              if (rad <= 89 && rad >= 1) {
+                  const val = 180;
+                  const calculate = val - rad;
+                  const h = side1 * Math.sin((rad * Math.PI) / 180);
+                  const k = side2 * h;
+                  const p = Math.sqrt(
+                      side1 * side1 + side2 * side2 - 
+                      2 * side1 * side2 * Math.cos((rad * Math.PI) / 180)
+                  );
+                  const q = Math.sqrt(
+                      side1 * side1 + side2 * side2 + 
+                      2 * side1 * side2 * Math.cos((rad * Math.PI) / 180)
+                  );
+                  const P = 2 * side1 + 2 * side2;
+                param.tech_calculate = isNaN(calculate) ? "NaN" : calculate;
+                param.tech_h = isNaN(h) ? "NaN" : h;
+                param.tech_k = isNaN(k) ? "NaN" : k;
+                param.tech_p = isNaN(p) ? "NaN" : p;
+                param.tech_q = isNaN(q) ? "NaN" : q;
+                param.tech_P = isNaN(P) ? "NaN" : P;
+                  return param;
+              } else {
+                  param.error = "For a Parallelogram 0 < A < 90°";
+                  return param;
+              }
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "12") {
+          if (rad > 0 && side1 > 0 && side2 > 0) {
+              const a = (Math.acos(
+                  (side2 * side2 - rad * rad - side1 * side1) / 
+                  (-2 * rad * side1)
+              ) * 180) / Math.PI;
+              const val = 180;
+              const calculate = 180 - a;
+              const h = rad * Math.sin((a * Math.PI) / 180);
+              const q = Math.sqrt(
+                  rad * rad + side1 * side1 + 
+                  2 * rad * side1 * Math.cos((a * Math.PI) / 180)
+              );
+              const P = 2 * rad + 2 * side1;
+              const pl = Math.sqrt(
+                  rad * rad + side1 * side1 - 
+                  2 * rad * side1 * Math.cos((a * Math.PI) / 180)
+              );
+              const pythagoras = Math.sqrt(rad * rad + side1 * side1);
+              
+              if (side2 <= pythagoras) {
+                param.tech_h = isNaN(h) ? "NaN" : h;
+                param.tech_calculate = isNaN(calculate) ? "NaN" : calculate;
+                param.tech_q = isNaN(q) ? "NaN" : q;
+                param.tech_P = isNaN(P) ? "NaN" : P;
+                param.tech_pl = isNaN(pl) ? "NaN" : pl;
+                param.tech_pythagoras = isNaN(pythagoras) ? "NaN" : pythagoras;
+                return param;
+              } else {
+                  param.error = `The shorter diagonal (p) must be less than ${pythagoras} according to the Pythagorean theorem with (a and b) as the two sides and (p) as the hypotenuse. Try entering a, b and q instead.`;
+                  return param;
+              }
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "13") {
+          if (rad > 0 && side1 > 0 && side2 > 0) {
+              const pythagoras = Math.sqrt(rad * rad + side1 * side1);
+              
+              if (side2 >= pythagoras) {
+                  const a = (Math.acos(
+                      (side2 * side2 - rad * rad - side1 * side1) / 
+                      (2 * rad * side1)
+                  ) * 180) / Math.PI;
+                  const b = 180 - a;
+                  const P = 2 * rad + 2 * side1;
+                  const p = Math.sqrt(
+                      rad * rad + side1 * side1 - 
+                      2 * rad * side1 * Math.cos((a * Math.PI) / 180)
+                  );
+                const h = rad * Math.sin((a * Math.PI) / 180);
+                param.tech_a = isNaN(a) ? "NaN" : a;
+                param.tech_b = isNaN(b) ? "NaN" : b;
+                param.tech_P = isNaN(P) ? "NaN" : P;
+                param.tech_p = isNaN(p) ? "NaN" : p;
+                param.tech_h = isNaN(h) ? "NaN" : h;
+
+                return param;
+
+              } else {
+                  param.error = `The longer diagonal (q) must be greater than ${pythagoras} according to the Pythagorean theorem with (a and b) as the two sides and (q) as the hypotenuse. Try entering a, b and p instead.`;
+                  return param;
+              }
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "14") {
+          if (rad > 0 && side1 > 0 && side2 > 0) {
+              if (side2 <= rad) {
+                  const a = (Math.asin(side2 / rad) * 180) / Math.PI;
+                  const b = 180 - a;
+                  const p = Math.sqrt(
+                      rad * rad + side1 * side1 - 
+                      2 * rad * side1 * Math.cos((a * Math.PI) / 180)
+                  );
+                  const q = Math.sqrt(
+                      rad * rad + side1 * side1 + 
+                      2 * rad * side1 * Math.cos((a * Math.PI) / 180)
+                  );
+                  const P = 2 * rad + 2 * side1;
+                  const k = side1 * side2;
+                  param.tech_a = isNaN(a) ? "NaN" : a;
+                  param.tech_b = isNaN(b) ? "NaN" : b;
+                  param.tech_P = isNaN(P) ? "NaN" : P;
+                  param.tech_p = isNaN(p) ? "NaN" : p;
+                  param.tech_q = isNaN(q) ? "NaN" : q;
+                  param.tech_k = isNaN(k) ? "NaN" : k;
+
+                return param;
+
+              } else {
+                  param.error = "Height (h) must be less than or equal to the side length (a) to form a parallelogram.";
+                  return param;
+              }
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "15") {
+          if (rad > 0 && side1 > 0 && side2 > 0) {
+              if (side2 > rad * side1) {
+                  param.error = "The area K of a rhombus must be less than or equal to side length (a) times side length (b) which is the area of a rectangle with sides a and b. (K ≤ a x b)";
+                  return param;
+              } else if (side2 <= rad * side1) {
+                  const a = (Math.asin(side2 / (rad * side1)) * 180) / Math.PI;
+                  const b = 180 - a;
+                  const p = Math.sqrt(
+                      rad * rad + side1 * side1 - 
+                      2 * rad * side1 * Math.cos((a * Math.PI) / 180)
+                  );
+                  const q = Math.sqrt(
+                      rad * rad + side1 * side1 + 
+                      2 * rad * side1 * Math.cos((a * Math.PI) / 180)
+                  );
+                  const k = rad * side1;
+                  const h = rad * Math.sin((a * Math.PI) / 180);
+                  const P = 2 * rad + 2 * side1;
+                  param.tech_a = isNaN(a) ? "NaN" : a;
+                  param.tech_b = isNaN(b) ? "NaN" : b;
+                  param.tech_p = isNaN(p) ? "NaN" : p;
+                  param.tech_q = isNaN(q) ? "NaN" : q;
+                  param.tech_k = isNaN(k) ? "NaN" : k;
+                  param.tech_h = isNaN(h) ? "NaN" : h;
+                  param.tech_P = isNaN(P) ? "NaN" : P;
+
+                return param;
+
+              }
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "16") {
+          if (side1 > 0 && side2 > 0) {
+              if (rad <= 89 && rad >= 1) {
+                  const b = side2 / (side1 * Math.sin((rad * Math.PI) / 180));
+                  const b_angle = 180 - rad;
+                  const h = side1 * Math.sin((rad * Math.PI) / 180);
+                  const P = 2 * side1 + 2 * b;
+                  const p = Math.sqrt(
+                      side1 * side1 + b * b - 
+                      2 * side1 * b * Math.cos((rad * Math.PI) / 180)
+                  );
+                  const q = Math.sqrt(
+                      side1 * side1 + b * b + 
+                      2 * side1 * b * Math.cos((rad * Math.PI) / 180)
+                  );
+                 param.tech_b = isNaN(b) ? "NaN" : b;
+                  param.tech_b_angle = isNaN(b_angle) ? "NaN" : b_angle;
+                  param.tech_h = isNaN(h) ? "NaN" : h;
+                  param.tech_P = isNaN(P) ? "NaN" : P;
+                  param.tech_p = isNaN(p) ? "NaN" : p;
+                  param.tech_q = isNaN(q) ? "NaN" : q;
+
+                  return param;
+
+              } else {
+                  param.error = "For a Parallelogram 0 < A < 90°";
+                  return param;
+              }
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "17") {
+          if (side1 > 0 && side2 > 0) {
+              if (rad <= 89 && rad >= 1) {
+                  const a = side2 / (side1 * Math.sin((rad * Math.PI) / 180));
+                  const b_angle = 180 - rad;
+                  const P = 2 * a + 2 * side1;
+                  const h = a * Math.sin((rad * Math.PI) / 180);
+                  const p = Math.sqrt(
+                      a * a + side1 * side1 - 
+                      2 * a * side1 * Math.cos((rad * Math.PI) / 180)
+                  );
+                  const q = Math.sqrt(
+                      a * a + side1 * side1 + 
+                      2 * a * side1 * Math.cos((rad * Math.PI) / 180)
+                  );
+                 param.tech_a = isNaN(a) ? "NaN" : a;
+                  param.tech_b_angle = isNaN(b_angle) ? "NaN" : b_angle;
+                  param.tech_P = isNaN(P) ? "NaN" : P;
+                  param.tech_h = isNaN(h) ? "NaN" : h;
+                  param.tech_p = isNaN(p) ? "NaN" : p;
+                  param.tech_q = isNaN(q) ? "NaN" : q;
+                  return param;
+
+              } else {
+                  param.error = "Please Enter Positive Numbers.";
+                  return param;
+              }
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "18") {
+          if (rad > 0 && side1 > 0 && side2 > 0) {
+              let c1, c2, log, sam;
+              
+              if (side1 > side2) {
+                  c1 = ((side1 - side2) / 2) + side1;
+                  c2 = (side2 - side2) / 2;
+                  log = 'p';
+                  sam = 'q';
+              } else {
+                  c1 = ((side2 - side1) / 2) + side1;
+                  c2 = (side2 - side1) / 2;
+                  log = 'q';
+                  sam = 'p';
+              }
+              
+              if (rad < c2) {
+                  param.error = `Side length (b) must be longer than the difference between the longer diagonal (${log}) and the shorter diagonal (${sam}) divided by 2 plus (p). Side length (b) must be less than ${c2} or a diagonal must be longer. [b > absolute value of (q-p)/2].`;
+                  return param;
+              } else if (rad > c1) {
+                  param.error = `Side length (b) must be shorter than the difference between the longer diagonal (${log}) and the shorter diagonal (${sam}) divided by 2 plus (p). Side length (b) must be less than ${c1} or b diagonal must be longer. [b > absolute value of (q-p)/2].`;
+                  return param;
+              } else {
+                  const b = (side1 * side1 + side2 * side2 - 2 * (rad * rad)) / 2;
+                  const sq = Math.sqrt(b);
+                  const a = (Math.acos(
+                      (side2 * side2 - rad * rad - sq * sq) / 
+                      (2 * rad * sq)
+                  ) * 180) / Math.PI;
+                  const b_angle = 180 - a;
+                  const h = rad * Math.sin((a * Math.PI) / 180);
+                  const P = 2 * rad + 2 * sq;
+                  const k = rad * sq * Math.sin((a * Math.PI) / 180);
+                 param.tech_b = isNaN(b) ? "NaN" : b;
+                  param.tech_sq = isNaN(sq) ? "NaN" : sq;
+                  param.tech_a = isNaN(a) ? "NaN" : a;
+                  param.tech_b_angle = isNaN(b_angle) ? "NaN" : b_angle;
+                  param.tech_h = isNaN(h) ? "NaN" : h;
+                  param.tech_P = isNaN(P) ? "NaN" : P;
+                  param.tech_k = isNaN(k) ? "NaN" : k;
+                  return param;
+
+              }
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      } else if (method == "19") {
+          if (rad > 0 && side1 > 0 && side2 > 0) {
+              let c1, c2, log, sam;
+              
+              if (side1 > side2) {
+                  c1 = ((side1 - side2) / 2) + side1;
+                  c2 = (side2 - side2) / 2;
+                  log = 'p';
+                  sam = 'q';
+              } else {
+                  c1 = ((side2 - side1) / 2) + side1;
+                  c2 = (side2 - side1) / 2;
+                  log = 'q';
+                  sam = 'p';
+              }
+              
+              if (rad < c2) {
+                  param.error = `Side length (b) must be longer than the difference between the longer diagonal (${log}) and the shorter diagonal (${sam}) divided by 2 plus (p). Side length (b) must be less than ${c2} or a diagonal must be longer. [b > absolute value of (q-p)/2].`;
+                  return param;
+              } else if (rad > c1) {
+                  param.error = `Side length (b) must be shorter than the difference between the longer diagonal (${log}) and the shorter diagonal (${sam}) divided by 2 plus (p). Side length (b) must be less than ${c1} or b diagonal must be longer. [b > absolute value of (q-p)/2].`;
+                  return param;
+              } else {
+                  const a = (side1 * side1 + side2 * side2 - 2 * (rad * rad)) / 2;
+                  const sq = Math.sqrt(a);
+                  const an = (Math.acos(
+                      (side2 * side2 - sq * sq - rad * rad) / 
+                      (2 * sq * rad)
+                  ) * 180) / Math.PI;
+                  const b_angle = 180 - an;
+                  const h = sq * Math.sin((an * Math.PI) / 180);
+                  const P = 2 * sq + 2 * rad;
+                  const k = sq * rad * Math.sin((an * Math.PI) / 180);
+                  param.tech_a = isNaN(a) ? "NaN" : a;
+                  param.tech_sq = isNaN(sq) ? "NaN" : sq;
+                  param.tech_an = isNaN(an) ? "NaN" : an;
+                  param.tech_b_angle = isNaN(b_angle) ? "NaN" : b_angle;
+                  param.tech_h = isNaN(h) ? "NaN" : h;
+                  param.tech_P = isNaN(P) ? "NaN" : P;
+                  param.tech_k = isNaN(k) ? "NaN" : k;
+
+                  return param;
+
+              }
+          } else {
+              param.error = "Please Enter Positive Numbers.";
+              return param;
+          }
+      }
+      
+      return param;
+  }
+
+   /**
+    * getCalculationReferenceAngleCalculator: Service Method
+    * POST: /api/calculators-lol/reference-angle-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+ async getCalculationReferenceAngleCalculator(body) {
+      const angle = body.tech_angle;
+      const angle_unit = body.tech_angle_unit;
+      const param = {};
+
+      if (angle_unit == "deg") {
+        if (!isNaN(angle) && angle !== null && angle !== '') {
+          let angle_convert = angle * 1;
+          let ans, src;
+
+          if (angle_convert >= 0 && angle_convert <= 90) {
+            ans = angle_convert;
+            src = "11.svg";
+          } else if (angle_convert > 90 && angle_convert <= 180) {
+            ans = 180 - angle_convert;
+            src = "22.svg";
+          } else if (angle_convert > 180 && angle_convert <= 270) {
+            ans = angle_convert - 180;
+            src = "33.svg";
+          } else if (angle_convert > 270 && angle_convert <= 360) {
+            ans = 360 - angle_convert;
+            src = "44.svg";
+          } else if (angle_convert > 360) {
+            while (angle_convert > 360) {
+              angle_convert = angle_convert - 360;
+            }
+            if (angle_convert >= 0 && angle_convert <= 90) {
+              ans = angle_convert;
+              src = "11.svg";
+            } else if (angle_convert > 90 && angle_convert <= 180) {
+              ans = 180 - angle_convert;
+              src = "22.svg";
+            } else if (angle_convert > 180 && angle_convert <= 270) {
+              ans = angle_convert - 180;
+              src = "33.svg";
+            } else if (angle_convert > 270 && angle_convert <= 360) {
+              ans = 360 - angle_convert;
+              src = "44.svg";
+            }
+          } else if (angle_convert <= 0 && angle_convert >= -90) {
+            const mul = -1;
+            ans = angle_convert * mul;
+            src = "44.svg";
+          } else if (angle_convert < -90 && angle_convert >= -180) {
+            const mul = -1;
+            const converting = angle_convert * (-1);
+            ans = 180 - converting;
+            src = "33.svg";
+          } else if (angle_convert < -180 && angle_convert >= -270) {
+            const mul = -1;
+            const converting = angle_convert * (-1);
+            ans = converting - 180;
+            src = "22.svg";
+          } else if (angle_convert < -270 && angle_convert >= -360) {
+            const mul = -1;
+            const converting = angle_convert * (-1);
+            ans = converting - 360;
+            src = "11.svg";
+          } else if (angle_convert < -360) {
+            while (angle_convert < -360) {
+              angle_convert = angle_convert + 360;
+            }
+            if (angle_convert <= 0 && angle_convert >= -90) {
+              const mul = -1;
+              ans = angle_convert * mul;
+              src = "44.svg";
+            } else if (angle_convert < -90 && angle_convert >= -180) {
+              const mul = -1;
+              const converting = angle_convert * mul;
+              ans = 180 - converting;
+              src = "33.svg";
+            } else if (angle_convert < -180 && angle_convert >= -270) {
+              const mul = -1;
+              const converting = angle_convert * mul;
+              ans = angle_convert - converting;
+              src = "22.svg";
+            } else if (angle_convert < -270 && angle_convert >= -360) {
+              const mul = -1;
+              const converting = angle_convert * mul;
+              ans = angle_convert - converting;
+              src = "11.svg";
+            }
+          }
+          param.tech_pi = ans * 0.005556;
+          param.tech_ans = ans;
+          param.tech_src = src;
+        } else {
+          param.error = 'Please Check Your Input.';
+          return param;
+        }
+      } else if (angle_unit == "rad") {
+        if (!isNaN(angle) && angle !== null && angle !== '') {
+          let convert = angle * 57.2958;
+          let ans, src;
+
+          if (convert >= 0 && convert <= 90) {
+            ans = convert;
+            src = "11.svg";
+          } else if (convert > 90 && convert <= 180) {
+            ans = 180 - convert;
+            src = "22.svg";
+          } else if (convert > 180 && convert <= 270) {
+            ans = convert - 180;
+            src = "33.svg";
+          } else if (convert > 270 && convert <= 360) {
+            ans = 360 - convert;
+            src = "44.svg";
+          } else if (convert > 360) {
+            while (convert > 360) {
+              convert = convert - 360;
+            }
+            if (convert >= 0 && convert <= 90) {
+              ans = convert;
+              src = "11.svg";
+            } else if (convert > 90 && convert <= 180) {
+              ans = 180 - convert;
+              src = "22.svg";
+            } else if (convert > 180 && convert <= 270) {
+              ans = convert - 180;
+              src = "33.svg";
+            } else if (convert > 270 && convert <= 360) {
+              ans = 360 - convert;
+              src = "44.svg";
+            }
+          } else if (convert <= 0 && convert >= -90) {
+            const mul = -1;
+            ans = convert * mul;
+            src = "44.svg";
+          } else if (convert < -90 && convert >= -180) {
+            src = "33.svg";
+            const mul = -1;
+            const converting = convert * mul;
+            ans = 180 - converting;
+          } else if (convert < -180 && convert >= -270) {
+            const mul = -1;
+            src = "22.svg";
+            const converting = convert * mul;
+            ans = converting - 180;
+          } else if (convert < -270 && convert >= -360) {
+            src = "11.svg";
+            const mul = -1;
+            const converting = convert * mul;
+            ans = 360 - converting;
+          } else if (convert < -360) {
+            while (convert < -360) {
+              convert = convert + 360;
+            }
+            if (convert <= 0 && convert >= -90) {
+              const mul = -1;
+              ans = convert * mul;
+              src = "44.svg";
+            } else if (convert < -90 && convert >= -180) {
+              src = "33.svg";
+              const mul = -1;
+              const converting = convert * mul;
+              ans = 180 - converting;
+            } else if (convert < -180 && convert >= -270) {
+              const mul = -1;
+              const converting = convert * mul;
+              src = "22.svg";
+              ans = converting - 180;
+            } else if (convert < -270 && convert >= -360) {
+              src = "11.svg";
+              const mul = -1;
+              const converting = convert * mul;
+              ans = 360 - converting;
+            }
+          }
+          param.tech_pi = (ans * 0.3183) * 0.017453;
+          param.tech_ans = ans;
+          param.tech_src = src;
+        } else {
+          param.error = 'Please Check Your Input.';
+          return param;
+        }
+      } else {
+        if (!isNaN(angle) && angle !== null && angle !== '') {
+          const ans = angle * 0;
+          const src = "";
+          param.tech_ans = ans;
+          param.tech_src = src;
+        } else {
+          param.error = 'Please Check Your Input.';
+          return param;
+        }
+      }
+
+      return param;
+    }
+
+
+       /**
+    * getCalculationRationalOrIrrationalCalculator: Service Method
+    * POST: /api/calculators-lol/rational-or-irrational-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationRationalOrIrrationalCalculator(body) {
+      const expression_unit = body.tech_expression_unit;
+      const num1 = body.tech_num1;
+      const num2 = body.tech_num2;
+      const param = {};
+
+      // Helper function to find repeating patterns
+      function findRepeat(number) {
+        const maxLength = 6;
+        const numberStr = number.toString();
+        const dotIndex = numberStr.indexOf('.');
+        
+        if (dotIndex == -1) return false;
+        
+        let decimal = numberStr.substring(dotIndex + 1);
+        
+        if (decimal.length >= maxLength) {
+          decimal = decimal.substring(0, maxLength);
+        }
+        
+        const checkLength = decimal.length;
+
+        for (let i = 0; i < checkLength - 3; ++i) {
+          // Check for single repetition
+          if (decimal[i] == decimal[i + 1] && decimal[i + 1] == decimal[i + 2]) {
+            return { position: i, patternSize: 1 };
+          }
+          // Triple repetition
+          if (decimal.substring(i, i + 3) == decimal.substring(i + 3, i + 6)) {
+            return { position: i, patternSize: 3 };
+          }
+          // Double repetition
+          if (decimal.substring(i, i + 2) == decimal.substring(i + 2, i + 4)) {
+            return { position: i, patternSize: 2 };
+          }
+        }
+        return false;
+      }
+
+      if (!isNaN(num1) && num1 != null && num1 != '' && 
+          !isNaN(num2) && num2 != null && num2 != '') {
+        
+        let final_ans, exp;
+
+        if (expression_unit == "1") {
+          if (num1 > 0 && num2 > 0) {
+            const num1_ans = 1 / num1;
+            final_ans = Math.pow(num2, num1_ans);
+          } else {
+            param.error = 'Please Enter value greater than zero.';
+            return param;
+          }
+
+          if (num2 % num1 == 0) {
+            if (num1 == num2) {
+              if (num1 == 1 && num2 == 1) {
+                exp = "Given Number is Rational";
+              } else {
+                exp = "Given Number is Irrational";
+              }
+            } else if (num1 != num2) {
+              exp = "Given Number is Rational";
+            }
+          } else {
+            exp = "Given Number is Irrational";
+          }
+        } else if (expression_unit == "2") {
+          if (!isNaN(num1) && num1 != null && num1 != '' && num2 > 0) {
+            if (num1 == 22 && num2 == 7) {
+              final_ans = num1 / num2;
+              exp = "Given Number is Irrational";
+            } else {
+              final_ans = num1 / num2;
+              exp = "Given Number is Rational";
+            }
+
+            const repeatResult = findRepeat(final_ans);
+            if (repeatResult != false) {
+              const finalAnsStr = final_ans.toString();
+              const dotIndex = finalAnsStr.indexOf('.');
+              const leadingNum = finalAnsStr.substring(0, dotIndex);
+              
+              let nonRepeat = finalAnsStr.substring(dotIndex + 1, dotIndex + 1 + repeatResult.position);
+              if (nonRepeat == '') {
+                nonRepeat = '.';
+              }
+
+              const repeat = finalAnsStr.substring(
+                dotIndex + 1 + repeatResult.position,
+                dotIndex + 1 + repeatResult.position + repeatResult.patternSize
+              );
+              
+              const nonRepeatStr = nonRepeat == '.' ? '.' : '.' + nonRepeat;
+              final_ans = leadingNum + nonRepeatStr + "<span style='text-decoration:overline'>" + repeat + "</span>";
+            } else {
+              final_ans = final_ans;
+            }
+          } else {
+            param.error = 'Please Enter value greater than zero.';
+            return param;
+          }
+        }
+
+        if (final_ans != undefined && final_ans != null) {
+          param.tech_final_ans = final_ans;
+        }
+        if (exp != undefined && exp != null && exp != '') {
+          param.tech_exp = exp;
+        }
+        return param;
+      } else {
+        param.error = 'Please! Check Your Input.';
+        return param;
+      }
+    }
+
+        /**
+    * getCalculationSimplifyRadicalsCalculator: Service Method
+    * POST: /api/calculators-lol/simplify-radicals-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+ async getCalculationSimplifyRadicalsCalculator(body) {
+    let num1 = body.tech_num1;
+    let num2 = body.tech_num2;
+    let num3 = body.tech_num3;
+    let num4 = body.tech_num4;
+    let num5 = body.tech_num5;
+    let num6 = body.tech_num6;
+    const expression_unit = body.tech_expression_unit;
+    const param = {};
+
+    if (expression_unit == "1") {
+      if (!isNaN(num2) && num2 != null && num2 != '' && 
+          !isNaN(num3) && num3 != null && num3 != '') {
+        
+        if (num2 < 0) {
+          param.error = 'b cannot be negative';
+          return param;
+        }
+        if (num3 < 2) {
+          param.error = 'n cannot be smaller than 2';
+          return param;
+        }
+        if (num1 != "" && num1 != null && num1 != undefined) {
+          // num1 has value
+        } else if (num1 == "" || num1 == null || num1 == undefined) {
+          num1 = 1;
+        } else if (num1 == 0) {
+          param.error = 'Number cannot be zero';
+          return param;
+        }
+
+        param.tech_num1 = num1;
+        param.tech_num2 = num2;
+        param.tech_num3 = num3;
+        param.tech_num4 = 1;
+        param.tech_num5 = 1;
+        param.tech_num6 = 1;
+        param.tech_expression_unit = expression_unit;
+        return param;
+      } else {
+        param.error = 'Please! Check Your Input';
+        return param;
+      }
+    } else if (expression_unit == "2") {
+      if (!isNaN(num2) && num2 != null && num2 != '' && 
+          !isNaN(num3) && num3 != null && num3 != '' &&
+          !isNaN(num5) && num5 != null && num5 != '' &&
+          !isNaN(num6) && num6 != null && num6 != '') {
+        
+        if (num2 < 0) {
+          param.error = 'b cannot be negative';
+          return param;
+        }
+        if (num3 < 2) {
+          param.error = 'n cannot be smaller than 2';
+          return param;
+        }
+        if (num5 < 0) {
+          param.error = 'd cannot be negative';
+          return param;
+        }
+        if (num6 < 2) {
+          param.error = 'm cannot be smaller than 2';
+          return param;
+        }
+
+        if (num1 == "" || num1 == null || num1 == undefined) {
+          num1 = 1;
+        } else if (num1 != "" && num1 != null && num1 != undefined) {
+          param.tech_num1 = num1;
+        } else if (num1 == 0) {
+          param.error = 'Number cannot be zero';
+          return param;
+        }
+
+        if (num4 == "" || num4 == null || num4 == undefined) {
+          num4 = 1;
+        } else if (num4 != "" && num4 != null && num4 != undefined) {
+          param.tech_num4 = num4;
+        } else if (num4 == 0) {
+          param.error = 'Number cannot be zero';
+          return param;
+        }
+
+        param.tech_num1 = num1;
+        param.tech_num4 = num4;
+        param.tech_num2 = num2;
+        param.tech_num3 = num3;
+        param.tech_num5 = num5;
+        param.tech_num6 = num6;
+        param.tech_expression_unit = expression_unit;
+        return param;
+      } else {
+        param.error = 'Please! Check Your Input';
+        return param;
+      }
+    } else if (expression_unit == "3") {
+      if (!isNaN(num2) && num2 != null && num2 != '' && 
+          !isNaN(num3) && num3 != null && num3 != '' &&
+          !isNaN(num5) && num5 != null && num5 != '' &&
+          !isNaN(num6) && num6 != null && num6 != '') {
+        
+        if (num2 < 0) {
+          param.error = 'b cannot be negative';
+          return param;
+        }
+        if (num3 < 2) {
+          param.error = 'n cannot be smaller than 2';
+          return param;
+        }
+        if (num5 < 0) {
+          param.error = 'd cannot be negative';
+          return param;
+        }
+        if (num6 < 2) {
+          param.error = 'm cannot be smaller than 2';
+          return param;
+        }
+
+        if (num1 == "" || num1 == null || num1 == undefined) {
+          num1 = 1;
+        } else if (num1 != "" && num1 != null && num1 != undefined) {
+          param.tech_num1 = num1;
+        } else if (num1 == 0) {
+          param.error = 'Number cannot be zero';
+          return param;
+        }
+
+        if (num4 == "" || num4 == null || num4 == undefined) {
+          num4 = 1;
+        } else if (num4 != "" && num4 != null && num4 != undefined) {
+          param.tech_num4 = num4;
+        } else if (num4 == 0) {
+          param.error = 'Number cannot be zero';
+          return param;
+        }
+
+        param.tech_num1 = num1;
+        param.tech_num4 = num4;
+        param.tech_num2 = num2;
+        param.tech_num3 = num3;
+        param.tech_num5 = num5;
+        param.tech_num6 = num6;
+        param.tech_expression_unit = expression_unit;
+        param.tech_operation = 4;
+        return param;
+      } else {
+        param.error = 'Please! Check Your Input';
+        return param;
+      }
+    } else if (expression_unit == "4") {
+      if (!isNaN(num2) && num2 != null && num2 != '' && 
+          !isNaN(num3) && num3 != null && num3 != '' &&
+          !isNaN(num5) && num5 != null && num5 != '' &&
+          !isNaN(num6) && num6 != null && num6 != '') {
+        
+        if (num2 < 0) {
+          param.error = 'b cannot be negative';
+          return param;
+        }
+        if (num3 < 2) {
+          param.error = 'n cannot be smaller than 2';
+          return param;
+        }
+        if (num5 < 0) {
+          param.error = 'd cannot be negative';
+          return param;
+        }
+        if (num6 < 2) {
+          param.error = 'm cannot be smaller than 2';
+          return param;
+        }
+
+        if (num1 == "" || num1 == null || num1 == undefined) {
+          num1 = 1;
+        } else if (num1 != "" && num1 != null && num1 != undefined) {
+          param.tech_num1 = num1;
+        } else if (num1 == 0) {
+          param.error = 'Number cannot be zero';
+          return param;
+        }
+
+        if (num4 == "" || num4 == null || num4 == undefined) {
+          num4 = 1;
+        } else if (num4 != "" && num4 != null && num4 != undefined) {
+          param.tech_num4 = num4;
+        } else if (num4 == 0) {
+          param.error = 'Number cannot be zero';
+          return param;
+        }
+
+        param.tech_num1 = num1;
+        param.tech_num4 = num4;
+        param.tech_num2 = num2;
+        param.tech_num3 = num3;
+        param.tech_num5 = num5;
+        param.tech_num6 = num6;
+        param.tech_expression_unit = expression_unit;
+        param.tech_operation = 4;
+        return param;
+      } else {
+        param.error = 'Please! Check Your Input';
+        return param;
+      }
+    }
+  }
+
+       /**
+    * getCalculationEllipseEquationCalculator: Service Method
+    * POST: /api/calculators-lol/ellipse-equation-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationEllipseEquationCalculator(body) {
+    const d1 = body.tech_d1;
+    const n2 = body.tech_n2;
+    const second_value = body.tech_second_value;
+    const c1 = body.tech_c1;
+    const c2 = body.tech_c2;
+    const selection = body.tech_selection;
+    const param = {};
+
+    // Helper function to calculate GCD
+    function gcd(a23, b23) {
+      a23 = Math.abs(a23);
+      b23 = Math.abs(b23);
+
+      if (a23 < b23) {
+        [b23, a23] = [a23, b23];
+      }
+      if (b23 == 0) {
+        return 1;
+      }
+      let r = a23 % b23;
+      while (r > 0) {
+        const a = b23;
+        b23 = r;
+        r = a % b23;
+      }
+      return b23;
+    }
+
+    // Helper function to reduce fraction
+    function reduce(num23, den23) {
+      const g = gcd(num23, den23);
+      return [num23 / g, den23 / g];
+    }
+
+    if (selection == "1") {
+      if (!isNaN(d1) && d1 != null && d1 != '' && 
+          !isNaN(n2) && n2 != null && n2 != '' && 
+          !isNaN(second_value) && second_value !== null && second_value !== '' && 
+          d1 > 0 && n2 > 0 && second_value > 0) {
+        
+        if (!isNaN(n2) && !isNaN(d1)) {
+          const totalN = n2;
+          const totalD = d1;
+          const g = gcd(totalN, totalD);
+          const [upr, btm] = reduce(totalN, totalD);
+          
+          // Return Values
+          param.tech_upr = upr;
+          param.tech_totalN = totalN;
+          param.tech_totalD = totalD;
+          param.tech_g = g;
+          param.tech_btm = btm;
+          param.tech_method = selection;
+        }
+
+        if (!isNaN(n2) && !isNaN(second_value)) {
+          const totalN1 = n2;
+          const totalD1 = second_value;
+          const g1 = gcd(totalN1, totalD1);
+          const [upr1, btm1] = reduce(totalN1, totalD1);
+          
+          // Return Values
+          param.tech_upr1 = upr1;
+          param.tech_totalN1 = totalN1;
+          param.tech_totalD1 = totalD1;
+          param.tech_g1 = g1;
+          param.tech_btm1 = btm1;
+          param.tech_method = selection;
+          return param;
+        }
+      } else {
+        param.error = 'Please! Check Your Input.';
+        return param;
+      }
+    } else if (selection == "2") {
+      if (!isNaN(c1) && c1 != null && c1 != '' && 
+          !isNaN(c2) && c2 != null && c2 != '' && 
+          !isNaN(d1) && d1 != null && d1 != '' && 
+          !isNaN(second_value) && second_value != null && second_value != '' && 
+          d1 > 0 && second_value > 0) {
+        
+        let calculate_eccentricity;
+        if (d1 > second_value) {
+          calculate_eccentricity = Math.sqrt(((d1 * d1) - (second_value * second_value))) / d1;
+        } else if (second_value > d1) {
+          calculate_eccentricity = Math.sqrt(((second_value * second_value) - (d1 * d1))) / second_value;
+        }
+
+        const area = 3.14 * d1 * second_value;
+        
+        param.tech_d1 = d1;
+        param.tech_c2 = second_value;
+        param.tech_center1 = c1;
+        param.tech_center2 = c2;
+        param.tech_calculate_eccentricity = calculate_eccentricity;
+        param.tech_area = area;
+        param.tech_method = selection;
+        return param;
+      } else {
+        param.error = 'Please! Check Your Input.';
+        return param;
+      }
+    }
+  }
+
+
+       /**
+    * getCalculationRrefCalculator: Service Method
+    * POST: /api/calculators-lol/rref-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    async getCalculationRrefCalculator(body) {
+      const matrix2 = parseInt(body.matrix2);
+      const matrix22 = parseInt(body.matrix22);
+      const second_matrix = [];
+
+      // Extract matrix data
+      for (let i = 1; i <= matrix2; i++) {
+          for (let j = 1; j <= matrix22; j++) {
+              const key = `matrix3${i}_${j}`;
+              if (body[key] !== undefined && !isNaN(parseFloat(body[key]))) {
+                  second_matrix.push(parseFloat(body[key]));
+              }
+          }
+      }
+
+      // Helper functions
+      const gcd22 = (a, b, f) => {
+          if (f) {
+              if (b <= 1) return a;
+          } else {
+              if (!b) return a;
+          }
+          return gcd22(b, a % b, f);
+      };
+
+      const roundresult2 = (x) => {
+          const y = parseFloat(x);
+          return roundnum2(y, 10);
+      };
+
+      const toPrecision2 = (number, precision) => {
+          if (number == 0) return 0;
+          const exponent = Math.floor(Math.log10(Math.abs(number)) + 1);
+          const significand = Math.round((number / Math.pow(10, exponent)) * Math.pow(10, precision)) / Math.pow(10, precision);
+          return significand * Math.pow(10, exponent);
+      };
+
+      const roundnum2 = (x, p) => {
+          const n = parseFloat(x);
+          const m = toPrecision2(n, (p + 1));
+          const y = m.toString();
+          return y;
+      };
+
+      const digits_after_period2 = (x) => {
+          const f = x.toString();
+          const i = f.indexOf('.');
+          if (i === -1) return 0;
+          return f.length - i - 1;
+      };
+
+      const convert2 = (xelem) => {
+          let sign = '';
+          let sign2 = '+';
+          let f = false;
+          const x = xelem;
+          const x2 = roundresult2(x);
+          const absx = Math.abs(x2);
+          const y = Math.floor(absx);
+          const frac = (absx - y);
+          
+          if (x2 < 0) {
+              sign = sign2 = '-';
+          }
+          
+          const d = digits_after_period2(absx);
+          const den = Math.round(Math.pow(10, d));
+          const num = Math.round(frac * den);
+          const a12 = num.toString();
+          const len = a12.length;
+          
+          if (len > 8) f = true;
+          
+          const g = gcd22(num, den, f);
+          const num2 = Math.round(num / g);
+          const den2 = Math.round(den / g);
+          
+          const top_jawab = sign + (num2 + den2 * y);
+          const down_jawab = den2;
+          
+          return [top_jawab, down_jawab];
+      };
+
+      // Function to remove ONLY negative zeros but preserve other negative values
+      const cleanMatrixValues = (matrix) => {
+          return matrix.map(row => 
+              row.map(val => {
+                  // Check if it's a negative zero (either -0 or very close to 0 but negative)
+                  if (Math.abs(val) < 1e-10 && val < 0) {
+                      return 0;
+                  }
+                  // For very small positive numbers that might be floating point errors
+                  if (Math.abs(val) < 1e-10 && val >= 0) {
+                      return 0;
+                  }
+                  return val;
+              })
+          );
+      };
+
+      const rref2 = (matrix) => {
+          let lead = 0;
+          let pz = matrix.map(row => [...row]); // Create a deep copy
+          const swap = [];
+          const swap_line = [];
+          const rowCount = matrix.length;
+          
+          if (rowCount == 0) return [matrix, swap, swap_line, pz];
+          
+          let columnCount = 0;
+          if (matrix[0]) {
+              columnCount = matrix[0].length;
+          }
+          
+          for (let r = 0; r < rowCount; r++) {
+              if (lead >= columnCount) break;
+              
+              // Find pivot row
+              let i = r;
+              while (Math.abs(matrix[i][lead]) < 1e-10) { // Use tolerance for zero check
+                  i++;
+                  if (i == rowCount) {
+                      i = r;
+                      lead++;
+                      if (lead == columnCount) {
+                          const finalMatrix = cleanMatrixValues(matrix);
+                          const finalPz = cleanMatrixValues(pz);
+                          return [finalMatrix, swap, swap_line, finalPz];
+                      }
+                  }
+              }
+              
+              // Swap rows if needed
+              if (i != r) {
+                  [matrix[r], matrix[i]] = [matrix[i], matrix[r]];
+                  [pz[r], pz[i]] = [pz[i], pz[r]];
+                  
+                  if (Math.abs(matrix[i][lead]) < 1e-10) {
+                      swap_line.push(`Swap the row ${r + 1} with row ${i + 1}`);
+                      swap.push(cleanMatrixValues(pz.map(row => [...row])));
+                  }
+              }
+              
+              // Normalize pivot row
+              const lv = matrix[r][lead];
+              if (Math.abs(lv) > 1e-10) {
+                  for (let j = 0; j < columnCount; j++) {
+                      matrix[r][j] = matrix[r][j] / lv;
+                      pz[r][j] = pz[r][j] / lv;
+                  }
+                  
+                  const test1 = convert2(lv);
+                  if (test1[1] == 1) {
+                      swap_line.push(`Divide row ${r + 1} by ${lv}: R<sub>${r + 1}</sub> = R<sub>${r + 1}</sub>/${lv}`);
+                  } else {
+                      const lv3 = `${test1[1]}/${test1[0]}`;
+                      swap_line.push(`Multiply row ${r + 1} by ${lv3}: R<sub>${r + 1}</sub> = ${lv3} R<sub>${r + 1}</sub>`);
+                  }
+                  swap.push(cleanMatrixValues(pz.map(row => [...row])));
+              }
+              
+              // Eliminate other rows
+              for (let i = 0; i < rowCount; i++) {
+                  if (i != r && Math.abs(matrix[i][lead]) > 1e-10) {
+                      const lv = matrix[i][lead];
+                      const lv2 = pz[i][lead];
+                      
+                      for (let j = 0; j < columnCount; j++) {
+                          matrix[i][j] -= lv * matrix[r][j];
+                          pz[i][j] -= lv2 * pz[r][j];
+                      }
+                      
+                      // Clean only negative zeros after each operation
+                      matrix[i] = matrix[i].map(val => {
+                          if (Math.abs(val) < 1e-10 && val < 0) return 0;
+                          if (Math.abs(val) < 1e-10 && val >= 0) return 0;
+                          return val;
+                      });
+                      pz[i] = pz[i].map(val => {
+                          if (Math.abs(val) < 1e-10 && val < 0) return 0;
+                          if (Math.abs(val) < 1e-10 && val >= 0) return 0;
+                          return val;
+                      });
+                      
+                      swap.push(cleanMatrixValues(pz.map(row => [...row])));
+                      const test = convert2(lv);
+                      let displayLv = lv;
+                      if (test[1] != 1) {
+                          displayLv = `${test[0]}/${test[1]}`;
+                      }
+                      swap_line.push(`Subtract row ${i} multiplied by ${displayLv} from row R${i + 1}: R<sub>${i + 1}</sub> = R<sub>${i + 1}</sub> - ${displayLv}R<sub>${i}</sub>`);
+                  }
+              }
+              
+              lead++;
+          }
+
+          // Final cleanup of ONLY negative zeros
+          const finalMatrix = cleanMatrixValues(matrix);
+          const finalPz = cleanMatrixValues(pz);
+          
+          return [finalMatrix, swap, swap_line, finalPz];
+      };
+
+      // Main logic
+      const mul = matrix22 * matrix2;
+      let result = {};
+
+      if (mul == second_matrix.length) {
+          // Convert flat array to 2D matrix
+          const zain = [];
+          for (let i = 0; i < matrix2; i++) {
+              const row = second_matrix.slice(i * matrix22, (i + 1) * matrix22);
+              zain.push(row);
+          }
+          
+          const fahad2 = rref2(zain);
+          result.tech_matrix = fahad2[0];
+          result.tech_swap = fahad2[1];
+          result.tech_swap_line = fahad2[2];
+      } else {
+          result.error = 'Please! Check Your Input.';
+      }
+
+      return result;
+  }
+
+     /**
+    * getCalculationGematriaCalculator: Service Method
+    * POST: /api/calculators-lol/gematria-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+  async getCalculationGematriaCalculator(body) {
+        const input = body.tech_input;
+        const param = {};
+
+        // Gematria mapping arrays
+        const English_Ordinal = {
+          'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 'i': 9,
+          'j': 10, 'k': 11, 'l': 12, 'm': 13, 'n': 14, 'o': 15, 'p': 16, 'q': 17,
+          'r': 18, 's': 19, 't': 20, 'u': 21, 'v': 22, 'w': 23, 'x': 24, 'y': 25, 'z': 26,
+          '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9
+        };
+
+        const Full_Reduction = {
+          'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 'i': 9,
+          'j': 1, 'k': 2, 'l': 3, 'm': 4, 'n': 5, 'o': 6, 'p': 7, 'q': 8, 'r': 9,
+          's': 1, 't': 2, 'u': 3, 'v': 4, 'w': 5, 'x': 6, 'y': 7, 'z': 8,
+          '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9
+        };
+
+        const Reverse_Ordinal = {
+          'a': 26, 'b': 25, 'c': 24, 'd': 23, 'e': 22, 'f': 21, 'g': 20, 'h': 19, 'i': 18,
+          'j': 17, 'k': 16, 'l': 15, 'm': 14, 'n': 13, 'o': 12, 'p': 11, 'q': 10, 'r': 9,
+          's': 8, 't': 7, 'u': 6, 'v': 5, 'w': 4, 'x': 3, 'y': 2, 'z': 1,
+          '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9
+        };
+
+        const Reverse_Full_Reduction = {
+          'a': 8, 'b': 7, 'c': 6, 'd': 5, 'e': 4, 'f': 3, 'g': 2, 'h': 1, 'i': 9,
+          'j': 8, 'k': 7, 'l': 6, 'm': 5, 'n': 4, 'o': 3, 'p': 2, 'q': 1, 'r': 9,
+          's': 8, 't': 7, 'u': 6, 'v': 5, 'w': 4, 'x': 3, 'y': 2, 'z': 1,
+          '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9
+        };
+
+        const Jewish_Gematria = {
+          'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8, 'i': 9,
+          'j': 600, 'k': 10, 'l': 20, 'm': 30, 'n': 40, 'o': 50, 'p': 60, 'q': 70,
+          'r': 80, 's': 90, 't': 100, 'u': 200, 'v': 700, 'w': 900, 'x': 300, 'y': 400, 'z': 500,
+          '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9
+        };
+
+        const English_Gematria = {
+          'a': 6, 'b': 12, 'c': 18, 'd': 24, 'e': 30, 'f': 36, 'g': 42, 'h': 48, 'i': 54,
+          'j': 60, 'k': 66, 'l': 72, 'm': 78, 'n': 84, 'o': 90, 'p': 96, 'q': 102, 'r': 108,
+          's': 114, 't': 120, 'u': 126, 'v': 132, 'w': 138, 'x': 144, 'y': 150, 'z': 156,
+          '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9
+        };
+
+        const Hebrew = {
+          'a': 1, 'b': 2, 'c': 8, 'd': 4, 'e': 5, 'f': 80, 'g': 3, 'h': 5, 'i': 10,
+          'j': 10, 'k': 20, 'l': 30, 'm': 40, 'n': 50, 'o': 70, 'p': 80, 'q': 100,
+          'r': 200, 's': 60, 't': 9, 'u': 6, 'v': 6, 'w': 6, 'x': 60, 'y': 10, 'z': 7,
+          '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9
+        };
+
+        // Helper functions
+        function printDivisors(n) {
+          const divi = [];
+          for (let i = 1; i <= n; i++) {
+            if (n % i == 0) divi.push(i);
+          }
+          return divi;
+        }
+
+        function np(num) {
+          let prev = '';
+          let next = 0;
+          
+          // Find next prime
+          let i = num;
+          let check_n = 0;
+          while (i < 10000000 && check_n != 1) {
+            i++;
+            let mm = 0;
+            for (let j = 2; j <= i / 2; j++) {
+              if (i % j == 0) {
+                mm++;
+                break;
+              }
+            }
+            if (mm == 0) {
+              next = i;
+              check_n = 1;
+            }
+          }
+          
+          // Find previous prime
+          i = num;
+          check_n = 0;
+          while (i > 2 && check_n !== 1) {
+            i--;
+            let mm = 0;
+            for (let j = 2; j <= i / 2; j++) {
+              if (i % j == 0) {
+                mm++;
+                break;
+              }
+            }
+            if (mm == 0) {
+              prev = i;
+              check_n = 1;
+            }
+          }
+          
+          return [prev, next];
+        }
+
+        function factor(loop_eo) {
+          let newtext_eo = "";
+          let chk_eo = 2;
+          
+          while (chk_eo * chk_eo <= loop_eo) {
+            if (loop_eo % chk_eo == 0) {
+              newtext_eo += chk_eo;
+              loop_eo = loop_eo / chk_eo;
+              if (loop_eo !== 1) {
+                newtext_eo += " × ";
+              }
+            } else {
+              chk_eo++;
+            }
+          }
+          
+          if (loop_eo != 1) {
+            newtext_eo += loop_eo;
+          }
+          
+          if (newtext_eo == "" + loop_eo) {
+            newtext_eo = "1 × " + newtext_eo;
+          }
+          
+          return newtext_eo;
+        }
+
+        function total(num) {
+          let totalCount = 0;
+          for (let i = 2; i <= num; i++) {
+            let mm = 0;
+            for (let j = 2; j <= i / 2; j++) {
+              if (i % j == 0) {
+                mm++;
+                break;
+              }
+            }
+            if (mm == 0) {
+              totalCount++;
+            }
+          }
+          return totalCount;
+        }
+
+        function primeCheck(number) {
+          if (number == 1) return 0;
+          for (let i = 2; i <= number / 2; i++) {
+            if (number % i == 0) return 0;
+          }
+          return 1;
+        }
+
+        // Generate triangular numbers
+        const triangular = [];
+        for (let i = 2, j = 1; i < 10000; i++) {
+          triangular.push(j);
+          j += i;
+        }
+
+        // Generate prime numbers
+        const prime_nums = [];
+        for (let i = 0; i < 10000; i++) {
+          if (i == 1 || i == 0) continue;
+          let f = 1;
+          for (let j = 2; j < Math.floor(i / 2) + 1; j++) {
+            if (i % j == 0) {
+              f = 0;
+              break;
+            }
+          }
+          if (f == 1) prime_nums.push(i);
+        }
+
+        // Generate Fibonacci sequence
+        const arr = [];
+        let num1 = 0;
+        let num2 = 1;
+        let counter = 0;
+        while (counter < 1000) {
+          arr.push(num1);
+          let num3 = num2 + num1;
+          num1 = num2;
+          num2 = num3;
+          counter++;
+        }
+
+        if (!input) {
+          param.error = "Please! Enter Your Input.";
+          return param;
+        }
+
+        // Process input
+        const small = input.toLowerCase();
+        const words1 = small.replace(/[^a-zA-Z0-9]+/g, " ");
+        const alphabets = small.replace(/[^a-zA-Z]+/g, "");
+        const null_space = small.replace(/\s/g, '');
+        const numbers = null_space.replace(/[^0-9]+/g, "");
+        const count_wrd = words1.split(" ");
+        const words_ans = count_wrd.length;
+        const count_ans = alphabets.length;
+        const num_agye = numbers.split('').map(Number);
+        const sum_num = num_agye.reduce((a, b) => a + b, 0);
+        const array_agai = alphabets.split('');
+        const nawa = small.split(' ');
+
+        // Process words
+        const inner_alpha = [];
+        const inner_ans_eo = [];
+        const inner_ans_fr = [];
+        const inner_ans_ro = [];
+        const inner_ans_rfd = [];
+        const inner_ans_jg = [];
+        const inner_ans_eg = [];
+        const inner_ans_h = [];
+        const inner_sum_eo = [];
+        const inner_sum_fr = [];
+        const inner_sum_ro = [];
+        const inner_sum_rfd = [];
+        const inner_sum_jg = [];
+        const inner_sum_eg = [];
+        const inner_sum_h = [];
+
+        nawa.forEach((value, i) => {
+          const chars = value.trim().split('');
+          inner_alpha[i] = chars;
+          inner_ans_eo[i] = [];
+          inner_ans_fr[i] = [];
+          inner_ans_ro[i] = [];
+          inner_ans_rfd[i] = [];
+          inner_ans_jg[i] = [];
+          inner_ans_eg[i] = [];
+          inner_ans_h[i] = [];
+
+          chars.forEach(char => {
+            inner_ans_eo[i].push(English_Ordinal[char] || 0);
+            inner_ans_fr[i].push(Full_Reduction[char] || 0);
+            inner_ans_ro[i].push(Reverse_Ordinal[char] || 0);
+            inner_ans_rfd[i].push(Reverse_Full_Reduction[char] || 0);
+            inner_ans_jg[i].push(Jewish_Gematria[char] || 0);
+            inner_ans_eg[i].push(English_Gematria[char] || 0);
+            inner_ans_h[i].push(Hebrew[char] || 0);
+          });
+
+          inner_sum_eo.push(inner_ans_eo[i].reduce((a, b) => a + b, 0));
+          inner_sum_fr.push(inner_ans_fr[i].reduce((a, b) => a + b, 0));
+          inner_sum_ro.push(inner_ans_ro[i].reduce((a, b) => a + b, 0));
+          inner_sum_rfd.push(inner_ans_rfd[i].reduce((a, b) => a + b, 0));
+          inner_sum_jg.push(inner_ans_jg[i].reduce((a, b) => a + b, 0));
+          inner_sum_eg.push(inner_ans_eg[i].reduce((a, b) => a + b, 0));
+          inner_sum_h.push(inner_ans_h[i].reduce((a, b) => a + b, 0));
+        });
+
+        // Calculate sums for each system
+        const sum_eo = array_agai.map(char => English_Ordinal[char] || 0);
+        const sum_fr = array_agai.map(char => Full_Reduction[char] || 0);
+        const sum_ro = array_agai.map(char => Reverse_Ordinal[char] || 0);
+        const sum_rfd = array_agai.map(char => Reverse_Full_Reduction[char] || 0);
+        const sum_jg = array_agai.map(char => Jewish_Gematria[char] || 0);
+        const sum_eg = array_agai.map(char => English_Gematria[char] || 0);
+        const sum_h = array_agai.map(char => Hebrew[char] || 0);
+
+        let answer_eo, answer_fr, answer_ro, answer_rfd, answer_jg, answer_eg, answer_h;
+
+        if (/\d/.test(input)) {
+          answer_eo = sum_num;
+          answer_fr = sum_num;
+          answer_ro = sum_num;
+          answer_rfd = sum_num;
+          answer_jg = sum_num;
+          answer_eg = sum_num;
+          answer_h = sum_num;
+        } else if (/[a-zA-Z]+/.test(input)) {
+          answer_eo = sum_eo.reduce((a, b) => a + b, 0) + sum_num;
+          answer_fr = sum_fr.reduce((a, b) => a + b, 0) + sum_num;
+          answer_ro = sum_ro.reduce((a, b) => a + b, 0) + sum_num;
+          answer_rfd = sum_rfd.reduce((a, b) => a + b, 0) + sum_num;
+          answer_jg = sum_jg.reduce((a, b) => a + b, 0) + sum_num;
+          answer_eg = sum_eg.reduce((a, b) => a + b, 0) + sum_num;
+          answer_h = sum_h.reduce((a, b) => a + b, 0) + sum_num;
+        } else {
+          answer_eo = sum_eo.reduce((a, b) => a + b, 0);
+          answer_fr = sum_fr.reduce((a, b) => a + b, 0);
+          answer_ro = sum_ro.reduce((a, b) => a + b, 0);
+          answer_rfd = sum_rfd.reduce((a, b) => a + b, 0);
+          answer_jg = sum_jg.reduce((a, b) => a + b, 0);
+          answer_eg = sum_eg.reduce((a, b) => a + b, 0);
+          answer_h = sum_h.reduce((a, b) => a + b, 0);
+        }
+
+        // Factor calculations
+        const newtext_eo = factor(answer_eo);
+        const newtext_fr = factor(answer_fr);
+        const newtext_ro = factor(answer_ro);
+        const newtext_rfd = factor(answer_rfd);
+        const newtext_jg = factor(answer_jg);
+        const newtext_eg = factor(answer_eg);
+        const newtext_h = factor(answer_h);
+
+        // Divisor calculations
+        const eo_divi = printDivisors(answer_eo);
+        const count_eodivi = eo_divi.length;
+        const eodivi_sum = eo_divi.reduce((a, b) => a + b, 0);
+        
+        const fr_divi = printDivisors(answer_fr);
+        const count_frdivi = fr_divi.length;
+        const frdivi_sum = fr_divi.reduce((a, b) => a + b, 0);
+        
+        const ro_divi = printDivisors(answer_ro);
+        const count_rodivi = ro_divi.length;
+        const rodivi_sum = ro_divi.reduce((a, b) => a + b, 0);
+        
+        const rfd_divi = printDivisors(answer_rfd);
+        const count_rfddivi = rfd_divi.length;
+        const rfddivi_sum = rfd_divi.reduce((a, b) => a + b, 0);
+        
+        const jg_divi = printDivisors(answer_jg);
+        const count_jgdivi = jg_divi.length;
+        const jgdivi_sum = jg_divi.reduce((a, b) => a + b, 0);
+        
+        const eg_divi = printDivisors(answer_eg);
+        const count_egdivi = eg_divi.length;
+        const egdivi_sum = eg_divi.reduce((a, b) => a + b, 0);
+        
+        const h_divi = printDivisors(answer_h);
+        const count_hdivi = h_divi.length;
+        const hdivi_sum = h_divi.reduce((a, b) => a + b, 0);
+
+        // Fibonacci calculations
+        const sq_root = Math.sqrt(5);
+        const final_ans = (Math.pow(1.61803, answer_eo) - Math.pow(-0.61803, answer_eo)) / sq_root;
+        const final_ans2 = (Math.pow(1.61803, answer_fr) - Math.pow(-0.61803, answer_fr)) / sq_root;
+        const final_ans3 = (Math.pow(1.61803, answer_ro) - Math.pow(-0.61803, answer_ro)) / sq_root;
+        const final_ans4 = (Math.pow(1.61803, answer_rfd) - Math.pow(-0.61803, answer_rfd)) / sq_root;
+        const final_ans5 = (Math.pow(1.61803, answer_jg) - Math.pow(-0.61803, answer_jg)) / sq_root;
+        const final_ans6 = (Math.pow(1.61803, answer_eg) - Math.pow(-0.61803, answer_eg)) / sq_root;
+        const final_ans7 = (Math.pow(1.61803, answer_h) - Math.pow(-0.61803, answer_h)) / sq_root;
+
+        // Adjacent primes
+        const ap_eo = np(answer_eo);
+        const [apeo_p, apeo_n] = ap_eo;
+        
+        const ap_fr = np(answer_fr);
+        const [apfr_p, apfr_n] = ap_fr;
+        
+        const ap_ro = np(answer_ro);
+        const [apro_p, apro_n] = ap_ro;
+        
+        const ap_rfd = np(answer_rfd);
+        const [aprfd_p, aprfd_n] = ap_rfd;
+        
+        const ap_jg = np(answer_jg);
+        const [apjg_p, apjg_n] = ap_jg;
+        
+        const ap_eg = np(answer_eg);
+        const [apeg_p, apeg_n] = ap_eg;
+        
+        const ap_h = np(answer_h);
+        const [aph_p, aph_n] = ap_h;
+
+        // Prime count
+        const previous_eo = total(answer_eo);
+        const next_eo = previous_eo + 1;
+        const previous_fr = total(answer_fr);
+        const next_fr = previous_fr + 1;
+        const previous_ro = total(answer_ro);
+        const next_ro = previous_ro + 1;
+        const previous_rfd = total(answer_rfd);
+        const next_rfd = previous_rfd + 1;
+        const previous_jg = total(answer_jg);
+        const next_jg = previous_jg + 1;
+        const previous_eg = total(answer_eg);
+        const next_eg = previous_eg + 1;
+        const previous_h = total(answer_h);
+        const next_h = previous_h + 1;
+
+        // Prime check
+        const check_eo = primeCheck(answer_eo);
+        const check_fr = primeCheck(answer_fr);
+        const check_ro = primeCheck(answer_ro);
+        const check_rfd = primeCheck(answer_rfd);
+        const check_jg = primeCheck(answer_jg);
+        const check_eg = primeCheck(answer_eg);
+        const check_h = primeCheck(answer_h);
+
+        // Triangular number check
+        const eo = triangular.indexOf(answer_eo);
+        const fr = triangular.indexOf(answer_fr);
+        const ro = triangular.indexOf(answer_ro);
+        const rfd = triangular.indexOf(answer_rfd);
+        const jg = triangular.indexOf(answer_jg);
+        const eg = triangular.indexOf(answer_eg);
+        const h = triangular.indexOf(answer_h);
+
+        // Process triangular results for each system
+        const processTriangular = (answer, index, suffix) => {
+          if (index !== -1) {
+            param[`tech_index_${suffix}`] = index + 2;
+          } else {
+            const greater = triangular.filter(v => answer > v);
+            const less = triangular.filter(v => answer < v);
+            param[`tech_countg_${suffix}`] = greater.length;
+            param[`tech_endg_${suffix}`] = greater[greater.length - 1];
+            param[`tech_fl_${suffix}`] = less[0];
+            param[`tech_countg_${suffix}1`] = greater.length + 1;
+          }
+        };
+
+        processTriangular(answer_eo, eo, 'eo');
+        processTriangular(answer_fr, fr, 'fr');
+        processTriangular(answer_ro, ro, 'ro');
+        processTriangular(answer_rfd, rfd, 'rfd');
+        processTriangular(answer_jg, jg, 'jg');
+        processTriangular(answer_eg, eg, 'eg');
+        processTriangular(answer_h, h, 'h');
+
+        // Digit sum
+        const dosra_eo = answer_eo.toString().split('').map(Number).reduce((a, b) => a + b, 0);
+        const dosra_fr = answer_fr.toString().split('').map(Number).reduce((a, b) => a + b, 0);
+        const dosra_ro = answer_ro.toString().split('').map(Number).reduce((a, b) => a + b, 0);
+        const dosra_rfd = answer_rfd.toString().split('').map(Number).reduce((a, b) => a + b, 0);
+        const dosra_jg = answer_jg.toString().split('').map(Number).reduce((a, b) => a + b, 0);
+        const dosra_eg = answer_eg.toString().split('').map(Number).reduce((a, b) => a + b, 0);
+        const dosra_h = answer_h.toString().split('').map(Number).reduce((a, b) => a + b, 0);
+
+        // Triangular relation
+        const trelation_eo = triangular[answer_eo - 1] || 0;
+        const trelation_fr = triangular[answer_fr - 1] || 0;
+        const trelation_ro = triangular[answer_ro - 1] || 0;
+        const trelation_rfd = triangular[answer_rfd - 1] || 0;
+        const trelation_jg = triangular[answer_jg - 1] || 0;
+        const trelation_eg = triangular[answer_eg - 1] || 0;
+        const trelation_h = triangular[answer_h - 1] || 0;
+
+        // Prime relation
+        const prelation_eo = prime_nums[answer_eo - 1] || 0;
+        const prelation_fr = prime_nums[answer_fr - 1] || 0;
+        const prelation_ro = prime_nums[answer_ro - 1] || 0;
+        const prelation_rfd = prime_nums[answer_rfd - 1] || 0;
+        const prelation_jg = prime_nums[answer_jg - 1] || 0;
+        const prelation_eg = prime_nums[answer_eg - 1] || 0;
+        const prelation_h = prime_nums[answer_h - 1] || 0;
+
+        // Fibonacci check
+        const eo_fib = arr.indexOf(answer_eo);
+        const fr_fib = arr.indexOf(answer_fr);
+        const ro_fib = arr.indexOf(answer_ro);
+        const rfd_fib = arr.indexOf(answer_rfd);
+        const jg_fib = arr.indexOf(answer_jg);
+        const eg_fib = arr.indexOf(answer_eg);
+        const h_fib = arr.indexOf(answer_h);
+
+        // Process Fibonacci results for each system
+        const processFibonacci = (answer, index, suffix) => {
+          if (index != -1) {
+            param[`tech_findex_${suffix}`] = index + 2;
+          } else {
+            const fgreater = arr.filter(v => answer > v);
+            const fless = arr.filter(v => answer < v);
+            param[`tech_fcountg_${suffix}`] = fgreater.length;
+            param[`tech_fendg_${suffix}`] = fgreater[fgreater.length - 1];
+            param[`tech_ffl_${suffix}`] = fless[0];
+            param[`tech_fcountg_${suffix}1`] = fgreater.length + 1;
+          }
+        };
+
+        processFibonacci(answer_eo, eo_fib, 'eo');
+        processFibonacci(answer_fr, fr_fib, 'fr');
+        processFibonacci(answer_ro, ro_fib, 'ro');
+        processFibonacci(answer_rfd, rfd_fib, 'rfd');
+        processFibonacci(answer_jg, jg_fib, 'jg');
+        processFibonacci(answer_eg, eg_fib, 'eg');
+        processFibonacci(answer_h, h_fib, 'h');
+
+        // Assign all results to param
+        Object.assign(param, {
+         tech_inner_alpha: inner_alpha,
+          tech_inner_ans_eo: inner_ans_eo,
+          tech_inner_ans_fr: inner_ans_fr,
+          tech_inner_ans_ro: inner_ans_ro,
+          tech_inner_ans_rfd: inner_ans_rfd,
+          tech_inner_ans_jg: inner_ans_jg,
+          tech_inner_ans_eg: inner_ans_eg,
+          tech_inner_ans_h: inner_ans_h,
+          tech_inner_sum_eo: inner_sum_eo,
+          tech_inner_sum_fr: inner_sum_fr,
+          tech_inner_sum_ro: inner_sum_ro,
+          tech_inner_sum_rfd: inner_sum_rfd,
+          tech_inner_sum_jg: inner_sum_jg,
+          tech_inner_sum_eg: inner_sum_eg,
+          tech_inner_sum_h: inner_sum_h,
+          tech_answer_eo: answer_eo,
+          tech_answer_fr: answer_fr,
+          tech_answer_ro: answer_ro,
+          tech_answer_rfd: answer_rfd,
+          tech_answer_jg: answer_jg,
+          tech_answer_eg: answer_eg,
+          tech_answer_h: answer_h,
+          tech_count_ans: count_ans,
+          tech_words_ans: words_ans,
+          tech_input: input,
+          tech_final_ans: final_ans,
+          tech_final_ans2: final_ans2,
+          tech_final_ans3: final_ans3,
+          tech_final_ans4: final_ans4,
+          tech_final_ans5: final_ans5,
+          tech_final_ans6: final_ans6,
+          tech_final_ans7: final_ans7,
+          tech_eo_divi: eo_divi,
+          tech_count_eodivi: count_eodivi,
+          tech_eodivi_sum: eodivi_sum,
+          tech_fr_divi: fr_divi,
+          tech_count_frdivi: count_frdivi,
+          tech_frdivi_sum: frdivi_sum,
+          tech_ro_divi: ro_divi,
+          tech_count_rodivi: count_rodivi,
+          tech_rodivi_sum: rodivi_sum,
+          tech_rfd_divi: rfd_divi,
+          tech_count_rfddivi: count_rfddivi,
+          tech_rfddivi_sum: rfddivi_sum,
+          tech_jg_divi: jg_divi,
+          tech_count_jgdivi: count_jgdivi,
+          tech_jgdivi_sum: jgdivi_sum,
+          tech_eg_divi: eg_divi,
+          tech_count_egdivi: count_egdivi,
+          tech_egdivi_sum: egdivi_sum,
+          tech_h_divi: h_divi,
+          tech_count_hdivi: count_hdivi,
+          tech_hdivi_sum: hdivi_sum,
+          tech_newtext_eo: newtext_eo,
+          tech_newtext_fr: newtext_fr,
+          tech_newtext_ro: newtext_ro,
+          tech_newtext_rfd: newtext_rfd,
+          tech_newtext_jg: newtext_jg,
+          tech_newtext_eg: newtext_eg,
+          tech_newtext_h: newtext_h,
+          tech_apeo_p: apeo_p,
+          tech_apeo_n: apeo_n,
+          tech_apfr_p: apfr_p,
+          tech_apfr_n: apfr_n,
+          tech_apro_p: apro_p,
+          tech_apro_n: apro_n,
+          tech_aprfd_p: aprfd_p,
+          tech_aprfd_n: aprfd_n,
+          tech_apjg_p: apjg_p,
+          tech_apjg_n: apjg_n,
+          tech_apeg_p: apeg_p,
+          tech_apeg_n: apeg_n,
+          tech_aph_p: aph_p,
+          tech_aph_n: aph_n,
+          tech_previous_eo: previous_eo,
+          tech_next_eo: next_eo,
+          tech_previous_fr: previous_fr,
+          tech_next_fr: next_fr,
+          tech_previous_ro: previous_ro,
+          tech_next_ro: next_ro,
+          tech_previous_rfd: previous_rfd,
+          tech_next_rfd: next_rfd,
+          tech_previous_jg: previous_jg,
+          tech_next_jg: next_jg,
+          tech_previous_eg: previous_eg,
+          tech_next_eg: next_eg,
+          tech_previous_h: previous_h,
+          tech_next_h: next_h,
+          tech_check_eo: check_eo,
+          tech_check_fr: check_fr,
+          tech_check_ro: check_ro,
+          tech_check_rfd: check_rfd,
+          tech_check_jg: check_jg,
+          tech_check_eg: check_eg,
+          tech_check_h: check_h,
+          tech_eo: eo,
+          tech_fr: fr,
+          tech_ro: ro,
+          tech_rfd: rfd,
+          tech_jg: jg,
+          tech_eg: eg,
+          tech_h: h,
+          tech_dosra_eo: dosra_eo,
+          tech_dosra_fr: dosra_fr,
+          tech_dosra_ro: dosra_ro,
+          tech_dosra_rfd: dosra_rfd,
+          tech_dosra_jg: dosra_jg,
+          tech_dosra_eg: dosra_eg,
+          tech_dosra_h: dosra_h,
+          tech_trelation_eo: trelation_eo,
+          tech_trelation_fr: trelation_fr,
+          tech_trelation_ro: trelation_ro,
+          tech_trelation_rfd: trelation_rfd,
+          tech_trelation_jg: trelation_jg,
+          tech_trelation_eg: trelation_eg,
+          tech_trelation_h: trelation_h,
+          tech_prelation_eo: prelation_eo,
+          tech_prelation_fr: prelation_fr,
+          tech_prelation_ro: prelation_ro,
+          tech_prelation_rfd: prelation_rfd,
+          tech_prelation_jg: prelation_jg,
+          tech_prelation_eg: prelation_eg,
+          tech_prelation_h: prelation_h,
+          tech_eo_fib: eo_fib,
+          tech_fr_fib: fr_fib,
+          tech_ro_fib: ro_fib,
+          tech_rfd_fib: rfd_fib,
+          tech_jg_fib: jg_fib,
+          tech_eg_fib: eg_fib,
+          tech_h_fib: h_fib
+
+        });
+
+        return param;
+      }
+
+          /**
+    * getCalculationBaseCalculator: Service Method
+    * POST: /api/calculators-lol/base-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+      async getCalculationBaseCalculator(body) {
+      const bnr_frs = body.tech_bnr_frs;
+      const bnr_sec = body.tech_bnr_sec;
+      const select_base = body.tech_select_base;
+      const tool = body.tech_tool;
+      const bnr_slc = body.tech_bnr_slc;
+      const to_number = body.tech_to_number;
+      const bnr_third = body.tech_bnr_third;
+      const param = {};
+
+      // Helper function to convert from any base to decimal (base 10)
+      function bnrType(nn, bnr_tpe) {
+        return parseInt(nn, bnr_tpe);
+      }
+
+      // Helper function to convert decimal to any base
+      function toBase(num, base) {
+        return Math.abs(num).toString(base);
+      }
+
+      // Binary calculation function
+      function bnrCal(fN, sN, bnr_slc, select_base) {
+        let rN, dc, bn;
+
+        if (bnr_slc == "add") {
+          rN = fN + sN;
+          dc = rN;
+          bn = toBase(dc, select_base);
+          return [bn, dc];
+        } else if (bnr_slc == "sub") {
+          rN = fN - sN;
+          dc = rN;
+          if (dc < 0) {
+            bn = "-" + toBase(dc, select_base);
+          } else {
+            bn = toBase(dc, select_base);
+          }
+          return [bn, dc];
+        } else if (bnr_slc == "mult") {
+          rN = fN * sN;
+          dc = rN;
+          bn = toBase(dc, select_base);
+          return [bn, dc];
+        } else if (bnr_slc == "divd") {
+          if (fN == 0 || sN == 0) {
+            return { error: 'Please! Check your input' };
+          }
+          rN = fN / sN;
+          dc = Math.round(rN);
+          bn = toBase(dc, select_base);
+          return [bn, dc];
+        }
+        
+        return ['invalid', null];
+      }
+
+      if (tool == "calculator") {
+        if (bnr_frs != "" && bnr_frs !== undefined && bnr_sec != "" && bnr_sec != undefined) {
+          const fN = bnrType(bnr_frs, select_base);
+          const sN = bnrType(bnr_sec, select_base);
+
+          // Set presentation text
+          if (bnr_slc == "add") {
+            param.tech_pres = "addition";
+          } else if (bnr_slc == "sub") {
+            param.tech_pres = "subtraction";
+          } else if (bnr_slc == "mult") {
+            param.tech_pres = "multiplication";
+          } else if (bnr_slc == "divd") {
+            param.tech_pres = "division";
+          }
+
+          // Perform calculation
+          const result = bnrCal(fN, sN, bnr_slc, select_base);
+          
+          if (Array.isArray(result) && result[0] !== undefined) {
+            param.tech_bn = result[0];
+          } else if (result && result.error) {
+            param.error = result.error;
+            return param;
+          } else {
+            param.tech_bn = 'error';
+          }
+
+          param.tech_bnr_frs = bnr_frs;
+          param.tech_bnr_sec = bnr_sec;
+          param.tech_bnr_slc = bnr_slc;
+          param.tech_bnr_tpe = select_base;
+          return param;
+        } else {
+          param.error = 'Please! Check your input';
+          return param;
+        }
+      } else if (tool == "converter") {
+        // Base converter
+        const binary = parseInt(bnr_third, select_base).toString(to_number);
+        
+        param.tech_bi = binary;
+        param.tech_from_base = select_base;
+        param.tech_to_base = to_number;
+        param.tech_resulting_number = bnr_third;
+        
+        return param;
+      }
+
+      param.error = 'Invalid tool selection';
+      return param;
+    }
+
+       /**
+    * getCalculationRatioToFractionCalculator: Service Method
+    * POST: /api/calculators-lol/base-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    async getCalculationRatioToFractionCalculator(body) {
+      const select_unit = body.tech_select_unit;
+      const first_number = body.tech_first_number;
+      const second_number = body.tech_second_number;
+      const convert = body.tech_convert;
+      const param = {};
+
+      // Helper function to calculate GCD (Greatest Common Divisor)
+      function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+
+        if (a < b) {
+          [a, b] = [b, a];
+        }
+
+        if (b == 0) {
+          return 1;
+        }
+
+        let r = a % b;
+        while (r > 0) {
+          a = b;
+          b = r;
+          r = a % b;
+        }
+        return b;
+      }
+
+      // Helper function to reduce fraction
+      function reduce(num, den) {
+        const g = gcd(num, den);
+        return [num / g, den / g];
+      }
+
+      // Validate if input is numeric
+      function isNumeric(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+      }
+
+      if (convert == "1") { // Convert Ratio to Fraction
+        if (select_unit == "1") {
+          if (isNumeric(first_number) && isNumeric(second_number)) {
+            const fn = parseFloat(first_number);
+            const sn = parseFloat(second_number);
+
+            if (fn >= 0 && sn >= 0) {
+              if (fn == 0 && sn == 0) {
+                param.error = 'There must be at least one part, A or B, greater than 0.';
+                return param;
+              } else {
+                const addition = fn + sn;
+                const totalN = fn;
+                const totalD = addition;
+
+                const [upr1, btm1] = reduce(totalN, totalD);
+
+                const totalN1 = sn;
+                const totalD1 = addition;
+
+                const [upr2, btm2] = reduce(totalN1, totalD1);
+
+                const method = 1;
+                param.tech_upr1 = upr1;
+                param.tech_btm1 = btm1;
+                param.tech_upr2 = upr2;
+                param.tech_btm2 = btm2;
+                param.tech_addition = addition;
+                param.tech_first_number = first_number;
+                param.tech_second_number = second_number;
+                param.tech_method = method;
+              }
+            } else {
+              param.error = 'Enter 0 or a whole number';
+              return param;
+            }
+          } else {
+            param.error = 'Please Check Your Input!';
+            return param;
+          }
+        } else if (select_unit == "2") {
+          if (isNumeric(first_number) && isNumeric(second_number)) {
+            const fn = parseFloat(first_number);
+            const sn = parseFloat(second_number);
+
+            if (fn >= 0 && sn >= 0) {
+              if (fn == 0 && sn == 0) {
+                param.error = 'Enter 0 or a whole number';
+                return param;
+              } else {
+                if (fn <= sn) { // Part is less than whole
+                  const totalN1 = fn;
+                  const totalD1 = sn;
+
+                  const [upr2, btm2] = reduce(totalN1, totalD1);
+
+                  const method2 = 2;
+                  param.tech_first_number = first_number;
+                  param.tech_second_number = second_number;
+                  param.tech_upr2 = upr2;
+                  param.tech_btm2 = btm2;
+                  param.tech_method = method2;
+                } else {
+                  param.error = 'The Part must be less than or equal to the Whole.';
+                  return param;
+                }
+              }
+            } else {
+              param.error = 'There must be at least one part, A or B, greater than 0.';
+              return param;
+            }
+          } else {
+            param.error = 'Please Check Your Input!';
+            return param;
+          }
+        }
+      } else if (convert == "2") { // Convert Fraction to Ratio
+        if (select_unit == "1") {
+          if (isNumeric(first_number) && isNumeric(second_number)) {
+            const fn = parseFloat(first_number);
+            const sn = parseFloat(second_number);
+
+            if (fn >= 0 && sn >= 0) {
+              if (fn == 0 && sn == 0) {
+                param.error = 'There must be at least one part, A or B, greater than 0.';
+                return param;
+              } else {
+                const totalN = fn;
+                const totalD = sn;
+
+                const [upr1, btm1] = reduce(totalN, totalD);
+
+                const method = 3;
+                param.tech_upr1 = upr1;
+                param.tech_upr2 = btm1;
+                param.tech_first_number = first_number;
+                param.tech_second_number = second_number;
+                param.tech_method = method;
+              }
+            } else {
+              param.error = 'Enter 0 or a whole number';
+              return param;
+            }
+          } else {
+            param.error = 'Please Check Your Input!';
+            return param;
+          }
+        } else if (select_unit == "2") {
+          if (isNumeric(first_number) && isNumeric(second_number)) {
+            const fn = parseFloat(first_number);
+            const sn = parseFloat(second_number);
+
+            if (fn >= 0 && sn >= 0) {
+              if (fn == 0 && sn == 0) {
+                param.error = 'There must be at least one part, A or B, greater than 0.';
+                return param;
+              } else {
+                if (fn <= sn) {
+                  const subtraction = sn - fn;
+                  const totalN = fn;
+                  const totalD = subtraction;
+
+                  const [upr1, btm1] = reduce(totalN, totalD);
+
+                  const totalN1 = sn;
+                  const totalD1 = subtraction;
+
+                  const [upr2, btm2] = reduce(totalN1, totalD1);
+
+                  const method = 4;
+                  param.tech_upr1 = upr1;
+                  param.tech_btm1 = btm1;
+                  param.tech_upr2 = upr2;
+                  param.tech_btm2 = btm2;
+                  param.tech_subtraction = subtraction;
+                  param.tech_first_number = first_number;
+                  param.tech_second_number = second_number;
+                  param.tech_method = method;
+                } else {
+                  param.error = 'The Part must be less than or equal to the Whole.';
+                  return param;
+                }
+              }
+            } else {
+              param.error = 'There must be at least one part, A or B, greater than 0.';
+              return param;
+            }
+          } else {
+            param.error = 'Please Check Your Input!';
+            return param;
+          }
+        }
+      }
+
+      return param;
+    }
+
+      /**
+    * getCalculationGramSchmidtCalculator: Service Method
+    * POST: /api/calculators-lol/gram-schmidt-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+      async getCalculationGramSchmidtCalculator(body) {
+      const matrix2 = parseInt(body.tech_matrix2);
+      const matrix22 = parseInt(body.tech_matrix22);
+      const second_matrix = [];
+
+      // Extract matrix data
+      for (let i = 1; i <= matrix2; i++) {
+          for (let j = 1; j <= matrix22; j++) {
+              const key = `tech_matrix3${i}_${j}`;
+              if (body[key] != undefined && !isNaN(parseFloat(body[key]))) {
+                  second_matrix.push(parseFloat(body[key]));
+              }
+          }
+      }
+
+      // Helper functions
+      const new_roundNumb = (a) => {
+          return Math.round(a * 100) / 100;
+      };
+
+      const normalizeVector = (coordinates, vector) => {
+          let divisor = 0;
+          for (let i = 0; i < coordinates; i++) {
+              divisor = divisor + Math.pow(vector[i], 2);
+          }
+          divisor = Math.sqrt(divisor);
+          if (divisor !== 0) {
+              for (let i = 0; i < coordinates; i++) {
+                  vector[i] = new_roundNumb(vector[i] / divisor);
+              }
+          }
+          return vector;
+      };
+
+      const subtractPrevious = (coordinates, vector1, vector2) => {
+          let divisor1 = 0;
+          let divisor2 = 0;
+          let dotProduct = 0;
+          for (let i = 0; i < coordinates; i++) {
+              divisor1 += vector1[i] * vector1[i];
+              divisor2 += vector2[i] * vector2[i];
+              dotProduct += vector1[i] * vector2[i];
+          }
+          if (divisor1 !== 0 && divisor2 !== 0) {
+              for (let i = 0; i < coordinates; i++) {
+                  vector1[i] = new_roundNumb(vector1[i] - dotProduct * vector2[i] / divisor2);
+              }
+          }
+          return vector1;
+      };
+
+      // Main logic
+      const mul = matrix22 * matrix2;
+      let result = {};
+
+      if (mul === second_matrix.length) {
+          // Convert flat array to 2D matrix
+          const zain = [];
+          for (let i = 0; i < matrix2; i++) {
+              const row = second_matrix.slice(i * matrix22, (i + 1) * matrix22);
+              zain.push(row);
+          }
+
+          // Get column vectors
+          const all_vec = [];
+          for (let i = 0; i < matrix22; i++) {
+              const column = [];
+              for (let j = 0; j < matrix2; j++) {
+                  column.push(zain[j][i]);
+              }
+              all_vec.push(column);
+          }
+
+          const first_unit = normalizeVector(matrix2, [...all_vec[0]]);
+          const fahad = Math.max(matrix22, matrix2);
+          const f_vec = [...all_vec[0]];
+          
+          // Calculate projections for all vectors
+          const total = [];
+          const vector_unit = [];
+
+          for (let i = 1; i < fahad; i++) {
+              if (all_vec[i]) {
+                  const s_vec = all_vec[i];
+                  const temp = [];
+                  for (let key = 0; key < f_vec.length; key++) {
+                      temp.push(f_vec[key] * s_vec[key]);
+                  }
+                  total[i] = temp;
+                  vector_unit.push(temp.reduce((sum, val) => sum + val, 0));
+              }
+          }
+
+          // Calculate vector magnitude
+          const itself_mul = [];
+          for (const value of f_vec) {
+              itself_mul.push(Math.pow(value, 2));
+          }
+          const vector_u = itself_mul.reduce((sum, val) => sum + val, 0);
+
+          // Calculate combined vectors
+          const combined_vector = [];
+          for (const value7 of vector_unit) {
+              combined_vector.push(value7 / vector_u);
+          }
+
+          // Calculate projection answers
+          const ans_pro = [];
+          for (let l = 0; l < f_vec.length; l++) {
+              const temp = [];
+              for (const values of combined_vector) {
+                  temp.push(values * f_vec[l]);
+              }
+              ans_pro.push(temp);
+          }
+
+          // Transpose ans_pro to get column vectors
+          const pros_ans = [];
+          for (let m = 0; m < matrix22 - 1; m++) {
+              const column = [];
+              for (let n = 0; n < ans_pro.length; n++) {
+                  if (ans_pro[n][m] !== undefined) {
+                      column.push(ans_pro[n][m]);
+                  }
+              }
+              pros_ans.push(column);
+          }
+
+          // Remove first element from zaini
+          const zaini = [...all_vec];
+          zaini.shift();
+
+          // Calculate subtracted vectors
+          const subtract = [];
+          for (let main = 0; main < pros_ans.length; main++) {
+              if (zaini[main]) {
+                  subtract.push(subtractPrevious(matrix2, [...zaini[main]], [...pros_ans[main]]));
+              }
+          }
+
+          // Calculate unit vectors
+          const all_vecunit = [];
+          for (const value of subtract) {
+              all_vecunit.push(normalizeVector(matrix2, [...value]));
+          }
+
+          // Set result values - match Laravel structure exactly
+          result.tech_all_vec = all_vec;
+          result.tech_first_unit = first_unit;
+          result.tech_all_vecunit = all_vecunit;
+          result.tech_pros_ans = pros_ans;
+          result.tech_subtract = subtract;
+
+      } else {
+          result.error = 'Please! Check Your Input.';
+      }
+
+      return result;
+  }
+
+      /**
+    * getCalculationVolumeOfTriangularPyramidCalculator: Service Method
+    * POST: /api/calculators-lol/volume-of-triangular-pyramid
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    async getCalculationVolumeOfTriangularPyramidCalculator(body) {
+    const selection = body.tech_selection;
+    const triangle_type = body.tech_triangle_type;
+    const base = body.tech_base;
+    const base_unit = body.tech_base_unit;
+    const base_height = body.tech_base_height;
+    const base_height_unit = body.tech_base_height_unit;
+    const pyramid_height = body.tech_pyramid_height;
+    const pyramid_height_unit = body.tech_pyramid_height_unit;
+    const pyramid_base_area = body.tech_pyramid_base_area;
+    const pyramid_base_area_unit = body.tech_pyramid_base_area_unit;
+    const sidea = body.tech_sidea;
+    const sidea_length_unit = body.tech_sidea_length_unit;
+    const sideb = body.tech_sideb;
+    const sideb_length_unit = body.tech_sideb_length_unit;
+    const sidec = body.tech_sidec;
+    const sidec_length_unit = body.tech_sidec_length_unit;
+    const angle_gamma = body.tech_angle_gamma;
+    const angle_gamma_unit = body.tech_angle_gamma_unit;
+    const angle_beta = body.tech_angle_beta;
+    const angle_beta_unit = body.tech_angle_beta_unit;
+    
+    const param = {};
+
+    // Helper function to convert length units to cm
+    function unit_convert(unit, value) {
+      const conversions = {
+        'mm': 0.1,
+        'cm': 1,
+        'm': 100,
+        'km': 100000,
+        'in': 2.54,
+        'ft': 30.48,
+        'yd': 91.44,
+        'mi': 160934
+      };
+      return value * (conversions[unit] || 1);
+    }
+
+    // Helper function to convert angle units to radians
+    function angle_convert(unit2, value2) {
+      if (unit2 == "deg") {
+        return value2 * 0.017453;
+      } else if (unit2 == "rad") {
+        return value2 * 1;
+      }
+      return value2;
+    }
+
+    // Helper function to convert area units to cm²
+    function centi(unit3, value3) {
+      const conversions = {
+        'mm²': 0.01,
+        'cm²': 1,
+        'm²': 10000,
+        'km²': 10000000000,
+        'in²': 6.452,
+        'ft²': 929,
+        'yd²': 8361,
+        'mi²': 25899881103
+      };
+      return value3 * (conversions[unit3] || 1);
+    }
+
+    // Validate if input is numeric
+    function isNumeric(value) {
+      return !isNaN(parseFloat(value)) && isFinite(value);
+    }
+
+    let pba, volume;
+
+    if (selection == "1") {
+      // Calculate using triangle dimensions
+      if (triangle_type == "1") {
+        // Right Triangle: base, height, pyramid height
+        if (isNumeric(base) && isNumeric(base_height) && isNumeric(pyramid_height)) {
+          const b_value = unit_convert(base_unit, parseFloat(base));
+          const bh_value = unit_convert(base_height_unit, parseFloat(base_height));
+          const ph_value = unit_convert(pyramid_height_unit, parseFloat(pyramid_height));
+          pba = (b_value * bh_value) / 2;
+          volume = (pba * ph_value) / 3;
+        } else {
+          param.error = 'Please! Check your input';
+          return param;
+        }
+      } else if (triangle_type == "2") {
+        // Three sides (Heron's formula)
+        if (isNumeric(sidea) && isNumeric(sideb) && isNumeric(sidec) && isNumeric(pyramid_height)) {
+          const sa = parseFloat(sidea);
+          const sb = parseFloat(sideb);
+          const sc = parseFloat(sidec);
+
+          // Validate triangle inequality
+          if (sa > sb + sc) {
+            param.error = 'Side a must be less than the sum of the other two sides (b+c)';
+            return param;
+          } else if (sb > sa + sc) {
+            param.error = 'Side b must be less than the sum of the other two sides (a+c)';
+            return param;
+          } else if (sc > sa + sb) {
+            param.error = 'Side c must be less than the sum of the other two sides (a+b)';
+            return param;
+          } else {
+            const sa_value = unit_convert(sidea_length_unit, sa);
+            const sb_value = unit_convert(sideb_length_unit, sb);
+            const sc_value = unit_convert(sidec_length_unit, sc);
+            const ph_value = unit_convert(pyramid_height_unit, parseFloat(pyramid_height));
+            
+            const sect_one = (sa_value + sb_value + sc_value);
+            const sect_two = (-sa_value + sb_value + sc_value);
+            const sect_three = (sa_value - sb_value + sc_value);
+            const sect_four = (sa_value + sb_value - sc_value);
+            
+            pba = 0.25 * Math.sqrt(sect_one * sect_two * sect_three * sect_four);
+            volume = (pba * ph_value) / 3;
+          }
+        } else {
+          param.error = 'Please! Check your input';
+          return param;
+        }
+      } else if (triangle_type == "3") {
+        // Two sides and included angle
+        if (isNumeric(sidea) && isNumeric(sideb) && isNumeric(angle_gamma) && isNumeric(pyramid_height)) {
+          const sa_value = unit_convert(sidea_length_unit, parseFloat(sidea));
+          const sb_value = unit_convert(sideb_length_unit, parseFloat(sideb));
+          const alpha_value = angle_convert(angle_gamma_unit, parseFloat(angle_gamma));
+
+          if (angle_gamma_unit == "deg") {
+            if (parseFloat(angle_gamma) < 180) {
+              const ph_value = unit_convert(pyramid_height_unit, parseFloat(pyramid_height));
+              pba = (sa_value * sb_value * Math.sin(alpha_value)) * 0.5;
+              volume = (pba * ph_value) / 3;
+            } else {
+              param.error = 'Angles should be between 0 and 180 deg';
+              return param;
+            }
+          } else if (angle_gamma_unit == "rad") {
+            if (alpha_value < 3.14159) {
+              const ph_value = unit_convert(pyramid_height_unit, parseFloat(pyramid_height));
+              pba = (sa_value * sb_value * Math.sin(alpha_value)) * 0.5;
+              volume = (pba * ph_value) / 3;
+            } else {
+              param.error = 'Angles should be between 0 and 180 deg';
+              return param;
+            }
+          }
+        } else {
+          param.error = 'Please! Check your input';
+          return param;
+        }
+      } else if (triangle_type == "4") {
+        // One side and two angles
+        if (isNumeric(sidea) && isNumeric(angle_beta) && isNumeric(angle_gamma) && isNumeric(pyramid_height)) {
+          const sa_value = unit_convert(sidea_length_unit, parseFloat(sidea));
+          
+          let alpha_value, beta_value;
+
+          // Convert gamma angle
+          if (angle_gamma_unit == "rad") {
+            alpha_value = parseFloat(angle_gamma);
+          } else if (angle_gamma_unit == "deg") {
+            alpha_value = parseFloat(angle_gamma) * 0.017453;
+          }
+
+          // Convert beta angle
+          if (angle_beta_unit == "rad") {
+            beta_value = parseFloat(angle_beta);
+          } else if (angle_beta_unit == "deg") {
+            beta_value = parseFloat(angle_beta) * 0.017453;
+          }
+
+          // Convert to degrees for validation
+          // const alpha_deg = angle_gamma_unit == "deg" ? parseFloat(angle_gamma) : parseFloat(angle_gamma) * 57.2958;
+          // const beta_deg = angle_beta_unit == "deg" ? parseFloat(angle_beta) : parseFloat(angle_beta) * 57.2958;
+          	// dd($alpha_value,$angle_gamma,$ang);
+          // console.log(alpha_deg,beta_deg);
+          if (alpha_value < 180 && beta_value < 180) {
+            if (alpha_value + beta_value < 180) {
+              const ph_value = unit_convert(pyramid_height_unit, parseFloat(pyramid_height));
+              const sect1 = sa_value * sa_value * Math.sin(beta_value) * Math.sin(alpha_value);
+              const sect2 = 2 * Math.sin(alpha_value + beta_value);
+              pba = sect1 / sect2;
+              volume = (pba * ph_value) / 3;
+            } else {
+              param.error = 'The sum of the two angles cannot exceed 180 deg.';
+              return param;
+            }
+          } else {
+            param.error = 'Angles should be between 0 and 180 deg range';
+            return param;
+          }
+        } else {
+          param.error = 'Please! Check your input';
+          return param;
+        }
+      }
+
+      param.tech_pba = pba;
+      param.tech_volume = volume;
+    } else if (selection == "2") {
+      // Calculate using base area directly
+      if (isNumeric(pyramid_base_area) && isNumeric(pyramid_height)) {
+        const pb_value = centi(pyramid_base_area_unit, parseFloat(pyramid_base_area));
+        const ph_value = unit_convert(pyramid_height_unit, parseFloat(pyramid_height));
+        volume = (pb_value * ph_value) / 3;
+        param.tech_volume = volume;
+      } else {
+        param.error = 'Please! Check your input';
+        return param;
+      }
+    }
+
+    return param;
+  }
+
+
+     /**
+    * getCalculationAreaCalculator: Service Method
+    * POST: /api/calculators-lol/area-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+   async getCalculationAreaCalculator(body) {
+        const shapes = body.tech_shapes;
+        const radius = body.tech_radius;
+        const radius_unit = body.tech_radius_unit;
+        const area = body.tech_area;
+        const area_unit = body.tech_area_unit;
+        const box = body.tech_box;
+        const box_unit = body.tech_box_unit;
+        const angle_alpha = body.tech_angle_alpha;
+        const angle_alpha_unit = body.tech_angle_alpha_unit;
+        const height = body.tech_height;
+        const height_unit = body.tech_height_unit;
+        const bara_radius = body.tech_bara_radius;
+        const bara_radius_unit = body.tech_bara_radius_unit;
+        const e = body.tech_e;
+        const e_unit = body.tech_e_unit;
+        const f = body.tech_f;
+        const f_unit = body.tech_f_unit;
+        const number_of_sides = body.tech_number_of_sides;
+        const find_triangle = body.tech_find_triangle;
+        const find_triangle_two = body.tech_find_triangle_two;
+        const find_triangle_three = body.tech_find_triangle_three;
+        const find_triangle_four = body.tech_find_triangle_four;
+        const c = body.tech_c;
+        const c_unit = body.tech_c_unit;
+        const angle_gamma = body.tech_angle_gamma;
+        const angle_gamma_unit = body.tech_angle_gamma_unit;
+        const angle_beta = body.tech_angle_beta;
+        const angle_beta_unit = body.tech_angle_beta_unit;
+        const angle_theta = body.tech_angle_theta;
+        const angle_theta_unit = body.tech_angle_theta_unit;
+
+        const param = {};
+
+        // Helper function to convert length units to cm
+        function unit_convert(unit, value) {
+          const conversions = {
+            'mm': 0.1,
+            'cm': 1,
+            'm': 100,
+            'km': 100000,
+            'in': 2.54,
+            'ft': 30.48,
+            'yd': 91.44,
+            'mi': 160934
+          };
+          return value * (conversions[unit] || 1);
+        }
+
+        // Helper function to convert angle units to radians
+        function angle_convert(unit2, value2) {
+          if (unit2 == "deg") {
+            return value2 * 0.017453;
+          } else if (unit2 == "rad") {
+            return value2 * 1;
+          }
+          return value2;
+        }
+
+        // Helper function to convert area units to cm²
+        function centi(unit3, value3) {
+          const conversions = {
+            'mm²': 0.01,
+            'cm²': 1,
+            'm²': 10000,
+            'km²': 10000000000,
+            'in²': 6.452,
+            'ft²': 929,
+            'yd²': 8361,
+            'mi²': 25899881103
+          };
+          return value3 * (conversions[unit3] || 1);
+        }
+
+        // Validate if input is numeric
+        function isNumeric(value) {
+          return !isNaN(parseFloat(value)) && isFinite(value);
+        }
+
+        let answer, method;
+
+        if (shapes == "square") {
+          method = 1;
+          if (isNumeric(area)) {
+            const area_value = unit_convert(area_unit, parseFloat(area));
+            answer = area_value * area_value;
+          param.tech_area = isNaN(area) ? "NaN" : area;
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "rectangle") {
+          method = 2;
+          if (isNumeric(area) && isNumeric(box)) {
+            const area_value = unit_convert(area_unit, parseFloat(area));
+            const box_value = unit_convert(box_unit, parseFloat(box));
+             param.tech_area = isNaN(area_value) ? "NaN" : area_value;
+            param.tech_box = isNaN(box_value) ? "NaN" : box_value;
+            answer = area_value * box_value;
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "triangle") {
+          if (find_triangle == "1") {
+            method = 31;
+            if (isNumeric(box) && isNumeric(height)) {
+              const box_value = unit_convert(box_unit, parseFloat(box));
+              const height_value = unit_convert(height_unit, parseFloat(height));
+             param.tech_height = isNaN(height_value) ? "NaN" : height_value;
+             param.tech_box = isNaN(box_value) ? "NaN" : box_value;
+              answer = box_value * height_value / 2;
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          } else if (find_triangle == "2") {
+            method = 32;
+            if (isNumeric(box) && isNumeric(area) && isNumeric(c)) {
+              const box_value = unit_convert(box_unit, parseFloat(box));
+              const area_value = unit_convert(area_unit, parseFloat(area));
+              const c_value = unit_convert(c_unit, parseFloat(c));
+              const sect_one = (area_value + box_value + c_value);
+              const sect_two = (-area_value + box_value + c_value);
+              const sect_three = (area_value - box_value + c_value);
+              const sect_four = (area_value + box_value - c_value);
+              answer = 0.25 * Math.sqrt(sect_one * sect_two * sect_three * sect_four);
+              param.tech_area = isNaN(area_value) ? "NaN" : area_value;
+              param.tech_box  = isNaN(box_value)  ? "NaN" : box_value;
+              param.tech_c    = isNaN(c_value)    ? "NaN" : c_value;
+
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          } else if (find_triangle == "3") {
+            method = 33;
+            if (isNumeric(area) && isNumeric(box) && isNumeric(angle_gamma)) {
+              const box_value = unit_convert(box_unit, parseFloat(box));
+              const area_value = unit_convert(area_unit, parseFloat(area));
+              const gamma_value = angle_convert(angle_gamma_unit, parseFloat(angle_gamma));
+              answer = area_value * box_value * Math.sin(gamma_value) * 0.5;
+              param.tech_area  = isNaN(area_value)  ? "NaN" : area_value;
+              param.tech_box   = isNaN(box_value)   ? "NaN" : box_value;
+              param.tech_gamma = isNaN(gamma_value) ? "NaN" : gamma_value;
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          } else if (find_triangle == "4") {
+            method = 34;
+            if (isNumeric(area) && isNumeric(angle_beta) && isNumeric(angle_gamma)) {
+              const area_value = unit_convert(area_unit, parseFloat(area));
+              const gamma_value = angle_convert(angle_gamma_unit, parseFloat(angle_gamma));
+              const beta_value = angle_convert(angle_beta_unit, parseFloat(angle_beta));
+              
+              const gamma_deg = angle_gamma_unit == "deg" ? parseFloat(angle_gamma) : parseFloat(angle_gamma) * 57.2958;
+              const beta_deg = angle_beta_unit == "deg" ? parseFloat(angle_beta) : parseFloat(angle_beta) * 57.2958;
+              
+              if (gamma_deg < 180 && beta_deg < 180) {
+                if (gamma_deg + beta_deg < 180) {
+                  const sect1 = area_value * area_value * Math.sin(beta_value) * Math.sin(gamma_value);
+                  const sect2 = 2 * Math.sin(gamma_value + beta_value);
+                  answer = sect1 / sect2;
+                } else {
+                  param.error = 'The sum of the two angles cannot exceed 180 deg.';
+                  return param;
+                }
+              } else {
+                param.error = 'Angles should be between 0 and 180 deg range';
+                return param;
+              }
+            param.tech_area  = isNaN(area_value)  ? "NaN" : area_value;
+            param.tech_beta  = isNaN(beta_value)  ? "NaN" : beta_value;
+            param.tech_gamma = isNaN(gamma_value) ? "NaN" : gamma_value;
+
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          }
+        } else if (shapes === "parallelogram") {
+          if (find_triangle_two == "1") {
+            method = 15;
+            if (isNumeric(box) && isNumeric(height)) {
+              const box_value = unit_convert(box_unit, parseFloat(box));
+              const height_value = unit_convert(height_unit, parseFloat(height));
+            param.tech_height = isNaN(height_value) ? "NaN" : height_value;
+            param.tech_box    = isNaN(box_value) ? "NaN" : box_value;
+
+              answer = box_value * height_value;
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          } else if (find_triangle_two == "2") {
+            method = 16;
+            if (isNumeric(area) && isNumeric(box) && isNumeric(angle_alpha)) {
+              const area_value = unit_convert(area_unit, parseFloat(area));
+              const box_value = unit_convert(box_unit, parseFloat(box));
+              const alpha_value = angle_convert(angle_alpha_unit, parseFloat(angle_alpha));
+              param.tech_area  = isNaN(area_value)  ? "NaN" : area_value;
+              param.tech_box   = isNaN(box_value)   ? "NaN" : box_value;
+              param.tech_alpha = isNaN(alpha_value) ? "NaN" : alpha_value;
+              answer = box_value * area_value * Math.sin(alpha_value);
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          } else if (find_triangle_two == "3") {
+            method = 17;
+            if (isNumeric(e) && isNumeric(f) && isNumeric(angle_theta)) {
+              const e_value = unit_convert(e_unit, parseFloat(e));
+              const f_value = unit_convert(f_unit, parseFloat(f));
+              const theta_value = angle_convert(angle_theta_unit, parseFloat(angle_theta));
+              param.tech_e = isNaN(e_value) ? "NaN" : e_value;
+              param.tech_f  = isNaN(f_value) ? "NaN" : f_value;
+              param.tech_theta_value = isNaN(theta_value) ? "NaN" : theta_value;
+
+              answer = e_value * f_value * Math.sin(theta_value);
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          }
+        } else if (shapes == "rhombus") {
+          if (find_triangle_three == "1") {
+            method = 21;
+            if (isNumeric(area) && isNumeric(height)) {
+              const area_value = unit_convert(area_unit, parseFloat(area));
+              const height_value = unit_convert(height_unit, parseFloat(height));
+              param.tech_height = isNaN(height_value) ? "NaN" : height_value;
+              param.tech_area   = isNaN(area_value)   ? "NaN" : area_value;
+              answer = area_value * height_value;
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          } else if (find_triangle_three == "2") {
+            method = 22;
+            if (isNumeric(e) && isNumeric(f)) {
+              const e_value = unit_convert(e_unit, parseFloat(e));
+              const f_value = unit_convert(f_unit, parseFloat(f));
+             param.tech_e = isNaN(e_value) ? "NaN" : e_value;
+              param.tech_f = isNaN(f_value) ? "NaN" : f_value;
+              answer = e_value * f_value / 2;
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          } else if (find_triangle_three == "3") {
+            method = 23;
+            if (isNumeric(area) && isNumeric(angle_alpha)) {
+              const area_value = unit_convert(area_unit, parseFloat(area));
+              const alpha_value = angle_convert(angle_alpha_unit, parseFloat(angle_alpha));
+             param.tech_area = isNaN(area_value) ? "NaN" : area_value;
+             param.tech_alpha_value = isNaN(alpha_value) ? "NaN" : alpha_value;
+
+              answer = area_value * area_value * Math.sin(alpha_value);
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          }
+        } else if (shapes == "kite") {
+          if (find_triangle_four == "2") {
+            method = 24;
+            if (isNumeric(area) && isNumeric(box) && isNumeric(angle_alpha)) {
+              const area_value = unit_convert(area_unit, parseFloat(area));
+              const box_value = unit_convert(box_unit, parseFloat(box));
+              const alpha_value = angle_convert(angle_alpha_unit, parseFloat(angle_alpha));
+              param.tech_area = isNaN(area_value) ? "NaN" : area_value;
+              param.tech_box = isNaN(box_value) ? "NaN" : box_value;
+              param.tech_alpha = isNaN(alpha_value) ? "NaN" : alpha_value;
+              answer = box_value * area_value * Math.sin(alpha_value);
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          } else if (find_triangle_four == "1") {
+            method = 25;
+            if (isNumeric(e) && isNumeric(f)) {
+              const e_value = unit_convert(e_unit, parseFloat(e));
+              const f_value = unit_convert(f_unit, parseFloat(f));
+             param.tech_e = isNaN(e_value) ? "NaN" : e_value;
+             param.tech_f = isNaN(f_value) ? "NaN" : f_value;
+
+              answer = e_value * f_value / 2;
+            } else {
+              param.error = 'Please! Check your input';
+              return param;
+            }
+          }
+        } else if (shapes == "circle") {
+          method = 4;
+          if (isNumeric(radius)) {
+            const radius_value = unit_convert(radius_unit, parseFloat(radius));
+            answer = radius_value * radius_value * Math.PI;
+             param.tech_radius = isNaN(radius_value) ? "NaN" : radius_value;
+
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "semicircle") {
+          method = 5;
+          if (isNumeric(radius)) {
+            const radius_value = unit_convert(radius_unit, parseFloat(radius));
+            answer = (radius_value * radius_value * Math.PI) * 0.5;
+             param.tech_radius = isNaN(radius) ? "NaN" : radius;
+
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "sector") {
+          method = 6;
+          if (isNumeric(angle_alpha) && isNumeric(radius)) {
+            const radius_value = unit_convert(radius_unit, parseFloat(radius));
+            const angle_value = angle_convert(angle_alpha_unit, parseFloat(angle_alpha));
+            answer = (radius_value * radius_value * angle_value) / 2;
+           param.tech_angle_value = isNaN(angle_value) ? "NaN" : angle_value;
+           param.tech_radius = isNaN(radius) ? "NaN" : radius;
+
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "ellipse") {
+          method = 7;
+          if (isNumeric(area) && isNumeric(box)) {
+            const area_value = unit_convert(area_unit, parseFloat(area));
+            const box_value = unit_convert(box_unit, parseFloat(box));
+            answer = area_value * box_value * Math.PI;
+            param.tech_area = isNaN(area_value) ? "NaN" : area_value;
+            param.tech_box = isNaN(box_value) ? "NaN" : box_value;
+
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "trapezoid") {
+          method = 8;
+          if (isNumeric(area) && isNumeric(box) && isNumeric(height)) {
+            const area_value = unit_convert(area_unit, parseFloat(area));
+            const box_value = unit_convert(box_unit, parseFloat(box));
+            const height_value = unit_convert(height_unit, parseFloat(height));
+            answer = (area_value + box_value) * height_value / 2;
+           param.tech_area = isNaN(area_value) ? "NaN" : area_value;
+            param.tech_box = isNaN(box_value) ? "NaN" : box_value;
+            param.tech_height = isNaN(height_value) ? "NaN" : height_value;
+
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "regular pentagon") {
+          method = 9;
+          if (isNumeric(area)) {
+            const area_value = unit_convert(area_unit, parseFloat(area));
+            answer = area_value * area_value * Math.sqrt(25 + 10 * Math.sqrt(5)) / 4;
+           param.tech_area = isNaN(area_value) ? "NaN" : area_value;
+
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "regular hexagon") {
+          method = 10;
+          if (isNumeric(area)) {
+            const area_value = unit_convert(area_unit, parseFloat(area));
+            answer = 3 / 2 * Math.sqrt(3) * area_value * area_value;
+           param.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "regular octagon") {
+          method = 11;
+          if (isNumeric(area)) {
+            const area_value = unit_convert(area_unit, parseFloat(area));
+            answer = 2 * (1 + Math.sqrt(2)) * area_value * area_value;
+            param.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "annulus (ring)") {
+          method = 12;
+          if (isNumeric(radius) && isNumeric(bara_radius)) {
+            const r_val = parseFloat(radius);
+            const br_val = parseFloat(bara_radius);
+            
+            if (br_val > r_val) {
+              const radius_value = unit_convert(radius_unit, r_val);
+              const bara_radius_value = unit_convert(bara_radius_unit, br_val);
+              answer = Math.PI * (bara_radius_value * bara_radius_value - radius_value * radius_value);
+             param.tech_radius = isNaN(radius_value) ? "NaN" : radius_value;
+            param.tech_bara_radius = isNaN(bara_radius_value) ? "NaN" : bara_radius_value;
+
+            } else {
+              param.error = 'Radius R should be greater than r.';
+              return param;
+            }
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes == "irregular quadrilateral") {
+          method = 13;
+          if (isNumeric(e) && isNumeric(f) && isNumeric(angle_alpha)) {
+            const e_value = unit_convert(e_unit, parseFloat(e));
+            const f_value = unit_convert(f_unit, parseFloat(f));
+            const angle_value = angle_convert(angle_alpha_unit, parseFloat(angle_alpha));
+            answer = e_value * f_value * Math.sin(angle_value);
+          param.tech_e = isNaN(e_value) ? "NaN" : e_value;
+          param.tech_f = isNaN(f_value) ? "NaN" : f_value;
+          param.tech_angle_value = isNaN(angle_value) ? "NaN" : angle_value;
+
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        } else if (shapes === "regular polygon") {
+          method = 14;
+          if (isNumeric(area) && isNumeric(number_of_sides)) {
+            const area_value = unit_convert(area_unit, parseFloat(area));
+            const n = parseFloat(number_of_sides);
+            answer = n * area_value * area_value * 1 / Math.tan(Math.PI / n) / 4;
+           param.tech_number_of_sides = isNaN(number_of_sides) ? "NaN" : number_of_sides;
+          param.tech_area = isNaN(area_value) ? "NaN" : area_value;
+
+          } else {
+            param.error = 'Please! Check your input';
+            return param;
+          }
+        }
+
+        param.tech_answer = answer;
+        param.tech_method = method;
+
+        return param;
+      }
+
+
+  /**
+    * getCalculationthirtytriangleCalculator: Service Method
+    * POST: /api/calculators-lol/30-60-90-triangle-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+   async getCalculationthirtytriangleCalculator(body) {
+        const sides = body.tech_sides;
+        const input = body.tech_input;
+        const linear_unit = body.tech_linear_unit;
+        const square_unit = body.tech_square_unit;
+        const param = {};
+
+        // Helper function to convert length units to cm
+        function again_unit_convert(unit, value) {
+          const conversions = {
+            'mm': 0.1,
+            'cm': 1,
+            'm': 100,
+            'km': 100000,
+            'in': 2.54,
+            'ft': 30.48,
+            'yd': 91.44,
+            'mi': 160934
+          };
+          return value * (conversions[unit] || 1);
+        }
+
+        // Helper function to convert area units to cm²
+        function again_centi(unit3, value3) {
+          const conversions = {
+            'mm²': 0.01,
+            'cm²': 1,
+            'm²': 10000,
+            'km²': 10000000000,
+            'in²': 6.452,
+            'ft²': 929,
+            'yd²': 8361,
+            'mi²': 25899881103
+          };
+          return value3 * (conversions[unit3] || 1);
+        }
+
+        // Validate if input is numeric
+        function isNumeric(value) {
+          return !isNaN(parseFloat(value)) && isFinite(value);
+        }
+
+        if (!isNumeric(input)) {
+          param.error = 'Please Check Your Input.';
+          return param;
+        }
+
+        let method, lena_val, b, c, area, peri, height, in_radius, radius;
+
+        if (sides == "a") {
+          // Given side 'a' (shortest side)
+          method = 1;
+          lena_val = again_unit_convert(linear_unit, parseFloat(input));
+          b = Math.sqrt(3) * lena_val;
+          c = 2 * lena_val;
+          area = (lena_val * b / 2);
+          peri = lena_val + b + c;
+          height = b / 2;
+          in_radius = (lena_val * b) / peri;
+          radius = c / 2;
+        } else if (sides == "b") {
+          // Given side 'b' (middle side)
+          method = 2;
+          b = again_unit_convert(linear_unit, parseFloat(input));
+          lena_val = (b * Math.sqrt(3)) / 3;
+          c = 2 * ((b * Math.sqrt(3)) / 3);
+          area = (lena_val * b / 2);
+          peri = lena_val + b + c;
+          height = b / 2;
+          in_radius = (lena_val * b) / peri;
+          radius = c / 2;
+        } else if (sides == "c") {
+          // Given side 'c' (hypotenuse)
+          method = 3;
+          c = again_unit_convert(linear_unit, parseFloat(input));
+          b = (c * Math.sqrt(3)) / 2;
+          lena_val = c / 2;
+          area = (lena_val * b / 2);
+          peri = lena_val + b + c;
+          height = b / 2;
+          in_radius = (lena_val * b) / peri;
+          radius = c / 2;
+        } else if (sides == "h") {
+          // Given height
+          method = 4;
+          height = again_unit_convert(linear_unit, parseFloat(input));
+          b = height * 2;
+          lena_val = b / Math.sqrt(3);
+          c = 2 * lena_val;
+          area = (lena_val * lena_val) * (Math.sqrt(3) / 2);
+          peri = lena_val + b + c;
+          in_radius = (lena_val * b) / peri;
+          radius = c / 2;
+        } else if (sides == "A") {
+          // Given area
+          method = 5;
+          area = again_centi(square_unit, parseFloat(input));
+          lena_val = Math.sqrt(2 * area / Math.sqrt(3));
+          b = lena_val * Math.sqrt(3);
+          c = 2 * lena_val;
+          height = lena_val * b / c;
+          peri = lena_val + b + c;
+          in_radius = (lena_val * b) / peri;
+          radius = c / 2;
+        } else if (sides == "p") {
+          // Given perimeter
+          method = 6;
+          peri = again_unit_convert(linear_unit, parseFloat(input));
+          lena_val = peri / (3 + Math.sqrt(3));
+          b = lena_val * Math.sqrt(3);
+          c = 2 * lena_val;
+          height = (lena_val * b) / c;
+          area = (lena_val * lena_val) * (Math.sqrt(3) / 2);
+          in_radius = (lena_val * b) / peri;
+          radius = c / 2;
+        }
+
+        // Round to 3 decimal places
+        param.tech_method = method;
+        param.tech_a = Math.round(lena_val * 1000) / 1000;
+        param.tech_a_unit = linear_unit;
+        param.tech_b = Math.round(b * 1000) / 1000;
+        param.tech_b_unit = linear_unit;
+        param.tech_c = Math.round(c * 1000) / 1000;
+        param.tech_c_unit = linear_unit;
+        param.tech_area_unit = square_unit;
+        param.tech_perimeter_unit = linear_unit;
+        param.tech_aa = Math.round(area * 1000) / 1000;
+        param.tech_peri = Math.round(peri * 1000) / 1000;
+        param.tech_height = Math.round(height * 1000) / 1000;
+        param.tech_height_unit = linear_unit;
+        param.tech_in_radius = Math.round(in_radius * 1000) / 1000;
+        param.tech_radius = Math.round(radius * 1000) / 1000;
+
+        return param;
+      }
+
+
+  /**
+    * getCalculationLiteralEquationsCalculator: Service Method
+    * POST: /api/calculators-lol/literal-equations-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+        async getCalculationLiteralEquationsCalculator(body) {
+        const equ = body.equ;
+        const find = body.find;
+
+        // Helper function to solve literal equations
+        const solveLiteralEquation = (equation, solveFor) => {
+            const steps = [];
+            const explanations = [];
+            const finalSteps = [];
+            
+            // Remove spaces and convert to lowercase
+            equation = equation.replace(/\s/g, '').toLowerCase();
+            solveFor = solveFor.toLowerCase();
+            
+            // Split into left and right sides
+            const sides = equation.split('=');
+            if (sides.length !== 2) {
+                throw new Error('Invalid equation format');
+            }
+            
+            let left = sides[0];
+            let right = sides[1];
+            
+            // Store original equations for display
+            const left_equ = left;
+            const right_equ = right;
+            
+            // Step 1: Move all terms containing the variable to one side
+            const moveVariableTerms = (side, targetSide) => {
+                const terms = side.split(/(?=[+-])/).filter(term => term !== '');
+                let newSide = '';
+                let movedTerms = [];
+                
+                terms.forEach(term => {
+                    if (term.includes(solveFor)) {
+                        // Move to target side with opposite sign
+                        let movedTerm = term.startsWith('+') ? '-' + term.slice(1) : 
+                                      term.startsWith('-') ? '+' + term.slice(1) : '-' + term;
+                        movedTerms.push(movedTerm);
+                    } else {
+                        newSide += term;
+                    }
+                });
+                
+                // Remove leading + if present
+                if (newSide.startsWith('+')) {
+                    newSide = newSide.slice(1);
+                }
+                
+                return { newSide, movedTerms };
+            };
+            
+            // Move variable terms from right to left
+            const rightResult = moveVariableTerms(right, 'left');
+            right = rightResult.newSide;
+            left += rightResult.movedTerms.join('');
+            
+            if (rightResult.movedTerms.length > 0) {
+                const explanation = `Move all ${solveFor} terms to the left side.`;
+                const step = `${left} = ${right}`;
+                explanations.push(explanation);
+                steps.push(step);
+                finalSteps.push(step);
+            }
+            
+            // Move variable terms from left to right (if any non-variable terms on left)
+            const leftResult = moveVariableTerms(left, 'right');
+            left = leftResult.newSide;
+            right += leftResult.movedTerms.join('');
+            
+            if (leftResult.movedTerms.length > 0) {
+                const explanation = `Move constant terms to the right side.`;
+                const step = `${left} = ${right}`;
+                explanations.push(explanation);
+                steps.push(step);
+                finalSteps.push(step);
+            }
+            
+            // Step 2: Combine like terms
+            const combineLikeTerms = (expression) => {
+                const terms = expression.split(/(?=[+-])/).filter(term => term !== '');
+                const variableTerms = [];
+                const constantTerms = [];
+                
+                terms.forEach(term => {
+                    if (term.includes(solveFor)) {
+                        variableTerms.push(term);
+                    } else {
+                        constantTerms.push(term);
+                    }
+                });
+                
+                // Combine variable terms
+                let combinedVariable = '0';
+                if (variableTerms.length > 0) {
+                    const coefficients = variableTerms.map(term => {
+                        const coeffMatch = term.match(/(-?\d*\.?\d*)/)[0];
+                        let coeff = coeffMatch === '-' ? -1 : 
+                                  coeffMatch === '' ? 1 : 
+                                  parseFloat(coeffMatch);
+                        return coeff;
+                    });
+                    
+                    const totalCoeff = coefficients.reduce((sum, coeff) => sum + coeff, 0);
+                    combinedVariable = totalCoeff === 1 ? solveFor : 
+                                    totalCoeff === -1 ? '-' + solveFor : 
+                                    totalCoeff + solveFor;
+                }
+                
+                // Combine constant terms
+                const totalConstant = constantTerms.reduce((sum, term) => {
+                    let value = term === '+' ? 1 : 
+                              term === '-' ? -1 : 
+                              parseFloat(term);
+                    return sum + value;
+                }, 0);
+                
+                let result = '';
+                if (combinedVariable !== '0') {
+                    result += combinedVariable;
+                }
+                if (totalConstant !== 0) {
+                    if (result && totalConstant > 0) result += '+';
+                    result += totalConstant;
+                }
+                
+                return result || '0';
+            };
+            
+            left = combineLikeTerms(left);
+            right = combineLikeTerms(right);
+            
+            if (steps.length > 0) { // Only add if there were previous steps
+                const explanation = 'Combine like terms on both sides.';
+                const step = `${left} = ${right}`;
+                explanations.push(explanation);
+                steps.push(step);
+                finalSteps.push(step);
+            }
+            
+            // Step 3: Isolate the variable
+            let finalAnswer = '';
+            
+            if (left.includes(solveFor)) {
+                // Variable is on left side
+                const coeffMatch = left.match(/(-?\d*\.?\d*)/)[0];
+                const coefficient = coeffMatch === '-' ? -1 : 
+                                  coeffMatch === '' ? 1 : 
+                                  parseFloat(coeffMatch);
+                
+                if (coefficient !== 1) {
+                    // Divide both sides by coefficient
+                    const explanation = `Divide both sides by ${coefficient}.`;
+                    let step = '';
+                    
+                    if (coefficient === -1) {
+                        step = `-${left} = -${right}`;
+                        left = left.slice(1); // Remove negative
+                        right = `-(${right})`;
+                    } else {
+                        step = `\\dfrac{${left}}{${coefficient}} = \\dfrac{${right}}{${coefficient}}`;
+                        left = solveFor;
+                        right = `\\dfrac{${right}}{${coefficient}}`;
+                    }
+                    
+                    explanations.push(explanation);
+                    steps.push(step);
+                    finalSteps.push(`${left} = ${right}`);
+                    
+                    finalAnswer = right;
+                } else {
+                    finalAnswer = right;
+                }
+            } else {
+                // Variable is on right side
+                const coeffMatch = right.match(/(-?\d*\.?\d*)/)[0];
+                const coefficient = coeffMatch === '-' ? -1 : 
+                                  coeffMatch === '' ? 1 : 
+                                  parseFloat(coeffMatch);
+                
+                if (coefficient !== 1) {
+                    const explanation = `Divide both sides by ${coefficient}.`;
+                    let step = '';
+                    
+                    if (coefficient === -1) {
+                        step = `-${left} = -${right}`;
+                        left = `-${left}`;
+                        right = right.slice(1);
+                    } else {
+                        step = `\\dfrac{${left}}{${coefficient}} = \\dfrac{${right}}{${coefficient}}`;
+                        left = `\\dfrac{${left}}{${coefficient}}`;
+                        right = solveFor;
+                    }
+                    
+                    explanations.push(explanation);
+                    steps.push(step);
+                    finalSteps.push(`${left} = ${right}`);
+                    
+                    finalAnswer = left;
+                } else {
+                    finalAnswer = left;
+                }
+            }
+            
+            // Final simplification
+            finalAnswer = finalAnswer.replace(/\+\-/g, '-')
+                                    .replace(/\-\-/g, '+')
+                                    .replace(/\\dfrac\{(\d+)\}\{(\d+)\}/g, (match, num, den) => {
+                                        const numerator = parseInt(num);
+                                        const denominator = parseInt(den);
+                                        if (numerator % denominator === 0) {
+                                            return (numerator / denominator).toString();
+                                        }
+                                        return match;
+                                    });
+            
+            return {
+                explain: explanations,
+                steps: steps,
+                final_steps: finalSteps,
+                final: `${solveFor} = ${finalAnswer}`,
+                jawab: finalAnswer,
+                one: '=',
+                left_equ: left_equ,
+                right_equ: right_equ
+            };
+        };
+
+        const result = {};
+
+        // Input validation
+        if (!equ || !find) {
+            result.error = 'Please Check Your Input.';
+            return result;
+        }
+
+        if (/<|>|&|php|print_r|print|echo|script|%|&/i.test(equ)) {
+            result.error = 'Please Enter Valid Equation.';
+            return result;
+        }
+
+        const findLower = find.toLowerCase();
+        const equLower = equ.toLowerCase();
+
+        if (!equLower.includes(findLower)) {
+            result.error = 'Character you entered does not seem to be exist on your equation.';
+            return result;
+        }
+
+        if (!equLower.includes('=')) {
+            result.error = 'Please Enter Valid Equation.';
+            return result;
+        }
+
+        try {
+            const solution = solveLiteralEquation(equ, find);
+            
+            result.explain = solution.explain;
+            result.jawab = solution.jawab;
+            result.one = solution.one;
+            result.steps = solution.steps;
+            result.final_steps = solution.final_steps;
+            result.left_equ = solution.left_equ;
+            result.right_equ = solution.right_equ;
+            result.final = solution.final;
+            result.RESULT = 1;
+            
+        } catch (error) {
+            console.error('Calculation Error:', error.message);
+            result.error = 'Unable to solve the equation. Please check your input.';
+        }
+
+        return result;
+    }
+
+      /**
+    * getCalculationTrigonometryCalculator: Service Method
+    * POST: /api/calculators-lol/trigonometry-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+     async  getCalculationTrigonometryCalculator(body) {
+        const find = body.tech_find;
+        const angle = body.tech_angle;
+        const angle_unit = body.tech_angle_unit;
+
+        const result = {};
+
+        // Helper function: degrees to radians
+        const deg2rad = (degrees) => degrees * (Math.PI / 180);
+
+        // Helper function: radians to degrees
+        const rad2deg = (radians) => radians * (180 / Math.PI);
+
+        // Validate angle is numeric
+        if (!angle || isNaN(angle)) {
+            result.error = 'Please Check Your Input.';
+            return result;
+        }
+
+        const angleNum = parseFloat(angle);
+        let method;
+
+        // Case 1: Single trigonometric function
+        if (["sin", "cos", "tan", "cot", "sec", "csc"].includes(find)) {
+            method = 1;
+            let ans1, ans2;
+
+            if (angle_unit == "deg") {
+                const radAngle = deg2rad(angleNum);
+                
+                switch(find) {
+                    case "sin":
+                        ans1 = Math.sin(radAngle);
+                        break;
+                    case "cos":
+                        ans1 = Math.cos(radAngle);
+                        break;
+                    case "tan":
+                        ans1 = Math.tan(radAngle);
+                        break;
+                    case "csc":
+                        ans1 = 1 / Math.sin(radAngle);
+                        break;
+                    case "sec":
+                        ans1 = 1 / Math.cos(radAngle);
+                        break;
+                    case "cot":
+                        ans1 = 1 / Math.tan(radAngle);
+                        break;
+                }
+                ans2 = radAngle;
+
+            } else if (angle_unit == "rad") {
+                switch(find) {
+                    case "sin":
+                        ans1 = Math.sin(angleNum);
+                        break;
+                    case "cos":
+                        ans1 = Math.cos(angleNum);
+                        break;
+                    case "tan":
+                        ans1 = Math.tan(angleNum);
+                        break;
+                    case "cot":
+                        ans1 = 1 / Math.tan(angleNum);
+                        break;
+                    case "csc":
+                        ans1 = 1 / Math.sin(angleNum);
+                        break;
+                    case "sec":
+                        ans1 = 1 / Math.cos(angleNum);
+                        break;
+                }
+                ans2 = rad2deg(angleNum);
+            }
+
+           result.tech_ans1 = isNaN(ans1) ? "NaN" : ans1;
+           result.tech_ans2 = isNaN(ans2) ? "NaN" : ans2;
+
+        }
+        // Case 2: All trigonometric functions
+        else if (find == "All") {
+            method = 2;
+            let sin, cos, tan, csc, sec, cot;
+            let asin, acos, atan, acsc, asec, acot;
+            let fns;
+
+            if (angle_unit == "deg") {
+                const radAngle = deg2rad(angleNum);
+                
+                sin = Math.sin(radAngle);
+                cos = Math.cos(radAngle);
+                tan = Math.tan(radAngle);
+                csc = 1 / Math.sin(radAngle);
+                sec = 1 / Math.cos(radAngle);
+                cot = 1 / Math.tan(radAngle);
+                
+                asin = Math.asin(angleNum);
+                acos = Math.acos(angleNum);
+                atan = Math.atan(angleNum);
+                acsc = Math.asin(1 / angleNum);
+                asec = Math.acos(1 / angleNum);
+                acot = Math.atan(1 / angleNum);
+                
+                fns = radAngle;
+
+            } else if (angle_unit === "rad") {
+                sin = Math.sin(angleNum);
+                cos = Math.cos(angleNum);
+                tan = Math.tan(angleNum);
+                csc = 1 / Math.sin(angleNum);
+                sec = 1 / Math.cos(angleNum);
+                cot = 1 / Math.tan(angleNum);
+                
+                asin = Math.asin(angleNum);
+                acos = Math.acos(angleNum);
+                atan = Math.atan(angleNum);
+                acsc = Math.asin(1 / angleNum);
+                asec = Math.acos(1 / angleNum);
+                acot = Math.atan(1 / angleNum);
+                
+                fns = rad2deg(angleNum);
+            }
+
+          result.tech_sin = isNaN(sin) ? "NaN" : sin;
+          result.tech_cos = isNaN(cos) ? "NaN" : cos;
+          result.tech_tan = isNaN(tan) ? "NaN" : tan;
+          result.tech_csc = isNaN(csc) ? "NaN" : csc;
+          result.tech_cot = isNaN(cot) ? "NaN" : cot;
+          result.tech_sec = isNaN(sec) ? "NaN" : sec;
+          result.tech_asin = isNaN(asin) ? "NaN" : asin;
+          result.tech_acos = isNaN(acos) ? "NaN" : acos;
+          result.tech_atan = isNaN(atan) ? "NaN" : atan;
+          result.tech_acsc = isNaN(acsc) ? "NaN" : acsc;
+          result.tech_acot = isNaN(acot) ? "NaN" : acot;
+          result.tech_asec = isNaN(asec) ? "NaN" : asec;
+          result.tech_fns = isNaN(fns) ? "NaN" : fns;
+
+        }
+        // Case 3: Inverse trigonometric functions
+        else if (["arcsin", "arccos", "arctan", "arccsc", "arcsec", "arccot"].includes(find)) {
+            method = 3;
+            
+            // Parse degrees, minutes, seconds
+            const vars = angle.toString().split(".");
+            let deg, min, sec;
+            
+            if (vars.length < 2) {
+                deg = parseInt(vars[0]);
+                min = 0;
+                sec = 0;
+            } else {
+                deg = parseInt(vars[0]);
+                let tempma = parseFloat("0." + vars[1]);
+                tempma = tempma * 3600;
+                min = Math.floor(tempma / 60);
+                sec = Math.round((tempma - (min * 60)) * 1000) / 1000;
+            }
+
+            let rad;
+            
+            switch(find) {
+                case "arcsin":
+                    rad = Math.asin(angleNum);
+                    break;
+                case "arccos":
+                    rad = Math.acos(angleNum);
+                    break;
+                case "arctan":
+                    rad = Math.atan(angleNum);
+                    break;
+                case "arccsc":
+                    rad = Math.asin(1 / angleNum);
+                    break;
+                case "arcsec":
+                    rad = Math.acos(1 / angleNum);
+                    break;
+                case "arccot":
+                    rad = Math.atan(1 / angleNum);
+                    break;
+            }
+
+            deg = rad2deg(rad);
+            
+            result.rad = rad;
+            result.deg = deg;
+        }
+
+        // Set group name based on function
+        const groupMap = {
+            "sin": "Group 4",
+            "cos": "Group 3",
+            "tan": "Group 2",
+            "sec": "Group 6",
+            "csc": "Group 5",
+            "cot": "Group 1"
+        };
+
+        if (groupMap[find]) {
+            result.tech_naam = groupMap[find];
+        }
+
+        result.tech_find = find;
+        result.tech_angle = isNaN(angle) ? "NaN" : angle;
+        result.tech_angle_unit = angle_unit;
+        result.tech_method = method;
+
+        return result;
+    }
+
+
+       /**
+    * getCalculationSohcahtoaCalculator: Service Method
+    * POST: /api/calculators-lol/sohcahtoa-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async  getCalculationSohcahtoaCalculator(body) {
+        let len_a = body.tech_len_a;
+        let len_a_unit = body.tech_len_a_unit;
+        let len_b = body.tech_len_b;
+        let len_b_unit = body.tech_len_b_unit;
+        let len_c = body.tech_len_c;
+        let len_c_unit = body.tech_len_c_unit;
+        let area = body.tech_area;
+        let area_unit = body.tech_area_unit;
+        let angle_alpha = body.tech_angle_alpha;
+        let angle_alpha_unit = body.tech_angle_alpha_unit;
+        let angle_beta = body.tech_angle_beta;
+        let angle_beta_unit = body.tech_angle_beta_unit;
+
+
+      const result = {};
+
+      // Helper function: Convert length units to centimeters
+      function newUnitConvert(unit, value) {
+          const conversions = {
+              'mm': 0.1,
+              'cm': 1,
+              'm': 100,
+              'km': 1000,
+              'in': 2.54,
+              'ft': 30.48,
+              'yd': 91.44,
+              'mi': 160934
+          };
+          return value * (conversions[unit] || 1);
+      }
+
+      // Helper function: Convert area units to square centimeters
+      function newCenti(unit3, value3) {
+          const conversions = {
+              'mm²': 0.01,
+              'cm²': 1,
+              'm²': 10000,
+              'km²': 10000000000,
+              'in²': 6.452,
+              'ft²': 929,
+              'yd²': 8361,
+              'mi²': 25899881103
+          };
+          return value3 * (conversions[unit3] || 1);
+      }
+
+      // Convert angle units
+      if (angle_alpha_unit == "rad") {
+          angle_alpha_unit = "57.3";
+      } else {
+          angle_alpha_unit = "0.017453";
+      }
+
+      if (angle_beta_unit == "rad") {
+          angle_beta_unit = "57.3";
+      } else {
+          angle_beta_unit = "0.017453";
+      }
+
+      // Helper to check if value is numeric and not empty
+      const isNumeric = (val) => val !== null && val !== undefined && val !== '' && !isNaN(val);
+
+      let method;
+      let c, anglea, angleb, area_value;
+
+      // Method 1: len_a and len_b provided
+      if (isNumeric(len_a) && isNumeric(len_b)) {
+          if (!isNumeric(len_c) && !isNumeric(area) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+              method = 1;
+              len_a = parseFloat(len_a);
+              len_b = parseFloat(len_b);
+              c = Math.sqrt((len_a * len_a) + (len_b * len_b));
+              anglea = Math.atan(len_a / len_b);
+              angleb = Math.atan(len_b / len_a);
+              area_value = (len_a * len_b) / 2;
+             result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 2: len_a and len_c provided
+      else if (isNumeric(len_a) && isNumeric(len_c)) {
+          if (!isNumeric(len_b) && !isNumeric(area) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+              method = 2;
+              len_a = parseFloat(len_a);
+              c = parseFloat(len_c);
+              len_b = Math.sqrt((c * c) - (len_a * len_a));
+              anglea = Math.atan(len_a / len_b);
+              angleb = Math.atan(len_b / len_a);
+              area_value = (len_a * len_b) / 2;
+             result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 3: len_b and len_c provided
+      else if (isNumeric(len_b) && isNumeric(len_c)) {
+          if (!isNumeric(len_a) && !isNumeric(area) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+              method = 3;
+              len_b = parseFloat(len_b);
+              c = parseFloat(len_c);
+              len_a = Math.sqrt((c * c) - (len_b * len_b));
+              anglea = Math.atan(len_a / len_b);
+              angleb = Math.atan(len_b / len_a);
+              area_value = (len_a * len_b) / 2;
+              result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 4: angle_alpha and len_a provided
+      else if (isNumeric(angle_alpha) && isNumeric(len_a)) {
+          if (!isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(angle_beta) && !isNumeric(area)) {
+              method = 4;
+              len_a = parseFloat(len_a);
+              anglea = parseFloat(angle_alpha) * parseFloat(angle_alpha_unit);
+              len_b = len_a / Math.tan(anglea);
+              c = Math.sqrt(len_a * len_a + len_b * len_b);
+              angleb = Math.atan(len_b / len_a);
+              area_value = (len_a * len_b) / 2;
+              result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 5: angle_alpha and len_b provided
+      else if (isNumeric(angle_alpha) && isNumeric(len_b)) {
+          if (!isNumeric(len_a) && !isNumeric(len_c) && !isNumeric(angle_beta) && !isNumeric(area)) {
+              method = 5;
+              len_b = parseFloat(len_b);
+              anglea = parseFloat(angle_alpha) * parseFloat(angle_alpha_unit);
+              len_a = len_b * Math.tan(anglea);
+              c = Math.sqrt(len_a * len_a + len_b * len_b);
+              angleb = Math.atan(len_b / len_a);
+              area_value = (len_a * len_b) / 2;
+             result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 6: angle_alpha and len_c provided
+      else if (isNumeric(angle_alpha) && isNumeric(len_c)) {
+          if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(angle_beta) && !isNumeric(area)) {
+              method = 6;
+              c = parseFloat(len_c);
+              anglea = parseFloat(angle_alpha) * parseFloat(angle_alpha_unit);
+              len_a = c * Math.sin(anglea);
+              len_b = c * Math.cos(anglea);
+              angleb = Math.atan(len_b / len_a);
+              area_value = (len_a * len_b) / 2;
+             result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 7: angle_beta and len_a provided
+      else if (isNumeric(angle_beta) && isNumeric(len_a)) {
+          if (!isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(angle_alpha) && !isNumeric(area)) {
+              method = 7;
+              len_a = parseFloat(len_a);
+              const PI = Math.PI;
+              
+              if (angle_beta_unit === "0.017453") {
+                  angleb = (parseFloat(angle_beta) * PI) / 180;
+                  anglea = PI / 2 - angleb;
+              } else if (angle_beta_unit === "57.3") {
+                  anglea = PI / 2 - parseFloat(angle_beta);
+              }
+              
+              len_b = len_a / Math.tan(anglea);
+              c = Math.sqrt(len_a * len_a + len_b * len_b);
+              anglea = Math.atan(len_a / len_b);
+              angleb = Math.atan(len_b / len_a);
+              area_value = (len_a * len_b) / 2;
+              result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 8: angle_beta and len_b provided
+      else if (isNumeric(angle_beta) && isNumeric(len_b)) {
+          if (!isNumeric(len_a) && !isNumeric(len_c) && !isNumeric(angle_alpha) && !isNumeric(area)) {
+              method = 8;
+              len_b = parseFloat(len_b);
+              const PI = Math.PI;
+              
+              if (angle_beta_unit === "0.017453") {
+                  angleb = (parseFloat(angle_beta) * PI) / 180;
+                  anglea = PI / 2 - angleb;
+              } else if (angle_beta_unit === "57.3") {
+                  anglea = PI / 2 - parseFloat(angle_beta);
+              }
+              
+              len_a = len_b * Math.tan(anglea);
+              c = Math.sqrt(len_a * len_a + len_b * len_b);
+              anglea = Math.atan(len_a / len_b);
+              angleb = Math.atan(len_b / len_a);
+              area_value = (len_a * len_b) / 2;
+              result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 9: angle_beta and len_c provided
+      else if (isNumeric(angle_beta) && isNumeric(len_c)) {
+          if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(angle_alpha) && !isNumeric(area)) {
+              method = 9;
+              c = parseFloat(len_c);
+              const PI = Math.PI;
+              
+              if (angle_beta_unit === "0.017453") {
+                  angleb = (parseFloat(angle_beta) * PI) / 180;
+                  anglea = PI / 2 - angleb;
+              } else if (angle_beta_unit === "57.3") {
+                  anglea = PI / 2 - parseFloat(angle_beta);
+              }
+              
+              len_a = c * Math.sin(anglea);
+              len_b = c * Math.cos(anglea);
+              anglea = Math.atan(len_a / len_b);
+              angleb = Math.atan(len_b / len_a);
+              area_value = (len_a * len_b) / 2;
+              result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 10: area and len_a provided
+      else if (isNumeric(area) && isNumeric(len_a)) {
+          if (!isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+              method = 10;
+              len_a = parseFloat(len_a);
+              area_value = newCenti(area_unit, parseFloat(area));
+              len_b = 2 * area_value / len_a;
+              c = Math.sqrt((len_a * len_a) + (len_b * len_b));
+              anglea = Math.atan(len_a / len_b);
+              angleb = Math.atan(len_b / len_a);
+              result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 11: area and len_b provided
+      else if (isNumeric(area) && isNumeric(len_b)) {
+          if (!isNumeric(len_a) && !isNumeric(len_c) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+              method = 11;
+              len_b = parseFloat(len_b);
+              area_value = newCenti(area_unit, parseFloat(area));
+              len_a = 2 * area_value / len_b;
+              c = Math.sqrt((len_a * len_a) + (len_b * len_b));
+              anglea = Math.atan(len_a / len_b);
+              angleb = Math.atan(len_b / len_a);
+              result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 12: area and len_c provided
+      else if (isNumeric(area) && isNumeric(len_c)) {
+          if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+              method = 12;
+              c = parseFloat(len_c);
+              area_value = newCenti(area_unit, parseFloat(area));
+              len_a = Math.sqrt((c * c + Math.sqrt(Math.pow(c, 4) - 16 * area_value * area_value)) / 2);
+              len_b = Math.sqrt((c * c - Math.sqrt(Math.pow(c, 4) - 16 * area_value * area_value)) / 2);
+              anglea = Math.asin(len_a / c);
+              angleb = Math.atan(len_b / len_a);
+             result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 13: area and angle_alpha provided
+      else if (isNumeric(area) && isNumeric(angle_alpha)) {
+          if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(angle_beta)) {
+              method = 13;
+              area_value = newCenti(area_unit, parseFloat(area));
+              anglea = parseFloat(angle_alpha) * parseFloat(angle_alpha_unit);
+              len_a = Math.sqrt(2 * area_value * Math.tan(anglea));
+              len_b = Math.sqrt(2 * area_value / Math.tan(anglea));
+              c = Math.sqrt(len_a * len_a + len_b * len_b);
+              anglea = Math.atan(len_a / len_b);
+              angleb = Math.atan(len_b / len_a);
+              result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Method 14: area and angle_beta provided
+      else if (isNumeric(area) && isNumeric(angle_beta)) {
+          if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(angle_alpha)) {
+              method = 14;
+              area_value = newCenti(area_unit, parseFloat(area));
+              angleb = parseFloat(angle_beta) * parseFloat(angle_beta_unit);
+              len_a = Math.sqrt(2 * area_value * Math.tan(angleb));
+              len_b = Math.sqrt(2 * area_value / Math.tan(angleb));
+              c = Math.sqrt(len_a * len_a + len_b * len_b);
+              anglea = Math.atan(len_a / len_b);
+              angleb = Math.atan(len_b / len_a);
+              result.tech_area = isNaN(area_value) ? "NaN" : area_value;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+      // Error: Both angles provided
+      else if (isNumeric(angle_alpha) && isNumeric(angle_beta)) {
+          if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(area)) {
+              result.error = 'Can not calculate based on 2 angles only.';
+              return result;
+          } else {
+              result.error = 'Please! Enter only two values in one of the following fields.';
+              return result;
+          }
+      }
+
+      result.tech_method = method;
+      result.tech_a = isNaN(len_a) ? "NaN" : len_a;
+      result.tech_b = isNaN(len_b) ? "NaN" : len_b;
+      result.tech_c = isNaN(c) ? "NaN" : c;
+      result.tech_anglea = isNaN(anglea) ? "NaN" : anglea;
+      result.tech_angleb = isNaN(angleb) ? "NaN" : angleb;
+
+      return result;
+  }
+
+
+          /**
+    * getCalculationFortyFivetriangleCalculator: Service Method
+    * POST: /api/calculators-lol/45-45-90-triangle-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async  getCalculationFortyFivetriangleCalculator(body) {
+      let sides = body.tech_sides;
+      let input = body.tech_input;
+      let linear_unit = body.tech_linear_unit;
+      let square_unit = body.tech_square_unit;
+
+      const result = {};
+
+      // Helper function: Convert length units to centimeters
+      function unitConvert(unit, value) {
+          const conversions = {
+              'mm': 0.1,
+              'cm': 1,
+              'm': 100,
+              'km': 1000,
+              'in': 2.54,
+              'ft': 30.48,
+              'yd': 91.44,
+              'mi': 160934
+          };
+          return value * (conversions[unit] || 1);
+      }
+
+      // Helper function: Convert area units to square centimeters
+      function centi(unit3, value3) {
+          const conversions = {
+              'mm²': 0.01,
+              'cm²': 1,
+              'm²': 10000,
+              'km²': 10000000000,
+              'in²': 6.452,
+              'ft²': 929,
+              'yd²': 8361,
+              'mi²': 25899881103
+          };
+          return value3 * (conversions[unit3] || 1);
+      }
+
+      // Validate input is numeric
+      if (!input || isNaN(input)) {
+          result.error = 'Please! Check Your Input.';
+          return result;
+      }
+
+      const inputNum = parseFloat(input);
+      let a_ans, b_ans, c_ans, area_ans, perimeter_ans;
+      let user_input;
+
+      // Calculate based on which side is given
+      switch(sides) {
+          case "a":
+              user_input = unitConvert(linear_unit, inputNum);
+              a_ans = user_input;
+              b_ans = user_input;
+              c_ans = user_input * Math.sqrt(2);
+              area_ans = Math.pow(user_input, 2) / 2;
+              perimeter_ans = user_input * 3.41421356;
+              break;
+
+          case "b":
+              user_input = unitConvert(linear_unit, inputNum);
+              c_ans = user_input * Math.sqrt(2);
+              a_ans = user_input;
+              b_ans = user_input;
+              area_ans = Math.pow(user_input, 2) / 2;
+              perimeter_ans = user_input * 3.41421356;
+              break;
+
+          case "c":
+              user_input = unitConvert(linear_unit, inputNum);
+              c_ans = user_input;
+              a_ans = user_input / 1.4142135;
+              b_ans = a_ans;
+              area_ans = Math.pow(a_ans, 2) / 2;
+              perimeter_ans = a_ans * 3.41421356;
+              break;
+
+          case "area":
+              user_input = centi(square_unit, inputNum);
+              area_ans = user_input;
+              a_ans = Math.sqrt(user_input * 2);
+              b_ans = a_ans;
+              c_ans = a_ans * Math.sqrt(2);
+              perimeter_ans = a_ans * 3.41421356;
+              break;
+
+          case "perimeter":
+              user_input = unitConvert(linear_unit, inputNum);
+              perimeter_ans = user_input;
+              a_ans = user_input / 3.41421356;
+              b_ans = a_ans;
+              c_ans = a_ans * Math.sqrt(2);
+              area_ans = Math.pow(a_ans, 2) / 2;
+              break;
+
+          default:
+              result.error = 'Please! Check Your Input.';
+              return result;
+      }
+
+      // Calculate height and radius
+      const height = c_ans / 2;
+      const radius = a_ans - height;
+      result.tech_a_ans = isNaN(a_ans) ? "NaN" : a_ans;
+      result.tech_b_ans = isNaN(b_ans) ? "NaN" : b_ans;
+      result.tech_c_ans = isNaN(c_ans) ? "NaN" : c_ans;
+      result.tech_area_ans = isNaN(area_ans) ? "NaN" : area_ans;
+      result.tech_perimeter_ans = isNaN(perimeter_ans) ? "NaN" : perimeter_ans;
+      result.tech_height = isNaN(height) ? "NaN" : height;
+      result.tech_radius = isNaN(radius) ? "NaN" : radius;
+
+
+      return result;
+  }
+
+     /**
+    * getCalculationTwoComplementCalculator: Service Method
+    * POST: /api/calculators-lol/twos-complement-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+
+  async  getCalculationTwoComplementCalculator(body) {
+      let selection = body.tech_selection;
+      let cal = body.tech_cal;
+      let dec = body.tech_dec;
+      let bnry = body.tech_bnry;
+      let hex = body.tech_hex;
+      let bits = body.tech_bits;
+      let no_of_bits = body.tech_no_of_bits;
+      let no = body.tech_no;
+      let no1 = body.tech_no1;
+      let action = body.tech_action;
+
+
+      const result = {};
+
+      // Helper function: Flip bit
+      function flip(c) {
+          return (c === '0') ? '1' : '0';
+      }
+
+      // Helper function: One's complement
+      function onesComplement(str) {
+          const n = str.length;
+          let ones = '';
+          
+          // For ones complement, flip every bit
+          for (let i = 0; i < n; i++) {
+              ones += flip(str[i]);
+          }
+          
+          return ones;
+      }
+
+      // Helper function: Two's complement
+      function twosComplement(str) {
+          const n = str.length;
+          let strArr = str.split('');
+          
+          // Traverse the string to get first '1' from the last of string
+          let i;
+          for (i = n - 1; i >= 0; i--) {
+              if (strArr[i] == '1') break;
+          }
+          
+          // If there exists no '1', concatenate 1 at the starting of string
+          if (i == -1) return '1' + str;
+          
+          // Continue traversal after the position of first '1'
+          for (let k = i - 1; k >= 0; k--) {
+              // Just flip the values
+              strArr[k] = (strArr[k] == '1') ? '0' : '1';
+          }
+          
+          // Return the modified string
+          return strArr.join('');
+      }
+
+      // Helper function: Add space for readability
+      function addspace(binary) {
+          const bit_len = binary.length;
+          const s1 = Math.floor(bit_len / 4);
+          const s2 = s1 * 4;
+          const s3 = bit_len - s2;
+          let res = '';
+          const rem = bit_len % 4;
+          const len = (rem != 0) ? s1 + 1 : s1;
+          let space = 0;
+          
+          for (let i = 0; i < len; i++) {
+              if (i == 0 && s3 != 0) {
+                  for (let j = 0; j <= s3; j++) {
+                      if (j !== s3) {
+                          res += binary[j];
+                      } else {
+                          res += ' ';
+                          space++;
+                      }
+                  }
+              } else {
+                  const s4 = res.length - space;
+                  for (let j = 0; j <= 4; j++) {
+                      if (j != 4) {
+                          res += binary[s4 + j];
+                      } else {
+                          res += ' ';
+                          space++;
+                      }
+                  }
+              }
+          }
+          
+          return res;
+      }
+
+      // Helper function: Binary calculation
+      function bnry_cal(bnry, bits) {
+          // Ensure the input is treated as a binary string
+          const binary_input = String(bnry);
+          const dec = parseInt(binary_input, 2);  // Convert binary to decimal
+          const hex = parseInt(binary_input, 2).toString(16);  // Convert binary to hexadecimal
+          const bit_len = binary_input.length;
+          const bitsNum = parseInt(bits);
+          const n = bitsNum - bit_len;
+          
+          let binary = binary_input;
+          
+          // Padding binary to the specified bit length
+          if (dec < 0) {
+              for (let i = 0; i < n; i++) {
+                  if (n < bitsNum) {
+                      binary = '1' + binary;
+                  }
+              }
+          } else {
+              for (let i = 0; i < n; i++) {
+                  if (n < bitsNum) {
+                      binary = '0' + binary;
+                  }
+              }
+          }
+          
+          binary = binary.slice(-bitsNum);
+          let _1s = onesComplement(binary);
+          _1s = addspace(_1s);
+          
+          let _2s;
+          if (dec === 0) {
+              _2s = '0';
+              for (let i = 0; i < n; i++) {
+                  _2s = '0' + _2s;
+              }
+              _2s = addspace(_2s);
+          } else {
+              _2s = twosComplement(binary);
+              _2s = addspace(_2s);
+          }
+          
+          binary = addspace(binary);
+          
+          return {
+              bits: bitsNum,
+              dec: dec,
+              binary: binary,
+              hex: hex.toUpperCase(),
+              _1s: _1s,
+              _2s: _2s
+          };
+      }
+
+      // Helper function: Decimal calculation
+      function dec_cal(dec, bits) {
+          // Convert decimal to binary
+          const bnry = parseInt(dec).toString(2);
+          const bitsNum = parseInt(bits);
+          
+          // Pad binary to the specified bit length
+          const padded_bnry = bnry.padStart(bitsNum, '0');
+          
+          const hex = parseInt(padded_bnry, 2).toString(16);
+          const _1s = onesComplement(padded_bnry);
+          const _2s = twosComplement(padded_bnry);
+          
+          // Add space for readability
+          const binary_with_space = addspace(padded_bnry);
+          const _1s_with_space = addspace(_1s);
+          const _2s_with_space = addspace(_2s);
+          
+          return {
+              bits: bitsNum,
+              dec: parseInt(dec),
+              binary: binary_with_space,
+              hex: hex.toUpperCase(),
+              _1s: _1s_with_space,
+              _2s: _2s_with_space
+          };
+      }
+
+      // Helper function: Hexadecimal calculation
+      function hex_cal(hex, bits) {
+          // Convert hex to binary
+          let binary = parseInt(hex, 16).toString(2);
+          
+          // Calculate the bit length of the binary representation
+          const bit_len = binary.length;
+          const bitsNum = parseInt(bits);
+          const n = bitsNum - bit_len;
+          
+          // Padding the binary string to the specified bit length
+          for (let i = 0; i < n; i++) {
+              binary = '0' + binary;
+          }
+          
+          // Ensure the binary string is exactly the specified bit length
+          binary = binary.slice(-bitsNum);
+          
+          // Calculate one's complement
+          const _1s = onesComplement(binary);
+          
+          // Calculate two's complement
+          const _2s = twosComplement(binary);
+          
+          // Add spaces for readability
+          const binary_with_space = addspace(binary);
+          const _1s_with_space = addspace(_1s);
+          const _2s_with_space = addspace(_2s);
+          
+          // Prepare the result object
+          return {
+              bits: bitsNum,
+              dec: parseInt(binary, 2),  // Convert binary to decimal
+              binary: binary_with_space,
+              hex: hex.toUpperCase(),
+              _1s: _1s_with_space,
+              _2s: _2s_with_space
+          };
+      }
+
+      // Main logic
+      if (selection == 'distance') {
+          let check = true;
+          
+          if (cal == 'bnry_cal') {
+              if (!bnry || !/^[01]+$/.test(bnry)) {
+                  check = false;
+              }
+          } else if (cal == 'dec_cal') {
+              if (!dec || isNaN(dec)) {
+                  check = false;
+              }
+          } else if (cal == 'hex_cal') {
+              if (!hex || hex == '') {
+                  check = false;
+              }
+          }
+
+          let finalBits;
+          if (bits == "other") {
+              if (no_of_bits && !isNaN(no_of_bits)) {
+                  finalBits = no_of_bits;
+              } else {
+                  result.error = 'Please! Check Your Input';
+                  return result;
+              }
+          } else {
+              finalBits = bits;
+          }
+
+          if (!check) {
+              result.error = 'Please! Check Your Input';
+              return result;
+          }
+
+          let calculationResult;
+          if (cal === 'dec_cal') {
+              calculationResult = dec_cal(dec, finalBits);
+          } else if (cal === 'bnry_cal') {
+              calculationResult = bnry_cal(bnry, finalBits);
+          } else if (cal === 'hex_cal') {
+              calculationResult = hex_cal(hex, finalBits);
+          }
+
+          result.tech_bit = calculationResult.bits;
+          result.tech_dec = calculationResult.dec;
+          result.tech_binary = calculationResult.binary;
+          result.tech_hex = calculationResult.hex;
+          result.tech_1s = calculationResult._1s;
+          result.tech_2s = calculationResult._2s;
+          
+          return result;
+      } else {
+          // Addition/Subtraction mode
+          if (no && no1 && !isNaN(no) && !isNaN(no1)) {
+              let ans;
+              
+              if (action == '+') {
+                  ans = parseInt(no, 2) + parseInt(no1, 2);
+              } else {
+                  ans = parseInt(no, 2) - parseInt(no1, 2);
+              }
+              
+              if (ans < 0) {
+                  ans = '-' + Math.abs(ans).toString(2);
+              } else {
+                  ans = Math.abs(ans).toString(2);
+              }
+              
+              result.tech_add_sub = ans;
+              result.tech_no = no;
+              result.tech_no1 = no1;
+              result.tech_action = action;
+              
+              return result;
+          } else {
+              result.error = 'Please! Check Your Input';
+              return result;
+          }
+      }
+  }
+
+
+
+
 }
 
 module.exports = new CalculatorsServices();
