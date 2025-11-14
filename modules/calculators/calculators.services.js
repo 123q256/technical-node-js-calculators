@@ -99406,287 +99406,7 @@ async getCalculationJumpRopeCalorieCalculator(body) {
       }
 
 
-  /**
-    * getCalculationLiteralEquationsCalculator: Service Method
-    * POST: /api/calculators-lol/literal-equations-calculator
-    * @param {Object} body Having Properties for Creating New Roles
-    * @returns Object with message property having success method
-    */
 
-        async getCalculationLiteralEquationsCalculator(body) {
-        const equ = body.equ;
-        const find = body.find;
-
-        // Helper function to solve literal equations
-        const solveLiteralEquation = (equation, solveFor) => {
-            const steps = [];
-            const explanations = [];
-            const finalSteps = [];
-            
-            // Remove spaces and convert to lowercase
-            equation = equation.replace(/\s/g, '').toLowerCase();
-            solveFor = solveFor.toLowerCase();
-            
-            // Split into left and right sides
-            const sides = equation.split('=');
-            if (sides.length !== 2) {
-                throw new Error('Invalid equation format');
-            }
-            
-            let left = sides[0];
-            let right = sides[1];
-            
-            // Store original equations for display
-            const left_equ = left;
-            const right_equ = right;
-            
-            // Step 1: Move all terms containing the variable to one side
-            const moveVariableTerms = (side, targetSide) => {
-                const terms = side.split(/(?=[+-])/).filter(term => term !== '');
-                let newSide = '';
-                let movedTerms = [];
-                
-                terms.forEach(term => {
-                    if (term.includes(solveFor)) {
-                        // Move to target side with opposite sign
-                        let movedTerm = term.startsWith('+') ? '-' + term.slice(1) : 
-                                      term.startsWith('-') ? '+' + term.slice(1) : '-' + term;
-                        movedTerms.push(movedTerm);
-                    } else {
-                        newSide += term;
-                    }
-                });
-                
-                // Remove leading + if present
-                if (newSide.startsWith('+')) {
-                    newSide = newSide.slice(1);
-                }
-                
-                return { newSide, movedTerms };
-            };
-            
-            // Move variable terms from right to left
-            const rightResult = moveVariableTerms(right, 'left');
-            right = rightResult.newSide;
-            left += rightResult.movedTerms.join('');
-            
-            if (rightResult.movedTerms.length > 0) {
-                const explanation = `Move all ${solveFor} terms to the left side.`;
-                const step = `${left} = ${right}`;
-                explanations.push(explanation);
-                steps.push(step);
-                finalSteps.push(step);
-            }
-            
-            // Move variable terms from left to right (if any non-variable terms on left)
-            const leftResult = moveVariableTerms(left, 'right');
-            left = leftResult.newSide;
-            right += leftResult.movedTerms.join('');
-            
-            if (leftResult.movedTerms.length > 0) {
-                const explanation = `Move constant terms to the right side.`;
-                const step = `${left} = ${right}`;
-                explanations.push(explanation);
-                steps.push(step);
-                finalSteps.push(step);
-            }
-            
-            // Step 2: Combine like terms
-            const combineLikeTerms = (expression) => {
-                const terms = expression.split(/(?=[+-])/).filter(term => term !== '');
-                const variableTerms = [];
-                const constantTerms = [];
-                
-                terms.forEach(term => {
-                    if (term.includes(solveFor)) {
-                        variableTerms.push(term);
-                    } else {
-                        constantTerms.push(term);
-                    }
-                });
-                
-                // Combine variable terms
-                let combinedVariable = '0';
-                if (variableTerms.length > 0) {
-                    const coefficients = variableTerms.map(term => {
-                        const coeffMatch = term.match(/(-?\d*\.?\d*)/)[0];
-                        let coeff = coeffMatch === '-' ? -1 : 
-                                  coeffMatch === '' ? 1 : 
-                                  parseFloat(coeffMatch);
-                        return coeff;
-                    });
-                    
-                    const totalCoeff = coefficients.reduce((sum, coeff) => sum + coeff, 0);
-                    combinedVariable = totalCoeff === 1 ? solveFor : 
-                                    totalCoeff === -1 ? '-' + solveFor : 
-                                    totalCoeff + solveFor;
-                }
-                
-                // Combine constant terms
-                const totalConstant = constantTerms.reduce((sum, term) => {
-                    let value = term === '+' ? 1 : 
-                              term === '-' ? -1 : 
-                              parseFloat(term);
-                    return sum + value;
-                }, 0);
-                
-                let result = '';
-                if (combinedVariable !== '0') {
-                    result += combinedVariable;
-                }
-                if (totalConstant !== 0) {
-                    if (result && totalConstant > 0) result += '+';
-                    result += totalConstant;
-                }
-                
-                return result || '0';
-            };
-            
-            left = combineLikeTerms(left);
-            right = combineLikeTerms(right);
-            
-            if (steps.length > 0) { // Only add if there were previous steps
-                const explanation = 'Combine like terms on both sides.';
-                const step = `${left} = ${right}`;
-                explanations.push(explanation);
-                steps.push(step);
-                finalSteps.push(step);
-            }
-            
-            // Step 3: Isolate the variable
-            let finalAnswer = '';
-            
-            if (left.includes(solveFor)) {
-                // Variable is on left side
-                const coeffMatch = left.match(/(-?\d*\.?\d*)/)[0];
-                const coefficient = coeffMatch === '-' ? -1 : 
-                                  coeffMatch === '' ? 1 : 
-                                  parseFloat(coeffMatch);
-                
-                if (coefficient !== 1) {
-                    // Divide both sides by coefficient
-                    const explanation = `Divide both sides by ${coefficient}.`;
-                    let step = '';
-                    
-                    if (coefficient === -1) {
-                        step = `-${left} = -${right}`;
-                        left = left.slice(1); // Remove negative
-                        right = `-(${right})`;
-                    } else {
-                        step = `\\dfrac{${left}}{${coefficient}} = \\dfrac{${right}}{${coefficient}}`;
-                        left = solveFor;
-                        right = `\\dfrac{${right}}{${coefficient}}`;
-                    }
-                    
-                    explanations.push(explanation);
-                    steps.push(step);
-                    finalSteps.push(`${left} = ${right}`);
-                    
-                    finalAnswer = right;
-                } else {
-                    finalAnswer = right;
-                }
-            } else {
-                // Variable is on right side
-                const coeffMatch = right.match(/(-?\d*\.?\d*)/)[0];
-                const coefficient = coeffMatch === '-' ? -1 : 
-                                  coeffMatch === '' ? 1 : 
-                                  parseFloat(coeffMatch);
-                
-                if (coefficient !== 1) {
-                    const explanation = `Divide both sides by ${coefficient}.`;
-                    let step = '';
-                    
-                    if (coefficient === -1) {
-                        step = `-${left} = -${right}`;
-                        left = `-${left}`;
-                        right = right.slice(1);
-                    } else {
-                        step = `\\dfrac{${left}}{${coefficient}} = \\dfrac{${right}}{${coefficient}}`;
-                        left = `\\dfrac{${left}}{${coefficient}}`;
-                        right = solveFor;
-                    }
-                    
-                    explanations.push(explanation);
-                    steps.push(step);
-                    finalSteps.push(`${left} = ${right}`);
-                    
-                    finalAnswer = left;
-                } else {
-                    finalAnswer = left;
-                }
-            }
-            
-            // Final simplification
-            finalAnswer = finalAnswer.replace(/\+\-/g, '-')
-                                    .replace(/\-\-/g, '+')
-                                    .replace(/\\dfrac\{(\d+)\}\{(\d+)\}/g, (match, num, den) => {
-                                        const numerator = parseInt(num);
-                                        const denominator = parseInt(den);
-                                        if (numerator % denominator === 0) {
-                                            return (numerator / denominator).toString();
-                                        }
-                                        return match;
-                                    });
-            
-            return {
-                explain: explanations,
-                steps: steps,
-                final_steps: finalSteps,
-                final: `${solveFor} = ${finalAnswer}`,
-                jawab: finalAnswer,
-                one: '=',
-                left_equ: left_equ,
-                right_equ: right_equ
-            };
-        };
-
-        const result = {};
-
-        // Input validation
-        if (!equ || !find) {
-            result.error = 'Please Check Your Input.';
-            return result;
-        }
-
-        if (/<|>|&|php|print_r|print|echo|script|%|&/i.test(equ)) {
-            result.error = 'Please Enter Valid Equation.';
-            return result;
-        }
-
-        const findLower = find.toLowerCase();
-        const equLower = equ.toLowerCase();
-
-        if (!equLower.includes(findLower)) {
-            result.error = 'Character you entered does not seem to be exist on your equation.';
-            return result;
-        }
-
-        if (!equLower.includes('=')) {
-            result.error = 'Please Enter Valid Equation.';
-            return result;
-        }
-
-        try {
-            const solution = solveLiteralEquation(equ, find);
-            
-            result.explain = solution.explain;
-            result.jawab = solution.jawab;
-            result.one = solution.one;
-            result.steps = solution.steps;
-            result.final_steps = solution.final_steps;
-            result.left_equ = solution.left_equ;
-            result.right_equ = solution.right_equ;
-            result.final = solution.final;
-            result.RESULT = 1;
-            
-        } catch (error) {
-            console.error('Calculation Error:', error.message);
-            result.error = 'Unable to solve the equation. Please check your input.';
-        }
-
-        return result;
-    }
 
       /**
     * getCalculationTrigonometryCalculator: Service Method
@@ -104108,561 +103828,9378 @@ async getCalculationJumpRopeCalorieCalculator(body) {
     }
 
 
-          /**
+     /**
     * getCalculationSubstitutionMethodCalculator: Service Method
     * POST: /api/calculators-lol/substitution-method-calculator
     * @param {Object} body Having Properties for Creating New Roles
     * @returns Object with message property having success method
     */
 
-   async getCalculationSubstitutionMethodCalculator(body) {
-  const operations = body.tech_operations;
+      async getCalculationSubstitutionMethodCalculator(body) {
+      const operations = body.tech_operations;
 
-      const a1_f = body.tech_a1_f;
-      const b1_f = body.tech_b1_f;
-      const k1_f = body.tech_k1_f;
-      const a2_f = body.tech_a2_f;
-      const b2_f = body.tech_b2_f;
-      const k2_f = body.tech_k2_f;
+          const a1_f = body.tech_a1_f;
+          const b1_f = body.tech_b1_f;
+          const k1_f = body.tech_k1_f;
+          const a2_f = body.tech_a2_f;
+          const b2_f = body.tech_b2_f;
+          const k2_f = body.tech_k2_f;
 
-      const a1_s = body.tech_a1_s;
-      const b1_s = body.tech_b1_s;
-      const c1_s = body.tech_c1_s;
-      const k1_s = body.tech_k1_s;
+          const a1_s = body.tech_a1_s;
+          const b1_s = body.tech_b1_s;
+          const c1_s = body.tech_c1_s;
+          const k1_s = body.tech_k1_s;
 
-      const a2_s = body.tech_a2_s;
-      const b2_s = body.tech_b2_s;
-      const c2_s = body.tech_c2_s;
-      const k2_s = body.tech_k2_s;
+          const a2_s = body.tech_a2_s;
+          const b2_s = body.tech_b2_s;
+          const c2_s = body.tech_c2_s;
+          const k2_s = body.tech_k2_s;
 
-      const a3_s = body.tech_a3_s;
-      const b3_s = body.tech_b3_s;
-      const c3_s = body.tech_c3_s;
-      const k3_s = body.tech_k3_s;
+          const a3_s = body.tech_a3_s;
+          const b3_s = body.tech_b3_s;
+          const c3_s = body.tech_c3_s;
+          const k3_s = body.tech_k3_s;
 
 
-    const result = {};
+        const result = {};
 
-    // Helper functions for equation formatting (same as before)
-    const writeEq = (a, b, c) => {
-        if (a == 0 && b == 0) return `0 = ${c}`;
-        else if (a !== 0 && b == 0) {
-            if (Math.abs(a) != 1) return `${a}x = ${c}`;
-            else if (a == -1) return `-x = ${c}`;
-            else return `x = ${c}`;
-        }
-        else if (a == 0 && b != 0) {
-            if (Math.abs(b) !== 1) return `${b}y = ${c}`;
-            else if (b === -1) return `-y = ${c}`;
-            else return `y = ${c}`;
-        }
-        else {
-            if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a}x + ${b}y = ${c}`;
-            else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a}x + y = ${c}`;
-            else if (b > 0 && b != 1 && a == 1) return `x + ${b}y = ${c}`;
-            else if (b > 0 && b != 1 && a == -1) return `-x + ${b}y = ${c}`;
-            else if (b > 0 && b == 1 && a == 1) return `x + y = ${c}`;
-            else if (b > 0 && b == 1 && a == -1) return `-x + y = ${c}`;
-            else if (b < 0 && b != -1 && Math.abs(a) != 1) return `${a}x - ${-b}y = ${c}`;
-            else if (b < 0 && b != -1 && a == 1) return `x - ${-b}y = ${c}`;
-            else if (b < 0 && b != -1 && a == -1) return `-x - ${-b}y = ${c}`;
-            else if (b < 0 && b == -1 && Math.abs(a) != 1) return `${a}x - y = ${c}`;
-            else if (b < 0 && b == -1 && a == 1) return `x - y = ${c}`;
-            else if (b < 0 && b == -1 && a == -1) return `-x - y = ${c}`;
-        }
-        return '';
-    };
+        // Helper functions for equation formatting (same as before)
+        const writeEq = (a, b, c) => {
+            if (a == 0 && b == 0) return `0 = ${c}`;
+            else if (a !== 0 && b == 0) {
+                if (Math.abs(a) != 1) return `${a}x = ${c}`;
+                else if (a == -1) return `-x = ${c}`;
+                else return `x = ${c}`;
+            }
+            else if (a == 0 && b != 0) {
+                if (Math.abs(b) !== 1) return `${b}y = ${c}`;
+                else if (b === -1) return `-y = ${c}`;
+                else return `y = ${c}`;
+            }
+            else {
+                if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a}x + ${b}y = ${c}`;
+                else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a}x + y = ${c}`;
+                else if (b > 0 && b != 1 && a == 1) return `x + ${b}y = ${c}`;
+                else if (b > 0 && b != 1 && a == -1) return `-x + ${b}y = ${c}`;
+                else if (b > 0 && b == 1 && a == 1) return `x + y = ${c}`;
+                else if (b > 0 && b == 1 && a == -1) return `-x + y = ${c}`;
+                else if (b < 0 && b != -1 && Math.abs(a) != 1) return `${a}x - ${-b}y = ${c}`;
+                else if (b < 0 && b != -1 && a == 1) return `x - ${-b}y = ${c}`;
+                else if (b < 0 && b != -1 && a == -1) return `-x - ${-b}y = ${c}`;
+                else if (b < 0 && b == -1 && Math.abs(a) != 1) return `${a}x - y = ${c}`;
+                else if (b < 0 && b == -1 && a == 1) return `x - y = ${c}`;
+                else if (b < 0 && b == -1 && a == -1) return `-x - y = ${c}`;
+            }
+            return '';
+        };
 
-    const writeEqMoveB = (a, b, c) => {
-        if (a == 0 && b == 0) return `0 = ${c}`;
-        else if (a != 0 && b == 0) {
-            if (Math.abs(a) != 1) return `${a}x = ${c}`;
-            else if (a == -1) return `-x = ${c}`;
-            else return `x = ${c}`;
-        }
-        else if (a == 0 && b != 0) {
-            if (Math.abs(b) != 1) return `${b}y = ${c}`;
-            else if (b == -1) return `-y = ${c}`;
-            else return `y = ${c}`;
-        }
-        else {
-            if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a}x = ${c} - ${b}y`;
-            else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a}x = ${c} - y`;
-            else if (b > 0 && b != 1 && a == 1) return `x = ${c} - ${b}y`;
-            else if (b > 0 && b != 1 && a == -1) return `-x = ${c} - ${b}y`;
-            else if (b > 0 && b == 1 && a == 1) return `x = ${c} - y`;
-            else if (b > 0 && b == 1 && a == -1) return `-x = ${c} - y`;
-            else if (b < 0 && b != -1 && Math.abs(a) != 1) return `${a}x = ${c} + ${-b}y`;
-            else if (b < 0 && b != -1 && a == 1) return `x = ${c} + ${-b}y`;
-            else if (b < 0 && b != -1 && a == -1) return `-x = ${c} + ${-b}y`;
-            else if (b < 0 && b == -1 && Math.abs(a) != 1) return `${a}x = ${c} + y`;
-            else if (b < 0 && b == -1 && a == 1) return `x = ${c} + y`;
-            else if (b < 0 && b == -1 && a == -1) return `-x = ${c} + y`;
-        }
-        return '';
-    };
+        const writeEqMoveB = (a, b, c) => {
+            if (a == 0 && b == 0) return `0 = ${c}`;
+            else if (a != 0 && b == 0) {
+                if (Math.abs(a) != 1) return `${a}x = ${c}`;
+                else if (a == -1) return `-x = ${c}`;
+                else return `x = ${c}`;
+            }
+            else if (a == 0 && b != 0) {
+                if (Math.abs(b) != 1) return `${b}y = ${c}`;
+                else if (b == -1) return `-y = ${c}`;
+                else return `y = ${c}`;
+            }
+            else {
+                if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a}x = ${c} - ${b}y`;
+                else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a}x = ${c} - y`;
+                else if (b > 0 && b != 1 && a == 1) return `x = ${c} - ${b}y`;
+                else if (b > 0 && b != 1 && a == -1) return `-x = ${c} - ${b}y`;
+                else if (b > 0 && b == 1 && a == 1) return `x = ${c} - y`;
+                else if (b > 0 && b == 1 && a == -1) return `-x = ${c} - y`;
+                else if (b < 0 && b != -1 && Math.abs(a) != 1) return `${a}x = ${c} + ${-b}y`;
+                else if (b < 0 && b != -1 && a == 1) return `x = ${c} + ${-b}y`;
+                else if (b < 0 && b != -1 && a == -1) return `-x = ${c} + ${-b}y`;
+                else if (b < 0 && b == -1 && Math.abs(a) != 1) return `${a}x = ${c} + y`;
+                else if (b < 0 && b == -1 && a == 1) return `x = ${c} + y`;
+                else if (b < 0 && b == -1 && a == -1) return `-x = ${c} + y`;
+            }
+            return '';
+        };
 
-    const writeEqSubX = (a, b, c, d, e) => {
-        let x;
-        if (e != 0) {
-            if (Math.abs(d) != 1) {
-                if (d > 0) x = `${e} + ${d}y`;
-                if (d < 0) x = `${e} - ${-d}y`;
-                if (d == 0) x = `${e}`;
-            } else if (d == -1) {
-                x = `${e} - y`;
+        const writeEqSubX = (a, b, c, d, e) => {
+            let x;
+            if (e != 0) {
+                if (Math.abs(d) != 1) {
+                    if (d > 0) x = `${e} + ${d}y`;
+                    if (d < 0) x = `${e} - ${-d}y`;
+                    if (d == 0) x = `${e}`;
+                } else if (d == -1) {
+                    x = `${e} - y`;
+                } else {
+                    x = `${e} + ${d}y`;
+                }
             } else {
-                x = `${e} + ${d}y`;
+                if (d == 1) x = 'y';
+                else if (d == -1) x = '-y';
+                else x = `${d}y`;
             }
-        } else {
-            if (d == 1) x = 'y';
-            else if (d == -1) x = '-y';
-            else x = `${d}y`;
-        }
-        x = `(${x})`;
+            x = `(${x})`;
 
-        if (a == 0 && b == 0) return `0 = ${c}`;
-        else if (a != 0 && b == 0) {
-            if (Math.abs(a) != 1) return `${a} ⋅ ${x} = ${c}`;
-            else if (a == -1) return `-${x} = ${c}`;
-            else return `${x} = ${c}`;
-        }
-        else if (a == 0 && b != 0) {
-            if (Math.abs(b) != 1) return `${b}y = ${c}`;
-            else if (b == -1) return `-y = ${c}`;
-            else return `y = ${c}`;
-        }
-        else {
-            if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a} ⋅ ${x} + ${b}y = ${c}`;
-            else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a} ⋅ ${x} + y = ${c}`;
-            else if (b > 0 && b != 1 && a == 1) return `${x} + ${b}y = ${c}`;
-            else if (b > 0 && b != 1 && a == -1) return `-${x} + ${b}y = ${c}`;
-            else if (b > 0 && b == 1 && a == 1) return `${x} + y = ${c}`;
-            else if (b > 0 && b == 1 && a == -1) return `-${x} + y = ${c}`;
-            else if (b < 0 && b != -1 && Math.abs(a) != 1) return `${a} ⋅ ${x} - ${-b}y = ${c}`;
-            else if (b < 0 && b != -1 && a == 1) return `${x} - ${-b}y = ${c}`;
-            else if (b < 0 && b != -1 && a == -1) return `-${x} - ${-b}y = ${c}`;
-            else if (b < 0 && b == -1 && Math.abs(a) != 1) return `${a} ⋅ ${x} - y = ${c}`;
-            else if (b < 0 && b == -1 && a == 1) return `${x} - y = ${c}`;
-            else if (b < 0 && b == -1 && a == -1) return `-${x} - y = ${c}`;
-        }
-        return '';
-    };
+            if (a == 0 && b == 0) return `0 = ${c}`;
+            else if (a != 0 && b == 0) {
+                if (Math.abs(a) != 1) return `${a} ⋅ ${x} = ${c}`;
+                else if (a == -1) return `-${x} = ${c}`;
+                else return `${x} = ${c}`;
+            }
+            else if (a == 0 && b != 0) {
+                if (Math.abs(b) != 1) return `${b}y = ${c}`;
+                else if (b == -1) return `-y = ${c}`;
+                else return `y = ${c}`;
+            }
+            else {
+                if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a} ⋅ ${x} + ${b}y = ${c}`;
+                else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a} ⋅ ${x} + y = ${c}`;
+                else if (b > 0 && b != 1 && a == 1) return `${x} + ${b}y = ${c}`;
+                else if (b > 0 && b != 1 && a == -1) return `-${x} + ${b}y = ${c}`;
+                else if (b > 0 && b == 1 && a == 1) return `${x} + y = ${c}`;
+                else if (b > 0 && b == 1 && a == -1) return `-${x} + y = ${c}`;
+                else if (b < 0 && b != -1 && Math.abs(a) != 1) return `${a} ⋅ ${x} - ${-b}y = ${c}`;
+                else if (b < 0 && b != -1 && a == 1) return `${x} - ${-b}y = ${c}`;
+                else if (b < 0 && b != -1 && a == -1) return `-${x} - ${-b}y = ${c}`;
+                else if (b < 0 && b == -1 && Math.abs(a) != 1) return `${a} ⋅ ${x} - y = ${c}`;
+                else if (b < 0 && b == -1 && a == 1) return `${x} - y = ${c}`;
+                else if (b < 0 && b == -1 && a == -1) return `-${x} - y = ${c}`;
+            }
+            return '';
+        };
 
-    const writeEqX = (a, b, y, c) => {
-        if (Math.abs(b) != 1) {
-            if (Math.abs(a) != 1) {
-                if (b > 0 && y >= 0) return `${a}x + ${b} ⋅ ${y} = ${c}`;
-                else if (b < 0 && y >= 0) return `${a}x - ${-b} ⋅ ${y} = ${c}`;
-                else if (b > 0 && y < 0) return `${a}x + ${b} ⋅ (${y}) = ${c}`;
-                else if (b < 0 && y < 0) return `${a}x - ${-b} ⋅ (${y}) = ${c}`;
-            } else if (a == 1) {
-                if (b > 0 && y >= 0) return `x + ${b} ⋅ ${y} = ${c}`;
-                else if (b < 0 && y >= 0) return `x - ${-b} ⋅ ${y} = ${c}`;
-                else if (b > 0 && y < 0) return `x + ${b} ⋅ (${y}) = ${c}`;
-                else if (b < 0 && y < 0) return `x - ${-b} ⋅ (${y}) = ${c}`;
-            } else if (a == -1) {
-                if (b > 0 && y >= 0) return `-x + ${b} ⋅ ${y} = ${c}`;
-                else if (b < 0 && y >= 0) return `-x - ${-b} ⋅ ${y} = ${c}`;
-                else if (b > 0 && y < 0) return `-x + ${b} ⋅ (${y}) = ${c}`;
-                else if (b < 0 && y < 0) return `-x - ${-b} ⋅ (${y}) = ${c}`;
+        const writeEqX = (a, b, y, c) => {
+            if (Math.abs(b) != 1) {
+                if (Math.abs(a) != 1) {
+                    if (b > 0 && y >= 0) return `${a}x + ${b} ⋅ ${y} = ${c}`;
+                    else if (b < 0 && y >= 0) return `${a}x - ${-b} ⋅ ${y} = ${c}`;
+                    else if (b > 0 && y < 0) return `${a}x + ${b} ⋅ (${y}) = ${c}`;
+                    else if (b < 0 && y < 0) return `${a}x - ${-b} ⋅ (${y}) = ${c}`;
+                } else if (a == 1) {
+                    if (b > 0 && y >= 0) return `x + ${b} ⋅ ${y} = ${c}`;
+                    else if (b < 0 && y >= 0) return `x - ${-b} ⋅ ${y} = ${c}`;
+                    else if (b > 0 && y < 0) return `x + ${b} ⋅ (${y}) = ${c}`;
+                    else if (b < 0 && y < 0) return `x - ${-b} ⋅ (${y}) = ${c}`;
+                } else if (a == -1) {
+                    if (b > 0 && y >= 0) return `-x + ${b} ⋅ ${y} = ${c}`;
+                    else if (b < 0 && y >= 0) return `-x - ${-b} ⋅ ${y} = ${c}`;
+                    else if (b > 0 && y < 0) return `-x + ${b} ⋅ (${y}) = ${c}`;
+                    else if (b < 0 && y < 0) return `-x - ${-b} ⋅ (${y}) = ${c}`;
+                }
+            } else if (b == 1) {
+                if (Math.abs(a) != 1) {
+                    if (y >= 0) return `${a}x + ${y} = ${c}`;
+                    else if (y < 0) return `${a}x - ${-y} = ${c}`;
+                } else if (a == 1) {
+                    if (y >= 0) return `x + ${y} = ${c}`;
+                    else if (y < 0) return `x - ${-y} = ${c}`;
+                } else if (a == -1) {
+                    if (y >= 0) return `-x + ${y} = ${c}`;
+                    else if (y < 0) return `-x - ${-y} = ${c}`;
+                }
+            } else if (b == -1) {
+                if (Math.abs(a) != 1) {
+                    if (y >= 0) return `${a}x - ${y} = ${c}`;
+                    else if (y < 0) return `${a}x + ${-y} = ${c}`;
+                } else if (a == 1) {
+                    if (y >= 0) return `x - ${y} = ${c}`;
+                    else if (y < 0) return `x + ${-y} = ${c}`;
+                } else if (a == -1) {
+                    if (y >= 0) return `-x - ${y} = ${c}`;
+                    else if (y < 0) return `-x + ${-y} = ${c}`;
+                }
             }
-        } else if (b == 1) {
-            if (Math.abs(a) != 1) {
-                if (y >= 0) return `${a}x + ${y} = ${c}`;
-                else if (y < 0) return `${a}x - ${-y} = ${c}`;
-            } else if (a == 1) {
-                if (y >= 0) return `x + ${y} = ${c}`;
-                else if (y < 0) return `x - ${-y} = ${c}`;
-            } else if (a == -1) {
-                if (y >= 0) return `-x + ${y} = ${c}`;
-                else if (y < 0) return `-x - ${-y} = ${c}`;
-            }
-        } else if (b == -1) {
-            if (Math.abs(a) != 1) {
-                if (y >= 0) return `${a}x - ${y} = ${c}`;
-                else if (y < 0) return `${a}x + ${-y} = ${c}`;
-            } else if (a == 1) {
-                if (y >= 0) return `x - ${y} = ${c}`;
-                else if (y < 0) return `x + ${-y} = ${c}`;
-            } else if (a == -1) {
-                if (y >= 0) return `-x - ${y} = ${c}`;
-                else if (y < 0) return `-x + ${-y} = ${c}`;
-            }
-        }
-        return '';
-    };
+            return '';
+        };
 
-    const writeEqY = (a, x, b, c) => {
-        if (Math.abs(b) != 1) {
-            if (Math.abs(a) != 1) {
-                if (b > 0 && x >= 0) return `${a} ⋅ ${x} + ${b}y = ${c}`;
-                else if (b < 0 && x >= 0) return `${a} ⋅ ${x} - ${-b}y = ${c}`;
-                else if (b > 0 && x < 0) return `${a} ⋅ (${x}) + ${b}y = ${c}`;
-                else if (b < 0 && x < 0) return `${a} ⋅ (${x}) - ${-b}y = ${c}`;
-            } else if (a == 1) {
-                if (b > 0) return `${x} + ${b}y = ${c}`;
-                else if (b < 0) return `${x} - ${-b}y = ${c}`;
-            } else if (a == -1) {
-                if (b > 0) return `${-x} + ${b}y = ${c}`;
-                else if (b < 0) return `${-x} - ${-b}y = ${c}`;
+        const writeEqY = (a, x, b, c) => {
+            if (Math.abs(b) != 1) {
+                if (Math.abs(a) != 1) {
+                    if (b > 0 && x >= 0) return `${a} ⋅ ${x} + ${b}y = ${c}`;
+                    else if (b < 0 && x >= 0) return `${a} ⋅ ${x} - ${-b}y = ${c}`;
+                    else if (b > 0 && x < 0) return `${a} ⋅ (${x}) + ${b}y = ${c}`;
+                    else if (b < 0 && x < 0) return `${a} ⋅ (${x}) - ${-b}y = ${c}`;
+                } else if (a == 1) {
+                    if (b > 0) return `${x} + ${b}y = ${c}`;
+                    else if (b < 0) return `${x} - ${-b}y = ${c}`;
+                } else if (a == -1) {
+                    if (b > 0) return `${-x} + ${b}y = ${c}`;
+                    else if (b < 0) return `${-x} - ${-b}y = ${c}`;
+                }
+            } else if (b == 1) {
+                if (Math.abs(a) != 1) {
+                    if (x >= 0) return `${a} ⋅ ${x} + y = ${c}`;
+                    else if (x < 0) return `${a} ⋅ (${x}) + y = ${c}`;
+                } else if (a == 1) {
+                    return `${x} + y = ${c}`;
+                } else if (a == -1) {
+                    return `${-x} + y = ${c}`;
+                }
+            } else if (b == -1) {
+                if (Math.abs(a) != 1) {
+                    if (x >= 0) return `${a} ⋅ ${x} - y = ${c}`;
+                    else if (x < 0) return `${a} ⋅ (${x}) - y = ${c}`;
+                } else if (a == 1) {
+                    return `${x} - y = ${c}`;
+                } else if (a == -1) {
+                    return `${-x} - y = ${c}`;
+                }
             }
-        } else if (b == 1) {
-            if (Math.abs(a) != 1) {
-                if (x >= 0) return `${a} ⋅ ${x} + y = ${c}`;
-                else if (x < 0) return `${a} ⋅ (${x}) + y = ${c}`;
-            } else if (a == 1) {
-                return `${x} + y = ${c}`;
-            } else if (a == -1) {
-                return `${-x} + y = ${c}`;
-            }
-        } else if (b == -1) {
-            if (Math.abs(a) != 1) {
-                if (x >= 0) return `${a} ⋅ ${x} - y = ${c}`;
-                else if (x < 0) return `${a} ⋅ (${x}) - y = ${c}`;
-            } else if (a == 1) {
-                return `${x} - y = ${c}`;
-            } else if (a == -1) {
-                return `${-x} - y = ${c}`;
-            }
-        }
-        return '';
-    };
+            return '';
+        };
 
-    // Helper functions for number operations
-    const are3NumbersZero = (a, b, c) => a * a + b * b + c * c === 0;
-    const are2NumbersZero = (a, b) => a * a + b * b === 0;
-    const roundNumb = (a) => Math.round(a * 100000) / 100000;
-    const lastRound = (a) => Math.round(a * 1000) / 1000;
+        // Helper functions for number operations
+        const are3NumbersZero = (a, b, c) => a * a + b * b + c * c === 0;
+        const are2NumbersZero = (a, b) => a * a + b * b === 0;
+        const roundNumb = (a) => Math.round(a * 100000) / 100000;
+        const lastRound = (a) => Math.round(a * 1000) / 1000;
 
-    // Helper function to check if value is numeric
-    const isNumeric = (value) => {
-        return value !== undefined && value !== null && value !== '' && !isNaN(parseFloat(value));
-    };
+        // Helper function to check if value is numeric
+        const isNumeric = (value) => {
+            return value !== undefined && value !== null && value !== '' && !isNaN(parseFloat(value));
+        };
 
-    // Gaussian elimination for 3x3 system (Laravel style)
-    const gauss3Equations = (s1, t1, u1, v1, s2, t2, u2, v2, s3, t3, u3, v3) => {
-        let matrix = [[s1, t1, u1, v1], [s2, t2, u2, v2], [s3, t3, u3, v3]];
-        
-        if (!are3NumbersZero(matrix[0][0], matrix[1][0], matrix[2][0])) {
-            if (matrix[0][0] === 0 && matrix[1][0] !== 0) {
-                [matrix[0], matrix[1]] = [matrix[1], matrix[0]];
+        // Gaussian elimination for 3x3 system (Laravel style)
+        const gauss3Equations = (s1, t1, u1, v1, s2, t2, u2, v2, s3, t3, u3, v3) => {
+            let matrix = [[s1, t1, u1, v1], [s2, t2, u2, v2], [s3, t3, u3, v3]];
+            
+            if (!are3NumbersZero(matrix[0][0], matrix[1][0], matrix[2][0])) {
+                if (matrix[0][0] === 0 && matrix[1][0] !== 0) {
+                    [matrix[0], matrix[1]] = [matrix[1], matrix[0]];
+                }
+                if (matrix[0][0] === 0 && matrix[2][0] !== 0) {
+                    [matrix[0], matrix[2]] = [matrix[2], matrix[0]];
+                }
+                if (matrix[1][0] === 0 && matrix[2][0] !== 0) {
+                    [matrix[1], matrix[2]] = [matrix[2], matrix[1]];
+                }
             }
-            if (matrix[0][0] === 0 && matrix[2][0] !== 0) {
-                [matrix[0], matrix[2]] = [matrix[2], matrix[0]];
-            }
-            if (matrix[1][0] === 0 && matrix[2][0] !== 0) {
-                [matrix[1], matrix[2]] = [matrix[2], matrix[1]];
-            }
-        }
 
-        // Forward elimination
-        if (matrix[1][0] !== 0) {
-            const factor = matrix[1][0] / matrix[0][0];
-            for (let j = 0; j < 4; j++) {
-                matrix[1][j] = roundNumb(matrix[1][j] - factor * matrix[0][j]);
+            // Forward elimination
+            if (matrix[1][0] !== 0) {
+                const factor = matrix[1][0] / matrix[0][0];
+                for (let j = 0; j < 4; j++) {
+                    matrix[1][j] = roundNumb(matrix[1][j] - factor * matrix[0][j]);
+                }
             }
-        }
-        if (matrix[2][0] !== 0) {
-            const factor = matrix[2][0] / matrix[0][0];
-            for (let j = 0; j < 4; j++) {
-                matrix[2][j] = roundNumb(matrix[2][j] - factor * matrix[0][j]);
+            if (matrix[2][0] !== 0) {
+                const factor = matrix[2][0] / matrix[0][0];
+                for (let j = 0; j < 4; j++) {
+                    matrix[2][j] = roundNumb(matrix[2][j] - factor * matrix[0][j]);
+                }
             }
-        }
 
-        // Second row elimination
-        if (matrix[2][1] !== 0 && matrix[1][1] !== 0) {
-            const factor = matrix[2][1] / matrix[1][1];
-            for (let j = 1; j < 4; j++) {
-                matrix[2][j] = roundNumb(matrix[2][j] - factor * matrix[1][j]);
+            // Second row elimination
+            if (matrix[2][1] !== 0 && matrix[1][1] !== 0) {
+                const factor = matrix[2][1] / matrix[1][1];
+                for (let j = 1; j < 4; j++) {
+                    matrix[2][j] = roundNumb(matrix[2][j] - factor * matrix[1][j]);
+                }
             }
-        }
 
-        return matrix;
-    };
+            return matrix;
+        };
 
-    const solveFor3 = (s1, t1, u1, v1, s2, t2, u2, v2, s3, t3, u3, v3) => {
-        const matrix = gauss3Equations(s1, t1, u1, v1, s2, t2, u2, v2, s3, t3, u3, v3);
-        
-        // Check for no solution
-        if (are3NumbersZero(matrix[2][0], matrix[2][1], matrix[2][2]) && matrix[2][3] !== 0) {
-            return 0; // No solution
-        }
-        
-        // Check for infinite solutions
-        if (are3NumbersZero(matrix[2][0], matrix[2][1], matrix[2][2]) && matrix[2][3] === 0) {
-            if (are3NumbersZero(matrix[1][0], matrix[1][1], matrix[1][2]) && matrix[1][3] !== 0) {
+        const solveFor3 = (s1, t1, u1, v1, s2, t2, u2, v2, s3, t3, u3, v3) => {
+            const matrix = gauss3Equations(s1, t1, u1, v1, s2, t2, u2, v2, s3, t3, u3, v3);
+            
+            // Check for no solution
+            if (are3NumbersZero(matrix[2][0], matrix[2][1], matrix[2][2]) && matrix[2][3] !== 0) {
                 return 0; // No solution
             }
-            if (are3NumbersZero(matrix[1][0], matrix[1][1], matrix[1][2]) && matrix[1][3] === 0) {
-                if (are3NumbersZero(matrix[0][0], matrix[0][1], matrix[0][2]) && matrix[0][3] !== 0) {
+            
+            // Check for infinite solutions
+            if (are3NumbersZero(matrix[2][0], matrix[2][1], matrix[2][2]) && matrix[2][3] === 0) {
+                if (are3NumbersZero(matrix[1][0], matrix[1][1], matrix[1][2]) && matrix[1][3] !== 0) {
                     return 0; // No solution
                 }
-                if (are3NumbersZero(matrix[0][0], matrix[0][1], matrix[0][2]) && matrix[0][3] === 0) {
-                    return 1; // Infinite solutions
+                if (are3NumbersZero(matrix[1][0], matrix[1][1], matrix[1][2]) && matrix[1][3] === 0) {
+                    if (are3NumbersZero(matrix[0][0], matrix[0][1], matrix[0][2]) && matrix[0][3] !== 0) {
+                        return 0; // No solution
+                    }
+                    if (are3NumbersZero(matrix[0][0], matrix[0][1], matrix[0][2]) && matrix[0][3] === 0) {
+                        return 1; // Infinite solutions
+                    }
                 }
             }
-        }
 
-        // Back substitution for unique solution
-        const z = roundNumb(matrix[2][3] / matrix[2][2]);
-        const y = roundNumb((matrix[1][3] - matrix[1][2] * z) / matrix[1][1]);
-        const x = roundNumb((matrix[0][3] - matrix[0][2] * z - matrix[0][1] * y) / matrix[0][0]);
+            // Back substitution for unique solution
+            const z = roundNumb(matrix[2][3] / matrix[2][2]);
+            const y = roundNumb((matrix[1][3] - matrix[1][2] * z) / matrix[1][1]);
+            const x = roundNumb((matrix[0][3] - matrix[0][2] * z - matrix[0][1] * y) / matrix[0][0]);
 
-        return [
-            [0, 0, lastRound(x)],
-            [0, 0, lastRound(y)], 
-            [0, 0, lastRound(z)]
-        ];
-    };
+            return [
+                [0, 0, lastRound(x)],
+                [0, 0, lastRound(y)], 
+                [0, 0, lastRound(z)]
+            ];
+        };
 
-    try {
-        if (operations == "1") {
-            // Two equations system
-            if (isNumeric(a1_f) && isNumeric(b1_f) && isNumeric(k1_f) && 
-                isNumeric(a2_f) && isNumeric(b2_f) && isNumeric(k2_f)) {
-                
-                const a1 = parseFloat(a1_f);
-                const b1 = parseFloat(b1_f);
-                const k1 = parseFloat(k1_f);
-                const a2 = parseFloat(a2_f);
-                const b2 = parseFloat(b2_f);
-                const k2 = parseFloat(k2_f);
+        try {
+            if (operations == "1") {
+                // Two equations system
+                if (isNumeric(a1_f) && isNumeric(b1_f) && isNumeric(k1_f) && 
+                    isNumeric(a2_f) && isNumeric(b2_f) && isNumeric(k2_f)) {
+                    
+                    const a1 = parseFloat(a1_f);
+                    const b1 = parseFloat(b1_f);
+                    const k1 = parseFloat(k1_f);
+                    const a2 = parseFloat(a2_f);
+                    const b2 = parseFloat(b2_f);
+                    const k2 = parseFloat(k2_f);
 
-                if (a1 != 0 || b1 != 0) {
-                    if (a2 != 0 || b2 != 0) {
-                        const f1_equation = writeEq(a1, b1, k1);
-                        const f2_equation = writeEq(a2, b2, k2);
-                        
-                        result.tech_f1_equation = f1_equation;
-                        result.tech_f2_equation = f2_equation;
+                    if (a1 != 0 || b1 != 0) {
+                        if (a2 != 0 || b2 != 0) {
+                            const f1_equation = writeEq(a1, b1, k1);
+                            const f2_equation = writeEq(a2, b2, k2);
+                            
+                            result.tech_f1_equation = f1_equation;
+                            result.tech_f2_equation = f2_equation;
 
-                        // Check for special cases with zero coefficients
-                        if (a1 * b1 * a2 * b2 === 0) {
-                            let x, y;
-                            if (a1 === 0 && a2 !== 0 && b1 !== 0 && b2 !== 0) {
-                                y = k1 / b1;
-                                x = (k2 - b2 * y) / a2;
-                                result.tech_first = '‣ From the first equation:';
-                                result.tech_second = `y = ${y}`;
-                                result.tech_third = `‣ Substitute y = ${y} into the second equation:`;
-                                result.tech_four = writeEqX(a2, b2, y, k2);
-                                result.tech_five = `x = ${x}`;
-                                result.tech_six = '‣ Solution:';
-                                result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
-                                result.tech_main_ans = result.tech_seven;
-                                result.tech_x = lastRound(x);
-                                result.tech_y = lastRound(y);
-                            } else if (a2 === 0 && a1 !== 0 && b2 !== 0 && b1 !== 0) {
-                                y = k2 / b2;
-                                x = (k1 - b1 * y) / a1;
-                                result.tech_first = '‣ From the second equation:';
-                                result.tech_second = `y = ${y}`;
-                                result.tech_third = `‣ Substitute y = ${y} into the first equation:`;
-                                result.tech_four = writeEqX(a1, b1, y, k1);
-                                result.tech_five = `x = ${x}`;
-                                result.tech_six = '‣ Solution:';
-                                result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
-                                result.tech_main_ans = result.tech_seven;
-                                result.tech_x = lastRound(x);
-                                result.tech_y = lastRound(y);
-                            } else if (b1 === 0 && b2 !== 0 && a1 !== 0 && a2 !== 0) {
-                                x = k1 / a1;
-                                y = (k2 - a2 * x) / b2;
-                                result.tech_first = '‣ From the first equation:';
-                                result.tech_second = `x = ${x}`;
-                                result.tech_third = `‣ Substitute x = ${x} into the second equation:`;
-                                result.tech_four = writeEqY(a2, x, b2, k2);
-                                result.tech_five = `y = ${y}`;
-                                result.tech_six = '‣ Solution:';
-                                result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
-                                result.tech_main_ans = result.tech_seven;
-                                result.tech_x = lastRound(x);
-                                result.tech_y = lastRound(y);
-                            } else if (b2 === 0 && b1 !== 0 && a2 !== 0 && a1 !== 0) {
-                                x = k2 / a2;
-                                y = (k1 - a1 * x) / b1;
-                                result.tech_first = '‣ From the second equation:';
-                                result.tech_second = `x = ${x}`;
-                                result.tech_third = `‣ Substitute x = ${x} into the first equation:`;
-                                result.tech_four = writeEqY(a1, x, b1, k1);
-                                result.tech_five = `y = ${y}`;
-                                result.tech_six = '‣ Solution:';
-                                result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
-                                result.tech_main_ans = result.tech_seven;
-                                result.tech_x = lastRound(x);
-                                result.tech_y = lastRound(y);
-                            }
-                        } else {
-                            // General case - use substitution method
-                            if (Math.abs(a1) == 1 || Math.abs(a2) == 1 || Math.abs(b1) == 1 || Math.abs(b2) == 1) {
-                                // Handle cases with coefficients of 1 or -1
-                                let a = 0, b = 0, c = 0;
-                                if (Math.abs(a1) == 1) {
-                                    result.tech_first = '‣ Calculate x from the first equation:';
-                                    result.tech_second = writeEqMoveB(a1, b1, k1);
-                                    result.tech_third = '‣ Substitute x into the second equation:';
-                                    result.tech_four = writeEqSubX(a2, b2, k2, -b1, k1);
-                                    result.tech_five = '‣ Simplify:';
-                                    a = 0;
-                                    b = -a2 * b1 + b2;
-                                    c = k2 - a2 * k1;
-                                    result.tech_six = writeEq(a, b, c);
-                                } else if (Math.abs(a2) == 1) {
-                                    result.tech_first = '‣ Calculate x from the second equation:';
-                                    result.tech_second = writeEqMoveB(a2, b2, k2);
-                                    result.tech_third = '‣ Substitute x into the first equation:';
-                                    result.tech_four = writeEqSubX(a1, b1, k1, -b2, k2);
-                                    result.tech_five = '‣ Simplify:';
-                                    a = 0;
-                                    b = -a1 * b2 + b1;
-                                    c = k1 - a1 * k2;
-                                    result.tech_six = writeEq(a, b, c);
-                                } else if (Math.abs(b2) == 1) {
-                                    result.tech_first = '‣ Calculate y from the second equation:';
-                                    result.tech_second = writeEqMoveB(a2, b2, k2);
-                                    result.tech_third = '‣ Substitute y into the first equation:';
-                                    result.tech_four = writeEqSubX(a1, b1, k1, -a2, k2);
-                                    result.tech_five = '‣ Simplify:';
-                                    a = 0;
-                                    b = a1 - a2 * b1;
-                                    c = k1 - b1 * k2;
-                                    result.tech_six = writeEq(a, b, c);
-                                } else if (Math.abs(b1) == 1) {
-                                    result.tech_first = '‣ Calculate y from the first equation:';
-                                    result.tech_second = writeEqMoveB(a1, b1, k1);
-                                    result.tech_third = '‣ Substitute y into the second equation:';
-                                    result.tech_four = writeEqSubX(a2, b2, k2, -a1, k1);
-                                    result.tech_five = '‣ Simplify:';
-                                    a = 0;
-                                    b = a2 - a1 * b2;
-                                    c = k2 - b2 * k1;
-                                    result.tech_six = writeEq(a, b, c);
-                                }
-
-                                // Solve the simplified equation
-                                if (b == 0 && c != 0) {
-                                    result.tech_main_ans = '<b>Contradiction! There is no solution.</b>';
-                                } else if (b == 0 && c == 0) {
-                                    result.tech_main_ans = '<b>There are infinitely many solutions.</b>';
-                                } else {
-                                    const y_val = c / b;
-                                    const x_val = (k1 - b1 * y_val) / a1;
-                                    
-                                    result.tech_answer1 = '‣ Solve for y:';
-                                    result.tech_answer2 = `<b>y = ${y_val}</b>`;
-                                    result.tech_answer3 = `‣ Substituting y = ${y_val} into the first equation, we get:`;
-                                    result.tech_answer4 = writeEqX(a1, b1, y_val, k1);
-                                    result.tech_answer5 = '‣ Solve for x:';
-                                    result.tech_answer6 = `<b>x = ${x_val}</b>`;
-                                    result.tech_answer7 = '‣ Solution:';
-                                    result.tech_answer8 = `x = ${lastRound(x_val)}, y = ${lastRound(y_val)}`;
-                                    result.tech_main_ans = result.tech_answer8;
-                                    result.tech_x = lastRound(x_val);
-                                    result.tech_y = lastRound(y_val);
+                            // Check for special cases with zero coefficients
+                            if (a1 * b1 * a2 * b2 === 0) {
+                                let x, y;
+                                if (a1 === 0 && a2 !== 0 && b1 !== 0 && b2 !== 0) {
+                                    y = k1 / b1;
+                                    x = (k2 - b2 * y) / a2;
+                                    result.tech_first = '‣ From the first equation:';
+                                    result.tech_second = `y = ${y}`;
+                                    result.tech_third = `‣ Substitute y = ${y} into the second equation:`;
+                                    result.tech_four = writeEqX(a2, b2, y, k2);
+                                    result.tech_five = `x = ${x}`;
+                                    result.tech_six = '‣ Solution:';
+                                    result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
+                                    result.tech_main_ans = result.tech_seven;
+                                    result.tech_x = lastRound(x);
+                                    result.tech_y = lastRound(y);
+                                } else if (a2 === 0 && a1 !== 0 && b2 !== 0 && b1 !== 0) {
+                                    y = k2 / b2;
+                                    x = (k1 - b1 * y) / a1;
+                                    result.tech_first = '‣ From the second equation:';
+                                    result.tech_second = `y = ${y}`;
+                                    result.tech_third = `‣ Substitute y = ${y} into the first equation:`;
+                                    result.tech_four = writeEqX(a1, b1, y, k1);
+                                    result.tech_five = `x = ${x}`;
+                                    result.tech_six = '‣ Solution:';
+                                    result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
+                                    result.tech_main_ans = result.tech_seven;
+                                    result.tech_x = lastRound(x);
+                                    result.tech_y = lastRound(y);
+                                } else if (b1 === 0 && b2 !== 0 && a1 !== 0 && a2 !== 0) {
+                                    x = k1 / a1;
+                                    y = (k2 - a2 * x) / b2;
+                                    result.tech_first = '‣ From the first equation:';
+                                    result.tech_second = `x = ${x}`;
+                                    result.tech_third = `‣ Substitute x = ${x} into the second equation:`;
+                                    result.tech_four = writeEqY(a2, x, b2, k2);
+                                    result.tech_five = `y = ${y}`;
+                                    result.tech_six = '‣ Solution:';
+                                    result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
+                                    result.tech_main_ans = result.tech_seven;
+                                    result.tech_x = lastRound(x);
+                                    result.tech_y = lastRound(y);
+                                } else if (b2 === 0 && b1 !== 0 && a2 !== 0 && a1 !== 0) {
+                                    x = k2 / a2;
+                                    y = (k1 - a1 * x) / b1;
+                                    result.tech_first = '‣ From the second equation:';
+                                    result.tech_second = `x = ${x}`;
+                                    result.tech_third = `‣ Substitute x = ${x} into the first equation:`;
+                                    result.tech_four = writeEqY(a1, x, b1, k1);
+                                    result.tech_five = `y = ${y}`;
+                                    result.tech_six = '‣ Solution:';
+                                    result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
+                                    result.tech_main_ans = result.tech_seven;
+                                    result.tech_x = lastRound(x);
+                                    result.tech_y = lastRound(y);
                                 }
                             } else {
-                                // General substitution method
-                                result.tech_first = `‣ Calculate x from the first equation. First, add ${-b1}y to both sides of the equation:`;
-                                result.tech_second = writeEqMoveB(a1, b1, k1);
-                                result.tech_third = `Next, divide both sides by ${a1}:`;
-                                result.tech_four = writeEqMoveB(1, b1 / a1, k1 / a1);
-                                result.tech_five = '‣ Substitute x into the second equation:';
-                                result.tech_six = writeEqSubX(a2, b2, k2, -(b1 / a1), (k1 / a1));
-                                result.tech_seven = '‣ Simplify:';
-                                const b_val = -a2 * b1 / a1 + b2;
-                                const c_val = k2 - a2 * k1 / a1;
-                                result.tech_eight = writeEq(0, b_val, c_val);
-                                
-                                // Solve for y and x
-                                if (b_val === 0 && c_val !== 0) {
-                                    result.main_ans = '<b>Contradiction! There is no solution.</b>';
-                                } else if (b_val === 0 && c_val === 0) {
-                                    result.main_ans = '<b>There are infinitely many solutions.</b>';
+                                // General case - use substitution method
+                                if (Math.abs(a1) == 1 || Math.abs(a2) == 1 || Math.abs(b1) == 1 || Math.abs(b2) == 1) {
+                                    // Handle cases with coefficients of 1 or -1
+                                    let a = 0, b = 0, c = 0;
+                                    if (Math.abs(a1) == 1) {
+                                        result.tech_first = '‣ Calculate x from the first equation:';
+                                        result.tech_second = writeEqMoveB(a1, b1, k1);
+                                        result.tech_third = '‣ Substitute x into the second equation:';
+                                        result.tech_four = writeEqSubX(a2, b2, k2, -b1, k1);
+                                        result.tech_five = '‣ Simplify:';
+                                        a = 0;
+                                        b = -a2 * b1 + b2;
+                                        c = k2 - a2 * k1;
+                                        result.tech_six = writeEq(a, b, c);
+                                    } else if (Math.abs(a2) == 1) {
+                                        result.tech_first = '‣ Calculate x from the second equation:';
+                                        result.tech_second = writeEqMoveB(a2, b2, k2);
+                                        result.tech_third = '‣ Substitute x into the first equation:';
+                                        result.tech_four = writeEqSubX(a1, b1, k1, -b2, k2);
+                                        result.tech_five = '‣ Simplify:';
+                                        a = 0;
+                                        b = -a1 * b2 + b1;
+                                        c = k1 - a1 * k2;
+                                        result.tech_six = writeEq(a, b, c);
+                                    } else if (Math.abs(b2) == 1) {
+                                        result.tech_first = '‣ Calculate y from the second equation:';
+                                        result.tech_second = writeEqMoveB(a2, b2, k2);
+                                        result.tech_third = '‣ Substitute y into the first equation:';
+                                        result.tech_four = writeEqSubX(a1, b1, k1, -a2, k2);
+                                        result.tech_five = '‣ Simplify:';
+                                        a = 0;
+                                        b = a1 - a2 * b1;
+                                        c = k1 - b1 * k2;
+                                        result.tech_six = writeEq(a, b, c);
+                                    } else if (Math.abs(b1) == 1) {
+                                        result.tech_first = '‣ Calculate y from the first equation:';
+                                        result.tech_second = writeEqMoveB(a1, b1, k1);
+                                        result.tech_third = '‣ Substitute y into the second equation:';
+                                        result.tech_four = writeEqSubX(a2, b2, k2, -a1, k1);
+                                        result.tech_five = '‣ Simplify:';
+                                        a = 0;
+                                        b = a2 - a1 * b2;
+                                        c = k2 - b2 * k1;
+                                        result.tech_six = writeEq(a, b, c);
+                                    }
+
+                                    // Solve the simplified equation
+                                    if (b == 0 && c != 0) {
+                                        result.tech_main_ans = '<b>Contradiction! There is no solution.</b>';
+                                    } else if (b == 0 && c == 0) {
+                                        result.tech_main_ans = '<b>There are infinitely many solutions.</b>';
+                                    } else {
+                                        const y_val = c / b;
+                                        const x_val = (k1 - b1 * y_val) / a1;
+                                        
+                                        result.tech_answer1 = '‣ Solve for y:';
+                                        result.tech_answer2 = `<b>y = ${y_val}</b>`;
+                                        result.tech_answer3 = `‣ Substituting y = ${y_val} into the first equation, we get:`;
+                                        result.tech_answer4 = writeEqX(a1, b1, y_val, k1);
+                                        result.tech_answer5 = '‣ Solve for x:';
+                                        result.tech_answer6 = `<b>x = ${x_val}</b>`;
+                                        result.tech_answer7 = '‣ Solution:';
+                                        result.tech_answer8 = `x = ${lastRound(x_val)}, y = ${lastRound(y_val)}`;
+                                        result.tech_main_ans = result.tech_answer8;
+                                        result.tech_x = lastRound(x_val);
+                                        result.tech_y = lastRound(y_val);
+                                    }
                                 } else {
-                                    const y_val = c_val / b_val;
-                                    const x_val = (k1 - b1 * y_val) / a1;
+                                    // General substitution method
+                                    result.tech_first = `‣ Calculate x from the first equation. First, add ${-b1}y to both sides of the equation:`;
+                                    result.tech_second = writeEqMoveB(a1, b1, k1);
+                                    result.tech_third = `Next, divide both sides by ${a1}:`;
+                                    result.tech_four = writeEqMoveB(1, b1 / a1, k1 / a1);
+                                    result.tech_five = '‣ Substitute x into the second equation:';
+                                    result.tech_six = writeEqSubX(a2, b2, k2, -(b1 / a1), (k1 / a1));
+                                    result.tech_seven = '‣ Simplify:';
+                                    const b_val = -a2 * b1 / a1 + b2;
+                                    const c_val = k2 - a2 * k1 / a1;
+                                    result.tech_eight = writeEq(0, b_val, c_val);
                                     
-                                    result.tech_answer1 = '‣ Solve for y:';
-                                    result.tech_answer2 = `<b>y = ${y_val}</b>`;
-                                    result.tech_answer3 = `‣ Substituting y = ${y_val} into the first equation, we get:`;
-                                    result.tech_answer4 = writeEqX(a1, b1, y_val, k1);
-                                    result.tech_answer5 = '‣ Solve for x:';
-                                    result.tech_answer6 = `<b>x = ${x_val}</b>`;
-                                    result.tech_answer7 = '‣ Solution:';
-                                    result.tech_answer8 = `x = ${lastRound(x_val)}, y = ${lastRound(y_val)}`;
-                                    result.tech_main_ans = result.tech_answer8;
-                                    result.tech_x = lastRound(x_val);
-                                    result.tech_y = lastRound(y_val);
+                                    // Solve for y and x
+                                    if (b_val === 0 && c_val !== 0) {
+                                        result.main_ans = '<b>Contradiction! There is no solution.</b>';
+                                    } else if (b_val === 0 && c_val === 0) {
+                                        result.main_ans = '<b>There are infinitely many solutions.</b>';
+                                    } else {
+                                        const y_val = c_val / b_val;
+                                        const x_val = (k1 - b1 * y_val) / a1;
+                                        
+                                        result.tech_answer1 = '‣ Solve for y:';
+                                        result.tech_answer2 = `<b>y = ${y_val}</b>`;
+                                        result.tech_answer3 = `‣ Substituting y = ${y_val} into the first equation, we get:`;
+                                        result.tech_answer4 = writeEqX(a1, b1, y_val, k1);
+                                        result.tech_answer5 = '‣ Solve for x:';
+                                        result.tech_answer6 = `<b>x = ${x_val}</b>`;
+                                        result.tech_answer7 = '‣ Solution:';
+                                        result.tech_answer8 = `x = ${lastRound(x_val)}, y = ${lastRound(y_val)}`;
+                                        result.tech_main_ans = result.tech_answer8;
+                                        result.tech_x = lastRound(x_val);
+                                        result.tech_y = lastRound(y_val);
+                                    }
                                 }
                             }
+                        } else {
+                            result.error = 'a2 and b2 cannot both be zeros!';
+                            return result;
                         }
                     } else {
-                        result.error = 'a2 and b2 cannot both be zeros!';
+                        result.error = 'a1 and b1 cannot both be zeros!';
                         return result;
                     }
                 } else {
-                    result.error = 'a1 and b1 cannot both be zeros!';
+                    result.error = 'Please! Check Your Input.';
+                    return result;
+                }
+
+            }  else if (operations == "2") {
+                // Three equations system
+                if (isNumeric(a1_s) && isNumeric(b1_s) && isNumeric(c1_s) && isNumeric(k1_s) &&
+                    isNumeric(a2_s) && isNumeric(b2_s) && isNumeric(c2_s) && isNumeric(k2_s) &&
+                    isNumeric(a3_s) && isNumeric(b3_s) && isNumeric(c3_s) && isNumeric(k3_s)) {
+                    
+                    const a1 = parseFloat(a1_s);
+                    const b1 = parseFloat(b1_s);
+                    const c1 = parseFloat(c1_s);
+                    const k1 = parseFloat(k1_s);
+                    const a2 = parseFloat(a2_s);
+                    const b2 = parseFloat(b2_s);
+                    const c2 = parseFloat(c2_s);
+                    const k2 = parseFloat(k2_s);
+                    const a3 = parseFloat(a3_s);
+                    const b3 = parseFloat(b3_s);
+                    const c3 = parseFloat(c3_s);
+                    const k3 = parseFloat(k3_s);
+
+                    const solution = solveFor3(a1, b1, c1, k1, a2, b2, c2, k2, a3, b3, c3, k3);
+
+                    if (solution === 0) {
+                        result.tech_s_fans = 'Your system of equations has no solutions.';
+                    } else if (solution === 1) {
+                        result.tech_s_fans = 'Your system of equations has an infinite number of solutions. It is satisfied by any three real numbers.';
+                    } else {
+                        const x = solution[0];
+                        const y = solution[1];
+                        const z = solution[2];
+                        
+                        result.tech_s_fans = `The unique solution to your system is x = ${x[2]}, y = ${y[2]}, z = ${z[2]}.`;
+                        result.tech_x = x;
+                        result.tech_y = y;
+                    }
+
+                } else {
+                    result.error = 'Please! Check Your Input for three equation system.';
                     return result;
                 }
             } else {
-                result.error = 'Please! Check Your Input.';
+                result.error = 'Invalid operation selected';
                 return result;
             }
 
-        }  else if (operations == "2") {
-            // Three equations system
-            if (isNumeric(a1_s) && isNumeric(b1_s) && isNumeric(c1_s) && isNumeric(k1_s) &&
-                isNumeric(a2_s) && isNumeric(b2_s) && isNumeric(c2_s) && isNumeric(k2_s) &&
-                isNumeric(a3_s) && isNumeric(b3_s) && isNumeric(c3_s) && isNumeric(k3_s)) {
-                
-                const a1 = parseFloat(a1_s);
-                const b1 = parseFloat(b1_s);
-                const c1 = parseFloat(c1_s);
-                const k1 = parseFloat(k1_s);
-                const a2 = parseFloat(a2_s);
-                const b2 = parseFloat(b2_s);
-                const c2 = parseFloat(c2_s);
-                const k2 = parseFloat(k2_s);
-                const a3 = parseFloat(a3_s);
-                const b3 = parseFloat(b3_s);
-                const c3 = parseFloat(c3_s);
-                const k3 = parseFloat(k3_s);
+            result.tech_operations = operations;
+            return result;
 
-                const solution = solveFor3(a1, b1, c1, k1, a2, b2, c2, k2, a3, b3, c3, k3);
+        } catch (error) {
+            console.error('Error in substitution method calculation:', error);
+            result.error = 'Please! Check Your Input.';
+            return result;
+        }
+    }
 
-                if (solution === 0) {
-                    result.tech_s_fans = 'Your system of equations has no solutions.';
-                } else if (solution === 1) {
-                    result.tech_s_fans = 'Your system of equations has an infinite number of solutions. It is satisfied by any three real numbers.';
-                } else {
-                    const x = solution[0];
-                    const y = solution[1];
-                    const z = solution[2];
-                    
-                    result.tech_s_fans = `The unique solution to your system is x = ${x[2]}, y = ${y[2]}, z = ${z[2]}.`;
-                    result.tech_x = x;
-                    result.tech_y = y;
+       /**
+    * getCalculationSystemOfEquationsCalculator: Service Method
+    * POST: /api/calculators-lol/system-of-equations-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+  async  getCalculationSystemOfEquationsCalculator(body) {
+    let operations = body.tech_operations;
+    let method = body.tech_method;
+
+    let a1_f = body.tech_a1_f;
+    let b1_f = body.tech_b1_f;
+    let k1_f = body.tech_k1_f;
+
+    let a2_f = body.tech_a2_f;
+    let b2_f = body.tech_b2_f;
+    let k2_f = body.tech_k2_f;
+
+    let a1_s = body.tech_a1_s;
+    let b1_s = body.tech_b1_s;
+    let c1_s = body.tech_c1_s;
+    let k1_s = body.tech_k1_s;
+
+    let a2_s = body.tech_a2_s;
+    let b2_s = body.tech_b2_s;
+    let c2_s = body.tech_c2_s;
+    let k2_s = body.tech_k2_s;
+
+    let a3_s = body.tech_a3_s;
+    let b3_s = body.tech_b3_s;
+    let c3_s = body.tech_c3_s;
+    let k3_s = body.tech_k3_s;
+
+
+      // Helper functions
+      function invert(A, debug = false) {
+          const n = A.length;
+
+          // Get and append identity matrix
+          const I = identity_matrix(n);
+          for (let i = 0; i < n; ++i) {
+              A[i] = A[i].concat(I[i]);
+          }
+
+          if (debug) {
+              console.log("\nStarting matrix: ");
+              print_matrix(A);
+          }
+
+          // Forward run
+          for (let j = 0; j < n - 1; ++j) {
+              for (let i = j + 1; i < n; ++i) {
+                  if (A[i][j] != 0) {
+                      const scalar = A[j][j] / A[i][j];
+                      for (let jj = j; jj < n * 2; ++jj) {
+                          A[i][jj] *= scalar;
+                          A[i][jj] -= A[j][jj];
+                      }
+                  }
+              }
+              if (debug) {
+                  console.log(`\nForward iteration ${j}: `);
+                  print_matrix(A);
+              }
+          }
+
+          // Reverse run
+          for (let j = n - 1; j > 0; --j) {
+              for (let i = j - 1; i >= 0; --i) {
+                  if (A[i][j] != 0) {
+                      const scalar = A[j][j] / A[i][j];
+                      for (let jj = i; jj < n * 2; ++jj) {
+                          A[i][jj] *= scalar;
+                          A[i][jj] -= A[j][jj];
+                      }
+                  }
+              }
+              if (debug) {
+                  console.log(`\nReverse iteration ${j}: `);
+                  print_matrix(A);
+              }
+          }
+
+          // Make all diagonal elements 1
+          for (let j = 0; j < n; ++j) {
+              if (A[j][j] !== 1) {
+                  const scalar = 1 / A[j][j];
+                  for (let jj = j; jj < n * 2; ++jj) {
+                      A[j][jj] *= scalar;
+                  }
+              }
+              if (debug) {
+                  console.log(`\n1-out iteration ${j}: `);
+                  print_matrix(A);
+              }
+          }
+
+          // Extract the inverse matrix
+          const Inv = [];
+          for (let i = 0; i < n; ++i) {
+              Inv[i] = A[i].slice(n);
+          }
+
+          return Inv;
+      }
+
+      function print_matrix(A, decimals = 6) {
+          A.forEach(row => {
+              let rowStr = "\n\t[";
+              row.forEach(i => {
+                  rowStr += `\t${round(i, decimals).toFixed(decimals)}`;
+              });
+              rowStr += "\t]";
+              console.log(rowStr);
+          });
+      }
+
+      function round(num, decimals) {
+          return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
+      }
+
+      function identity_matrix(n) {
+          const I = [];
+          for (let i = 0; i < n; ++i) {
+              I[i] = [];
+              for (let j = 0; j < n; ++j) {
+                  I[i][j] = (i == j) ? 1 : 0;
+              }
+          }
+          return I;
+      }
+
+      function multiply(mat1, mat2) {
+          const res = [];
+          const N = mat1.length;
+          
+          for (let i = 0; i < N; i++) {
+              res[i] = [];
+              for (let j = 0; j < mat2[0].length; j++) {
+                  res[i][j] = 0;
+                  for (let k = 0; k < N; k++) {
+                      res[i][j] += mat1[i][k] * mat2[k][j];
+                  }
+              }
+          }
+          return res;
+      }
+
+      function rref2(matrix) {
+          let lead = 0;
+          const rowCount = matrix.length;
+          if (rowCount == 0) return matrix;
+          
+          const columnCount = matrix[0] ? matrix[0].length : 0;
+          
+          for (let r = 0; r < rowCount; r++) {
+              if (lead >= columnCount) break;
+              
+              let i = r;
+              while (matrix[i][lead] == 0) {
+                  i++;
+                  if (i == rowCount) {
+                      i = r;
+                      lead++;
+                      if (lead == columnCount) return matrix;
+                  }
+              }
+              
+              // Swap rows
+              [matrix[r], matrix[i]] = [matrix[i], matrix[r]];
+              
+              // Normalize the pivot row
+              const lv = matrix[r][lead];
+              for (let j = 0; j < columnCount; j++) {
+                  matrix[r][j] = matrix[r][j] / lv;
+              }
+              
+              // Eliminate other rows
+              for (let i = 0; i < rowCount; i++) {
+                  if (i != r) {
+                      const lv = matrix[i][lead];
+                      for (let j = 0; j < columnCount; j++) {
+                          matrix[i][j] -= lv * matrix[r][j];
+                      }
+                  }
+              }
+              lead++;
+          }
+          return matrix;
+      }
+
+      function deter(arr) {
+          const determinant = 
+              arr[0][0] * (arr[1][1] * arr[2][2] - arr[1][2] * arr[2][1]) -
+              arr[0][1] * (arr[1][0] * arr[2][2] - arr[1][2] * arr[2][0]) +
+              arr[0][2] * (arr[1][0] * arr[2][1] - arr[1][1] * arr[2][0]);
+          return determinant;
+      }
+
+      // Main logic
+      const result = {};
+
+      if (operations == 1) {
+          if (isNumeric(k1_f) && isNumeric(k2_f)) {
+              if ((!a1_f && a1_f != 0) && (!a2_f && a2_f != 0)) {
+                  result.error = 'Please! Check Your Input.';
+                  return result;
+              }
+              if ((!b1_f && b1_f != 0) && (!b2_f && b2_f != 0)) {
+                  result.error = 'Please! Check Your Input.';
+                  return result;
+              }
+
+              if (method == 1) {
+                  let n1, n2, n3, multiBy;
+                  
+                  if (a1_f == 1) {
+                      multiBy = a2_f;
+                      n1 = a2_f - (a1_f * a2_f);
+                      n2 = b2_f - (b1_f * a2_f);
+                      n3 = k2_f - (k1_f * a2_f);
+                  } else if (a1_f > 1) {
+                      multiBy = `\\dfrac{${a2_f}}{${a1_f}}`;
+                      n1 = a2_f - (a1_f * (a2_f / a1_f));
+                      n2 = b2_f - (b1_f * (a2_f / a1_f));
+                      n3 = k2_f - (k1_f * (a2_f / a1_f));
+                  } else if (a1_f == 0) {
+                      multiBy = 'swap';
+                      n1 = a1_f;
+                      n2 = b1_f;
+                      n3 = k1_f;
+                      // Note: In original PHP, variables were reassigned but this doesn't affect the result object
+                  } else if (a1_f == -1) {
+                      multiBy = a2_f;
+                      n1 = a2_f + (a1_f * a2_f);
+                      n2 = b2_f + (b1_f * a2_f);
+                      n3 = k2_f + (k1_f * a2_f);
+                  } else if (a1_f < -1) {
+                      multiBy = `\\dfrac{${a2_f}}{${a1_f}}`;
+                      n1 = a2_f + (a1_f * (a2_f / Math.abs(a1_f)));
+                      n2 = b2_f + (b1_f * (a2_f / Math.abs(a1_f)));
+                      n3 = k2_f + (k1_f * (a2_f / Math.abs(a1_f)));
+                  }
+
+                  const y = n3 / n2;
+                  const x = (k1_f - (b1_f * y)) / a1_f;
+
+                  result.tech_x = x;
+                  result.tech_y = y;
+                  result.tech_n1 = n1;
+                  result.tech_n2 = n2;
+                  result.tech_n3 = n3;
+                  result.tech_a1_f = a1_f;
+                  result.tech_b1_f = b1_f;
+                  result.tech_k1_f = k1_f;
+                  return result;
+
+              } else if (method == 2) {
+                  const invers = [[a1_f, b1_f], [a2_f, b2_f]];
+                  const inv = invert(invers);
+                  const side = [[k1_f], [k2_f]];
+                  const multi = multiply(inv, side);
+
+                  result.tech_x = multi[0][0];
+                  result.tech_y = multi[1][0];
+                  result.tech_inv = inv;
+                  result.tech_multi = multi;
+                  return result;
+
+              } else if (method == 3) {
+                  const det1 = (a1_f * b2_f) - (a2_f * b1_f);
+                  const det2 = (k1_f * b2_f) - (k2_f * b1_f);
+                  const det3 = (a1_f * k2_f) - (a2_f * k1_f);
+                  const x = det2 / det1;
+                  const y = det3 / det1;
+
+                  result.tech_x = x;
+                  result.tech_y = y;
+                  result.tech_det1 = det1;
+                  result.tech_det2 = det2;
+                  result.tech_det3 = det3;
+                  return result;
+              }
+          } else {
+              result.error = 'Please! Check Your Input.';
+              return result;
+          }
+      } else if (operations == 2) {
+          if (method == 1) {
+              const A = [
+                  [a1_s, b1_s, c1_s, k1_s],
+                  [a2_s, b2_s, c2_s, k2_s],
+                  [a3_s, b3_s, c3_s, k3_s]
+              ];
+              const rref = rref2(A);
+              const x = rref[0][3];
+              const y = rref[1][3];
+              const z = rref[2][3];
+
+              result.tech_rref = rref;
+              result.tech_x = x;
+              result.tech_y = y;
+              result.tech_z = z;
+              return result;
+
+          } else if (method == 2) {
+              const A = [
+                  [a1_s, b1_s, c1_s],
+                  [a2_s, b2_s, c2_s],
+                  [a3_s, b3_s, c3_s]
+              ];
+              const inv = invert(A);
+              const side = [[k1_s], [k2_s], [k3_s]];
+              const multi = multiply(inv, side);
+
+              result.tech_x = multi[0][0];
+              result.tech_y = multi[1][0];
+              result.tech_z = multi[2][0];
+              result.tech_inv = inv;
+              result.tech_multi = multi;
+              return result;
+
+          } else if (method == 3) {
+              const A = [
+                  [a1_s, b1_s, c1_s],
+                  [a2_s, b2_s, c2_s],
+                  [a3_s, b3_s, c3_s]
+              ];
+              const B = [
+                  [k1_s, b1_s, c1_s],
+                  [k2_s, b2_s, c2_s],
+                  [k3_s, b3_s, c3_s]
+              ];
+              const C = [
+                  [a1_s, k1_s, c1_s],
+                  [a2_s, k2_s, c2_s],
+                  [a3_s, k3_s, c3_s]
+              ];
+              const D = [
+                  [a1_s, b1_s, k1_s],
+                  [a2_s, b2_s, k2_s],
+                  [a3_s, b3_s, k3_s]
+              ];
+              const det1 = deter(A);
+              const det2 = deter(B);
+              const det3 = deter(C);
+              const det4 = deter(D);
+
+              const x = det2 / det1;
+              const y = det3 / det1;
+              const z = det4 / det1;
+
+            result.tech_x = isNaN(x) ? "NaN" : x;
+            result.tech_y = isNaN(y) ? "NaN" : y;
+            result.tech_z = isNaN(z) ? "NaN" : z;
+
+            result.tech_det1 = isNaN(det1) ? "NaN" : det1;
+            result.tech_det2 = isNaN(det2) ? "NaN" : det2;
+            result.tech_det3 = isNaN(det3) ? "NaN" : det3;
+            result.tech_det4 = isNaN(det4) ? "NaN" : det4;
+
+              return result;
+          }
+      }
+
+      return result;
+      
+      // Helper function to check if value is numeric
+      function isNumeric(value) {
+          return !isNaN(parseFloat(value)) && isFinite(value);
+      }
+  }
+
+      /**
+    * getCalculationInverseMatrixCalculator: Service Method
+    * POST: /api/calculators-lol/inverse-matrix-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+     async  getCalculationInverseMatrixCalculator(body) {
+    let dtrmn_slct_method = body.tech_dtrmn_slct_method;
+    let dtrmn_opts_method = body.tech_dtrmn_opts_method;
+
+    // Convert to numbers
+    const matrixSize = parseInt(dtrmn_slct_method);
+    
+    // Helper functions (keep all the previous helper functions as they are)
+    function invert(A, debug = false) {
+        const n = A.length;
+        const matrixCopy = A.map(row => [...row]);
+        const pz = A.map(row => [...row]);
+
+        const I = identity_matrix(n); 
+        for (let i = 0; i < n; ++i) {
+            matrixCopy[i] = [...matrixCopy[i], ...I[i]];
+            pz[i] = [...pz[i], ...I[i]];
+        }
+
+        // Forward run
+        for (let j = 0; j < n - 1; ++j) {
+            for (let i = j + 1; i < n; ++i) {
+                if (matrixCopy[i][j] !== 0) {
+                    const scalar = matrixCopy[j][j] / matrixCopy[i][j];
+                    for (let jj = j; jj < n * 2; ++jj) {
+                        matrixCopy[i][jj] *= scalar;
+                        matrixCopy[i][jj] -= matrixCopy[j][jj];
+                    }
                 }
-
-            } else {
-                result.error = 'Please! Check Your Input for three equation system.';
-                return result;
             }
+        }
+
+        // Reverse run
+        for (let j = n - 1; j > 0; --j) {
+            for (let i = j - 1; i >= 0; --i) {
+                if (matrixCopy[i][j] !== 0) {
+                    const scalar = matrixCopy[j][j] / matrixCopy[i][j];
+                    for (let jj = i; jj < n * 2; ++jj) {
+                        matrixCopy[i][jj] *= scalar;
+                        matrixCopy[i][jj] -= matrixCopy[j][jj];
+                    }
+                }
+            }
+        }
+
+        // Make all diagonal elements 1
+        for (let j = 0; j < n; ++j) {
+            if (matrixCopy[j][j] !== 1) {
+                const scalar = 1 / matrixCopy[j][j];
+                for (let jj = j; jj < n * 2; ++jj) {
+                    matrixCopy[j][jj] *= scalar;
+                }
+            }
+        }
+
+        // Extract the inverse matrix
+        const Inv = [];
+        for (let i = 0; i < n; ++i) {
+            Inv[i] = matrixCopy[i].slice(n);
+        }
+
+        return Inv;
+    }
+
+    function rref2(matrix) {
+        let lead = 0;
+        const matrixCopy = matrix.map(row => [...row]);
+        const pz = matrix.map(row => [...row]);
+        const swap = [];
+        const swap_line = [];
+        const rowCount = matrixCopy.length;
+        
+        if (rowCount === 0) return [matrixCopy, swap, swap_line, pz];
+        
+        const columnCount = matrixCopy[0] ? matrixCopy[0].length : 0;
+        
+        for (let r = 0; r < rowCount; r++) {
+            if (lead >= columnCount) break;
+            
+            let i = r;
+            while (i < rowCount && matrixCopy[i][lead] === 0) {
+                i++;
+                if (i === rowCount) {
+                    i = r;
+                    lead++;
+                    if (lead === columnCount) return [matrixCopy, swap, swap_line, pz];
+                }
+            }
+            
+            if (i >= rowCount) continue;
+            
+            // Swap rows
+            [matrixCopy[r], matrixCopy[i]] = [matrixCopy[i], matrixCopy[r]];
+            
+            if (i !== r) {
+                swap_line.push(`Swap the row ${r + 1} with row ${i + 1}`);
+                [pz[r], pz[i]] = [pz[i], pz[r]];
+                swap.push(pz.map(row => [...row]));
+            }
+            
+            // Normalize the pivot row
+            const lv = matrixCopy[r][lead];
+            if (lv !== 0) {
+                for (let j = 0; j < columnCount; j++) {
+                    matrixCopy[r][j] = matrixCopy[r][j] / lv;
+                    pz[r][j] = pz[r][j] / lv;
+                }
+                
+                const test1 = convert2(lv);
+                if (test1[1] == 1) {
+                    swap_line.push(`Divide row ${r + 1} by ${lv}: R<sub>${r + 1}</sub> = R<sub>${r + 1}</sub>/${lv}`);
+                } else {
+                    const lv3 = `${test1[1]}/${test1[0]}`;
+                    swap_line.push(`Multiply row ${r + 1} by ${lv3}: R<sub>${r + 1}</sub> = ${lv3} R<sub>${r + 1}</sub>`);
+                }
+                swap.push(pz.map(row => [...row]));
+            }
+            
+            // Eliminate other rows
+            for (let i = 0; i < rowCount; i++) {
+                if (i !== r && matrixCopy[i][lead] !== 0) {
+                    const lv = matrixCopy[i][lead];
+                    const lv2 = pz[i][lead];
+                    for (let j = 0; j < columnCount; j++) {
+                        matrixCopy[i][j] -= lv * matrixCopy[r][j];
+                        pz[i][j] -= lv2 * pz[r][j];
+                    }
+                    
+                    swap.push(pz.map(row => [...row]));
+                    const test = convert2(lv);
+                    let lvDisplay = lv;
+                    if (test[1] != 1) {
+                        lvDisplay = `${test[0]}/${test[1]}`;
+                    }
+                    swap_line.push(`Subtract row ${r + 1} multiplied by ${lvDisplay} from row ${i + 1}: R<sub>${i + 1}</sub> = R<sub>${i + 1}</sub> - ${lvDisplay}R<sub>${r + 1}</sub>`);
+                }
+            }
+            lead++;
+        }
+        return [matrixCopy, swap, swap_line, pz];
+    }
+
+    function identity_matrix(n) {
+        const I = [];
+        for (let i = 0; i < n; ++i) {
+            I[i] = [];
+            for (let j = 0; j < n; ++j) {
+                I[i][j] = (i === j) ? 1 : 0;
+            }
+        }
+        return I;
+    }
+
+    function deter(arr, N) {
+        // Validate array dimensions
+        if (!arr || arr.length !== N) {
+            throw new Error(`Invalid matrix dimensions: expected ${N}x${N}`);
+        }
+        
+        for (let i = 0; i < N; i++) {
+            if (!arr[i] || arr[i].length !== N) {
+                throw new Error(`Invalid matrix row ${i}: expected length ${N}`);
+            }
+        }
+
+        if (N === 1) {
+            return arr[0][0];
+        } else if (N === 2) {
+            return arr[0][0] * arr[1][1] - arr[0][1] * arr[1][0];
+        } else if (N === 3) {
+            return arr[0][0] * (arr[1][1] * arr[2][2] - arr[1][2] * arr[2][1]) -
+                   arr[0][1] * (arr[1][0] * arr[2][2] - arr[1][2] * arr[2][0]) +
+                   arr[0][2] * (arr[1][0] * arr[2][1] - arr[1][1] * arr[2][0]);
         } else {
-            result.error = 'Invalid operation selected';
+            // For larger matrices, use recursive determinant
+            return determinant(arr, N, N);
+        }
+    }
+
+    function getCofactor(A, p, q, n) {
+        const temp = Array(n - 1).fill(null).map(() => Array(n - 1).fill(0));
+        let i = 0;
+        let j = 0;
+        
+        for (let row = 0; row < n; row++) {
+            for (let col = 0; col < n; col++) {
+                if (row !== p && col !== q) {
+                    temp[i][j++] = A[row][col];
+                    if (j === n - 1) {
+                        j = 0;
+                        i++;
+                    }
+                }
+            }
+        }
+        return temp;
+    }
+
+    function determinant(A, n, N) {
+        if (n === 1) return A[0][0];
+        
+        let D = 0;
+        let sign = 1;
+        
+        for (let f = 0; f < n; f++) {
+            const cofactorTemp = getCofactor(A, 0, f, n);
+            D += sign * A[0][f] * determinant(cofactorTemp, n - 1, N);
+            sign = -sign;
+        }
+        return D;
+    }
+
+    function adjoint(A, N) {
+        if (N === 1) {
+            return [[[1]], [], [], [], []];
+        }
+        
+        const adj = Array(N).fill(null).map(() => Array(N).fill(0));
+        const sign22 = [];
+        const sign_pow = [];
+        const c_sign = [];
+        
+        for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) {
+                const cofactorTemp = getCofactor(A, i, j, N);
+                const sign = ((i + j) % 2 === 0) ? 1 : -1;
+                sign22.push(sign);
+                sign_pow.push(`${i + 1} + ${j + 1}`);
+                c_sign.push(`${i + 1}${j + 1}`);
+                adj[j][i] = sign * determinant(cofactorTemp, N - 1, N);
+            }
+        }
+        return [adj, sign22, sign_pow, [], c_sign];
+    }
+
+    function transpose(A, N) {
+        const B = Array(N).fill(null).map(() => Array(N).fill(0));
+        for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) {
+                B[i][j] = A[j][i];
+            }
+        }
+        return B;
+    }
+
+    function convert2(xelem) {
+        const x = parseFloat(xelem);
+        if (isNaN(x)) return ['0', '1'];
+        
+        // Simple fraction conversion for display purposes
+        const tolerance = 1.0e-6;
+        let numerator = 1;
+        let denominator = 1;
+        
+        for (let d = 1; d <= 1000; d++) {
+            const n = Math.round(x * d);
+            if (Math.abs(x - n/d) < tolerance) {
+                numerator = n;
+                denominator = d;
+                break;
+            }
+        }
+        
+        const gcdVal = gcd(numerator, denominator);
+        numerator /= gcdVal;
+        denominator /= gcdVal;
+        
+        return [numerator.toString(), denominator.toString()];
+    }
+
+    function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+    }
+
+    // Main logic
+    const result = {};
+
+    try {
+        // console.log('Input matrix size:', matrixSize);
+        // console.log('Method:', dtrmn_opts_method);
+
+        // Validate input matrix
+        const all = [];
+        let totalElements = 0;
+        
+        for (let i = 0; i < matrixSize; i++) {
+            for (let j = 0; j < matrixSize; j++) {
+                const key = `tech_dtrmn_${i}_${j}`;
+                const value = body[key];
+                // console.log(`Reading ${key}: ${value}`);
+                
+                if (value == undefined || value == null || value == '') {
+                    result.error = `Please provide value for position [${i}][${j}].`;
+                    return result;
+                }
+                if (isNumeric(value)) {
+                    all.push(parseFloat(value));
+                    totalElements++;
+                } else {
+                    result.error = `Invalid number at position [${i}][${j}]: ${value}`;
+                    return result;
+                }
+            }
+        }
+
+        // console.log('Total elements collected:', totalElements);
+        // console.log('Expected elements:', matrixSize * matrixSize);
+
+        const zain = chunkArray(all, matrixSize);
+        
+        // console.log('Matrix created with dimensions:', zain.length, 'x', zain[0] ? zain[0].length : 0);
+        // console.log('Matrix content:', JSON.stringify(zain));
+
+        // Validate matrix creation
+        if (zain.length != matrixSize) {
+            result.error = `Failed to create matrix. Expected ${matrixSize} rows, got ${zain.length}`;
             return result;
         }
 
-        result.tech_operations = operations;
-        return result;
+        for (let i = 0; i < zain.length; i++) {
+            if (zain[i].length != matrixSize) {
+                result.error = `Row ${i} has incorrect length. Expected ${matrixSize}, got ${zain[i].length}`;
+                return result;
+            }
+        }
 
+        let det, inverse;
+
+        if (dtrmn_opts_method == "exp_col") {
+            // console.log('Using column expansion method');
+            det = deter(zain, matrixSize);
+            // console.log('Determinant calculated:', det);
+            
+            if (Math.abs(det) < 1e-10) {
+                inverse = "The matrix is not invertible (determinant is zero).";
+            } else {
+                // console.log('Calculating inverse using RREF...');
+                const f_ans = invert(zain);
+                // console.log('Inverse calculated via inversion');
+                
+                const n = zain.length;
+                const I = identity_matrix(n);
+                const invt = [];
+                
+                for (let i = 0; i < n; ++i) {
+                    invt[i] = [...zain[i], ...I[i]];
+                }
+                
+                const ans = rref2(invt);
+                const inverseFlat = [];
+                
+                f_ans.forEach(value => {
+                    value.forEach(value2 => {
+                        const numValue = parseFloat(value2);
+                        if (!isNaN(numValue)) {
+                            if (Number.isInteger(numValue)) {
+                                inverseFlat.push(numValue);
+                            } else {
+                                inverseFlat.push(parseFloat(numValue.toFixed(6)));
+                            }
+                        } else {
+                            inverseFlat.push(value2);
+                        }
+                    });
+                });
+                
+                inverse = chunkArray(inverseFlat, matrixSize);
+                result.tech_matrix = ans[0];
+                result.tech_swap = ans[1];
+                result.tech_swap_line = ans[2];
+            }
+        } else if (dtrmn_opts_method == "exp_row") {
+            // console.log('Using row expansion method');
+            det = deter(zain, matrixSize);
+            // console.log('Determinant calculated:', det);
+            
+            if (Math.abs(det) < 1e-10) {
+                // inverse = "The matrix is not invertible (determinant is zero).";
+            } else {
+                // console.log('Calculating inverse using adjoint method...');
+                const cofa = [];
+                
+                for (let i = 0; i < matrixSize; i++) {
+                    for (let j = 0; j < matrixSize; j++) {
+                        cofa.push(getCofactor(zain, i, j, matrixSize));
+                    }
+                }
+                
+                const all_cofadet = cofa.map(value => determinant(value, matrixSize - 1, matrixSize));
+                
+                const res = adjoint(zain, matrixSize);
+                const allans_det = [];
+                
+                for (let i = 0; i < all_cofadet.length; i++) {
+                    allans_det.push(all_cofadet[i] * res[1][i]);
+                }
+                
+                const adj_ans = res[0];
+                const c_down = res[4];
+                const minus_pow = res[2];
+                const all_cofy = cofa;
+                const final_cofa = chunkArray(allans_det, matrixSize);
+                const ans_tran = transpose(final_cofa, matrixSize);
+                
+                inverse = Array(matrixSize).fill(null).map(() => Array(matrixSize).fill(0));
+                for (let i = 0; i < matrixSize; i++) {
+                    for (let j = 0; j < matrixSize; j++) {
+                        const invValue = adj_ans[i][j] / det;
+                        const numValue = parseFloat(invValue);
+                        if (!isNaN(numValue)) {
+                            if (Number.isInteger(numValue)) {
+                                inverse[i][j] = numValue;
+                            } else {
+                                inverse[i][j] = parseFloat(numValue.toFixed(6));
+                            }
+                        } else {
+                            inverse[i][j] = invValue;
+                        }
+                    }
+                }
+                
+                result.tech_c_down = c_down;
+                result.tech_minus_pow = minus_pow;
+                result.tech_all_cofy = all_cofy;
+                result.tech_allcofy_det = allans_det;
+                result.tech_ans_tran = ans_tran;
+                result.tech_final_cofa = final_cofa;
+            }
+        } else {
+            result.error = 'Invalid method specified.';
+            return result;
+        }
+
+        result.tech_zain = zain;
+        result.tech_det = det;
+        result.tech_inverse = inverse;
+        
+        // console.log('Calculation completed successfully');
+        
     } catch (error) {
-        console.error('Error in substitution method calculation:', error);
-        result.error = 'Please! Check Your Input.';
+        console.error('Calculation error details:', error);
+        result.error = `An error occurred during calculation: ${error.message}`;
+    }
+
+    return result;
+    
+    // Helper functions
+    function isNumeric(value) {
+        if (typeof value == 'number') return true;
+        if (typeof value != 'string') return false;
+        return !isNaN(value) && !isNaN(parseFloat(value));
+    }
+    
+    function chunkArray(array, size) {
+        if (!array || !size || size <= 0) return [];
+        const result = [];
+        for (let i = 0; i < array.length; i += size) {
+            result.push(array.slice(i, i + size));
+        }
         return result;
     }
 }
+
+
+    /**
+    * getCalculationVectorAdditionCalculator: Service Method
+    * POST: /api/calculators-lol/vector-addition-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    async  getCalculationVectorAdditionCalculator(body) {
+     let calculation = body.tech_calculation;
+      let operation = body.tech_operation;
+      let alpha = body.tech_alpha;
+      let beta = body.tech_beta;
+
+      let vectora_representation = body.tech_vectora_representation;
+      let ax = body.tech_ax;
+      let ay = body.tech_ay;
+      let az = body.tech_az;
+
+      let vectorb_representation = body.tech_vectorb_representation;
+      let bx = body.tech_bx;
+      let by = body.tech_by;
+      let bz = body.tech_bz;
+
+      let magnitude_x = body.tech_magnitude_x;
+      let direction_x = body.tech_direction_x;
+      let direction_x_unit = body.tech_direction_x_unit;
+
+      let magnitude_y = body.tech_magnitude_y;
+      let direction_y = body.tech_direction_y;
+      let direction_y_unit = body.tech_direction_y_unit;
+
+     
+      // Helper function to convert angles
+      function convert_angle(unit, value) {
+          const numValue = parseFloat(value);
+          if (isNaN(numValue)) return 0;
+
+          switch(unit) {
+              case "deg":
+                  return numValue * 0.017453;
+              case "rad":
+                  return numValue * 1;
+              case "gon":
+                  return numValue * 0.015708;
+              case "tr":
+                  return numValue * 6.283;
+              case "arcmin":
+                  return numValue * 0.0002909;
+              case "arcsec":
+                  return numValue * 0.000004848;
+              case "mrad":
+                  return numValue * 0.001;
+              case "μrad":
+                  return numValue * 0.000001;
+              case "* π rad":
+                  return numValue * 3.1416;
+              default:
+                  return numValue;
+          }
+      }
+
+      // Helper function to check if all values are numeric
+      function areAllNumeric(...values) {
+          return values.every(val => isNumeric(val));
+      }
+
+      const result = {};
+
+      try {
+          if (calculation === "3D") { // Three Dimensional
+              if (operation === "1") { // Addition without multiples
+                  if (areAllNumeric(ax, ay, az, bx, by, bz)) {
+                      const calculate_x = parseFloat(ax) + parseFloat(bx);
+                      const calculate_y = parseFloat(ay) + parseFloat(by);
+                      const calculate_z = parseFloat(az) + parseFloat(bz);
+                      const calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y + calculate_z * calculate_z);
+                      const q = parseFloat(bx) + parseFloat(ax);
+                      const theta = Math.acos(q / calculate_m);
+                      
+                      result.tech_x = isNaN(calculate_x) ? "NaN" : calculate_x;
+                      result.tech_y = isNaN(calculate_y) ? "NaN" : calculate_y;
+                      result.tech_z = isNaN(calculate_z) ? "NaN" : calculate_z;
+                      result.tech_m = isNaN(calculate_m) ? "NaN" : calculate_m;
+                      result.tech_theta = isNaN(theta) ? "NaN" : theta;
+
+                  } else {
+                      result.error = 'Please! Check your input';
+                      return result;
+                  }
+              } else if (operation === "2") { // Addition with multiplies
+                  if (areAllNumeric(ax, ay, az, bx, by, bz, alpha, beta)) {
+                      const calculate_x = (parseFloat(ax) * parseFloat(alpha)) + (parseFloat(bx) * parseFloat(beta));
+                      const calculate_y = (parseFloat(ay) * parseFloat(alpha)) + (parseFloat(by) * parseFloat(beta));
+                      const calculate_z = (parseFloat(az) * parseFloat(alpha)) + (parseFloat(bz) * parseFloat(beta));
+                      
+                    result.tech_x = isNaN(calculate_x) ? "NaN" : calculate_x;
+                    result.tech_y = isNaN(calculate_y) ? "NaN" : calculate_y;
+                    result.tech_z = isNaN(calculate_z) ? "NaN" : calculate_z;
+
+                  } else {
+                      result.error = 'Please! Check your input';
+                      return result;
+                  }
+              } else if (operation === "3") { // Subtraction without multiplies
+                  if (areAllNumeric(ax, ay, az, bx, by, bz)) {
+                      const calculate_x = parseFloat(ax) - parseFloat(bx);
+                      const calculate_y = parseFloat(ay) - parseFloat(by);
+                      const calculate_z = parseFloat(az) - parseFloat(bz);
+                      
+                      result.tech_x = isNaN(calculate_x) ? "NaN" : calculate_x;
+                    result.tech_y = isNaN(calculate_y) ? "NaN" : calculate_y;
+                    result.tech_z = isNaN(calculate_z) ? "NaN" : calculate_z;
+                  } else {
+                      result.error = 'Please! Check your input';
+                      return result;
+                  }
+              } else if (operation === "4") { // Subtraction with multiplies
+                  if (areAllNumeric(ax, ay, az, bx, by, bz, alpha, beta)) {
+                      const calculate_x = (parseFloat(ax) * parseFloat(alpha)) - (parseFloat(bx) * parseFloat(beta));
+                      const calculate_y = (parseFloat(ay) * parseFloat(alpha)) - (parseFloat(by) * parseFloat(beta));
+                      const calculate_z = (parseFloat(az) * parseFloat(alpha)) - (parseFloat(bz) * parseFloat(beta));
+                      
+                     result.tech_x = isNaN(calculate_x) ? "NaN" : calculate_x;
+                    result.tech_y = isNaN(calculate_y) ? "NaN" : calculate_y;
+                    result.tech_z = isNaN(calculate_z) ? "NaN" : calculate_z;
+                  } else {
+                      result.error = 'Please! Check your input';
+                      return result;
+                  }
+              }
+              result.tech_operation = operation;
+              
+          } else if (calculation === "2D") {
+              let calculate_x, calculate_y, calculate_m, theta, method;
+
+              if (["1", "2", "3", "4"].includes(operation)) {
+                  // When both are cartesian coordinates
+                  if (vectora_representation == "1" && vectorb_representation == "1") {
+                      if (areAllNumeric(ax, ay, bx, by)) {
+                          const num_ax = parseFloat(ax);
+                          const num_ay = parseFloat(ay);
+                          const num_bx = parseFloat(bx);
+                          const num_by = parseFloat(by);
+
+                          if (operation == "1") {
+                              calculate_x = num_ax + num_bx;
+                              calculate_y = num_ay + num_by;
+                              calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                              const q = num_bx + num_ax;
+                              theta = Math.acos(q / calculate_m);
+                              method = 1;
+                          } else if (operation == "2") {
+                              if (areAllNumeric(alpha, beta)) {
+                                  calculate_x = (num_ax * parseFloat(alpha)) + (num_bx * parseFloat(beta));
+                                  calculate_y = (num_ay * parseFloat(alpha)) + (num_by * parseFloat(beta));
+                                  calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                                  const q = calculate_x;
+                                  theta = Math.acos(q / calculate_m);
+                                  method = 1;
+                              } else {
+                                  result.error = 'Please! Check your input';
+                                  return result;
+                              }
+                          } else if (operation == "3") {
+                              calculate_x = num_ax - num_bx;
+                              calculate_y = num_ay - num_by;
+                              calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                              const q = calculate_x;
+                              
+                              if (calculate_m == 0.0) {
+                                  if (q == 0.0) {
+                                      theta = 0;
+                                  } else {
+                                      theta = Infinity;
+                                  }
+                              } else {
+                                  theta = Math.acos(q / calculate_m);
+                              }
+                              method = 2;
+                              console.log(theta);
+                          } else if (operation == "4") {
+                              if (areAllNumeric(alpha, beta)) {
+                                  calculate_x = (num_ax * parseFloat(alpha)) - (num_bx * parseFloat(beta));
+                                  calculate_y = (num_ay * parseFloat(alpha)) - (num_by * parseFloat(beta));
+                                  calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                                  
+                                  if (calculate_m != 0) {
+                                      theta = Math.acos(calculate_x / calculate_m);
+                                  } else {
+                                      theta = null;
+                                  }
+                                  method = 2;
+                              } else {
+                                  result.error = 'Please! Check your input';
+                                  return result;
+                              }
+                          }
+                      } else {
+                          result.error = 'Please! Check your input';
+                          return result;
+                      }
+                  }
+                  // When x is coordinate and y is magnitude
+                  else if (vectora_representation == "1" && vectorb_representation == "2") {
+                      if (areAllNumeric(ax, ay, magnitude_y, direction_y)) {
+                          const direction_y_value = convert_angle(direction_y_unit, direction_y);
+                          const num_ax = parseFloat(ax);
+                          const num_ay = parseFloat(ay);
+                          const num_magnitude_y = parseFloat(magnitude_y);
+
+                          if (operation == "1") {
+                              calculate_x = parseFloat((num_ax + num_magnitude_y * Math.cos(direction_y_value)).toFixed(4));
+                              calculate_y = parseFloat((num_ay + num_magnitude_y * Math.sin(direction_y_value)).toFixed(4));
+                              calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                              const q = calculate_x;
+                              theta = Math.acos(q / calculate_m);
+                              method = 1;
+                          } else if (operation == "2") {
+                              if (areAllNumeric(alpha, beta)) {
+                                  calculate_x = ((num_ax * parseFloat(alpha)) + (num_magnitude_y * parseFloat(beta)) * Math.cos(direction_y_value));
+                                  calculate_y = ((num_ay * parseFloat(alpha)) + num_magnitude_y * (Math.sin(direction_y_value) * parseFloat(beta)));
+                                  calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                                  const q = calculate_x;
+                                  theta = Math.acos(q / calculate_m);
+                                  method = 1;
+                              } else {
+                                  result.error = 'Please! Check your input';
+                                  return result;
+                              }
+                          } else if (operation == "3") {
+                              calculate_x = num_ax - num_magnitude_y * Math.cos(direction_y_value);
+                              calculate_y = num_ay - num_magnitude_y * Math.sin(direction_y_value);
+                              calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                              const q = calculate_x;
+                              theta = Math.acos(q / calculate_m);
+                              method = 2;
+                          } else if (operation == "4") {
+                              if (areAllNumeric(alpha, beta)) {
+                                  calculate_x = (num_ax * parseFloat(alpha)) - (num_magnitude_y * parseFloat(beta)) * Math.cos(direction_y_value);
+                                  calculate_y = (num_ay * parseFloat(alpha)) - num_magnitude_y * (Math.sin(direction_y_value) * parseFloat(beta));
+                                  calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                                  const q = calculate_x;
+                                  theta = Math.acos(q / calculate_m);
+                                  method = 2;
+                              } else {
+                                  result.error = 'Please! Check your input';
+                                  return result;
+                              }
+                          }
+                      } else {
+                          result.error = 'Please! Check your input';
+                          return result;
+                      }
+                  }
+                  // When x is magnitude and y is coordinate
+                  else if (vectorb_representation === "1" && vectora_representation === "2") {
+                      if (areAllNumeric(bx, by, magnitude_x, direction_x)) {
+                          const direction_x_value = convert_angle(direction_x_unit, direction_x);
+                          const num_bx = parseFloat(bx);
+                          const num_by = parseFloat(by);
+                          const num_magnitude_x = parseFloat(magnitude_x);
+
+                          if (operation == "1") {
+                              calculate_x = num_magnitude_x * Math.cos(direction_x_value) + num_bx;
+                              calculate_y = num_magnitude_x * Math.sin(direction_x_value) + num_by;
+                              calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                              theta = Math.acos(calculate_x / calculate_m);
+                              method = 1;
+                          } else if (operation == "2") {
+                              if (areAllNumeric(alpha, beta)) {
+                                  calculate_x = (num_magnitude_x * Math.cos(direction_x_value) * parseFloat(alpha)) + (num_bx * parseFloat(beta));
+                                  calculate_y = (num_magnitude_x * Math.sin(direction_x_value) * parseFloat(alpha)) + (num_by * parseFloat(beta));
+                                  calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                                  theta = Math.acos(calculate_x / calculate_m);
+                                  method = 1;
+                              } else {
+                                  result.error = 'Please! Check your input';
+                                  return result;
+                              }
+                          } else if (operation == "3") {
+                              calculate_x = parseFloat((num_bx - num_magnitude_x * Math.cos(direction_x_value)).toFixed(4));
+                              calculate_y = parseFloat((num_by - num_magnitude_x * Math.sin(direction_x_value)).toFixed(4));
+                              calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                              const q = calculate_x;
+                              theta = Math.acos(q / calculate_m);
+                              method = 2;
+                          } else if (operation == "4") {
+                              if (areAllNumeric(alpha, beta)) {
+                                  calculate_x = (num_magnitude_x * Math.cos(direction_x_value) * parseFloat(alpha)) - (num_bx * parseFloat(beta));
+                                  calculate_y = (num_magnitude_x * Math.sin(direction_x_value) * parseFloat(alpha)) - (num_by * parseFloat(beta));
+                                  calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                                  theta = Math.acos(calculate_x / calculate_m);
+                                  method = 2;
+                              } else {
+                                  result.error = 'Please! Check your input';
+                                  return result;
+                              }
+                          }
+                      } else {
+                          result.error = 'Please! Check your input';
+                          return result;
+                      }
+                  }
+                  // When both are magnitude representations
+                  else if (vectorb_representation == "2" && vectora_representation == "2") {
+                      if (areAllNumeric(magnitude_y, direction_y, magnitude_x, direction_x)) {
+                          const num_magnitude_x = parseFloat(magnitude_x);
+                          const num_magnitude_y = parseFloat(magnitude_y);
+
+                          if (operation == "1") {
+                              const direction_x_value = convert_angle(direction_x_unit, direction_x);
+                              const direction_y_value = convert_angle(direction_y_unit, direction_y);
+                              const x1 = num_magnitude_x * Math.cos(direction_x_value);
+                              const x2 = num_magnitude_x * Math.sin(direction_x_value);
+                              const y1 = num_magnitude_y * Math.cos(direction_y_value);
+                              const y2 = num_magnitude_y * Math.sin(direction_y_value);
+                              calculate_x = x1 + y1;
+                              calculate_y = x2 + y2;
+                              calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                              theta = Math.acos(calculate_x / calculate_m);
+                              method = 1;
+                          } else if (operation == "2") {
+                              if (areAllNumeric(alpha, beta)) {
+                                  const direction_x_value = convert_angle(direction_x_unit, direction_x);
+                                  const direction_y_value = convert_angle(direction_y_unit, direction_y);
+                                  const x1 = num_magnitude_x * Math.cos(direction_x_value) * parseFloat(alpha);
+                                  const x2 = num_magnitude_x * Math.sin(direction_x_value) * parseFloat(alpha);
+                                  const y1 = num_magnitude_y * Math.cos(direction_y_value) * parseFloat(beta);
+                                  const y2 = num_magnitude_y * Math.sin(direction_y_value) * parseFloat(beta);
+                                  calculate_x = x1 + y1;
+                                  calculate_y = x2 + y2;
+                                  calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                                  theta = Math.acos(calculate_x / calculate_m);
+                                  method = 1;
+                              } else {
+                                  result.error = 'Please! Check your input';
+                                  return result;
+                              }
+                          } else if (operation == "3") {
+                            //  let theta = 0;
+                              const direction_x_value = convert_angle(direction_x_unit, direction_x);
+                              const direction_y_value = convert_angle(direction_y_unit, direction_y);
+                              const x1 = num_magnitude_x * Math.cos(direction_x_value);
+                              const x2 = num_magnitude_x * Math.sin(direction_x_value);
+                              const y1 = num_magnitude_y * Math.cos(direction_y_value);
+                              const y2 = num_magnitude_y * Math.sin(direction_y_value);
+                              calculate_x = x1 - y1;
+                              calculate_y = x2 - y2;
+                              calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                              theta = Math.acos(calculate_x / calculate_m);
+                              method = 2;
+                          } else if (operation == "4") {
+                              if (areAllNumeric(alpha, beta)) {
+                                  const direction_x_value = convert_angle(direction_x_unit, direction_x);
+                                  const direction_y_value = convert_angle(direction_y_unit, direction_y);
+                                  const x1 = num_magnitude_x * Math.cos(direction_x_value) * parseFloat(alpha);
+                                  const x2 = num_magnitude_x * Math.sin(direction_x_value) * parseFloat(alpha);
+                                  const y1 = num_magnitude_y * Math.cos(direction_y_value) * parseFloat(beta);
+                                  const y2 = num_magnitude_y * Math.sin(direction_y_value) * parseFloat(beta);
+                                  calculate_x = x1 - y1;
+                                  calculate_y = x2 - y2;
+                                  calculate_m = Math.sqrt(calculate_x * calculate_x + calculate_y * calculate_y);
+                                  
+                                  if (calculate_m == 0.0) {
+                                      if (calculate_x == 0.0) {
+                                          theta = 0;
+                                      } else {
+                                          theta = Infinity;
+                                      }
+                                  } else {
+                                      theta = Math.acos(calculate_x / calculate_m);
+                                  }
+                                  method = 2;
+                              } else {
+                                  result.error = 'Please! Check your input';
+                                  return result;
+                              }
+                          }
+                      } else {
+                          result.error = 'Please! Check your input';
+                          return result;
+                      }
+                  } else {
+                      result.error = 'Invalid vector representation combination';
+                      return result;
+                  }
+
+                result.tech_x = isNaN(calculate_x) ? "NaN" : calculate_x;
+                result.tech_y = isNaN(calculate_y) ? "NaN" : calculate_y;
+                result.tech_m = isNaN(calculate_m) ? "NaN" : calculate_m;
+                result.tech_theta = isNaN(theta) ? "NaN" : theta;
+                  result.tech_method = method;
+              } else {
+                  result.error = 'Invalid operation';
+                  return result;
+              }
+          } else {
+              result.error = 'Invalid calculation type';
+              return result;
+          }
+
+          
+      } catch (error) {
+          console.error('Vector calculation error:', error);
+          result.error = `An error occurred during calculation: ${error.message}`;
+      }
+
+      return result;
+      
+      // Helper function to check if value is numeric
+      function isNumeric(value) {
+          if (typeof value === 'number') return true;
+          if (typeof value !== 'string') return false;
+          return !isNaN(value) && !isNaN(parseFloat(value));
+      }
+  }
+
+    /**
+    * getCalculationGaussSeidelCalculator: Service Method
+    * POST: /api/calculators-lol/gauss-seidel-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+    async getCalculationGaussSeidelCalculator(body) {
+      let number = body.tech_number;
+      let value = body.tech_value;
+
+      // Helper function to calculate determinant
+      function solve_matrix(m) {
+          const size = m.length;
+          
+          switch (size) {
+              case 1:
+                  return m[0][0];
+              case 2:
+                  return (m[0][0] * m[1][1]) - (m[0][1] * m[1][0]);
+              case 3:
+                  return (m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])) - 
+                        (m[1][0] * (m[0][1] * m[2][2] - m[0][2] * m[2][1])) + 
+                        (m[2][0] * (m[0][1] * m[1][2] - m[0][2] * m[1][1]));
+              default:
+                  return 0;
+          }
+      }
+
+      const result = {};
+
+      try {
+          // Validate inputs
+          const n = parseInt(number);
+          if (isNaN(n) || n < 0) {
+              result.error = 'Invalid matrix size';
+              return result;
+          }
+
+          // Read matrix values
+          const matrix = [];
+          const r = [];
+          
+          for (let i = 0; i <= n; i++) {
+              matrix[i] = [];
+              for (let j = 0; j <= n; j++) {
+                  const key = `tech_matrix${i}_${j}`;
+                  const val = body[key];
+                  
+                  if (isNumeric(val)) {
+                      matrix[i][j] = parseFloat(val);
+                      r.push(parseFloat(val));
+                  } else {
+                      result.error = `Please! Check Your Input at position [${i}][${j}].`;
+                      return result;
+                  }
+              }
+          }
+
+          // Validate value array
+          if (!value || !Array.isArray(value) || value.length <= n) {
+              result.error = 'Invalid value array';
+              return result;
+          }
+
+          const numericValue = value.map(v => parseFloat(v)).filter(v => !isNaN(v));
+          if (numericValue.length <= n) {
+              result.error = 'Please! Check Your Input values.';
+              return result;
+          }
+
+          // Create upper triangular matrix
+          const upper = [];
+          for (let k = 0; k <= n; k++) {
+              upper[k] = [];
+              for (let f = 0; f <= n; f++) {
+                  if (k > f) {
+                      upper[k][f] = 0;
+                  } else {
+                      upper[k][f] = matrix[k][f];
+                  }
+              }
+          }
+
+          // Create lower triangular matrix
+          const lower = [];
+          for (let i = 0; i <= n; i++) {
+              lower[i] = [];
+              for (let j = 0; j <= n; j++) {
+                  if (j > i) {
+                      lower[i][j] = 0;
+                  } else {
+                      lower[i][j] = matrix[i][j];
+                  }
+              }
+          }
+
+          // Calculate determinant of lower matrix
+          const I_matrix_I = solve_matrix(lower);
+          
+          if (Math.abs(I_matrix_I) < 1e-10) {
+              result.error = 'Matrix is singular (determinant is zero)';
+              return result;
+          }
+
+          // Calculate adjoint matrix
+          const adjoint = [];
+          for (let i = 0; i <= n; i++) {
+              adjoint[i] = [];
+              for (let j = 0; j <= n; j++) {
+                  adjoint[i][j] = 0;
+              }
+          }
+
+          for (let i = 0; i <= n; i++) {
+              for (let j = 0; j <= n; j++) {
+                  const cofactor = [];
+                  for (let k = 0; k <= n; k++) {
+                      if (i !== k) {
+                          const temp = [];
+                          for (let l = 0; l <= n; l++) {
+                              if (j !== l) {
+                                  temp.push(lower[k][l]);
+                              }
+                          }
+                          if (temp.length > 0) {
+                              cofactor.push(temp);
+                          }
+                      }
+                  }
+                  
+                  if (cofactor.length > 0) {
+                      adjoint[j][i] = solve_matrix(cofactor) * Math.pow(-1, i + j);
+                  } else {
+                      adjoint[j][i] = 0;
+                  }
+              }
+          }
+
+          // Calculate inverse matrix
+          const inverse = [];
+          for (let i = 0; i <= n; i++) {
+              inverse[i] = [];
+              for (let j = 0; j <= n; j++) {
+                  inverse[i][j] = adjoint[i][j] / I_matrix_I;
+              }
+          }
+
+          // Modify upper matrix (set diagonal to zero)
+          for (let i = 0; i < upper.length; i++) {
+              for (let j = 0; j < upper[i].length; j++) {
+                  if (i === j) {
+                      upper[i][j] = 0;
+                  }
+              }
+          }
+
+          // Calculate result matrix: -inverse * upper
+          const resultMatrix = [];
+          for (let i = 0; i < inverse.length; i++) {
+              resultMatrix[i] = [];
+              for (let j = 0; j < upper[0].length; j++) {
+                  resultMatrix[i][j] = 0;
+                  for (let k = 0; k < upper.length; k++) {
+                      resultMatrix[i][j] += (-inverse[i][k] * upper[k][j]);
+                  }
+              }
+          }
+
+          // Calculate result2 matrix: inverse * value
+          const result2 = [];
+          for (let i = 0; i < inverse.length; i++) {
+              result2[i] = [];
+              for (let j = 0; j < 1; j++) {
+                  result2[i][j] = 0;
+                  for (let k = 0; k <= n; k++) {
+                      result2[i][j] += (inverse[i][k] * numericValue[k]);
+                  }
+              }
+          }
+
+          // Gauss-Seidel iteration (19 iterations as in original code)
+          let resultt = [];
+          const result3 = [];
+
+          for (let h = 0; h < 19; h++) {
+              for (let j = 0; j < resultMatrix.length; j++) {
+                  result3[j] = [];
+                  for (let k = 0; k < 1; k++) {
+                      result3[j][k] = 0;
+                      for (let m = 0; m < result2.length; m++) {
+                          if (h === 0) {
+                              result3[j][k] += (resultMatrix[j][m] * result2[m][k]);
+                          } else {
+                              result3[j][k] += (resultMatrix[j][m] * resultt[m][k]);
+                          }
+                      }
+                  }
+              }
+
+              // Initialize resultt array if not exists
+              if (!resultt.length) {
+                  resultt = Array(result3.length).fill().map(() => Array(1).fill(0));
+              }
+
+              for (let n = 0; n < result3.length; n++) {
+                  for (let z = 0; z < 1; z++) {
+                      resultt[n][z] = result3[n][z] + result2[n][z];
+                  }
+              }
+          }
+
+          // Prepare final result
+          result.tech_upper = upper;
+          result.tech_lower = lower;
+          result.tech_number = n;
+          result.tech_inverse = inverse;
+          result.tech_value = numericValue;
+          result.tech_result = resultMatrix;
+          result.tech_result2 = result2;
+          result.tech_main_result = resultt;
+
+      } catch (error) {
+          console.error('Gauss-Seidel calculation error:', error);
+          result.error = `An error occurred during calculation: ${error.message}`;
+      }
+
+      return result;
+      
+      // Helper function to check if value is numeric
+      function isNumeric(value) {
+          if (value === null || value === undefined || value === '') return false;
+          if (typeof value === 'number') return true;
+          if (typeof value !== 'string') return false;
+          return !isNaN(value) && !isNaN(parseFloat(value));
+      }
+  }
+
+  /**
+    * getCalculationRationalizeTheDenominatorCalculator: Service Method
+    * POST: /api/calculators-lol/rationalize-the-denominator-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async  getCalculationRationalizeTheDenominatorCalculator(body) {
+        const params = {};
+        
+        try {
+          let type = body.tech_type;
+          let operations = body.tech_operations;
+          let a = body.tech_a;
+          let b = body.tech_b;
+          let n = body.tech_n;
+          let c = body.tech_c;
+          let d = body.tech_d;
+          let m = body.tech_m;
+          let x = body.tech_x;
+          let y = body.tech_y;
+          let k = body.tech_k;
+          let u = body.tech_u;
+          let n1 = body.tech_n1;
+          let d1 = body.tech_d1;
+
+
+            if (type == "first") {
+                if (operations == "1") {
+                    if ([a, b, n, x, y, k].every(val => !isNaN(val))) {
+                        if (a != 0) {
+                            if (b > 0) {
+                                if (n >= 2) {
+                                    if (x != 0) {
+                                        if (y > 0) {
+                                            if (k != 0) {
+                                                params.tech_operations = operations;
+                                                params.tech_type = type;
+                                                params.tech_a = a;
+                                                params.tech_b = b;
+                                                params.tech_n = n;
+                                                params.tech_x = x;
+                                                params.tech_y = y;
+                                                params.tech_k = k;
+                                                params.tech_z = 0;
+                                                params.tech_c = 0;
+                                                params.tech_d = 0;
+                                                params.tech_m = 0;
+                                                params.tech_u = 0;
+                                            } else {
+                                                params.error = 'k cannot be 0.';
+                                                return params;
+                                            }
+                                        } else {
+                                            params.error = 'y cannot be negative.';
+                                            return params;
+                                        }
+                                    } else {
+                                        params.error = "Are you sure about x being 0? Why don't we input something different?";
+                                        return params;
+                                    }
+                                } else {
+                                    params.error = 'n cannot be smaller than 2.';
+                                    return params;
+                                }
+                            } else {
+                                params.error = 'b cannot be negative.';
+                                return params;
+                            }
+                        } else {
+                            params.error = "Are you sure about a being 0? Why don't we input something different?";
+                            return params;
+                        }
+                    } else {
+                        params.error = 'Please! Check Your Input.';
+                        return params;
+                    }
+                } else if (operations == "2") {
+                    if ([a, b, n, c, d, m, x, y, k].every(val => !isNaN(val))) {
+                        params.tech_operations = operations;
+                        params.tech_type = type;
+                        params.tech_a = a;
+                        params.tech_b = b;
+                        params.tech_n = n;
+                        params.tech_x = x;
+                        params.tech_y = y;
+                        params.tech_k = k;
+                        params.tech_z = 0;
+                        params.tech_c = c;
+                        params.tech_d = d;
+                        params.tech_m = m;
+                        params.tech_u = 0;
+                    } else {
+                        params.error = 'Please! Check Your Input.';
+                        return params;
+                    }
+                } else if (operations == "3") {
+                    if ([a, b, x, y, k, u].every(val => !isNaN(val))) {
+                        params.tech_operations = operations;
+                        params.tech_type = type;
+                        params.tech_a = a;
+                        params.tech_b = b;
+                        params.tech_n = 1;
+                        params.tech_x = x;
+                        params.tech_y = y;
+                        params.tech_k = 1;
+                        params.tech_z = k;
+                        params.tech_c = 1;
+                        params.tech_d = 1;
+                        params.tech_m = 1;
+                        params.tech_u = u;
+                    } else {
+                        params.error = 'Please! Check Your Input.';
+                        return params;
+                    }
+                } else if (operations == "4") {
+                    if ([a, b, d, x, y, k, u, c].every(val => !isNaN(val))) {
+                        params.tech_operations = operations;
+                        params.tech_type = type;
+                        params.tech_a = a;
+                        params.tech_b = b;
+                        params.tech_n = 1;
+                        params.tech_x = x;
+                        params.tech_y = y;
+                        params.tech_k = 1;
+                        params.tech_z = k;
+                        params.tech_c = c;
+                        params.tech_d = d;
+                        params.tech_m = 1;
+                        params.tech_u = u;
+                    } else {
+                        params.error = 'Please! Check Your Input.';
+                        return params;
+                    }
+                }
+                } else if (type === "second") {
+                  console.log('Processing second type with n1:', n1, 'd1:', d1);
+                  
+                  // Input validation
+                  if (!n1 || !d1 || typeof n1 !== 'string' || typeof d1 !== 'string') {
+                      // console.log('n1 or d1 missing or not strings');
+                      params.error = 'Please! Check Your Input. n1 and d1 are required.';
+                      return params;
+                  }
+
+                  // Security validation - modified to allow = sign
+                  const dangerousPattern = /<|>|&|php|print_r|print|echo|script|%|eval|exec|system|command/i;
+                  
+                  // console.log('Security check - n1:', dangerousPattern.test(n1), 'd1:', dangerousPattern.test(d1));
+                  
+                  if (dangerousPattern.test(n1) || dangerousPattern.test(d1)) {
+                      // console.log('Dangerous pattern detected');
+                      params.error = 'Please! Check Your Input. Invalid characters detected.';
+                      return params;
+                  }
+
+                  // Process the equations
+                  let xeq = n1.replace(/ /g, '')
+                            .replace(/\+/g, 'plus')
+                            .replace(/{/g, '(')
+                            .replace(/}/g, ')')
+                            .replace(/xe\^/g, 'x*e^')
+                            .replace(/ye\^/g, 'y*e^')
+                            .replace(/e\^/g, 'exp')
+                            .replace(/exp\^/g, 'exp')
+                            .replace(/\^/g, '**')
+                            .replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+
+                  let yeq = d1.replace(/ /g, '')
+                            .replace(/\+/g, 'plus')
+                            .replace(/{/g, '(')
+                            .replace(/}/g, ')')
+                            .replace(/xe\^/g, 'x*e^')
+                            .replace(/ye\^/g, 'y*e^')
+                            .replace(/e\^/g, 'exp')
+                            .replace(/exp\^/g, 'exp')
+                            .replace(/\^/g, '**')
+                            .replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+
+                  // console.log('Processed xeq:', xeq);
+                  // console.log('Processed yeq:', yeq);
+
+                  try {
+                      // console.log('Making API call...');
+                      const response = await axios.post('http://167.172.134.148/rationalize', {
+                          xeq: xeq,
+                          yeq: yeq
+                      }, {
+                          timeout: 120000,
+                          headers: {
+                              'Content-Type': 'application/x-www-form-urlencoded'
+                          }
+                      });
+
+                      // console.log('API response status:', response.status);
+                      // console.log('API response data:', response.data);
+                      
+                      if (response.data && typeof response.data === 'string') {
+                          const buffer = response.data.split('@@@');
+                          if (buffer.length >= 5) {
+                              params.tech_enter = buffer[0];
+                              params.tech_up = buffer[1];
+                              params.tech_ress = buffer[2];
+                              params.tech_down = buffer[3];
+                              params.tech_main_ans = buffer[4];
+                          } else {
+                              params.error = 'Invalid response format from API.';
+                              return params;
+                          }
+                      } else {
+                          params.error = 'Invalid response from API.';
+                          return params;
+                      }
+                  } catch (error) {
+                      // console.log('API call error:', error.message);
+                      if (error.response) {
+                          // console.log('API response error:', error.response.status, error.response.data);
+                      }
+                      params.error = 'Please! Check Your Input. API call failed: ' + error.message;
+                      return params;
+                  }
+              }
+
+            params.tech_type = type;
+            return params;
+
+        } catch (error) {
+            const errorParams = {};
+            errorParams.error = 'Please! Check Your Input.';
+            return errorParams;
+        }
+    }
+
+
+  /**
+    * getCalculationSurfaceAreaCalculator: Service Method
+    * POST: /api/calculators-lol/surface-area-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async getCalculationSurfaceAreaCalculator(body) {
+      const params = {};
+      
+      try {
+          let operations = body.tech_operations;
+          let shape = body.tech_shape;
+          let first = body.tech_first;
+          let second = body.tech_second;
+          let third = body.tech_third;
+          let four = body.tech_four;
+          let pi = body.tech_pi;
+          let unit1 = body.tech_unit1;
+          let unit2 = body.tech_unit2;
+          let unit3 = body.tech_unit3;
+          let unit4 = body.tech_unit4;
+
+          // Unit conversion function
+          const calculation = (a, b) => {
+              if (!a || !b) return 0;
+              
+              if (b == 'cm') {
+                  return parseFloat(a);
+              } else if (b == 'mm') {
+                  return parseFloat(a) / 10;
+              } else if (b == 'm') {
+                  return parseFloat(a) * 100;
+              } else if (b == 'in') {
+                  return parseFloat(a) * 2.54;
+              } else if (b == 'ft') {
+                  return parseFloat(a) * 30.48;
+              } else if (b == 'yd') {
+                  return parseFloat(a) * 91.44;
+              }
+              return parseFloat(a);
+          };
+
+          // Convert units
+          const firstVal = calculation(first, unit1);
+          const secondVal = calculation(second, unit2);
+          const thirdVal = calculation(third, unit3);
+          const fourVal = calculation(four, unit4);
+
+          // Validate numeric inputs
+          const isNumeric = (val) => !isNaN(parseFloat(val)) && isFinite(val);
+
+          if (operations == "1") {
+              if (isNumeric(firstVal) && isNumeric(secondVal) && isNumeric(pi)) {
+                  const ttsa = 2 * parseFloat(pi) * firstVal * ((2 * firstVal) + secondVal);
+                 params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "2") {
+              if (isNumeric(firstVal) && isNumeric(secondVal) && isNumeric(pi)) {
+                  const s = Math.pow(firstVal, 2) + Math.pow(secondVal, 2);
+                  const s_sqrt = Math.sqrt(s);
+                  const lsa = parseFloat(pi) * firstVal * s_sqrt;
+                  const bsa = parseFloat(pi) * Math.pow(firstVal, 2);
+                  const ttsa = parseFloat(pi) * firstVal * (firstVal + s_sqrt);
+                 params.tech_lsa  = isNaN(lsa) ? "NAN" : lsa;
+                  params.tech_bsa  = isNaN(bsa) ? "NAN" : bsa;
+                  params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "3") {
+              if (isNumeric(firstVal) && isNumeric(secondVal) && isNumeric(thirdVal) && isNumeric(pi)) {
+                  const top = parseFloat(pi) * Math.pow(firstVal, 2);
+                  const bsa = parseFloat(pi) * Math.pow(secondVal, 2);
+                  const s = Math.pow(firstVal - secondVal, 2) + Math.pow(thirdVal, 2);
+                  const s_sqrt = Math.sqrt(s);
+                  const ttsa = parseFloat(pi) * (Math.pow(firstVal, 2) + Math.pow(secondVal, 2) + (firstVal * secondVal) * s_sqrt);
+                  const lsa = parseFloat(pi) * (firstVal + secondVal) * s_sqrt;
+                 params.tech_top  = isNaN(top) ? "NAN" : top;
+                  params.tech_bsa  = isNaN(bsa) ? "NAN" : bsa;
+                  params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+                  params.tech_lsa  = isNaN(lsa) ? "NAN" : lsa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "4") {
+              if (isNumeric(firstVal)) {
+                  const bsa = Math.pow(firstVal, 2);
+                  const top = Math.pow(firstVal, 2);
+                  const lsa = 4 * Math.pow(firstVal, 2);
+                  const ttsa = 6 * bsa;
+                  params.tech_top  = isNaN(top) ? "NAN" : top;
+                  params.tech_bsa  = isNaN(bsa) ? "NAN" : bsa;
+                  params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+                  params.tech_lsa  = isNaN(lsa) ? "NAN" : lsa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "5") {
+              if (isNumeric(firstVal) && isNumeric(secondVal) && isNumeric(pi)) {
+                  const top = parseFloat(pi) * Math.pow(firstVal, 2);
+                  const bsa = parseFloat(pi) * Math.pow(firstVal, 2);
+                  const ttsa = 2 * parseFloat(pi) * firstVal * (secondVal + firstVal);
+                  const lsa = ttsa - (top + bsa);
+                  params.tech_top  = isNaN(top) ? "NAN" : top;
+                  params.tech_bsa  = isNaN(bsa) ? "NAN" : bsa;
+                  params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+                  params.tech_lsa  = isNaN(lsa) ? "NAN" : lsa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "6") {
+              if (isNumeric(firstVal) && isNumeric(pi)) {
+                  const csa = 2 * parseFloat(pi) * Math.pow(firstVal, 2);
+                  const bsa = parseFloat(pi) * Math.pow(firstVal, 2);
+                  const ttsa = 3 * parseFloat(pi) * Math.pow(firstVal, 2);
+                  params.tech_bsa  = isNaN(bsa) ? "NAN" : bsa;
+                  params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+                  params.tech_csa  = isNaN(csa) ? "NAN" : csa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "7") {
+              if (isNumeric(firstVal) && isNumeric(secondVal) && isNumeric(thirdVal)) {
+                  const bsa = firstVal * secondVal;
+                  const top = thirdVal * firstVal;
+                  const top2 = thirdVal * secondVal;
+                  const ttsa = 2 * (bsa + top + top2);
+                  const lsa = ttsa - (bsa + top);
+                params.tech_top  = isNaN(top) ? "NAN" : top;
+                params.tech_bsa  = isNaN(bsa) ? "NAN" : bsa;
+                params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+                params.tech_lsa  = isNaN(lsa) ? "NAN" : lsa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "8") {
+              if (isNumeric(firstVal) && isNumeric(pi)) {
+                  const ttsa = 4 * parseFloat(pi) * Math.pow(firstVal, 2);
+                  params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "9") {
+              if (isNumeric(firstVal) && isNumeric(secondVal) && isNumeric(pi)) {
+                  const csa = 2 * parseFloat(pi) * firstVal * secondVal;
+                  params.tech_csa = isNaN(csa) ? "NAN" : ttsa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "10") {
+              if (isNumeric(firstVal) && isNumeric(secondVal) && isNumeric(thirdVal) && isNumeric(fourVal)) {
+                  const add = secondVal + thirdVal;
+                  if (firstVal >= add) {
+                      params.error = 'The sum of sides b and c must be greater than side a to form a triangle';
+                      return params;
+                  }
+                  const top_sq = (firstVal + secondVal + thirdVal) * (secondVal + thirdVal - firstVal) * (thirdVal + firstVal - secondVal) * (firstVal + secondVal - thirdVal);
+                  const top = (1/4) * Math.sqrt(top_sq);
+                  const bsa = top;
+                  const lsa = fourVal * (firstVal + secondVal + thirdVal);
+                  const ttsa = top + bsa + lsa;
+                  params.tech_top = isNaN(top) ? "NAN" : top;
+                  params.tech_bsa = isNaN(bsa) ? "NAN" : bsa;
+                  params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+                  params.tech_lsa = isNaN(lsa) ? "NAN" : lsa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "11") {
+              if (shape == 1) {
+                  if (isNumeric(firstVal) && isNumeric(secondVal)) {
+                      const height = 0.8660 * firstVal;
+                      const bsa = (Math.pow(firstVal, 2) * Math.sqrt(3)) / 4;
+                      const lsa = 1.5 * firstVal * secondVal;
+                      const ttsa = bsa + lsa;
+                      params.tech_height = isNaN(height) ? "NAN" : height;
+                      params.tech_bsa = isNaN(bsa) ? "NAN" : bsa;
+                      params.tech_lsa = isNaN(lsa) ? "NAN" : lsa;
+                      params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+
+                  } else {
+                      params.error = 'Please check your input';
+                      return params;
+                  }
+              } else if (shape == 2) {
+                  if (isNumeric(firstVal) && isNumeric(secondVal)) {
+                      const f_sql = 4 * Math.pow(secondVal, 2);
+                      const minus_div = (f_sql - Math.pow(firstVal, 2)) / 4;
+                      const height = Math.sqrt(minus_div);
+                      const bsa = Math.pow(firstVal, 2);
+                      const lsa = firstVal * Math.sqrt(Math.pow(firstVal, 2) + 4 * Math.pow(height, 2));
+                      const ttsa = bsa + lsa;
+                      params.tech_height = isNaN(height) ? "NAN" : height;
+                      params.tech_bsa    = isNaN(bsa) ? "NAN" : bsa;
+                      params.tech_lsa    = isNaN(lsa) ? "NAN" : lsa;
+                      params.tech_ttsa   = isNaN(ttsa) ? "NAN" : ttsa;
+
+                  } else {
+                      params.error = 'Please check your input';
+                      return params;
+                  }
+              } else if (shape == 3) {
+                  if (isNumeric(firstVal) && isNumeric(secondVal) && isNumeric(thirdVal)) {
+                      const la = Math.sqrt(Math.pow(thirdVal, 2) + (Math.pow(secondVal, 2) / 4));
+                      const lb = Math.sqrt(Math.pow(thirdVal, 2) + (Math.pow(firstVal, 2) / 4));
+                      const bsa = firstVal * secondVal;
+                      const lsa = firstVal * la + secondVal * lb;
+                      const ttsa = bsa + lsa;
+                     params.tech_bsa  = isNaN(bsa) ? "NAN" : bsa;
+                      params.tech_lsa  = isNaN(lsa) ? "NAN" : lsa;
+                      params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+
+                  } else {
+                      params.error = 'Please check your input';
+                      return params;
+                  }
+              } else if (shape == 4) {
+                  if (isNumeric(firstVal) && isNumeric(secondVal)) {
+                      const height = Math.sqrt(Math.pow(secondVal, 2) - ((6.25 * Math.pow(firstVal, 2)) / 13.1769));
+                      const bsa = 1.7222 * Math.pow(firstVal, 2);
+                      const lsa = 2.5 * firstVal * Math.sqrt((0.474 * Math.pow(firstVal, 2)) + Math.pow(height, 2));
+                      const ttsa = bsa + lsa;
+                     params.tech_height = isNaN(height) ? "NAN" : height;
+                    params.tech_bsa    = isNaN(bsa) ? "NAN" : bsa;
+                    params.tech_lsa    = isNaN(lsa) ? "NAN" : lsa;
+                    params.tech_ttsa   = isNaN(ttsa) ? "NAN" : ttsa;
+
+                  } else {
+                      params.error = 'Please check your input';
+                      return params;
+                  }
+              } else if (shape == 5) {
+                  if (isNumeric(firstVal) && isNumeric(secondVal)) {
+                      const height = Math.sqrt(Math.pow(secondVal, 2) - ((3 * Math.pow(firstVal, 2)) / 4));
+                      const bsa = 2.5981 * Math.pow(firstVal, 2);
+                      const lsa = 3 * firstVal * Math.sqrt(Math.pow(height, 2) + ((3 * Math.pow(firstVal, 2)) / 4));
+                      const ttsa = bsa + lsa;
+                    params.tech_height = isNaN(height) ? "NAN" : height;
+                    params.tech_bsa    = isNaN(bsa) ? "NAN" : bsa;
+                    params.tech_lsa    = isNaN(lsa) ? "NAN" : lsa;
+                    params.tech_ttsa   = isNaN(ttsa) ? "NAN" : ttsa;
+
+                  } else {
+                      params.error = 'Please check your input';
+                      return params;
+                  }
+              }
+          } else if (operations == "12") {
+              if (isNumeric(firstVal)) {
+                  const ttsa = 4 * 3.141593 * Math.pow(firstVal, 2);
+                  params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else if (operations == "13") {
+              if (isNumeric(firstVal) && isNumeric(secondVal) && isNumeric(fourVal)) {
+                  const f_mul = Math.pow((firstVal * secondVal), 1.6);
+                  const s_mul = Math.pow((firstVal * fourVal), 1.6);
+                  const t_mul = Math.pow((secondVal * fourVal), 1.6);
+                  const divide = (f_mul + s_mul + t_mul) / 3;
+                  const ttsa = 4 * 3.141593 * Math.pow(divide, 0.625);
+                  params.tech_ttsa = isNaN(ttsa) ? "NAN" : ttsa;
+
+              } else {
+                  params.error = 'Please check your input';
+                  return params;
+              }
+          } else {
+              params.error = 'Invalid operation specified';
+              return params;
+          }
+
+          return params;
+
+      } catch (error) {
+          console.log('Surface area calculation error:', error.message);
+          const errorParams = {};
+          errorParams.error = 'Please check your input. Error: ' + error.message;
+          return errorParams;
+      }
+  }
+
+     /**
+    * getCalculationLengthOfCurveCalculator: Service Method
+    * POST: /api/calculators-lol/length-of-curve-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+
+    async getCalculationLengthOfCurveCalculator(body) {
+      let cal = body.tech_cal;
+      let func = body.tech_func;
+      let func1 = body.tech_func1;
+      let func2 = body.tech_func2;
+      let lower = body.tech_lower;
+      let upper = body.tech_upper;
+
+      if (!lower || !upper) {
+          return { error: 'Please! Check Your Input.' };
+      }
+
+      // Input validation function
+      const validateInput = (input) => {
+          const dangerousPatterns = /<|>|&|php|print_r|print|echo|script|=|&|%/i;
+          return !dangerousPatterns.test(input);
+      };
+
+      // Parameter processing function
+      const processParam = (param) => {
+          return param
+              .replace(/ /g, '')
+              .replace(/\+/g, 'plus')
+              .replace(/%20/g, '')
+              .replace(/{/g, '(')
+              .replace(/}/g, ')')
+              .replace(/e\^/g, 'exp')
+              .replace(/exp\^/g, 'exp')
+              .replace(/\^/g, '**')
+              .replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+      };
+
+      try {
+          if (cal == 'y' && func) {
+              if (!validateInput(func)) {
+                  return { error: 'Please! Check Your Input.' };
+              }
+
+              const parem = processParam(func);
+              const check = 'y';
+
+              const response = await fetch("http://167.172.134.148/length", {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  body: new URLSearchParams({
+                      equ: parem,
+                      check: check
+                  }),
+                  timeout: 120000
+              });
+
+              const buffer = await response.text();
+              const bufferArray = buffer.split("@@@");
+              
+              return {
+                  tech_enter: bufferArray[0],
+                  tech_diff: bufferArray[1],
+                  tech_lower: lower,
+                  tech_upper: upper,
+              };
+
+          } else if (cal == 'x' && func) {
+              if (!validateInput(func)) {
+                  return { error: 'Please! Check Your Input.' };
+              }
+
+              const parem = processParam(func);
+              const check = 'x';
+
+              const response = await fetch("http://167.172.134.148/length", {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  body: new URLSearchParams({
+                      equ: parem,
+                      check: check
+                  }),
+                  timeout: 120000
+              });
+
+              const buffer = await response.text();
+              const bufferArray = buffer.split("@@@");
+              
+              return {
+                  tech_enter: bufferArray[0],
+                  tech_diff: bufferArray[1],
+                  tech_lower: lower,
+                  tech_upper: upper,
+              };
+
+          } else if (cal == 'xy' && func && func1) {
+              if (!validateInput(func) || !validateInput(func1)) {
+                  return { error: 'Please! Check Your Input.' };
+              }
+
+              const parem = processParam(func);
+              const parem1 = processParam(func1);
+              const check = 'xy';
+
+              const response = await fetch("http://167.172.134.148/length", {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  body: new URLSearchParams({
+                      equ: parem,
+                      check: check,
+                      equ1: parem1
+                  }),
+                  timeout: 120000
+              });
+
+              const buffer = await response.text();
+              const bufferArray = buffer.split("@@@");
+              
+              return {
+                  tech_enter: bufferArray[0],
+                  tech_enter1: bufferArray[1],
+                  tech_diff: bufferArray[2],
+                  tech_diff1: bufferArray[3],
+                  tech_lower: lower,
+                  tech_upper: upper,
+              };
+
+          } else if (cal == 'r' && func) {
+              if (!validateInput(func)) {
+                  return { error: 'Please! Check Your Input.' };
+              }
+
+              const parem = processParam(func).replace(/plus/g, '+');
+              const check = 'r';
+
+              const response = await fetch("http://167.172.134.148/length", {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  body: new URLSearchParams({
+                      equ: parem,
+                      check: check
+                  }),
+                  timeout: 120000
+              });
+
+              const buffer = await response.text();
+              const bufferArray = buffer.split("@@@");
+              
+              return {
+                  tech_enter: bufferArray[0],
+                  tech_diff: bufferArray[1],
+                  tech_lower: lower,
+                  tech_upper: upper,
+              };
+
+          } else if (cal == 'xyz' && func && func1 && func2) {
+              if (!validateInput(func) || !validateInput(func1) || !validateInput(func2)) {
+                  return { error: 'Please! Check Your Input.' };
+              }
+
+              const parem = processParam(func);
+              const parem1 = processParam(func1);
+              const parem2 = processParam(func2);
+              const check = 'xyz';
+
+              const response = await fetch("http://167.172.134.148/length", {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                  },
+                  body: new URLSearchParams({
+                      equ: parem,
+                      check: check,
+                      equ1: parem1,
+                      equ2: parem2
+                  }),
+                  timeout: 120000
+              });
+
+              const buffer = await response.text();
+              const bufferArray = buffer.split("@@@");
+              
+              return {
+                  tech_enter: bufferArray[0],
+                  tech_enter1: bufferArray[1],
+                  tech_enter2: bufferArray[2],
+                  tech_diff: bufferArray[3],
+                  tech_diff1: bufferArray[4],
+                  tech_diff2: bufferArray[5],
+                  tech_lower: lower,
+                  tech_upper: upper,
+              };
+
+          } else {
+              return { error: 'Please! Check Your Input.' };
+          }
+
+      } catch (error) {
+          return { error: 'Please! Check Your Input.' };
+      }
+  }
+
+
+     /**
+    * getCalculationDiagonalCalculator: Service Method
+    * POST: /api/calculators-lol/diagonal-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+      async getCalculationDiagonalCalculator(body) {
+          let given = body.tech_given;
+          let ls = body.tech_ls;
+          let ls_unit = body.tech_ls_unit;
+          let ss = body.tech_ss;
+          let ss_unit = body.tech_ss_unit;
+          let perimeter = body.tech_perimeter;
+          let perimeter_unit = body.tech_perimeter_unit;
+          let area = body.tech_area;
+          let area_unit = body.tech_area_unit;
+          let angle = body.tech_angle;
+          let angle_unit = body.tech_angle_unit;
+          let circum = body.tech_circum;
+          let circum_unit = body.tech_circum_unit;
+
+        // Unit conversion functions
+        const myunitConvert = (unit, value) => {
+            const conversions = {
+                "mm": value * 0.1,
+                "cm": value * 1,
+                "m": value * 100,
+                "km": value * 1000,
+                "in": value * 2.54,
+                "ft": value * 30.48,
+                "yd": value * 91.44,
+                "mi": value * 160934
+            };
+            return conversions[unit] || value;
+        };
+
+        const centimeter = (unit3, value3) => {
+            const conversions = {
+                "mm²": value3 * 0.01,
+                "cm²": value3 * 1,
+                "m²": value3 * 10000,
+                "km²": value3 * 10000000000,
+                "in²": value3 * 6.452,
+                "ft²": value3 * 929,
+                "yd²": value3 * 8361,
+                "mi²": value3 * 25899881103,
+                "a": value3 * 1000000,
+                "da": value3 * 10000000,
+                "ha": value3 * 100000000,
+                "ac": value3 * 40468560
+            };
+            return conversions[unit3] || value3;
+        };
+
+        const deg2rad = (degrees) => {
+            return degrees * (Math.PI / 180);
+        };
+
+        // Initialize variables
+        let lsv, ssv, areaResult, perimeterResult, diagonal, angle_α, radius;
+
+        try {
+            if (given == "1") { // Longer Side and Shorter Side
+                if (isNumeric(ls) && isNumeric(ss)) {
+                    lsv = myunitConvert(ls_unit, ls);
+                    ssv = myunitConvert(ss_unit, ss);
+                    // console.log(lsv,ssv);
+                    if (ls > ss) {
+                        areaResult = lsv * ssv;
+                        perimeterResult = 2 * ss + 2 * lsv;
+                        diagonal = Math.sqrt(lsv * lsv + ssv * ssv);
+                        radius = diagonal / 2;
+                        const δ = Math.atan(ssv / lsv);
+                        angle_α = Math.PI - (2 * δ);
+                        lsv = "";
+                        ssv = "";
+                        // console.log(perimeterResult,ssv,lsv);
+                    } else {
+                        return { error: 'Please! Longer side should be greater than shorter side.' };
+                    }
+                } else {
+                    return { error: 'Please! Check Your Input.' };
+                }
+            } else if (given == "2") { // Longer Side and Area
+                if (isNumeric(ls) && isNumeric(area)) {
+                    lsv = myunitConvert(ls_unit, ls);
+                    const av = centimeter(area_unit, area);
+                    ssv = av / lsv;
+                    perimeterResult = 2 * ssv + 2 * lsv;
+                    const δ = Math.atan(ssv / lsv);
+                    angle_α = Math.PI - (2 * δ);
+                    diagonal = Math.sqrt(lsv * lsv + ssv * ssv);
+                    radius = diagonal / 2;
+                    lsv = "";
+                    areaResult = "";
+                } else {
+                    return { error: 'Please! Check Your Input.' };
+                }
+            } else if (given == "3") { // Longer Side and Perimeter
+                if (isNumeric(ls) && isNumeric(perimeter)) {
+                    if ((ls * 2 + 1) <= perimeter) {
+                        lsv = myunitConvert(ls_unit, ls);
+                        const pv = myunitConvert(perimeter_unit, perimeter);
+                        ssv = (pv - (2 * lsv)) / 2;
+                        areaResult = lsv * ssv;
+                        const δ = Math.atan(ssv / lsv);
+                        angle_α = Math.PI - (2 * δ);
+                        diagonal = Math.sqrt(lsv * lsv + ssv * ssv);
+                        radius = diagonal / 2;
+                        lsv = "";
+                        perimeterResult = "";
+                    } else {
+                        return { error: 'Perimeter is too small.' };
+                    }
+                } else {
+                    return { error: 'Please! Check Your Input.' };
+                }
+            } else if (given == "4") { // Longer Side and Angle alpha
+                if (isNumeric(ls) && isNumeric(angle)) {
+                    if (angle <= 90) {
+                        return { error: 'Angle between diagonals must be greater than 90°.' };
+                    } else {
+                        lsv = myunitConvert(ls_unit, ls);
+                        let angle_α_temp;
+                        
+                        if (angle_unit == "deg") {
+                            angle_α_temp = 1 * angle;
+                        } else if (angle_unit == "rad") {
+                            angle_α_temp = 57.3 * angle;
+                        } else if (angle_unit == "gon") {
+                            angle_α_temp = 0.9 * angle;
+                        } else {
+                            angle_α_temp = 180 * angle;
+                        }
+                        
+                        angle_α_temp = angle_α_temp / 2;
+                        ssv = lsv / Math.tan(deg2rad(angle_α_temp));
+                        areaResult = lsv * ssv;
+                        perimeterResult = 2 * ssv + 2 * lsv;
+                        diagonal = Math.sqrt(lsv * lsv + ssv * ssv);
+                        radius = diagonal / 2;
+                        lsv = "";
+                        angle_α = "";
+                    }
+                } else {
+                    return { error: 'Please! Check Your Input.' };
+                }
+            } else if (given == "5") { // Shorter Side and Area
+                if (isNumeric(ss) && isNumeric(area)) {
+                    ssv = myunitConvert(ss_unit, ss);
+                    const av = centimeter(area_unit, area);
+                    lsv = av / ssv;
+                    perimeterResult = 2 * ssv + 2 * lsv;
+                    const δ = Math.atan(ssv / lsv);
+                    angle_α = Math.PI - (2 * δ);
+                    diagonal = Math.sqrt(lsv * lsv + ssv * ssv);
+                    radius = diagonal / 2;
+                    ssv = "";
+                    areaResult = "";
+                } else {
+                    return { error: 'Please! Check Your Input.' };
+                }
+            } else if (given == "6") { // Shorter Side and Perimeter
+                if (isNumeric(ss) && isNumeric(perimeter)) {
+                    if (perimeter >= ss * 4) {
+                        ssv = myunitConvert(ss_unit, ss);
+                        const pv = myunitConvert(perimeter_unit, perimeter);
+                        lsv = (pv - 2 * ssv) / 2;
+                        areaResult = lsv * ssv;
+                        perimeterResult = 2 * ss + 2 * lsv;
+                        diagonal = Math.sqrt(lsv * lsv + ssv * ssv);
+                        radius = diagonal / 2;
+                        const δ = Math.atan(ssv / lsv);
+                        angle_α = Math.PI - (2 * δ);
+                        ssv = "";
+                        perimeterResult = "";
+                    } else {
+                        return { error: 'Perimeter is too small.' };
+                    }
+                } else {
+                    return { error: 'Please! Check Your Input.' };
+                }
+            } else if (given == "7") { // Shorter Side and Angle
+                if (isNumeric(ss) && isNumeric(angle)) {
+                    ssv = myunitConvert(ss_unit, ss);
+                    let angle_α_temp;
+                    
+                    if (angle_unit == "deg") {
+                        angle_α_temp = 1 * angle;
+                    } else if (angle_unit == "rad") {
+                        angle_α_temp = 57.3 * angle;
+                    } else if (angle_unit == "gon") {
+                        angle_α_temp = 0.9 * angle;
+                    } else {
+                        angle_α_temp = 180 * angle;
+                    }
+                    
+                    angle_α_temp = angle_α_temp / 2;
+                    lsv = ssv * Math.tan(deg2rad(angle_α_temp));
+                    areaResult = lsv * ssv;
+                    perimeterResult = 2 * ssv + 2 * lsv;
+                    diagonal = Math.sqrt(lsv * lsv + ssv * ssv);
+                    radius = diagonal / 2;
+                    ssv = "";
+                    angle_α = "";
+                } else {
+                    return { error: 'Please! Check Your Input.' };
+                }
+            } else if (given == "8") { // Circumference
+                if (isNumeric(circum)) {
+                    const circumValue = myunitConvert(circum_unit, circum);
+                    diagonal = circumValue * 2;
+                    ssv = "";
+                    lsv = "";
+                    areaResult = "";
+                    radius = "";
+                    perimeterResult = "";
+                    angle_α = "";
+                }
+            } else {
+                return { error: 'Please! Check Your Input.' };
+            }
+
+            return {
+                tech_lsv: lsv || '',
+                tech_ssv: ssv || '',
+                tech_area: areaResult || '',
+                tech_perimeter: perimeterResult || '',
+                tech_diagonal: diagonal || '',
+                tech_angle_α: angle_α || '',
+                tech_radius: radius || '',
+              };
+
+        } catch (error) {
+            return { error: 'Please! Check Your Input.' };
+        }
+        
+        // Helper function to check if value is numeric
+        function isNumeric(value) {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        }
+    }
+
+       /**
+    * getCalculationRationalZerosCalculator: Service Method
+    * POST: /api/calculators-lol/rational-zeros-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+      */
+
+      async getCalculationRationalZerosCalculator(body) {
+          let v1 = body.tech_v1;
+          let v2 = body.tech_v2;
+          let v3 = body.tech_v3;
+          let v4 = body.tech_v4;
+          let v5 = body.tech_v5;
+          let v6 = body.tech_v6;
+          let v7 = body.tech_v7;
+          let v8 = body.tech_v8;
+          let v9 = body.tech_v9;
+          let v10 = body.tech_v10;
+          let no_of = body.tech_no_of;
+
+
+        // Helper function to check if value is numeric
+        const isNumeric = (value) => {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        };
+
+        // Function to get divisors
+        const printDivisors = (n) => {
+            const divi = [];
+            const absN = Math.abs(n);
+            for (let i = 1; i <= absN; i++) {
+                if (absN % i == 0) {
+                    divi.push(i);
+                }
+            }
+            return divi;
+        };
+
+        // Validate all inputs are numeric
+        const allNumeric = [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, no_of].every(isNumeric);
+        
+        if (!allNumeric) {
+            return { error: 'Please! Check Your Input.' };
+        }
+
+        try {
+            let q = parseFloat(v1);
+            let p;
+
+            // Determine p based on no_of
+            switch (parseInt(no_of)) {
+                case 2:
+                    p = parseFloat(v3);
+                    break;
+                case 3:
+                    p = parseFloat(v4);
+                    break;
+                case 4:
+                    p = parseFloat(v5);
+                    break;
+                case 5:
+                    p = parseFloat(v6);
+                    break;
+                case 6:
+                    p = parseFloat(v7);
+                    break;
+                case 7:
+                    p = parseFloat(v8);
+                    break;
+                case 8:
+                    p = parseFloat(v9);
+                    break;
+                case 9:
+                    p = parseFloat(v10);
+                    break;
+                default:
+                    return { error: 'Please! Check Your Input.' };
+            }
+
+            // Make p positive for divisor calculation
+            const pAbs = Math.abs(p);
+
+            const array_p = printDivisors(pAbs);
+            const new_times = array_p.map(value => (-1) * value);
+            const array_q = printDivisors(q);
+            const new_times2 = array_q.map(value => value * (-1));
+
+            const final_p = [...array_p, ...new_times];
+            const final_q = [...array_q, ...new_times2];
+
+            const ans = [];
+            const main_ans = [];
+            const main_ans2 = [];
+            const main_ans3 = [];
+
+            // YAHAN PAR MAIN FIX HAI - PHP logic ke according calculation
+            for (let i = 0; i < final_q.length; i++) {
+                if (final_q[i] !== 1) {
+                    for (const value of final_p) {
+                        const calculatedValue = value / final_q[i];
+                        
+                        if (value % final_q[i] === 0) {
+                            ans.push(calculatedValue);
+                        } else {
+                            ans.push(`\\frac{${value}}{${final_q[i]}}`);
+                        }
+                        main_ans.push(`\\frac{${value}}{${final_q[i]}}`);
+                        main_ans2.push(calculatedValue);
+                        main_ans3.push(`${value} / ${final_q[i]}`);
+                    }
+                }
+            }
+
+            // Get unique values - PHP ke jaisa filter karna
+            const uq = [...new Set(ans)].filter(val => val !== null && val !== undefined && val !== '');
+
+            // Format polynomial coefficients
+            const formatCoefficient = (val, isFirst = false) => {
+                const numVal = parseFloat(val);
+                if (isFirst) {
+                    return (numVal !== 1) ? numVal : '';
+                }
+                return (numVal >= 0) ? ` +${numVal}` : ` ${numVal}`;
+            };
+
+            const s1 = formatCoefficient(v1, true);
+            const s2 = formatCoefficient(v2);
+            const s3 = formatCoefficient(v3);
+            const s4 = formatCoefficient(v4);
+            const s5 = formatCoefficient(v5);
+            const s6 = formatCoefficient(v6);
+            const s7 = formatCoefficient(v7);
+            const s8 = formatCoefficient(v8);
+            const s9 = formatCoefficient(v9);
+            const s10 = formatCoefficient(v10);
+
+            const eq = [];
+            const result = [];
+            const final_result = [];
+
+            for (let i = 0; i < uq.length; i++) {
+                const uqVal = uq[i];
+                // YAHAN PAR MAIN FIX HAI - sahi value use karo
+                const mainAns2Val = main_ans2[i];
+
+                switch (parseInt(no_of)) {
+                    case 2:
+                        eq.push(`\\( \\text{P}{\\left(x\\right)}=${s1}x^{2}${s2}x${s3}\\)`);
+                        result.push(`\\( \\text{P}{\\left(${uqVal}\\right)}=\\left(${v1}\\right)\\left(${uqVal}\\right)^{2}+\\left(${v2}\\right)\\left(${uqVal}\\right)+${v3}\\)`);
+                        // YAHAN PAR CALCULATION FIX KARO
+                        const polyValue2 = 
+                            parseFloat(v1) * Math.pow(mainAns2Val, 2) + 
+                            parseFloat(v2) * mainAns2Val + 
+                            parseFloat(v3);
+                        final_result.push(polyValue2);
+                        break;
+                    case 3:
+                        eq.push(`\\( \\text{P}{\\left(x\\right)}=${s1}x^{3}${s2}x^{2}${s3}x${s4}\\)`);
+                        result.push(`\\( \\text{P}{\\left(${uqVal}\\right)}=\\left(${v1}\\right)\\left(${uqVal}\\right)^{3}+\\left(${v2}\\right)\\left(${uqVal}\\right)^{2}+\\left(${v3}\\right)\\left(${uqVal}\\right)+${v4}\\)`);
+                        const polyValue3 = 
+                            parseFloat(v1) * Math.pow(mainAns2Val, 3) + 
+                            parseFloat(v2) * Math.pow(mainAns2Val, 2) + 
+                            parseFloat(v3) * mainAns2Val + 
+                            parseFloat(v4);
+                        final_result.push(polyValue3);
+                        break;
+                    case 4:
+                        eq.push(`\\( \\text{P}{\\left(x\\right)}=${s1}x^{4}${s2}x^{3}${s3}x^{2}${s4}x${s5}\\)`);
+                        result.push(`\\( \\text{P}{\\left(${uqVal}\\right)}=\\left(${v1}\\right)\\left(${uqVal}\\right)^{4}+\\left(${v2}\\right)\\left(${uqVal}\\right)^{3}+\\left(${v3}\\right)\\left(${uqVal}\\right)^{2}+\\left(${v4}\\right)\\left(${uqVal}\\right)+${v5}\\)`);
+                        const polyValue4 = 
+                            parseFloat(v1) * Math.pow(mainAns2Val, 4) + 
+                            parseFloat(v2) * Math.pow(mainAns2Val, 3) + 
+                            parseFloat(v3) * Math.pow(mainAns2Val, 2) + 
+                            parseFloat(v4) * mainAns2Val + 
+                            parseFloat(v5);
+                        final_result.push(polyValue4);
+                        break;
+                    case 5:
+                        eq.push(`\\( \\text{P}{\\left(x\\right)}=${s1}x^{5}${s2}x^{4}${s3}x^{3}${s4}x^{2}${s5}x${s6}\\)`);
+                        result.push(`\\( \\text{P}{\\left(${uqVal}\\right)}=\\left(${v1}\\right)\\left(${uqVal}\\right)^{5}+\\left(${v2}\\right)\\left(${uqVal}\\right)^{4}+\\left(${v3}\\right)\\left(${uqVal}\\right)^{3}+\\left(${v4}\\right)\\left(${uqVal}\\right)^{2}+\\left(${v5}\\right)\\left(${uqVal}\\right)+${v6}\\)`);
+                        const polyValue5 = 
+                            parseFloat(v1) * Math.pow(mainAns2Val, 5) + 
+                            parseFloat(v2) * Math.pow(mainAns2Val, 4) + 
+                            parseFloat(v3) * Math.pow(mainAns2Val, 3) + 
+                            parseFloat(v4) * Math.pow(mainAns2Val, 2) + 
+                            parseFloat(v5) * mainAns2Val + 
+                            parseFloat(v6);
+                        final_result.push(polyValue5);
+                        break;
+                    case 6:
+                        eq.push(`\\( \\text{P}{\\left(x\\right)}=${s1}x^{6}${s2}x^{5}${s3}x^{4}${s4}x^{3}${s5}x^{2}${s6}x${s7}\\)`);
+                        result.push(`\\( \\text{P}{\\left(${uqVal}\\right)}=\\left(${v1}\\right)\\left(${uqVal}\\right)^{6}+\\left(${v2}\\right)\\left(${uqVal}\\right)^{5}+\\left(${v3}\\right)\\left(${uqVal}\\right)^{4}+\\left(${v4}\\right)\\left(${uqVal}\\right)^{3}+\\left(${v5}\\right)\\left(${uqVal}\\right)^{2}+\\left(${v6}\\right)\\left(${uqVal}\\right)+${v7}\\)`);
+                        const polyValue6 = 
+                            parseFloat(v1) * Math.pow(mainAns2Val, 6) + 
+                            parseFloat(v2) * Math.pow(mainAns2Val, 5) + 
+                            parseFloat(v3) * Math.pow(mainAns2Val, 4) + 
+                            parseFloat(v4) * Math.pow(mainAns2Val, 3) + 
+                            parseFloat(v5) * Math.pow(mainAns2Val, 2) + 
+                            parseFloat(v6) * mainAns2Val + 
+                            parseFloat(v7);
+                        final_result.push(polyValue6);
+                        break;
+                    case 7:
+                        eq.push(`\\( \\text{P}{\\left(x\\right)}=${s1}x^{7}${s2}x^{6}${s3}x^{5}${s4}x^{4}${s5}x^{3}${s6}x^{2}${s7}x${s8}\\)`);
+                        result.push(`\\( \\text{P}{\\left(${uqVal}\\right)}=\\left(${v1}\\right)\\left(${uqVal}\\right)^{7}+\\left(${v2}\\right)\\left(${uqVal}\\right)^{6}+\\left(${v3}\\right)\\left(${uqVal}\\right)^{5}+\\left(${v4}\\right)\\left(${uqVal}\\right)^{4}+\\left(${v5}\\right)\\left(${uqVal}\\right)^{3}+\\left(${v6}\\right)\\left(${uqVal}\\right)^{2}+\\left(${v7}\\right)\\left(${uqVal}\\right)+${v8}\\)`);
+                        const polyValue7 = 
+                            parseFloat(v1) * Math.pow(mainAns2Val, 7) + 
+                            parseFloat(v2) * Math.pow(mainAns2Val, 6) + 
+                            parseFloat(v3) * Math.pow(mainAns2Val, 5) + 
+                            parseFloat(v4) * Math.pow(mainAns2Val, 4) + 
+                            parseFloat(v5) * Math.pow(mainAns2Val, 3) + 
+                            parseFloat(v6) * Math.pow(mainAns2Val, 2) + 
+                            parseFloat(v7) * mainAns2Val + 
+                            parseFloat(v8);
+                        final_result.push(polyValue7);
+                        break;
+                    case 8:
+                        eq.push(`\\( \\text{P}{\\left(x\\right)}=${s1}x^{8}${s2}x^{7}${s3}x^{6}${s4}x^{5}${s5}x^{4}${s6}x^{2}${s7}x^{2}${s8}x${s9}\\)`);
+                        result.push(`\\( \\text{P}{\\left(${uqVal}\\right)}=\\left(${v1}\\right)\\left(${uqVal}\\right)^{}+\\left(${v2}\\right)\\left(${uqVal}\\right)^{7}+\\left(${v3}\\right)\\left(${uqVal}\\right)^{6}+\\left(${v4}\\right)\\left(${uqVal}\\right)^{5}+\\left(${v5}\\right)\\left(${uqVal}\\right)^{4}+\\left(${v6}\\right)\\left(${uqVal}\\right)^{3}+\\left(${v7}\\right)\\left(${uqVal}\\right)^{2}+\\left(${v8}\\right)\\left(${uqVal}\\right)+${v9}\\)`);
+                        const polyValue8 = 
+                            parseFloat(v1) * Math.pow(mainAns2Val, 8) + 
+                            parseFloat(v2) * Math.pow(mainAns2Val, 7) + 
+                            parseFloat(v3) * Math.pow(mainAns2Val, 6) + 
+                            parseFloat(v4) * Math.pow(mainAns2Val, 5) + 
+                            parseFloat(v5) * Math.pow(mainAns2Val, 4) + 
+                            parseFloat(v6) * Math.pow(mainAns2Val, 3) + 
+                            parseFloat(v7) * Math.pow(mainAns2Val, 2) + 
+                            parseFloat(v8) * mainAns2Val + 
+                            parseFloat(v9);
+                        final_result.push(polyValue8);
+                        break;
+                    case 9:
+                        eq.push(`\\( \\text{P}{\\left(x\\right)}=${s1}x^{9}${s2}x^{8}${s3}x^{7}${s4}x^{6}${s5}x^{5}${s6}x^{4}${s7}x^{3}${s8}x^{2}${s9}x${s10}\\)`);
+                        result.push(`\\( \\text{P}{\\left(${uqVal}\\right)}=\\left(${v1}\\right)\\left(${uqVal}\\right)^{9}+\\left(${v2}\\right)\\left(${uqVal}\\right)^{8}+\\left(${v3}\\right)\\left(${uqVal}\\right)^{7}+\\left(${v4}\\right)\\left(${uqVal}\\right)^{6}+\\left(${v5}\\right)\\left(${uqVal}\\right)^{5}+\\left(${v6}\\right)\\left(${uqVal}\\right)^{4}+\\left(${v7}\\right)\\left(${uqVal}\\right)^{3}+\\left(${v8}\\right)\\left(${uqVal}\\right)^{2}+\\left(${v9}\\right)\\left(${uqVal}\\right)+${v10}\\)`);
+                        const polyValue9 = 
+                            parseFloat(v1) * Math.pow(mainAns2Val, 9) + 
+                            parseFloat(v2) * Math.pow(mainAns2Val, 8) + 
+                            parseFloat(v3) * Math.pow(mainAns2Val, 7) + 
+                            parseFloat(v4) * Math.pow(mainAns2Val, 6) + 
+                            parseFloat(v5) * Math.pow(mainAns2Val, 5) + 
+                            parseFloat(v6) * Math.pow(mainAns2Val, 4) + 
+                            parseFloat(v7) * Math.pow(mainAns2Val, 3) + 
+                            parseFloat(v8) * Math.pow(mainAns2Val, 2) + 
+                            parseFloat(v9) * mainAns2Val + 
+                            parseFloat(v10);
+                        final_result.push(polyValue9);
+                        break;
+                }
+            }
+
+            return {
+                tech_v1: parseFloat(v1),
+                tech_v2: parseFloat(v2),
+                tech_v3: parseFloat(v3),
+                tech_v4: parseFloat(v4),
+                tech_v5: parseFloat(v5),
+                tech_v6: parseFloat(v6),
+                tech_v7: parseFloat(v7),
+                tech_v8: parseFloat(v8),
+                tech_v9: parseFloat(v9),
+                tech_v10: parseFloat(v10),
+                tech_no_of: parseInt(no_of),
+                tech_p: p,
+                tech_q: q,
+                tech_main_ans: main_ans,
+                tech_main_ans2: main_ans2,
+                tech_main_ans3: main_ans3,
+                tech_ans: ans,
+                tech_uq: uq,
+                tech_final_p: final_p,
+                tech_final_q: final_q,
+                tech_eq: eq,
+                tech_result: result,
+                tech_final_result: final_result,
+            };
+
+        } catch (error) {
+            console.error('Error in rational zeros calculation:', error);
+            return { error: 'Please! Check Your Input.' };
+        }
+    }
+
+
+        /**
+    * getCalculationAugmentedMatrixCalculator: Service Method
+    * POST: /api/calculators-lol/augmented-matrix-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+      */
+
+      async getCalculationAugmentedMatrixCalculator(body) {
+        const { matrix2, matrix22, ...request } = body;
+
+        // Helper functions
+        const gcd22 = (a, b, f) => {
+            if (f) {
+                if (b <= 1)
+                    return a;
+            } else {
+                if (!b)
+                    return a;
+            }
+            return gcd22(b, a % b, f);
+        };
+
+        const roundresult2 = (x) => {
+            const y = parseFloat(x);
+            return roundnum2(y, 10);
+        };
+
+        const toPrecision2 = (number, precision) => {
+            if (number == 0) return 0;
+            const exponent = Math.floor(Math.log10(Math.abs(number)) + 1);
+            const significand =
+                Math.round(
+                    (number / Math.pow(10, exponent)) *
+                    Math.pow(10, precision)
+                ) / Math.pow(10, precision);
+            return significand * Math.pow(10, exponent);
+        };
+
+        const roundnum2 = (x, p) => {
+            const n = parseFloat(x);
+            const m = toPrecision2(n, (p + 1));
+            const y = String(m);
+            const i = y.indexOf('e');
+            if (i == -1)
+                return y;
+            return y;
+        };
+
+        const digits_after_period2 = (x) => {
+            const f = String(x);
+            const i = f.indexOf('.');
+            if (i == -1) return 0;
+            return f.length - i - 1;
+        };
+
+        const convert2 = (xelem) => {
+            let sign = '';
+            let sign2 = '+';
+            let f = false;
+            const x = xelem;
+            const x2 = roundresult2(x);
+            const absx = Math.abs(x2);
+            const y = Math.floor(absx);
+            const frac = (absx - y);
+            
+            if (x2 < 0) {
+                sign = sign2 = '-';
+            }
+            
+            const d = digits_after_period2(absx);
+            const den = Math.round(Math.pow(10, d));
+            const num = Math.round(frac * den);
+            const a12 = String(num);
+            const len = a12.length;
+            
+            if (len > 8) f = true;
+            
+            const g = gcd22(num, den, f);
+            const num2 = Math.round(num / g);
+            const den2 = Math.round(den / g);
+            
+            const top_jawab = sign + (num2 + den2 * y);
+            const down_jawab = den2;
+            
+            return [top_jawab, down_jawab];
+        };
+
+        const new_rref2 = (matrix) => {
+            let lead = 0;
+            let pz = JSON.parse(JSON.stringify(matrix)); // Deep copy
+            const swap = [];
+            const swap_line = [];
+            const rowCount = matrix.length;
+            
+            if (rowCount === 0)
+                return matrix;
+                
+            let columnCount = 0;
+            if (matrix[0]) {
+                columnCount = matrix[0].length;
+            }
+            
+            let bus;
+            if (rowCount > columnCount) {
+                bus = rowCount - 2;
+            } else if (rowCount < columnCount) {
+                bus = rowCount;
+            } else if (rowCount == columnCount) {
+                bus = rowCount - 1;
+            }
+
+            for (let r = 0; r < bus; r++) {
+                if (lead >= columnCount)
+                    break;
+
+                // Find pivot row
+                let i = r;
+                while (i < rowCount && matrix[i][lead] == 0) {
+                    i++;
+                    if (i == rowCount) {
+                        i = r;
+                        lead++;
+                        if (lead == columnCount)
+                            return [matrix, swap, swap_line, pz];
+                    }
+                }
+
+                // Swap rows if needed
+                if (i != r) {
+                    const temp = matrix[r];
+                    matrix[r] = matrix[i];
+                    matrix[i] = temp;
+                    
+                    const temp2 = pz[r];
+                    pz[r] = pz[i];
+                    pz[i] = temp2;
+                    
+                    // FIX: Use 0-based indexing like Laravel
+                    swap_line.push("Swap the row " + r + " with row " + i);
+                    swap.push(JSON.parse(JSON.stringify(pz)));
+                }
+
+                // Normalize pivot row
+                const lv = matrix[r][lead];
+                if (lv != 0) {
+                    for (let j = 0; j < columnCount; j++) {
+                        matrix[r][j] = matrix[r][j] / lv;
+                        pz[r][j] = pz[r][j] / lv;
+                    }
+
+                    const test1 = convert2(lv);
+                    // FIX: Use 0-based indexing like Laravel
+                    if (test1[1] == 1) {
+                        swap_line.push('Divide row ' + r + ' by ' + lv + ": R<sub>" + r + "</sub> = R<sub>" + r + "</sub>/" + lv);
+                    } else if (test1[1] != 1) {
+                        const lv3 = test1[1] + "/" + test1[0];
+                        swap_line.push('Multiply row ' + r + ' by ' + lv3 + ": R<sub>" + r + "</sub> = " + lv3 + " R<sub>" + r + "</sub>");
+                    }
+                    swap.push(JSON.parse(JSON.stringify(pz)));
+                }
+
+                // Eliminate other rows
+                for (let i = 0; i < rowCount; i++) {
+                    if (i !== r && matrix[i][lead] !== 0) {
+                        const lv = matrix[i][lead];
+                        const lv2 = pz[i][lead];
+                        
+                        for (let j = 0; j < columnCount; j++) {
+                            matrix[i][j] -= lv * matrix[r][j];
+                            pz[i][j] -= lv2 * pz[r][j];
+                        }
+                        
+                        swap.push(JSON.parse(JSON.stringify(pz)));
+                        const test = convert2(lv);
+                        
+                        let displayLv;
+                        if (test[1] == 1) {
+                            displayLv = lv;
+                        } else {
+                            displayLv = test[0] + "/" + test[1];
+                        }
+                        
+                        // FIX: Use 0-based indexing like Laravel
+                        if (lv < 0) {
+                            swap_line.push('Add row ' + i + ' multiplied by ' + displayLv + " from row R" + r + ": R<sub>" + i + "</sub> = R<sub>" + i + "</sub> + " + displayLv + "R<sub>" + r + "</sub>");
+                        } else if (lv >= 0) {
+                            swap_line.push('Subtract row ' + i + ' multiplied by ' + displayLv + " from row R" + r + ": R<sub>" + i + "</sub> = R<sub>" + i + "</sub> - " + displayLv + "R<sub>" + r + "</sub>");
+                        }
+                    }
+                }
+                lead++;
+            }
+
+            return [matrix, swap, swap_line, pz];
+        };
+
+        try {
+            // Extract matrix data from request
+            const second_matrix = [];
+            const rows = parseInt(matrix2);
+            const cols = parseInt(matrix22);
+
+            for (let i = 1; i <= rows; i++) {
+                for (let j = 1; j <= cols; j++) {
+                    const key = 'matrix3' + i + '_' + j;
+                    if (request[key] !== undefined && !isNaN(parseFloat(request[key]))) {
+                        second_matrix.push(parseFloat(request[key]));
+                    }
+                }
+            }
+
+            // Create matrix from flat array
+            const zain = [];
+            for (let i = 0; i < second_matrix.length; i += cols) {
+                zain.push(second_matrix.slice(i, i + cols));
+            }
+
+            const fahad2 = new_rref2(zain);
+
+            return {
+                tech_matrix: fahad2[0],
+                tech_swap: fahad2[1],
+                tech_swap_line: fahad2[2],
+                tech_pz: fahad2[3],
+            };
+
+        } catch (error) {
+            console.error('Error in augmented matrix calculation:', error);
+            return { error: 'Please! Check Your Input.' };
+        }
+    }
+
+       /**
+    * getCalculationElementaryMatrixCalculator: Service Method
+    * POST: /api/calculators-lol/elementary-matrix-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+      */
+
+      async getCalculationElementaryMatrixCalculator(body) {
+       let matrix_size = body.tech_matrix_size;
+        let pth_matrix = body.tech_pth_matrix;
+        let a = body.tech_a;
+        let b = body.tech_b;
+        let type = body.tech_type;
+        let result_q = body.tech_result_q;
+
+
+        // Helper function to check if value is numeric
+        const isNumeric = (value) => {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        };
+
+        // Validate all inputs are numeric
+        if (!isNumeric(matrix_size) || !isNumeric(pth_matrix) || !isNumeric(a) || !isNumeric(b) || !isNumeric(result_q)) {
+            return { error: 'Please! Check Your Input.' };
+        }
+
+        try {
+            const size = parseInt(matrix_size);
+            const p = parseInt(pth_matrix);
+            const q = parseInt(result_q);
+            const scalarA = parseFloat(a);
+            const scalarB = parseFloat(b);
+
+            if (type == "row") {
+                if ((q <= size && p <= size) && (q > 0 && p > 0)) {
+                    if (p != q) {
+                        // Create identity matrix
+                        const identity_matrix = [];
+                        const array = [];
+                        
+                        for (let row = 0; row < size; row++) {
+                            identity_matrix[row] = [];
+                            array[row] = [];
+                            for (let col = 0; col < size; col++) {
+                                // Checking if row is equal to column
+                                if (row == col) {
+                                    identity_matrix[row][col] = 1;
+                                    array[row][col] = 1;
+                                } else {
+                                    identity_matrix[row][col] = 0;
+                                    array[row][col] = 0;
+                                }
+                            }
+                        }
+
+                        // Create multiply matrix (copy of identity)
+                        const multiply_matrix = JSON.parse(JSON.stringify(identity_matrix));
+
+                        // Apply scalar multiplication to rows
+                        for (let i = 0; i < size; i++) {
+                            multiply_matrix[p - 1][i] = scalarA * identity_matrix[p - 1][i];
+                            multiply_matrix[q - 1][i] = scalarB * identity_matrix[q - 1][i];
+                        }
+
+                        // Create addition matrix (copy of multiply_matrix)
+                        const addition_matrix = JSON.parse(JSON.stringify(multiply_matrix));
+
+                        // Perform row addition
+                        for (let i = 0; i < size; i++) {
+                            addition_matrix[q - 1][i] = addition_matrix[q - 1][i] + addition_matrix[p - 1][i];
+                        }
+
+                        // Create final result array
+                        const array1 = [];
+                        const array2 = [];
+                        
+                        for (let i = 0; i < size; i++) {
+                            array1[0] = array1[0] || [];
+                            array2[0] = array2[0] || [];
+                            array1[0][i] = scalarA * identity_matrix[p - 1][i];
+                            array2[0][i] = scalarB * identity_matrix[q - 1][i];
+                        }
+
+                        // Build final result
+                        for (let i = 0; i < size; i++) {
+                            array[q - 1][i] = array1[0][i] + array2[0][i];
+                        }
+
+                        return {
+                            tech_array: array,
+                            tech_identity_matrix: identity_matrix,
+                            tech_multiply_matrix: multiply_matrix,
+                            tech_addition_matrix: addition_matrix,
+                        };
+                    } else {
+                        return { error: 'The row p and q cannot be equal.' };
+                    }
+                } else {
+                    return { error: 'The row p and q cannot be greater then n or less then 1.' };
+                }
+            } else if (type == "col") {
+                if ((q <= size && p <= size) && (q > 0 && p > 0)) {
+                    if (p != q) {
+                        // Create identity matrix
+                        const identity_matrix = [];
+                        const array = [];
+                        
+                        for (let row = 0; row < size; row++) {
+                            identity_matrix[row] = [];
+                            array[row] = [];
+                            for (let col = 0; col < size; col++) {
+                                // Checking if row is equal to column
+                                if (row === col) {
+                                    identity_matrix[row][col] = 1;
+                                    array[row][col] = 1;
+                                } else {
+                                    identity_matrix[row][col] = 0;
+                                    array[row][col] = 0;
+                                }
+                            }
+                        }
+
+                        // Create multiply matrix (copy of identity)
+                        const multiply_matrix = JSON.parse(JSON.stringify(identity_matrix));
+
+                        // Apply scalar multiplication to columns
+                        for (let i = 0; i < size; i++) {
+                            multiply_matrix[i][p - 1] = scalarA * identity_matrix[i][p - 1];
+                            multiply_matrix[i][q - 1] = scalarB * identity_matrix[i][q - 1];
+                        }
+
+                        // Create addition matrix (copy of multiply_matrix)
+                        const addition_matrix = JSON.parse(JSON.stringify(multiply_matrix));
+
+                        // Perform column addition
+                        for (let i = 0; i < size; i++) {
+                            addition_matrix[i][q - 1] = addition_matrix[i][q - 1] + addition_matrix[i][p - 1];
+                        }
+
+                        // Create final result arrays
+                        const array1 = [];
+                        const array2 = [];
+                        
+                        for (let i = 0; i < size; i++) {
+                            array1[i] = array1[i] || [];
+                            array2[i] = array2[i] || [];
+                            array1[i][0] = scalarA * identity_matrix[i][p - 1];
+                            array2[i][0] = scalarB * identity_matrix[i][q - 1];
+                        }
+
+                        // Build final result
+                        for (let i = 0; i < size; i++) {
+                            array[i][q - 1] = array1[i][0] + array2[i][0];
+                        }
+
+                        return {
+                            tech_array: array,
+                            tech_identity_matrix: identity_matrix,
+                            tech_multiply_matrix: multiply_matrix,
+                            tech_addition_matrix: addition_matrix,
+                        };
+                    } else {
+                        return { error: 'The column p and q cannot be equal.' };
+                    }
+                } else {
+                    return { error: 'The column p and q cannot be greater then n or less then 1.' };
+                }
+            } else {
+                return { error: 'Please! Check Your Input.' };
+            }
+
+        } catch (error) {
+            console.error('Error in elementary matrix calculation:', error);
+            return { error: 'Please! Check Your Input.' };
+        }
+    }
+
+
+         /**
+    * getCalculationDistanceFormulaCalculator: Service Method
+    * POST: /api/calculators-lol/distance-formula-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+      */
+
+      async getCalculationDistanceFormulaCalculator(body) {
+       let type = body.tech_type;
+        let dimen = body.tech_dimen;
+        let px2 = body['tech_2px2'];
+        let px1 = body['tech_2px1'];
+        let x1 = body.tech_x1;
+        let x2 = body.tech_x2;
+        let x3 = body.tech_x3;
+        let y1 = body.tech_y1;
+        let y2 = body.tech_y2;
+        let y3 = body.tech_y3;
+        let m = body.tech_m;
+        let m2 = body.tech_m2;
+        let b = body.tech_b;
+        let b2 = body.tech_b2;
+        let x31 = body['tech_3x1'];
+        let x32 = body['tech_3x2'];
+        let x33 = body['tech_3x3'];
+        let y31 = body['tech_3y1'];
+        let y32 = body['tech_3y2'];
+        let y33 = body['tech_3y3'];
+        let z31 = body['tech_3z1'];
+        let z32 = body['tech_3z2'];
+        let z33 = body['tech_3z3'];
+        let x41 = body['tech_4x1'];
+        let x42 = body['tech_4x2'];
+        let x43 = body['tech_4x3'];
+        let y41 = body['tech_4y1'];
+        let y42 = body['tech_4y2'];
+        let y43 = body['tech_4y3'];
+        let z41 = body['tech_4z1'];
+        let z42 = body['tech_4z2'];
+        let z43 = body['tech_4z3'];
+        let k41 = body['tech_4k1'];
+        let k42 = body['tech_4k2'];
+        let k43 = body['tech_4k3'];
+        let px31 = body['tech_3px1'];
+        let px32 = body['tech_3px2'];
+        let px33 = body['tech_3px3'];
+
+
+        // Helper function to check if value is numeric
+        const isNumeric = (value) => {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        };
+
+        try {
+            if (type == '2P' && dimen == '1D') {
+                if (isNumeric(px1) && isNumeric(px2)) {
+                    const ans = Math.sqrt(Math.pow((px2 - px1), 2));
+                     return {
+                      tech_ans: isNaN(ans) ? "NaN" : ans,
+                  };
+                } else {
+                    return { error: 'Please fill all fields' };
+                }
+            }
+
+            if (type === '2P' && dimen === '2D') {
+                if (isNumeric(x1) && isNumeric(x2) && isNumeric(y1) && isNumeric(y2)) {
+                    const ans = Math.round(Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2)) * 10000) / 10000;
+                    return {
+                      tech_ans: isNaN(ans) ? "NaN" : ans,
+                  };
+                } else {
+                    return { error: 'Please fill all fields' };
+                }
+            }
+
+            if (type == '2P' && dimen == '3D') {
+                if (isNumeric(x31) && isNumeric(y31) && isNumeric(z31) && isNumeric(x32) && isNumeric(y32) && isNumeric(z32)) {
+                    const ans = Math.round(Math.sqrt(Math.pow((x32 - x31), 2) + Math.pow((y32 - y31), 2) + Math.pow((z32 - z31), 2)) * 10000) / 10000;
+                     return {
+                      tech_ans: isNaN(ans) ? "NaN" : ans,
+                  };
+                } else {
+                    return { error: 'Please fill all fields' };
+                }
+            }
+
+            if (type == '2P' && dimen == '4D') {
+                if (isNumeric(x41) && isNumeric(y41) && isNumeric(z41) && isNumeric(k41) && isNumeric(x42) && isNumeric(y42) && isNumeric(z42) && isNumeric(k42)) {
+                    const ans = Math.round(Math.sqrt(Math.pow((x42 - x41), 2) + Math.pow((y42 - y41), 2) + Math.pow((z42 - z41), 2) + Math.pow((k42 - k41), 2)) * 10000) / 10000;
+                   return {
+                      tech_ans: isNaN(ans) ? "NaN" : ans,
+                  };
+
+                } else {
+                    return { error: 'Please fill all fields' };
+                }
+            }
+
+            if (type == '3P' && dimen == '1D') {
+                if (isNumeric(px31) && isNumeric(px32) && isNumeric(px33)) {
+                    const ans1 = Math.sqrt(Math.pow((px32 - px31), 2));
+                    const ans2 = Math.sqrt(Math.pow((px33 - px32), 2));
+                    const ans3 = Math.sqrt(Math.pow((px33 - px31), 2));
+                    return {
+                      tech_ans1: isNaN(ans1) ? "NaN" : ans1,
+                      tech_ans2: isNaN(ans2) ? "NaN" : ans2,
+                      tech_ans3: isNaN(ans3) ? "NaN" : ans3,
+                  };
+                } else {
+                    return { error: 'Please fill all fields' };
+                }
+            }
+
+            if (type == '3P' && dimen == '2D') {
+                if (isNumeric(x1) && isNumeric(x2) && isNumeric(x3) && isNumeric(y1) && isNumeric(y2) && isNumeric(y3)) {
+                    const ans1 = Math.round(Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2)) * 10000) / 10000;
+                    const ans2 = Math.round(Math.sqrt(Math.pow((x3 - x2), 2) + Math.pow((y3 - y2), 2)) * 10000) / 10000;
+                    const ans3 = Math.round(Math.sqrt(Math.pow((x3 - x1), 2) + Math.pow((y3 - y1), 2)) * 10000) / 10000;
+                  return {
+                      tech_ans1: isNaN(ans1) ? "NaN" : ans1,
+                      tech_ans2: isNaN(ans2) ? "NaN" : ans2,
+                      tech_ans3: isNaN(ans3) ? "NaN" : ans3,
+                  };
+
+                } else {
+                    return { error: 'Please fill all fields' };
+                }
+            }
+
+            if (type == '3P' && dimen == '3D') {
+                if (isNumeric(x31) && isNumeric(y31) && isNumeric(z31) && isNumeric(x32) && isNumeric(y32) && isNumeric(z32) && isNumeric(x33) && isNumeric(y33) && isNumeric(z33)) {
+                    const ans1 = Math.round(Math.sqrt(Math.pow((x32 - x31), 2) + Math.pow((y32 - y31), 2) + Math.pow((z32 - z31), 2)) * 10000) / 10000;
+                    const ans2 = Math.round(Math.sqrt(Math.pow((x33 - x32), 2) + Math.pow((y33 - y32), 2) + Math.pow((z33 - z32), 2)) * 10000) / 10000;
+                    const ans3 = Math.round(Math.sqrt(Math.pow((x33 - x31), 2) + Math.pow((y33 - y31), 2) + Math.pow((z33 - z31), 2)) * 10000) / 10000;
+                   return {
+                      tech_ans1: isNaN(ans1) ? "NaN" : ans1,
+                      tech_ans2: isNaN(ans2) ? "NaN" : ans2,
+                      tech_ans3: isNaN(ans3) ? "NaN" : ans3,
+                  };
+
+                } else {
+                    return { error: 'Please fill all fields' };
+                }
+            }
+
+            if (type == '3P' && dimen == '4D') {
+                if (isNumeric(x41) && isNumeric(y41) && isNumeric(z41) && isNumeric(k41) && isNumeric(x42) && isNumeric(y42) && isNumeric(z42) && isNumeric(k42) && isNumeric(x43) && isNumeric(y43) && isNumeric(z43) && isNumeric(k43)) {
+                    const ans1 = Math.round(Math.sqrt(Math.pow((x42 - x41), 2) + Math.pow((y42 - y41), 2) + Math.pow((z42 - z41), 2) + Math.pow((k42 - k41), 2)) * 10000) / 10000;
+                    const ans2 = Math.round(Math.sqrt(Math.pow((x43 - x42), 2) + Math.pow((y43 - y42), 2) + Math.pow((z43 - z42), 2) + Math.pow((k43 - k42), 2)) * 10000) / 10000;
+                    const ans3 = Math.round(Math.sqrt(Math.pow((x43 - x41), 2) + Math.pow((y43 - y41), 2) + Math.pow((z43 - z41), 2) + Math.pow((k43 - k41), 2)) * 10000) / 10000;
+                   return {
+                    tech_ans1: isNaN(ans1) ? "NaN" : ans1,
+                    tech_ans2: isNaN(ans2) ? "NaN" : ans2,
+                    tech_ans3: isNaN(ans3) ? "NaN" : ans3,
+                };
+
+                } else {
+                    return { error: 'Please fill all fields' };
+                }
+            }
+
+            if (type == 'PS') {
+                if (isNumeric(x1) && isNumeric(y1) && isNumeric(m) && isNumeric(b)) {
+                    const ans = Math.round(Math.abs(m * x1 - y1 + b) / Math.sqrt((Math.pow(m, 2) + 1)) * 10000) / 10000;
+                    return {
+                      tech_ans: isNaN(ans) ? "NaN" : ans,
+                  };
+                } else {
+                    return { error: 'Please fill all fields' };
+                }
+            }
+
+            if (type == 'PL') {
+                if (isNumeric(m2) && isNumeric(b2) && isNumeric(m) && isNumeric(b)) {
+                    if (m2 != m) {
+                        return { error: 'Make sure that lines are parallel (m = m₂)' };
+                    }
+                    const ans = Math.round((b2 - b) / Math.sqrt((Math.pow(m, 2) + 1)) * 10000) / 10000;
+                     return {
+                      tech_ans: isNaN(ans) ? "NaN" : ans,
+                  };
+                } else {
+                    return { error: 'Please fill all fields' };
+                }
+            }
+
+            // If no matching type found
+            return { error: 'Please! Check Your Input.' };
+
+        } catch (error) {
+            console.error('Error in distance formula calculation:', error);
+            return { error: 'Please! Check Your Input.' };
+        }
+    }
+
+
+          /**
+    * getCalculationVolumeOfCapsuleCalculator: Service Method
+    * POST: /api/calculators-lol/volume-of-capsule
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+      */
+
+      async getCalculationVolumeOfCapsuleCalculator(body) {
+      let choose = body.tech_choose;
+      let first = body.tech_first;
+      let first_unit = body.tech_first_unit;
+      let second = body.tech_second;
+      let second_unit = body.tech_second_unit;
+      let pi_val = body.tech_pi_val;
+      let units = body.tech_units;
+
+
+        // Helper function to check if value is numeric
+        const isNumeric = (value) => {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        };
+
+        // Unit conversion function
+        const newconvert_into_cm = (unit, value) => {
+            const conversions = {
+                "mm": value * 0.1,
+                "cm": value * 1,
+                "m": value * 100,
+                "km": value * 1000,
+                "in": value * 2.54,
+                "ft": value * 30.48,
+                "yd": value * 91.44,
+                "mi": value * 160934
+            };
+            return conversions[unit] || value;
+        };
+
+        // Validate inputs
+        if (!isNumeric(first) || !isNumeric(second) || !isNumeric(pi_val)) {
+            return { error: 'Please Check Your Input.' };
+        }
+
+        try {
+            // Convert inputs to cm
+            const first_cm = newconvert_into_cm(first_unit, parseFloat(first));
+            const second_cm = newconvert_into_cm(second_unit, parseFloat(second));
+            const pi = parseFloat(pi_val);
+
+            let radius, side, volume, surface, circumference;
+        
+            // Calculate based on chosen option
+            switch (choose) {
+                case "a_r": // radius and side
+                    radius = first_cm;
+                    side = second_cm;
+                    volume = pi * Math.pow(radius, 2) * ((4/3) * radius + side);
+                    surface = 2 * pi * radius * (2 * radius + side);
+                    circumference = 2 * pi * radius;
+                        console.log(volume,surface,circumference)
+                    break;
+
+                case "v_r": // radius and volume
+                    radius = first_cm;
+                    volume = second_cm;
+                    side = ((volume / (pi * Math.pow(radius, 2))) - ((4/3) * radius));
+                    surface = 2 * pi * radius * (2 * radius + side);
+                    circumference = 2 * pi * radius;
+                    break;
+
+                case "s_r": // radius and surface
+                    radius = first_cm;
+                    surface = second_cm;
+                    side = surface / (2 * pi * radius) - 2 * radius;
+                    volume = pi * Math.pow(radius, 2) * ((4/3) * radius + side);
+                    circumference = 2 * pi * radius;
+                    break;
+
+                default: // side and circumference
+                    side = first_cm;
+                    circumference = second_cm;
+                    radius = circumference / (2 * pi);
+                    volume = pi * Math.pow(radius, 2) * ((4/3) * radius + side);
+                    surface = 2 * pi * radius * (2 * radius + side);
+                    break;
+            }
+
+            // Unit conversion factors
+            const conversionFactors = {
+                "mm": { single_val: 10, square_val: 100, cube_val: 1000 },
+                "cm": { single_val: 1, square_val: 1, cube_val: 1 },
+                "m": { single_val: 0.01, square_val: 0.0001, cube_val: 0.000001 },
+                "km": { single_val: 0.00001, square_val: 0.0000000001, cube_val: 0.000000000000001 },
+                "in": { single_val: 0.393701, square_val: 0.155, cube_val: 0.0610237 },
+                "ft": { single_val: 0.0328084, square_val: 0.0010763888889, cube_val: 0.000035315 },
+                "yd": { single_val: 0.0109361, square_val: 0.00011959876543333333655, cube_val: 0.00000130795 },
+                "mi": { single_val: 0.0000062137, square_val: 0.00000000003861013863421143294, cube_val: 0.000000000000000239913 }
+            };
+
+            const factors = conversionFactors[units] || conversionFactors.cm;
+
+            // Convert results to desired units
+            const result = {
+              tech_radius: isNaN(radius) ? "NaN" : Math.round((radius * factors.single_val) * 100) / 100,
+              tech_side: isNaN(side) ? "NaN" : Math.round((side * factors.single_val) * 100) / 100,
+              tech_volume: isNaN(volume) ? "NaN" : Math.round((volume * factors.cube_val) * 100) / 100,
+              tech_surface: isNaN(surface) ? "NaN" : Math.round((surface * factors.square_val) * 100) / 100,
+              tech_circumference: isNaN(circumference) ? "NaN" : Math.round((circumference * factors.single_val) * 100) / 100,
+
+            };
+
+            return result;
+
+        } catch (error) {
+            console.error('Error in capsule volume calculation:', error);
+            return { error: 'Please Check Your Input.' };
+        }
+    }
+
+
+        /**
+    * getCalculationConicalFrustumVolumeCalculator: Service Method
+    * POST: /api/calculators-lol/conical-frustum-volume-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+      */
+
+     async getCalculationConicalFrustumVolumeCalculator(body) {
+       let choose = body.tech_choose;
+      let first = body.tech_first;
+      let first_unit = body.tech_first_unit;
+      let second = body.tech_second;
+      let second_unit = body.tech_second_unit;
+      let third = body.tech_third;
+      let third_unit = body.tech_third_unit;
+      let pi_val = body.tech_pi_val;
+      let units = body.tech_units;
+
+        // Helper function to check if value is numeric
+        const isNumeric = (value) => {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        };
+
+        // Unit conversion function
+        const new_convert_into_cm = (unit, value) => {
+            const conversions = {
+                "mm": value * 0.1,
+                "cm": value * 1,
+                "m": value * 100,
+                "km": value * 1000,
+                "in": value * 2.54,
+                "ft": value * 30.48,
+                "yd": value * 91.44,
+                "mi": value * 160934
+            };
+            return conversions[unit] || value;
+        };
+
+        // Validate inputs
+        if (!isNumeric(first) || !isNumeric(second) || !isNumeric(third) || !isNumeric(pi_val)) {
+            return { error: 'Please Check Your Input.' };
+        }
+
+        try {
+            // Convert inputs to cm
+            const first_cm = new_convert_into_cm(first_unit, parseFloat(first));
+            const second_cm = new_convert_into_cm(second_unit, parseFloat(second));
+            const third_cm = new_convert_into_cm(third_unit, parseFloat(third));
+            const pi = parseFloat(pi_val);
+
+            let radius_1, radius_2, height, slant_height, volume, lsa, tsa, bsa, ttsa;
+
+            // Calculate based on chosen option
+            switch (choose) {
+                case "r_h": // radius and height
+                    radius_1 = first_cm;
+                    radius_2 = second_cm;
+                    height = third_cm;
+                    slant_height = Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2));
+                    lsa = pi * (radius_1 + radius_2) * Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2));
+                    tsa = pi * Math.pow(radius_1, 2);
+                    bsa = pi * Math.pow(radius_2, 2);
+                    ttsa = pi * (Math.pow(radius_1, 2) + Math.pow(radius_2, 2) + (radius_1 + radius_2) * Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2)));
+                    volume = (1/3) * pi * height * (radius_1 * radius_1 + radius_2 * radius_2 + (radius_1 * radius_2));
+                    break;
+
+                case "r_sh": // radius and slant height
+                    radius_1 = first_cm;
+                    radius_2 = second_cm;
+                    slant_height = third_cm;
+                    height = Math.sqrt(Math.pow(slant_height, 2) - Math.pow(radius_1 - radius_2, 2));
+                    volume = (1/3) * pi * height * (radius_1 * radius_1 + radius_2 * radius_2 + (radius_1 * radius_2));
+                    lsa = pi * (radius_1 + radius_2) * Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2));
+                    tsa = pi * Math.pow(radius_1, 2);
+                    bsa = pi * Math.pow(radius_2, 2);
+                    ttsa = pi * (Math.pow(radius_1, 2) + Math.pow(radius_2, 2) + (radius_1 + radius_2) * Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2)));
+                    break;
+
+                case "r_v": // radius and volume
+                    radius_1 = first_cm;
+                    radius_2 = second_cm;
+                    volume = third_cm;
+                    height = (volume * 3) / (pi * (radius_1 * radius_1 + radius_2 * radius_2 + (radius_1 * radius_2)));
+                    slant_height = Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2));
+                    lsa = pi * (radius_1 + radius_2) * Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2));
+                    tsa = pi * Math.pow(radius_1, 2);
+                    bsa = pi * Math.pow(radius_2, 2);
+                    ttsa = pi * (Math.pow(radius_1, 2) + Math.pow(radius_2, 2) + (radius_1 + radius_2) * Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2)));
+                    break;
+
+                case "r_l": // radius and lateral surface area
+                    radius_1 = first_cm;
+                    radius_2 = second_cm;
+                    lsa = third_cm;
+                    height = Math.sqrt(Math.pow(lsa / (pi * (radius_1 + radius_2)), 2) - Math.pow(radius_1 - radius_2, 2));
+                    slant_height = Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2));
+                    tsa = pi * Math.pow(radius_1, 2);
+                    bsa = pi * Math.pow(radius_2, 2);
+                    ttsa = pi * (radius_1 + radius_2) * Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2));
+                    volume = (1/3) * pi * height * (radius_1 * radius_1 + radius_2 * radius_2 + (radius_1 * radius_2));
+                    break;
+
+                default: // radius and total surface area
+                    radius_1 = first_cm;
+                    radius_2 = second_cm;
+                    ttsa = third_cm;
+                    height = Math.sqrt(Math.pow(radius_1 + radius_2, 2) - Math.pow(radius_1 - radius_2, 2) - Math.pow(ttsa / pi, 2));
+                    volume = (1/3) * pi * height * (radius_1 * radius_1 + radius_2 * radius_2 + (radius_1 * radius_2));
+                    lsa = pi * (radius_1 + radius_2) * Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2));
+                    slant_height = Math.sqrt(Math.pow(radius_1 - radius_2, 2) + Math.pow(height, 2));
+                    tsa = pi * Math.pow(radius_1, 2);
+                    bsa = pi * Math.pow(radius_2, 2);
+                    break;
+            }
+
+            // Unit conversion factors
+            const conversionFactors = {
+                "mm": { single_val: 10, square_val: 100, cube_val: 1000 },
+                "cm": { single_val: 1, square_val: 1, cube_val: 1 },
+                "m": { single_val: 0.01, square_val: 0.0001, cube_val: 0.000001 },
+                "km": { single_val: 0.00001, square_val: 0.0000000001, cube_val: 0.000000000000001 },
+                "in": { single_val: 0.393701, square_val: 0.155, cube_val: 0.0610237 },
+                "ft": { single_val: 0.0328084, square_val: 0.0010763888889, cube_val: 0.000035315 },
+                "yd": { single_val: 0.0109361, square_val: 0.00011959876543333333655, cube_val: 0.00000130795 },
+                "mi": { single_val: 0.0000062137, square_val: 0.00000000003861013863421143294, cube_val: 0.000000000000000239913 }
+            };
+
+            const factors = conversionFactors[units] || conversionFactors.cm;
+
+            // Convert results to desired units and round to 2 decimal places
+            const result = {
+              tech_radius_1: isNaN(radius_1) ? "NaN" : Math.round((radius_1 * factors.single_val) * 100) / 100,
+              tech_radius_2: isNaN(radius_2) ? "NaN" : Math.round((radius_2 * factors.single_val) * 100) / 100,
+              tech_height: isNaN(height) ? "NaN" : Math.round((height * factors.single_val) * 100) / 100,
+              tech_slant_height: isNaN(slant_height) ? "NaN" : Math.round((slant_height * factors.single_val) * 100) / 100,
+              tech_volume: isNaN(volume) ? "NaN" : Math.round((volume * factors.cube_val) * 100) / 100,
+              tech_lsa: isNaN(lsa) ? "NaN" : Math.round((lsa * factors.square_val) * 100) / 100,
+              tech_tsa: isNaN(tsa) ? "NaN" : Math.round((tsa * factors.square_val) * 100) / 100,
+              tech_bsa: isNaN(bsa) ? "NaN" : Math.round((bsa * factors.square_val) * 100) / 100,
+              tech_ttsa: isNaN(ttsa) ? "NaN" : Math.round((ttsa * factors.square_val) * 100) / 100,
+
+            };
+
+            return result;
+
+        } catch (error) {
+            console.error('Error in conical frustum calculation:', error);
+            return { error: 'Please Check Your Input.' };
+        }
+    }
+
+         /**
+    * getCalculationVolumeOfRectangleCalculator: Service Method
+    * POST: /api/calculators-lol/volume-of-a-rectangle
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+      */
+
+        async getCalculationVolumeOfRectangleCalculator(body) {
+            let choose = body.tech_choose;
+            let first = body.tech_first;
+            let first_unit = body.tech_first_unit;
+            let second = body.tech_second;
+            let second_unit = body.tech_second_unit;
+            let third = body.tech_third;
+            let third_unit = body.tech_third_unit;
+            let units = body.tech_units;
+
+        // Helper function to check if value is numeric
+        const isNumeric = (value) => {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        };
+
+        // Unit conversion function
+        const convert_into_cm = (unit, value) => {
+            const conversions = {
+                "mm": value * 0.1,
+                "cm": value * 1,
+                "m": value * 100,
+                "km": value * 1000,
+                "in": value * 2.54,
+                "ft": value * 30.48,
+                "yd": value * 91.44,
+                "mi": value * 160934
+            };
+            return conversions[unit] || value;
+        };
+
+        // Validate inputs
+        if (!isNumeric(first) || !isNumeric(second) || !isNumeric(third)) {
+            return { error: 'Please Enter Valid Input.' };
+        }
+
+        try {
+            // Convert inputs to cm
+            const first_cm = convert_into_cm(first_unit, parseFloat(first));
+            const second_cm = convert_into_cm(second_unit, parseFloat(second));
+            const third_cm = convert_into_cm(third_unit, parseFloat(third));
+
+            let length, width, height, diagonal, s_tot, s_lat, s_top, s_btm, volume_ans;
+
+            // Calculate based on chosen option
+            switch (choose) {
+                case "hlw": // height, length, width
+                    length = first_cm;
+                    width = second_cm;
+                    height = third_cm;
+                    diagonal = Math.sqrt((Math.pow(length, 2)) + (Math.pow(width, 2)) + (Math.pow(height, 2)));
+                    s_tot = 2 * ((length * width) + (length * height) + (width * height));
+                    s_lat = 2 * height * (length + width);
+                    s_top = length * width;
+                    s_btm = length * width;
+                    volume_ans = length * width * height;
+                    break;
+
+                case "slw": // surface area, length, width
+                    length = first_cm;
+                    width = second_cm;
+                    s_tot = third_cm;
+                    height = ((s_tot / 2) - (length * width)) / (length + width);
+                    diagonal = Math.sqrt((Math.pow(length, 2)) + (Math.pow(width, 2)) + (Math.pow(height, 2)));
+                    s_lat = 2 * height * (length + width);
+                    s_top = length * width;
+                    s_btm = length * width;
+                    volume_ans = length * width * height;
+                    break;
+
+                case "vlw": // volume, length, width
+                    length = first_cm;
+                    width = second_cm;
+                    volume_ans = third_cm;
+                    height = volume_ans / (length * width);
+                    diagonal = Math.sqrt((Math.pow(length, 2)) + (Math.pow(width, 2)) + (Math.pow(height, 2)));
+                    s_tot = 2 * ((length * width) + (length * height) + (width * height));
+                    s_lat = 2 * height * (length + width);
+                    s_top = length * width;
+                    s_btm = length * width;
+                    break;
+
+                default: // diagonal, length, width
+                    length = first_cm;
+                    width = second_cm;
+                    diagonal = third_cm;
+                    height = Math.sqrt((Math.pow(diagonal, 2)) - (Math.pow(length, 2)) - (Math.pow(width, 2)));
+                    s_tot = 2 * ((length * width) + (length * height) + (width * height));
+                    s_lat = 2 * height * (length + width);
+                    s_top = length * width;
+                    s_btm = length * width;
+                    volume_ans = length * width * height;
+                    break;
+            }
+
+            // Unit conversion factors
+            const conversionFactors = {
+                "mm": { single_val: 10, square_val: 100, cube_val: 1000 },
+                "cm": { single_val: 1, square_val: 1, cube_val: 1 },
+                "m": { single_val: 0.01, square_val: 0.0001, cube_val: 0.000001 },
+                "km": { single_val: 0.00001, square_val: 0.0000000001, cube_val: 0.000000000000001 },
+                "in": { single_val: 0.393701, square_val: 0.155, cube_val: 0.0610237 },
+                "ft": { single_val: 0.0328084, square_val: 0.0010763888889, cube_val: 0.000035315 },
+                "yd": { single_val: 0.0109361, square_val: 0.00011959876543333333655, cube_val: 0.00000130795 },
+                "mi": { single_val: 0.0000062137, square_val: 0.00000000003861013863421143294, cube_val: 0.000000000000000239913 }
+            };
+
+            const factors = conversionFactors[units] || conversionFactors.cm;
+
+            // Convert results to desired units and round to 2 decimal places
+            const result = {
+              tech_length: isNaN(length) ? "NaN" : Math.round((length * factors.single_val) * 100) / 100,
+              tech_width: isNaN(width) ? "NaN" : Math.round((width * factors.single_val) * 100) / 100,
+              tech_height: isNaN(height) ? "NaN" : Math.round((height * factors.single_val) * 100) / 100,
+              tech_diagonal: isNaN(diagonal) ? "NaN" : Math.round((diagonal * factors.single_val) * 100) / 100,
+              tech_s_tot: isNaN(s_tot) ? "NaN" : Math.round((s_tot * factors.square_val) * 100) / 100,
+              tech_s_lat: isNaN(s_lat) ? "NaN" : Math.round((s_lat * factors.square_val) * 100) / 100,
+              tech_s_top: isNaN(s_top) ? "NaN" : Math.round((s_top * factors.square_val) * 100) / 100,
+              tech_s_btm: isNaN(s_btm) ? "NaN" : Math.round((s_btm * factors.square_val) * 100) / 100,
+              tech_volume_ans: isNaN(volume_ans) ? "NaN" : Math.round((volume_ans * factors.cube_val) * 100) / 100,
+
+            };
+
+            return result;
+
+        } catch (error) {
+            console.error('Error in rectangular volume calculation:', error);
+            return { error: 'Please Enter Valid Input.' };
+        }
+    }
+
+       /**
+    * getCalculationSimilarTrianglesCalculator: Service Method
+    * POST: /api/calculators-lol/similar-triangles-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+      */
+
+      async getCalculationSimilarTrianglesCalculator(body) {
+              let type = body.tech_type;
+            let similarity = body.tech_similarity;
+
+            let ABC_f = body.tech_ABC_f;
+            let ABC_f_unit = body.tech_ABC_f_unit;
+            let ABC_f_deg_rad = body.tech_ABC_f_deg_rad;
+
+            let ABC_s = body.tech_ABC_s;
+            let ABC_s_unit = body.tech_ABC_s_unit;
+            let ABC_s_deg_rad = body.tech_ABC_s_deg_rad;
+
+            let ABC_t = body.tech_ABC_t;
+            let ABC_t_unit = body.tech_ABC_t_unit;
+            let ABC_t_deg_rad = body.tech_ABC_t_deg_rad;
+
+            let ABC_corresponding = body.tech_ABC_corresponding;
+            let ABC_corresponding_unit = body.tech_ABC_corresponding_unit;
+
+            let scale_factor = body.tech_scale_factor;
+
+            let DEF_f = body.tech_DEF_f;
+            let DEF_f_unit = body.tech_DEF_f_unit;
+            let DEF_f_deg_rad = body.tech_DEF_f_deg_rad;
+
+            let DEF_s = body.tech_DEF_s;
+            let DEF_s_unit = body.tech_DEF_s_unit;
+            let DEF_s_deg_rad = body.tech_DEF_s_deg_rad;
+
+            let DEF_t = body.tech_DEF_t;
+            let DEF_t_unit = body.tech_DEF_t_unit;
+            let DEF_t_deg_rad = body.tech_DEF_t_deg_rad;
+
+            let DEF_corresponding = body.tech_DEF_corresponding;
+            let DEF_corresponding_unit = body.tech_DEF_corresponding_unit;
+
+
+        // Helper function to check if value is numeric
+        const isNumeric = (value) => {
+            return !isNaN(parseFloat(value)) && isFinite(value);
+        };
+
+        // Unit conversion function for length
+        const imp_unit = (a, b) => {
+            const conversions = {
+                "mm": a / 10,
+                "cm": a * 1,
+                "m": a * 100,
+                "km": a * 100000,
+                "in": a * 2.54,
+                "ft": a * 30.48,
+                "yd": a * 91.44,
+                "mi": a * 160900
+            };
+            return conversions[b] || a;
+        };
+
+        // Angle unit conversion function
+        const ang_unit = (a, b) => {
+            if (b == "rad") {
+                return a * 114.592; // Convert radians to degrees (180/π ≈ 57.296, but using 114.592 as in original)
+            } else {
+                return a * 1; // Degrees remain as is
+            }
+        };
+
+        try {
+            if (type == "1") {
+                // Similarity check
+                if (similarity == "SSS") {
+                    if (isNumeric(ABC_f) && isNumeric(ABC_s) && isNumeric(ABC_t) && 
+                        isNumeric(DEF_f) && isNumeric(DEF_s) && isNumeric(DEF_t)) {
+                        
+                        const abc_f = imp_unit(parseFloat(ABC_f), ABC_f_unit);
+                        const abc_s = imp_unit(parseFloat(ABC_s), ABC_s_unit);
+                        const abc_t = imp_unit(parseFloat(ABC_t), ABC_t_unit);
+                        const def_f = imp_unit(parseFloat(DEF_f), DEF_f_unit);
+                        const def_s = imp_unit(parseFloat(DEF_s), DEF_s_unit);
+                        const def_t = imp_unit(parseFloat(DEF_t), DEF_t_unit);
+
+                        let jawab, symbol;
+                        if ((abc_f == def_f) && (abc_s == def_s) && (abc_t == def_t)) {
+                            symbol = "∼";
+                            jawab = "equal";
+                        } else {
+                            jawab = "notequal";
+                            symbol = "≁";
+                        }
+
+                        return {
+                            tech_jawab: jawab,
+                            tech_symbol: symbol,
+                        };
+                    } else {
+                        return { error: 'Please Check Your Input.' };
+                    }
+
+                } else if (similarity == "SAS") {
+                    if (isNumeric(ABC_f) && isNumeric(ABC_s) && isNumeric(ABC_t) && 
+                        isNumeric(DEF_f) && isNumeric(DEF_s) && isNumeric(DEF_t)) {
+                        
+                        const abc_f = imp_unit(parseFloat(ABC_f), ABC_f_unit);
+                        const abc_s = imp_unit(parseFloat(ABC_s), ABC_s_unit);
+                        const abc_t = ang_unit(parseFloat(ABC_t), ABC_t_deg_rad);
+                        const def_f = imp_unit(parseFloat(DEF_f), DEF_f_unit);
+                        const def_s = imp_unit(parseFloat(DEF_s), DEF_s_unit);
+                        const def_t = ang_unit(parseFloat(DEF_t), DEF_t_deg_rad);
+
+                        let jawab, symbol;
+                        if ((abc_f == def_f) && (abc_s == def_s) && (abc_t == def_t)) {
+                            symbol = "∼";
+                            jawab = "equal";
+                        } else {
+                            jawab = "notequal";
+                            symbol = "≁";
+                        }
+
+                        return {
+                            tech_jawab: jawab,
+                            tech_symbol: symbol,
+                        };
+                    } else {
+                        return { error: 'Please Check Your Input.' };
+                    }
+
+                } else {
+                    // AA similarity
+                    if (isNumeric(ABC_f) && isNumeric(ABC_s) && isNumeric(ABC_corresponding) && 
+                        isNumeric(DEF_f) && isNumeric(DEF_s) && isNumeric(DEF_corresponding)) {
+                        
+                        const abc_f = ang_unit(parseFloat(ABC_f), ABC_f_deg_rad);
+                        const abc_s = ang_unit(parseFloat(ABC_s), ABC_s_deg_rad);
+                        const abc_corresponding = imp_unit(parseFloat(ABC_corresponding), ABC_corresponding_unit);
+                        const def_f = ang_unit(parseFloat(DEF_f), DEF_f_deg_rad);
+                        const def_s = ang_unit(parseFloat(DEF_s), DEF_s_deg_rad);
+                        const def_corresponding = imp_unit(parseFloat(DEF_corresponding), DEF_corresponding_unit);
+
+                        const ACB_jawab = 180 - (abc_f + abc_s);
+                        const DEF_jawab = 180 - (def_f + def_s);
+                        const scale_ans = def_corresponding / abc_corresponding;
+                        let jawab, symbol;
+                        if ((abc_f == def_f) && (abc_s == def_s)) {
+                            symbol = "∼";
+                            jawab = "equal";
+                        } else {
+                            jawab = "notequal";
+                            symbol = "≁";
+                        }
+
+                        return {
+                            tech_jawab: jawab,
+                            tech_symbol: symbol,
+                            tech_ACB_jawab: isNaN(ACB_jawab) ? "NaN" : ACB_jawab,
+                            tech_DEF_jawab: isNaN(DEF_jawab) ? "NaN" : DEF_jawab,
+                            tech_scale_ans: isNaN(scale_ans) ? "NaN" : scale_ans,
+
+                        };
+                    } else {
+                        return { error: 'Please Check Your Input.' };
+                    }
+                }
+
+            } else {
+                // Scale factor calculation
+                if (isNumeric(ABC_f) && isNumeric(ABC_s) && isNumeric(ABC_t) && isNumeric(scale_factor)) {
+                    
+                    const abc_f = imp_unit(parseFloat(ABC_f), ABC_f_unit);
+                    const abc_s = imp_unit(parseFloat(ABC_s), ABC_s_unit);
+                    const abc_t = imp_unit(parseFloat(ABC_t), ABC_t_unit);
+                    const scale = parseFloat(scale_factor);
+
+                    // Calculate ABC triangle properties
+                    const ABC_perimeter_ans = abc_f + abc_s + abc_t;
+                    const ABC_semi = ABC_perimeter_ans / 2;
+                    const ABC_area_ans = Math.sqrt(ABC_semi * ((ABC_semi - abc_f) * (ABC_semi - abc_s) * (ABC_semi - abc_t)));
+
+                    // Calculate DEF triangle properties using scale factor
+                    const DEF_f_ans = abc_f * scale;
+                    const DEF_s_ans = abc_s * scale;
+                    const DEF_t_ans = abc_t * scale;
+                    const DEF_perimeter_ans = DEF_f_ans + DEF_s_ans + DEF_t_ans;
+                    const DEF_semi = DEF_perimeter_ans / 2;
+                    const DEF_area_ans = Math.sqrt(DEF_semi * ((DEF_semi - DEF_f_ans) * (DEF_semi - DEF_s_ans) * (DEF_semi - DEF_t_ans)));
+
+                    return {
+                      tech_ABC_perimeter_ans: isNaN(ABC_perimeter_ans) ? "NaN" : Math.round(ABC_perimeter_ans * 100) / 100,
+                      tech_ABC_semi: isNaN(ABC_semi) ? "NaN" : ABC_semi,
+                      tech_ABC_area_ans: isNaN(ABC_area_ans) ? "NaN" : Math.round(ABC_area_ans * 100) / 100,
+                      tech_DEF_f_ans: isNaN(DEF_f_ans) ? "NaN" : DEF_f_ans,
+                      tech_DEF_s_ans: isNaN(DEF_s_ans) ? "NaN" : DEF_s_ans,
+                      tech_DEF_t_ans: isNaN(DEF_t_ans) ? "NaN" : DEF_t_ans,
+                      tech_DEF_perimeter_ans: isNaN(DEF_perimeter_ans) ? "NaN" : Math.round(DEF_perimeter_ans * 100) / 100,
+                      tech_DEF_semi: isNaN(DEF_semi) ? "NaN" : DEF_semi,
+                      tech_DEF_area_ans: isNaN(DEF_area_ans) ? "NaN" : Math.round(DEF_area_ans * 100) / 100,
+
+                    };
+                } else {
+                    return { error: 'Please Check Your Input.' };
+                }
+            }
+
+        } catch (error) {
+            console.error('Error in similar triangles calculation:', error);
+            return { error: 'Please Check Your Input.' };
+        }
+    }
+
+
+    /**
+    * getCalculationVolumeCalculator: Service Method
+    * POST: /api/calculators-lol/volume-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+      */
+
+  async getCalculationVolumeCalculator(body) {
+     let volume_select = body.tech_volume_select;
+      let rec_width = body.tech_rec_width;
+      let rec_length = body.tech_rec_length;
+      let rec_height = body.tech_rec_height;
+      let rec_width_units = body.tech_rec_width_units;
+      let rec_length_units = body.tech_rec_length_units;
+      let rec_height_units = body.tech_rec_height_units;
+
+      let cub_side = body.tech_cub_side;
+      let cub_side_units = body.tech_cub_side_units;
+
+      let cyl_height = body.tech_cyl_height;
+      let cyl_height_units = body.tech_cyl_height_units;
+      let cyl_diameter = body.tech_cyl_diameter;
+      let cyl_diameter_units = body.tech_cyl_diameter_units;
+
+      let con_height = body.tech_con_height;
+      let con_height_units = body.tech_con_height_units;
+      let con_diameter = body.tech_con_diameter;
+      let con_diameter_units = body.tech_con_diameter_units;
+
+      let sph_diameter = body.tech_sph_diameter;
+      let sph_diameter_units = body.tech_sph_diameter_units;
+
+      let tri_base = body.tech_tri_base;
+      let tri_h = body.tech_tri_h;
+      let tri_h_units = body.tech_tri_h_units;
+      let tri_base_units = body.tech_tri_base_units;
+      let tri_length = body.tech_tri_length;
+      let tri_length_units = body.tech_tri_length_units;
+      let tri_height = body.tech_tri_height;
+      let tri_height_units = body.tech_tri_height_units;
+
+      let pyr_height = body.tech_pyr_height;
+      let pyr_height_units = body.tech_pyr_height_units;
+      let pyr_side = body.tech_pyr_side;
+      let pyr_side_units = body.tech_pyr_side_units;
+
+      let cap_radius = body.tech_cap_radius;
+      let cap_radius_units = body.tech_cap_radius_units;
+      let cap_height = body.tech_cap_height;
+      let cap_height_units = body.tech_cap_height_units;
+
+      let hem_radius = body.tech_hem_radius;
+      let hem_radius_units = body.tech_hem_radius_units;
+
+      let hol_height = body.tech_hol_height;
+      let hol_height_units = body.tech_hol_height_units;
+      let hol_outer_dia = body.tech_hol_outer_dia;
+      let hol_outer_dia_units = body.tech_hol_outer_dia_units;
+      let hol_inner_dia = body.tech_hol_inner_dia;
+      let hol_inner_dia_units = body.tech_hol_inner_dia_units;
+
+      let coni_height = body.tech_coni_height;
+      let coni_height_units = body.tech_coni_height_units;
+      let coni_bottom_r = body.tech_coni_bottom_r;
+      let coni_bottom_r_units = body.tech_coni_bottom_r_units;
+      let coni_top_r = body.tech_coni_top_r;
+      let coni_top_r_units = body.tech_coni_top_r_units;
+
+      let tru_height = body.tech_tru_height;
+      let tru_height_units = body.tech_tru_height_units;
+      let tru_top_side = body.tech_tru_top_side;
+      let tru_top_side_units = body.tech_tru_top_side_units;
+      let tru_base_side = body.tech_tru_base_side;
+      let tru_base_side_units = body.tech_tru_base_side_units;
+
+      let ell_sem_a = body.tech_ell_sem_a;
+      let ell_sem_a_units = body.tech_ell_sem_a_units;
+      let ell_sem_b = body.tech_ell_sem_b;
+      let ell_sem_b_units = body.tech_ell_sem_b_units;
+      let ell_sem_c = body.tech_ell_sem_c;
+      let ell_sem_c_units = body.tech_ell_sem_c_units;
+
+      let square = body.tech_square;
+      let square_units = body.tech_square_units;
+
+      let col_height = body.tech_col_height;
+      let col_height_units = body.tech_col_height_units;
+      let col_radi = body.tech_col_radi;
+      let col_radi_units = body.tech_col_radi_units;
+
+
+      // Helper function to check if value is numeric
+      const isNumeric = (value) => {
+          return !isNaN(parseFloat(value)) && isFinite(value);
+      };
+
+      // Unit conversion function
+      const convert_unit = (unit, value) => {
+          if (!unit || !isNumeric(value)) return value;
+          
+          const conversions = {
+              'cm': value * 1,
+              'm': value / 100,
+              'in': value / 2.54,
+              'ft': value / 30.48,
+              'yd': value / 91.44
+          };
+          return conversions[unit] || value;
+      };
+
+      try {
+          const result = { };
+
+          switch (volume_select) {
+              case 'Rectangular':
+                  if (isNumeric(rec_height) && isNumeric(rec_width) && isNumeric(rec_length)) {
+                      const height = convert_unit(rec_height_units, parseFloat(rec_height));
+                      const width = convert_unit(rec_width_units, parseFloat(rec_width));
+                      const length = convert_unit(rec_length_units, parseFloat(rec_length));
+                     result.tech_rectangular = isNaN(height * width * length) ? "NaN" : height * width * length;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Cube':
+                  if (isNumeric(cub_side)) {
+                      const side = convert_unit(cub_side_units, parseFloat(cub_side));
+                 result.tech_cube = isNaN(side * side * side) ? "NaN" : side * side * side;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Cylinder':
+                  if (isNumeric(cyl_height) && isNumeric(cyl_diameter)) {
+                      const height = convert_unit(cyl_height_units, parseFloat(cyl_height));
+                      const diameter = convert_unit(cyl_diameter_units, parseFloat(cyl_diameter));
+                      const radius = diameter / 2;
+                   result.tech_cylinder = isNaN(Math.PI * Math.pow(radius, 2) * height) ? "NaN" : Math.PI * Math.pow(radius, 2) * height;
+                    result.tech_radius = isNaN(radius) ? "NaN" : radius;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Cone':
+                  if (isNumeric(con_height) && isNumeric(con_diameter)) {
+                      const height = convert_unit(con_height_units, parseFloat(con_height));
+                      const diameter = convert_unit(con_diameter_units, parseFloat(con_diameter));
+                      const radius = diameter / 2;
+                      result.tech_cone = isNaN((1/3) * Math.PI * Math.pow(radius, 2) * height) ? "NaN" : (1/3) * Math.PI * Math.pow(radius, 2) * height;
+                      result.tech_radius = isNaN(radius) ? "NaN" : radius;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Sphere':
+                  if (isNumeric(sph_diameter)) {
+                      const diameter = convert_unit(sph_diameter_units, parseFloat(sph_diameter));
+                      const radius = diameter / 2;
+                       result.tech_sphere = isNaN((4/3) * Math.PI * Math.pow(radius, 3)) ? "NaN" : (4/3) * Math.PI * Math.pow(radius, 3);
+                         result.tech_radius = isNaN(radius) ? "NaN" : radius;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Triangular':
+                  if (isNumeric(tri_height) && isNumeric(tri_base) && isNumeric(tri_length) && isNumeric(tri_h)) {
+                      const tri_a = convert_unit(tri_base_units, parseFloat(tri_base));
+                      const tri_b = convert_unit(tri_length_units, parseFloat(tri_length));
+                      const tri_c = convert_unit(tri_height_units, parseFloat(tri_height));
+                      const tri_d = convert_unit(tri_h_units, parseFloat(tri_h));
+
+                      const baseArea = (tri_a + tri_b + tri_c) * (tri_b + tri_c - tri_a) *
+                                    (tri_c + tri_a - tri_b) * (tri_a + tri_b - tri_c);
+                      
+                  result.tech_triangular = isNaN((1/4) * tri_d * Math.sqrt(baseArea)) ? "NaN" : (1/4) * tri_d * Math.sqrt(baseArea);
+                  result.tech_baseArea = isNaN(baseArea) ? "NaN" : baseArea;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Capsule':
+                  if (isNumeric(cap_radius) && isNumeric(cap_height)) {
+                      const radius = convert_unit(cap_radius_units, parseFloat(cap_radius));
+                      const height = convert_unit(cap_height_units, parseFloat(cap_height));
+                     result.tech_capsule = isNaN(Math.PI * Math.pow(radius, 2) * (radius * 4/3 + height)) ? "NaN" : Math.PI * Math.pow(radius, 2) * (radius * 4/3 + height);
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Hemisphere':
+                  if (isNumeric(hem_radius)) {
+                      const radius = convert_unit(hem_radius_units, parseFloat(hem_radius));
+                     result.tech_hemisphere = isNaN((2/3) * Math.PI * Math.pow(radius, 3)) ? "NaN" : (2/3) * Math.PI * Math.pow(radius, 3);
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Hollow':
+                  if (isNumeric(hol_height) && isNumeric(hol_outer_dia) && isNumeric(hol_inner_dia)) {
+                      const height = convert_unit(hol_height_units, parseFloat(hol_height));
+                      const outerDia = convert_unit(hol_outer_dia_units, parseFloat(hol_outer_dia));
+                      const innerDia = convert_unit(hol_inner_dia_units, parseFloat(hol_inner_dia));
+                      
+                      if (outerDia <= innerDia) {
+                          return { error: 'Outer diameter should be greater than inner diameter.' };
+                      }
+                      
+                      const rad = Math.pow(outerDia, 2) - Math.pow(innerDia, 2);
+                     result.tech_hollow = isNaN(Math.PI * height * rad / 4) ? "NaN" : Math.PI * height * rad / 4;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Conical':
+                  if (isNumeric(coni_height) && isNumeric(coni_bottom_r) && isNumeric(coni_top_r)) {
+                      const height = convert_unit(coni_height_units, parseFloat(coni_height));
+                      const bottomR = convert_unit(coni_bottom_r_units, parseFloat(coni_bottom_r));
+                      const topR = convert_unit(coni_top_r_units, parseFloat(coni_top_r));
+                      
+                      const At = Math.PI * Math.pow(topR, 2);
+                      const Ab = Math.PI * Math.pow(bottomR, 2);
+                     result.tech_conical = isNaN((height / 3) * (At + Ab + Math.sqrt(At * Ab))) ? "NaN" : (height / 3) * (At + Ab + Math.sqrt(At * Ab));
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Truncated':
+                  if (isNumeric(tru_height) && isNumeric(tru_top_side) && isNumeric(tru_base_side)) {
+                      const height = convert_unit(tru_height_units, parseFloat(tru_height));
+                      const topSide = convert_unit(tru_top_side_units, parseFloat(tru_top_side));
+                      const baseSide = convert_unit(tru_base_side_units, parseFloat(tru_base_side));
+                      
+                      const A1 = topSide * topSide;
+                      const A2 = baseSide * baseSide;
+                    result.tech_truncated = isNaN((1/3) * height * (A1 + A2 + Math.sqrt(A1 * A2))) ? "NaN" : (1/3) * height * (A1 + A2 + Math.sqrt(A1 * A2));
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Ellipsoid':
+                  if (isNumeric(ell_sem_a) && isNumeric(ell_sem_b) && isNumeric(ell_sem_c)) {
+                      const semA = convert_unit(ell_sem_a_units, parseFloat(ell_sem_a));
+                      const semB = convert_unit(ell_sem_b_units, parseFloat(ell_sem_b));
+                      const semC = convert_unit(ell_sem_c_units, parseFloat(ell_sem_c));
+                     result.tech_ellipsoid = isNaN((4/3) * Math.PI * semA * semB * semC) ? "NaN" : (4/3) * Math.PI * semA * semB * semC;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Pyramid':
+                  if (isNumeric(pyr_height) && isNumeric(pyr_side)) {
+                      const height = convert_unit(pyr_height_units, parseFloat(pyr_height));
+                      const side = convert_unit(pyr_side_units, parseFloat(pyr_side));
+                      const baseArea = side * side;
+                      result.tech_pyramid = isNaN((1/3) * baseArea * height) ? "NaN" : (1/3) * baseArea * height;
+                      result.tech_baseArea = isNaN(baseArea) ? "NaN" : baseArea;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Square':
+                  if (isNumeric(square)) {
+                      const side = convert_unit(square_units, parseFloat(square));
+                     result.tech_square = isNaN(side * side * side) ? "NaN" : side * side * side;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              case 'Column':
+                  if (isNumeric(col_height) && isNumeric(col_radi)) {
+                      const height = convert_unit(col_height_units, parseFloat(col_height));
+                      const radius = convert_unit(col_radi_units, parseFloat(col_radi));
+                     result.tech_column = isNaN(Math.PI * Math.pow(radius, 2) * height) ? "NaN" : Math.PI * Math.pow(radius, 2) * height;
+
+                  } else {
+                      return { error: 'Please! Check Your Input' };
+                  }
+                  break;
+
+              default:
+                  return { error: 'Please! Check Your Input' };
+          }
+
+          return result;
+
+      } catch (error) {
+          console.error('Error in volume calculation:', error);
+          return { error: 'Please! Check Your Input' };
+      }
+  }
+
+
+      /**
+    * getCalculationParabolaCalculator: Service Method
+    * POST: /api/calculators-lol/parabola-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+      */
+
+    async getCalculationParabolaCalculator(body) {
+      const param = {};
+      const from = body.tech_from;
+
+      // GCD helper function
+      function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        if (b == 0) return a;
+        return gcd(b, a % b);
+      }
+
+      // Numeric check helper
+      function isNumeric(value) {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+      }
+
+      // Common calculations function
+      function performCalculations(a, b, c, from, axis = null) {
+        // Calculate h (vertex x-coordinate)
+        let h1 = (-1) * b;
+        let h2 = 2 * a;
+        let gcdVal = gcd(h1, h2);
+        h1 = h1 / gcdVal;
+        h2 = h2 / gcdVal;
+        let hf = 'ni';
+        if (h1 % h2 == 0) {
+          hf = h1 / h2;
+        }
+        const hf_ = h1 / h2;
+
+        // Calculate k (vertex y-coordinate)
+        let k1 = Math.pow(b, 2);
+        let k2 = 4 * a;
+        gcdVal = gcd(k1, k2);
+        k1 = k1 / gcdVal;
+        k2 = k2 / gcdVal;
+        k1 = (c * k2) - k1;
+        let kf = 'ni';
+        if (k1 % k2 == 0) {
+          kf = k1 / k2;
+        }
+        const kf_ = k1 / k2;
+
+        // Calculate focus
+        let fu1 = Math.pow(b, 2) - 1;
+        let fu2 = 4 * a;
+        gcdVal = gcd(fu1, fu2);
+        fu1 = fu1 / gcdVal;
+        fu2 = fu2 / gcdVal;
+        fu1 = (c * fu2) - fu1;
+        let fuf = 'ni';
+        if (fu1 % fu2 == 0) {
+          fuf = fu1 / fu2;
+        }
+
+        // Calculate directrix
+        let dir1 = Math.pow(b, 2) + 1;
+        let dir2 = 4 * a;
+        gcdVal = gcd(dir1, dir2);
+        dir1 = dir1 / gcdVal;
+        dir2 = dir2 / gcdVal;
+        let dirf = 'ni';
+        if (dir1 % dir2 == 0) {
+          dirf = dir1 / dir2;
+        }
+        dir1 = (c * dir2) - dir1;
+
+        // Calculate x-intercepts
+        const x_inter = (-1) * (k1 / k2);
+        if (x_inter >= 0) {
+          const x_inter_sqrt = Math.sqrt(x_inter / a);
+          const rith = (h1 / h2);
+          const x_inter1 = Math.round((rith + x_inter_sqrt) * 100000000) / 100000000;
+          const x_inter2 = Math.round((rith - x_inter_sqrt) * 100000000) / 100000000;
+          param['tech_x_inter1'] = x_inter1;
+          param['tech_x_inter2'] = x_inter2;
+        }
+
+        // Calculate y-intercept
+        const y_inter = ((a * Math.pow(h1 / h2, 2)) * k2 + k1) / k2;
+
+        // Set all parameters
+        if (axis) param['tech_axis'] = axis;
+        param['tech_a'] = a;
+        param['tech_b'] = b;
+        param['tech_c'] = c;
+        param['tech_h1'] = h1;
+        param['tech_hf'] = hf;
+        param['tech_hf_'] = hf_;
+        param['tech_kf'] = kf;
+        param['tech_kf_'] = kf_;
+        param['tech_h2'] = h2;
+        param['tech_k1'] = k1;
+        param['tech_k2'] = k2;
+        param['tech_fu1'] = fu1;
+        param['tech_fu2'] = fu2;
+        param['tech_fuf'] = fuf;
+        param['tech_y_inter'] = y_inter;
+        param['tech_dir1'] = dir1;
+        param['tech_dir2'] = dir2;
+        param['tech_dirf'] = dirf;
+        param['tech_from'] = from;
+        param['RESULT'] = 1;
+
+        return param;
+      }
+
+      try {
+        // Form 1: Standard form (ax² + bx + c)
+        if (from == '1') {
+          const a = parseFloat(body.tech_a);
+          const b = parseFloat(body.tech_b);
+          const c = parseFloat(body.tech_c);
+
+          if (!isNumeric(a) || !isNumeric(b) || !isNumeric(c)) {
+            param['error'] = 'Please! Check Your Input.';
+            return param;
+          }
+
+          if (a == 0) {
+            param['error'] = 'a can never equal zero for a parabola!';
+            return param;
+          }
+
+          return performCalculations(a, b, c, from);
+        }
+        
+        // Form 2: Vertex form (a(x-h)² + k)
+        else if (from == '2') {
+          const a = parseFloat(body.tech_a);
+          const h = parseFloat(body.tech_b);
+          const k = parseFloat(body.tech_c);
+
+          if (!isNumeric(a) || !isNumeric(h) || !isNumeric(k)) {
+            param['error'] = 'Please! Check Your Input.';
+            return param;
+          }
+
+          if (a == 0) {
+            param['error'] = 'a can never equal zero for a parabola!';
+            return param;
+          }
+
+          // Convert vertex form to standard form
+          const b = -2 * a * h;
+          const c = k + (Math.pow(b, 2) / (4 * a));
+
+          return performCalculations(a, b, c, from);
+        }
+        
+        // Form 3: Vertex + Point
+        else if (from == '3') {
+          const h = parseFloat(body.tech_h1);
+          const k = parseFloat(body.tech_k1);
+          const x11 = parseFloat(body.tech_x11);
+          const y11 = parseFloat(body.tech_y11);
+          const axis = body.tech_axis;
+
+          // Sirf required fields check karo
+          if (!isNumeric(h) || !isNumeric(k) || !isNumeric(x11) || !isNumeric(y11)) {
+            param['error'] = 'Please! Check Your Input.';
+            return param;
+          }
+
+          let equ;
+          let tempH = h, tempK = k;
+
+          if (axis == 'x') {
+            equ = `(a(${x11}-(${h}))**2plus${k})-(${y11})`;
+          } else {
+            equ = `(a(${y11}-(${k}))**2plus${h})-(${x11})`;
+            tempH = k;
+            tempK = h;
+          }
+
+          try {
+            const response = await axios.get('http://167.172.134.148/parabolaa', {
+              params: { equ },
+              timeout: 120000
+            });
+
+            // Response data ko safely handle karo
+            let aValue;
+            if (typeof response.data == 'string') {
+              aValue = response.data.trim();
+            } else if (typeof response.data == 'number') {
+              aValue = response.data.toString();
+            } else {
+              // Agar object hai to stringify karo
+              aValue = JSON.stringify(response.data);
+            }
+
+            const a = parseFloat(aValue);
+
+            if (isNaN(a)) {
+              param['error'] = "Could not calculate 'a' value from the given points";
+              return param;
+            }
+
+            if (a == 0) {
+              param['error'] = "You can't build a parabola with these points";
+              return param;
+            }
+
+            const b = -2 * a * tempH;
+            const c = tempK + (Math.pow(b, 2) / (4 * a));
+
+            return performCalculations(a, b, c, from, axis);
+          } catch (error) {
+            console.error('Error in form 3 calculation:', error);
+            console.error('Error response:', error.response?.data);
+            param['error'] = 'Please! Check Your Input.';
+            return param;
+          }
+        }
+        
+        // Form 7: Three points
+        else if (from == '7') {
+          const x1 = parseFloat(body.tech_x1);
+          const y1 = parseFloat(body.tech_y1);
+          const x2 = parseFloat(body.tech_x2);
+          const y2 = parseFloat(body.tech_y2);
+          const x3 = parseFloat(body.tech_x3);
+          const y3 = parseFloat(body.tech_y3);
+          const axis = body.tech_axis;
+
+          if (!isNumeric(x1) || !isNumeric(y1) || 
+              !isNumeric(x2) || !isNumeric(y2) || 
+              !isNumeric(x3) || !isNumeric(y3)) {
+            param['error'] = 'Please! Check Your Input.';
+            return param;
+          }
+
+          let eq1, eq1c, eq2, eq2c, eq3, eq3c;
+
+          if (axis == 'x') {
+            eq1 = `${Math.pow(x1, 2)}aplus${x1}bplusc`;
+            eq1c = y1;
+            eq2 = `${Math.pow(x2, 2)}aplus${x2}bplusc`;
+            eq2c = y2;
+            eq3 = `${Math.pow(x3, 2)}aplus${x3}bplusc`;
+            eq3c = y3;
+          } else {
+            eq1 = `${Math.pow(y1, 2)}aplus${y1}bplusc`;
+            eq1c = x1;
+            eq2 = `${Math.pow(y2, 2)}aplus${y2}bplusc`;
+            eq2c = x2;
+            eq3 = `${Math.pow(y3, 2)}aplus${y3}bplusc`;
+            eq3c = x3;
+          }
+
+          try {
+            const response = await axios.get('http://167.172.134.148/parabola', {
+              params: { eq1, eq1c, eq2, eq2c, eq3, eq3c },
+              timeout: 120000
+            });
+
+            let buffer = response.data;
+            
+            // Safely handle buffer data
+            if (typeof buffer != 'string') {
+              buffer = buffer.toString();
+            }
+            
+            buffer = buffer.replace(/\(/g, '').replace(/\)/g, '');
+            const bufferArray = buffer.split(',');
+
+            if (bufferArray.length != 3) {
+              param['error'] = "Parabola can't be built with these points.";
+              return param;
+            }
+
+            // Evaluate each expression
+            let a, b, c;
+            try {
+              a = new Function('return ' + bufferArray[0])();
+              b = new Function('return ' + bufferArray[1])();
+              c = new Function('return ' + bufferArray[2])();
+            } catch (e) {
+              a = parseFloat(bufferArray[0]);
+              b = parseFloat(bufferArray[1]);
+              c = parseFloat(bufferArray[2]);
+            }
+
+            if (isNaN(a) || a == 0) {
+              param['error'] = "You can't build a parabola with these points";
+              return param;
+            }
+
+            return performCalculations(a, b, c, from, axis);
+          } catch (error) {
+            console.error('Error in form 7 calculation:', error);
+            param['error'] = 'Please! Check Your Input.';
+            return param;
+          }
+        } else {
+          param['error'] = 'Invalid form type';
+          return param;
+        }
+
+      } catch (error) {
+        console.error('General error in parabola calculator:', error);
+        param['error'] = 'An error occurred during calculation.';
+        return param;
+      }
+    }
+
+
+      /**
+    * getCalculationLiteralEquationsCalculator: Service Method
+    * POST: /api/calculators-lol/literal-equations-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    //     async getCalculationLiteralEquationsCalculator(body) {
+    //     const equ = body.equ;
+    //     const find = body.find;
+
+    //     // Helper function to solve literal equations
+    //     const solveLiteralEquation = (equation, solveFor) => {
+    //         const steps = [];
+    //         const explanations = [];
+    //         const finalSteps = [];
+            
+    //         // Remove spaces and convert to lowercase
+    //         equation = equation.replace(/\s/g, '').toLowerCase();
+    //         solveFor = solveFor.toLowerCase();
+            
+    //         // Split into left and right sides
+    //         const sides = equation.split('=');
+    //         if (sides.length !== 2) {
+    //             throw new Error('Invalid equation format');
+    //         }
+            
+    //         let left = sides[0];
+    //         let right = sides[1];
+            
+    //         // Store original equations for display
+    //         const left_equ = left;
+    //         const right_equ = right;
+            
+    //         // Step 1: Move all terms containing the variable to one side
+    //         const moveVariableTerms = (side, targetSide) => {
+    //             const terms = side.split(/(?=[+-])/).filter(term => term !== '');
+    //             let newSide = '';
+    //             let movedTerms = [];
+                
+    //             terms.forEach(term => {
+    //                 if (term.includes(solveFor)) {
+    //                     // Move to target side with opposite sign
+    //                     let movedTerm = term.startsWith('+') ? '-' + term.slice(1) : 
+    //                                   term.startsWith('-') ? '+' + term.slice(1) : '-' + term;
+    //                     movedTerms.push(movedTerm);
+    //                 } else {
+    //                     newSide += term;
+    //                 }
+    //             });
+                
+    //             // Remove leading + if present
+    //             if (newSide.startsWith('+')) {
+    //                 newSide = newSide.slice(1);
+    //             }
+                
+    //             return { newSide, movedTerms };
+    //         };
+            
+    //         // Move variable terms from right to left
+    //         const rightResult = moveVariableTerms(right, 'left');
+    //         right = rightResult.newSide;
+    //         left += rightResult.movedTerms.join('');
+            
+    //         if (rightResult.movedTerms.length > 0) {
+    //             const explanation = `Move all ${solveFor} terms to the left side.`;
+    //             const step = `${left} = ${right}`;
+    //             explanations.push(explanation);
+    //             steps.push(step);
+    //             finalSteps.push(step);
+    //         }
+            
+    //         // Move variable terms from left to right (if any non-variable terms on left)
+    //         const leftResult = moveVariableTerms(left, 'right');
+    //         left = leftResult.newSide;
+    //         right += leftResult.movedTerms.join('');
+            
+    //         if (leftResult.movedTerms.length > 0) {
+    //             const explanation = `Move constant terms to the right side.`;
+    //             const step = `${left} = ${right}`;
+    //             explanations.push(explanation);
+    //             steps.push(step);
+    //             finalSteps.push(step);
+    //         }
+            
+    //         // Step 2: Combine like terms
+    //         const combineLikeTerms = (expression) => {
+    //             const terms = expression.split(/(?=[+-])/).filter(term => term !== '');
+    //             const variableTerms = [];
+    //             const constantTerms = [];
+                
+    //             terms.forEach(term => {
+    //                 if (term.includes(solveFor)) {
+    //                     variableTerms.push(term);
+    //                 } else {
+    //                     constantTerms.push(term);
+    //                 }
+    //             });
+                
+    //             // Combine variable terms
+    //             let combinedVariable = '0';
+    //             if (variableTerms.length > 0) {
+    //                 const coefficients = variableTerms.map(term => {
+    //                     const coeffMatch = term.match(/(-?\d*\.?\d*)/)[0];
+    //                     let coeff = coeffMatch === '-' ? -1 : 
+    //                               coeffMatch === '' ? 1 : 
+    //                               parseFloat(coeffMatch);
+    //                     return coeff;
+    //                 });
+                    
+    //                 const totalCoeff = coefficients.reduce((sum, coeff) => sum + coeff, 0);
+    //                 combinedVariable = totalCoeff === 1 ? solveFor : 
+    //                                 totalCoeff === -1 ? '-' + solveFor : 
+    //                                 totalCoeff + solveFor;
+    //             }
+                
+    //             // Combine constant terms
+    //             const totalConstant = constantTerms.reduce((sum, term) => {
+    //                 let value = term === '+' ? 1 : 
+    //                           term === '-' ? -1 : 
+    //                           parseFloat(term);
+    //                 return sum + value;
+    //             }, 0);
+                
+    //             let result = '';
+    //             if (combinedVariable !== '0') {
+    //                 result += combinedVariable;
+    //             }
+    //             if (totalConstant !== 0) {
+    //                 if (result && totalConstant > 0) result += '+';
+    //                 result += totalConstant;
+    //             }
+                
+    //             return result || '0';
+    //         };
+            
+    //         left = combineLikeTerms(left);
+    //         right = combineLikeTerms(right);
+            
+    //         if (steps.length > 0) { // Only add if there were previous steps
+    //             const explanation = 'Combine like terms on both sides.';
+    //             const step = `${left} = ${right}`;
+    //             explanations.push(explanation);
+    //             steps.push(step);
+    //             finalSteps.push(step);
+    //         }
+            
+    //         // Step 3: Isolate the variable
+    //         let finalAnswer = '';
+            
+    //         if (left.includes(solveFor)) {
+    //             // Variable is on left side
+    //             const coeffMatch = left.match(/(-?\d*\.?\d*)/)[0];
+    //             const coefficient = coeffMatch === '-' ? -1 : 
+    //                               coeffMatch === '' ? 1 : 
+    //                               parseFloat(coeffMatch);
+                
+    //             if (coefficient !== 1) {
+    //                 // Divide both sides by coefficient
+    //                 const explanation = `Divide both sides by ${coefficient}.`;
+    //                 let step = '';
+                    
+    //                 if (coefficient === -1) {
+    //                     step = `-${left} = -${right}`;
+    //                     left = left.slice(1); // Remove negative
+    //                     right = `-(${right})`;
+    //                 } else {
+    //                     step = `\\dfrac{${left}}{${coefficient}} = \\dfrac{${right}}{${coefficient}}`;
+    //                     left = solveFor;
+    //                     right = `\\dfrac{${right}}{${coefficient}}`;
+    //                 }
+                    
+    //                 explanations.push(explanation);
+    //                 steps.push(step);
+    //                 finalSteps.push(`${left} = ${right}`);
+                    
+    //                 finalAnswer = right;
+    //             } else {
+    //                 finalAnswer = right;
+    //             }
+    //         } else {
+    //             // Variable is on right side
+    //             const coeffMatch = right.match(/(-?\d*\.?\d*)/)[0];
+    //             const coefficient = coeffMatch === '-' ? -1 : 
+    //                               coeffMatch === '' ? 1 : 
+    //                               parseFloat(coeffMatch);
+                
+    //             if (coefficient !== 1) {
+    //                 const explanation = `Divide both sides by ${coefficient}.`;
+    //                 let step = '';
+                    
+    //                 if (coefficient === -1) {
+    //                     step = `-${left} = -${right}`;
+    //                     left = `-${left}`;
+    //                     right = right.slice(1);
+    //                 } else {
+    //                     step = `\\dfrac{${left}}{${coefficient}} = \\dfrac{${right}}{${coefficient}}`;
+    //                     left = `\\dfrac{${left}}{${coefficient}}`;
+    //                     right = solveFor;
+    //                 }
+                    
+    //                 explanations.push(explanation);
+    //                 steps.push(step);
+    //                 finalSteps.push(`${left} = ${right}`);
+                    
+    //                 finalAnswer = left;
+    //             } else {
+    //                 finalAnswer = left;
+    //             }
+    //         }
+            
+    //         // Final simplification
+    //         finalAnswer = finalAnswer.replace(/\+\-/g, '-')
+    //                                 .replace(/\-\-/g, '+')
+    //                                 .replace(/\\dfrac\{(\d+)\}\{(\d+)\}/g, (match, num, den) => {
+    //                                     const numerator = parseInt(num);
+    //                                     const denominator = parseInt(den);
+    //                                     if (numerator % denominator === 0) {
+    //                                         return (numerator / denominator).toString();
+    //                                     }
+    //                                     return match;
+    //                                 });
+            
+    //         return {
+    //             explain: explanations,
+    //             steps: steps,
+    //             final_steps: finalSteps,
+    //             final: `${solveFor} = ${finalAnswer}`,
+    //             jawab: finalAnswer,
+    //             one: '=',
+    //             left_equ: left_equ,
+    //             right_equ: right_equ
+    //         };
+    //     };
+
+    //     const result = {};
+
+    //     // Input validation
+    //     if (!equ || !find) {
+    //         result.error = 'Please Check Your Input.';
+    //         return result;
+    //     }
+
+    //     if (/<|>|&|php|print_r|print|echo|script|%|&/i.test(equ)) {
+    //         result.error = 'Please Enter Valid Equation.';
+    //         return result;
+    //     }
+
+    //     const findLower = find.toLowerCase();
+    //     const equLower = equ.toLowerCase();
+
+    //     if (!equLower.includes(findLower)) {
+    //         result.error = 'Character you entered does not seem to be exist on your equation.';
+    //         return result;
+    //     }
+
+    //     if (!equLower.includes('=')) {
+    //         result.error = 'Please Enter Valid Equation.';
+    //         return result;
+    //     }
+
+    //     try {
+    //         const solution = solveLiteralEquation(equ, find);
+            
+    //         result.explain = solution.explain;
+    //         result.jawab = solution.jawab;
+    //         result.one = solution.one;
+    //         result.steps = solution.steps;
+    //         result.final_steps = solution.final_steps;
+    //         result.left_equ = solution.left_equ;
+    //         result.right_equ = solution.right_equ;
+    //         result.final = solution.final;
+    //         result.RESULT = 1;
+            
+    //     } catch (error) {
+    //         console.error('Calculation Error:', error.message);
+    //         result.error = 'Unable to solve the equation. Please check your input.';
+    //     }
+
+    //     return result;
+    // }
+
+
+       /**
+    * getCalculationVelocityCalculator: Service Method
+    * POST: /api/calculators-lol/velocity-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationVelocityCalculator(body) {
+        const request = body;
+        const result = {};
+        
+        const velo_value = request.tech_velo_value;
+        const dem = request.tech_dem;
+        const collection = request.tech_collection;
+        const dis1_unit = request.tech_dis_unit;
+        const time_unit = request.tech_time_unit;
+        const val_unit = request.tech_val_unit;
+        const val_units = request.tech_val_units;
+        
+        const iv_unit = request.tech_iv_unit;
+        const acc_unit = request.tech_acc_unit;
+        const atime_unit = request.tech_atime_unit;
+        const fv_unit = request.tech_fv_unit;
+
+        // Helper function for velocity conversion (single value)
+        function velocityfun(velocity, units) {
+            if (units == 'km/h') {
+                return velocity / 3.6;
+            } else if (units == 'ft/s') {
+                return velocity / 3.28084;
+            } else if (units == 'mph') {
+                return velocity / 2.23694;
+            } else if (units == 'kn') {
+                return velocity / 1.94384;
+            } else if (units == 'ft/m') {
+                return velocity / 196.8504;
+            } else if (units == 'cm/s') {
+                return velocity / 100;
+            } else if (units == 'm/min') {
+                return velocity / 60;
+            } else {
+                return velocity;
+            }
+        }
+
+        // Helper function for time conversion (single value)
+        function convertTime(time, units) {
+            if (units == 'min') {
+                return time * 60;
+            } else if (units == 'hrs') {
+                return time * 3600;
+            } else if (units == 'days') {
+                return time * 86400;
+            } else if (units == 'wks') {
+                return time * 604800;
+            } else if (units == 'mon') {
+                return time * 2.628e+6;
+            } else if (units == 'yrs') {
+                return time * 3.154e+7;
+            } else {
+                return time;
+            }
+        }
+
+        // Helper function for distance conversion
+        function distancefun(a, b) {
+            if (b == "cm") {
+                return parseInt(a / 100);
+            } else if (b == "km") {
+                return parseInt(a * 1000);
+            } else if (b == "in") {
+                return parseInt(a * 0.0254);
+            } else if (b == "ft") {
+                return parseInt(a * 0.3048);
+            } else if (b == "yd") {
+                return parseInt(a * 0.9144);
+            } else if (b == "mi") {
+                return parseInt(a * 1609.34);
+            } else {
+                return parseInt(a);
+            }
+        }
+
+        // Helper function for velocity array conversion
+        function velocity(velocities, units) {
+            const converted_velocities = [];
+            velocities.forEach((value, index) => {
+                const numValue = parseFloat(value);
+                const unit = units[index] || '';
+                if (unit == 'km/h') {
+                    converted_velocities.push(numValue / 3.6);
+                } else if (unit == 'ft/s') {
+                    converted_velocities.push(numValue / 3.28084);
+                } else if (unit == 'mph') {
+                    converted_velocities.push(numValue / 2.23694);
+                } else if (unit == 'kn') {
+                    converted_velocities.push(numValue / 1.94384);
+                } else if (unit == 'ft/m') {
+                    converted_velocities.push(numValue / 196.8504);
+                } else if (unit == 'cm/s') {
+                    converted_velocities.push(numValue / 100);
+                } else if (unit == 'm/min') {
+                    converted_velocities.push(numValue / 60);
+                } else {
+                    converted_velocities.push(numValue);
+                }
+            });
+            return converted_velocities;
+        }
+
+        // Helper function for time array conversion
+        function convertTimeArray(times, units) {
+            const converted_times = [];
+            times.forEach((value, index) => {
+                const numValue = parseFloat(value);
+                const unit = units[index] || '';
+                if (unit == 'min') {
+                    converted_times.push(numValue * 60);
+                } else if (unit == 'hrs') {
+                    converted_times.push(numValue * 3600);
+                } else if (unit == 'days') {
+                    converted_times.push(numValue * 86400);
+                } else if (unit == 'wks') {
+                    converted_times.push(numValue * 604800);
+                } else if (unit == 'mon') {
+                    converted_times.push(numValue * 2.628e+6);
+                } else if (unit == 'yrs') {
+                    converted_times.push(numValue * 3.154e+7);
+                } else {
+                    converted_times.push(numValue);
+                }
+            });
+            return converted_times;
+        }
+
+        if (velo_value == '1') {
+            // Basic velocity, distance, time calculation
+            const distance = parseFloat(request.tech_x);
+            const time = parseFloat(request.tech_y);
+            const velocity_val = parseFloat(request.tech_vel);
+
+            const distances = distancefun(distance, dis1_unit);
+            const velocitys = velocityfun(velocity_val, val_units);
+            const times = convertTime(time, time_unit);
+
+            let ans;
+            if (dem === 'dc') {
+                // Distance Calculation
+                ans = Math.round(velocitys * times * 10000) / 10000;
+                result.tech_ans_t = "Distance";
+            } else if (dem == 'av') {
+                // Velocity Calculation
+                if (times == 0) {
+                    ans = 0;
+                } else {
+                    ans = Math.round((distances / times) * 10000) / 10000;
+                }
+                result.tech_ans_t = "Velocity";
+            } else {
+                // Time Calculation
+                if (velocitys == 0) {
+                    ans = "Infinity";
+                } else {
+                    ans = Math.round((distances / velocitys) * 10000) / 10000;
+                }
+                result.tech_ans_t = "Time";
+            }
+            
+            result.tech_ans = ans;
+            return result;
+
+        } else if (velo_value == '3') {
+            // Average velocity calculation
+            let vs = request.tech_z;
+            const vs_unit = request.tech_val_unit;
+            let avt = request.tech_aty;
+            const avt_unit = request.tech_ytime_unit;
+
+            vs = velocity(vs, vs_unit);
+            avt = convertTimeArray(avt, avt_unit);
+
+            if (Array.isArray(vs) && Array.isArray(avt)) {
+                const total_time = avt.reduce((sum, val) => sum + parseFloat(val), 0);
+                let weighted_sum = 0;
+
+                for (let key = 0; key < vs.length; key++) {
+                    const vel = parseInt(vs[key]);
+                    const time_val = parseInt(avt[key]);
+                    
+                    if (!isNaN(vel) && !isNaN(time_val)) {
+                        weighted_sum += vs[key] * avt[key];
+                    } else {
+                        result.error = 'Please! Check Your Input';
+                        return result;
+                    }
+                }
+
+                if (total_time > 0) {
+                    const average_velocity = weighted_sum / total_time;
+                    result.tech_ans = Math.round(average_velocity * 10000) / 10000;
+                    result.tech_unit = "m/s";
+                } else {
+                    result.error = 'Total time must be greater than zero';
+                    return result;
+                }
+                result.tech_ans_t = "Avrage Velocity";
+            }
+
+            return result;
+
+        } else if (velo_value == '2') {
+            // Acceleration-based calculations
+            let ans, unit;
+
+            if (collection == '1') {
+                // Calculate initial velocity from acceleration, time, and final velocity
+                let a = parseFloat(request.tech_acc);
+                
+                if (acc_unit == "ft/s²") a *= 0.3048;
+                if (acc_unit == "in/s²") a *= 0.0254;
+                if (acc_unit == "cm/s²") a *= 0.01;
+                if (acc_unit == "mi/s²") a *= 1609.344;
+                if (acc_unit == "km/s²") a *= 100;
+                if (acc_unit == "g") a *= 0.10197162129779;
+
+                let time = parseFloat(request.tech_y1);
+                if (atime_unit == 'min') time *= 60;
+                if (atime_unit == 'hrs') time *= 3600;
+                if (atime_unit == 'days') time *= 86400;
+                if (atime_unit == 'wks') time *= 604800;
+                if (atime_unit == 'mos') time *= 2.628e+6;
+                if (atime_unit == 'yrs') time *= 3.154e+7;
+
+                let fv = parseFloat(request.tech_z1);
+                if (fv_unit == 'm/s') fv = fv;
+                if (fv_unit == 'km/h') fv /= 3.6;
+                if (fv_unit == 'ft/s') fv /= 3.28084;
+                if (fv_unit == 'mph') fv /= 2.23694;
+                if (fv_unit == 'kn') fv /= 1.94384;
+                if (fv_unit == 'ft/m') fv /= 196.8504;
+                if (fv_unit == 'cm/s') fv /= 100;
+                if (fv_unit == 'm/min') fv /= 60;
+
+                result.tech_ans_t = "Velocity";
+                ans = Math.round((fv - (a * time)) * 10000) / 10000;
+                unit = "m/s";
+            } else if (collection == '2') {
+                // Calculate final velocity from initial velocity, acceleration, and time
+                let time = parseFloat(request.tech_y1);
+                if (atime_unit == 'min') time *= 60;
+                if (atime_unit == 'hrs') time *= 3600;
+                if (atime_unit == 'days') time *= 86400;
+                if (atime_unit == 'wks') time *= 604800;
+                if (atime_unit == 'mos') time *= 2.628e+6;
+                if (atime_unit == 'yrs') time *= 3.154e+7;
+
+                let iv = parseFloat(request.tech_x1);
+                if (iv_unit == 'km/h') iv /= 3.6;
+                if (iv_unit == 'ft/s') iv /= 3.28084;
+                if (iv_unit == 'mph') iv /= 2.23694;
+                if (iv_unit == 'kn') iv /= 1.94384;
+                if (iv_unit == 'ft/m') iv /= 196.8504;
+                if (iv_unit == 'cm/s') iv /= 100;
+                if (iv_unit == 'm/min') iv /= 60;
+
+                let a = parseFloat(request.tech_acc);
+                if (acc_unit == "ft/s²") a *= 0.3048;
+                if (acc_unit == "in/s²") a *= 0.0254;
+                if (acc_unit == "cm/s²") a *= 0.01;
+                if (acc_unit == "mi/s²") a *= 1609.344;
+                if (acc_unit == "km/s²") a *= 100;
+
+                result.tech_ans_t = "Velocity";
+                ans = Math.round((iv + (a * time)) * 10000) / 10000;
+                unit = "m/s";
+
+            } else if (collection == '3') {
+                // Calculate acceleration from initial velocity, final velocity, and time
+                let time = parseFloat(request.tech_y1);
+                if (atime_unit == 'min') time *= 60;
+                if (atime_unit == 'hrs') time *= 3600;
+                if (atime_unit == 'days') time *= 86400;
+                if (atime_unit == 'wks') time *= 604800;
+                if (atime_unit == 'mos') time *= 2.628e+6;
+                if (atime_unit == 'yrs') time *= 3.154e+7;
+
+                let iv = parseFloat(request.tech_x1);
+                if (iv_unit == 'km/h') iv /= 3.6;
+                if (iv_unit == 'ft/s') iv /= 3.28084;
+                if (iv_unit == 'mph') iv /= 2.23694;
+                if (iv_unit == 'kn') iv /= 1.94384;
+                if (iv_unit == 'ft/m') iv /= 196.8504;
+                if (iv_unit == 'cm/s') iv /= 100;
+                if (iv_unit == 'm/min') iv /= 60;
+
+                let fv = parseFloat(request.tech_z1);
+                if (fv_unit == 'km/h') fv /= 3.6;
+                if (fv_unit == 'ft/s') fv /= 3.28084;
+                if (fv_unit == 'mph') fv /= 2.23694;
+                if (fv_unit == 'kn') fv /= 1.94384;
+                if (fv_unit == 'ft/m') fv /= 196.8504;
+                if (fv_unit == 'cm/s') fv /= 100;
+                if (fv_unit == 'm/min') fv /= 60;
+
+                result.tech_ans_t = "Acceleration";
+                ans = Math.round(((fv - iv) / time) * 10000) / 10000;
+                unit = 'm/s²';
+
+            } else {
+                // Calculate time from initial velocity, final velocity, and acceleration
+                let a = parseFloat(request.tech_acc);
+                if (acc_unit == "ft/s²") a *= 0.3048;
+                if (acc_unit == "in/s²") a *= 0.0254;
+                if (acc_unit == "cm/s²") a *= 0.01;
+                if (acc_unit == "mi/s²") a *= 1609.344;
+                if (acc_unit == "km/s²") a *= 100;
+                if (acc_unit == "g") a *= 0.10197162129779;
+
+                let iv = parseFloat(request.tech_x1);
+                if (iv_unit == 'km/h') iv /= 3.6;
+                if (iv_unit == 'ft/s') iv /= 3.28084;
+                if (iv_unit == 'mph') iv /= 2.23694;
+                if (iv_unit == 'kn') iv /= 1.94384;
+                if (iv_unit == 'ft/m') iv /= 196.8504;
+                if (iv_unit == 'cm/s') iv /= 100;
+                if (iv_unit == 'm/min') iv /= 60;
+
+                let fv = parseFloat(request.tech_z1);
+                if (fv_unit == 'km/h') fv /= 3.6;
+                if (fv_unit == 'ft/s') fv /= 3.28084;
+                if (fv_unit == 'mph') fv /= 2.23694;
+                if (fv_unit == 'kn') fv /= 1.94384;
+                if (fv_unit == 'ft/m') fv /= 196.8504;
+                if (fv_unit == 'cm/s') fv /= 100;
+                if (fv_unit == 'm/min') fv /= 60;
+
+                result.tech_ans_t = "Time";
+                ans = Math.round(((fv - iv) / a) * 10000) / 10000;
+                unit = "s";
+            }
+
+            result.tech_ans = ans;
+            return result;
+        }
+
+        return result;
+    }
+
+       /**
+    * getCalculationDisplacementCalculator: Service Method
+    * POST: /api/calculators-lol/displacement-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationDisplacementCalculator(body) {
+        const request = body;
+        const param = {};
+        
+        const dispKnown = request.tech_known;
+        let check = false;
+        
+        if (dispKnown) {
+            if (dispKnown === "1") {
+                // Formula: displacement = average velocity × time
+                const sldsp = request.tech_sldsp;
+                let avg = parseFloat(request.tech_av);
+                const slav = request.tech_slav;
+                let tme = parseFloat(request.tech_tm);
+                const sltm = request.tech_sltm;
+                check = true;
+
+                param.tech_avg = `${request.tech_av} ${slav}`;
+
+                // Convert average velocity to m/s
+                if (slav === "ft/s") {
+                    avg = avg * 0.3048;
+                }
+                if (slav === "km/h") {
+                    avg = avg * 0.277778;
+                }
+                if (slav === "km/s") {
+                    avg = avg * 1000;
+                }
+                if (slav === "mi/s") {
+                    avg = avg * 1609.34;
+                }
+                if (slav === "mph") {
+                    avg = avg / 2.237;
+                }
+
+                param.tech_tme = `${request.tech_tm} ${sltm}`;
+
+                // Convert time to seconds
+                if (sltm === "min") {
+                    tme = tme * 60;
+                }
+                if (sltm === "h") {
+                    tme = tme * 60 * 60;
+                }
+
+                // Calculate displacement in meters
+                let dsp = avg * tme;
+
+                // Convert to desired unit
+                if (sldsp === "cm") {
+                    dsp = dsp * 100;
+                }
+                if (sldsp === "in") {
+                    dsp = dsp * 39.37;
+                }
+                if (sldsp === "ft") {
+                    dsp = dsp * 3.281;
+                }
+                if (sldsp === "km") {
+                    dsp = dsp / 1000;
+                }
+                if (sldsp === "mi") {
+                    dsp = dsp / 1609.35;
+                }
+
+                param.tech_dsp = `${Math.round(dsp * 10000) / 10000} ${sldsp}`;
+                
+            } else if (dispKnown === "2") {
+                // Formula: displacement = (initial velocity × time) + (0.5 × acceleration × time²)
+                const sldsp = request.tech_sldsp;
+                let tme = parseFloat(request.tech_tm);
+                const sltm = request.tech_sltm;
+                let iv = parseFloat(request.tech_iv);
+                const sliv = request.tech_sliv;
+                let acce = parseFloat(request.tech_acc);
+                const slacc = request.tech_slacc;
+
+                check = true;
+
+                param.tech_ivs = `${request.tech_iv} ${sliv}`;
+                
+                // Convert initial velocity to m/s
+                if (sliv === "ft/s") {
+                    iv = iv * 0.3048;
+                }
+                if (sliv === "km/h") {
+                    iv = iv * 0.277778;
+                }
+                if (sliv === "km/s") {
+                    iv = iv * 1000;
+                }
+                if (sliv === "mi/s") {
+                    iv = iv * 1609.34;
+                }
+                if (sliv === "mph") {
+                    iv = iv / 2.237;
+                }
+
+                param.tech_tme = `${request.tech_tm} ${sltm}`;
+
+                // Convert time to seconds
+                if (sltm === "min") {
+                    tme = tme * 60;
+                }
+                if (sltm === "h") {
+                    tme = tme * 60 * 60;
+                }
+
+                param.tech_acce = `${request.tech_acc} ${slacc}`;
+                
+                // Convert acceleration to m/s²
+                if (slacc === "ft/s²") {
+                    acce = acce * 0.3048;
+                }
+
+                // Calculate displacement in meters
+                let dsp = (iv * tme) + (0.5 * (acce * Math.pow(tme, 2)));
+                
+                // Convert to desired unit
+                if (sldsp === "cm") {
+                    dsp = dsp * 100;
+                }
+                if (sldsp === "in") {
+                    dsp = dsp * 39.37;
+                }
+                if (sldsp === "ft") {
+                    dsp = dsp * 3.281;
+                }
+                if (sldsp === "km") {
+                    dsp = dsp / 1000;
+                }
+                if (sldsp === "mi") {
+                    dsp = dsp / 1609.35;
+                }
+
+                param.tech_dsp = `${Math.round(dsp * 10000) / 10000} ${sldsp}`;
+                
+            } else if (dispKnown === "3") {
+                // Formula: displacement = 0.5 × (initial velocity + final velocity) × time
+                const sldsp = request.tech_sldsp;
+                let tme = parseFloat(request.tech_tm);
+                const sltm = request.tech_sltm;
+                let iv = parseFloat(request.tech_iv);
+                const sliv = request.tech_sliv;
+                let fv = parseFloat(request.tech_fv);
+                const slfv = request.tech_slfv;
+                check = true;
+
+                param.tech_ivs = `${request.tech_iv} ${sliv}`;
+                
+                // Convert initial velocity to m/s
+                if (sliv === "ft/s") {
+                    iv = iv * 0.3048;
+                }
+                if (sliv === "km/h") {
+                    iv = iv * 0.277778;
+                }
+                if (sliv === "km/s") {
+                    iv = iv * 1000;
+                }
+                if (sliv === "mi/s") {
+                    iv = iv * 1609.34;
+                }
+                if (sliv === "mph") {
+                    iv = iv / 2.237;
+                }
+
+                param.tech_tme = `${request.tech_tm} ${sltm}`;
+                
+                // Convert time to seconds
+                if (sltm === "min") {
+                    tme = tme * 60;
+                }
+                if (sltm === "h") {
+                    tme = tme * 60 * 60;
+                }
+
+                param.tech_fvs = `${request.tech_fv} ${slfv}`;
+                
+                // Convert final velocity to m/s
+                if (slfv === "ft/s") {
+                    fv = fv * 0.3048;
+                }
+                if (slfv === "km/h") {
+                    fv = fv * 0.277778;
+                }
+                if (slfv === "km/s") {
+                    fv = fv * 1000;
+                }
+                if (slfv === "mi/s") {
+                    fv = fv * 1609.34;
+                }
+                if (slfv === "mph") {
+                    fv = fv / 2.237;
+                }
+
+                // Calculate displacement in meters
+                let dsp = 0.5 * (fv + iv) * tme;
+                
+                // Convert to desired unit
+                if (sldsp === "cm") {
+                    dsp = dsp * 100;
+                }
+                if (sldsp === "in") {
+                    dsp = dsp * 39.37;
+                }
+                if (sldsp === "ft") {
+                    dsp = dsp * 3.281;
+                }
+                if (sldsp === "km") {
+                    dsp = dsp / 1000;
+                }
+                if (sldsp === "mi") {
+                    dsp = dsp / 1609.35;
+                }
+
+                param.tech_dsp = `${Math.round(dsp * 10000) / 10000} ${sldsp}`;
+                
+            } else if (dispKnown === "4") {
+                // Multiple velocity-time pairs
+                check = true;
+
+                const vlocInpAr = [];
+                const vlocSlcAr = [];
+                const timiInpAr = [];
+                const timiSlcAr = [];
+                const vloReslt = [];
+
+                for (let i = 0; i < 10; i++) {
+                    const vloInRaw = request[`tech_vloc_${i}`];
+                    const vloSl = request[`tech_slvloc_${i}`];
+                    const timInRaw = request[`tech_timi_${i}`];
+                    const timSl = request[`tech_sltimi_${i}`];
+                    
+                    // Skip if values don't exist or are empty
+                    if (!vloInRaw || !timInRaw || vloInRaw === '' || timInRaw === '') {
+                        continue;
+                    }
+                    
+                    let vloIn = parseFloat(vloInRaw);
+                    
+                    // Convert velocity to m/s
+                    if (vloSl === "ft/s") {
+                        vloIn = vloIn * 0.3048;
+                    }
+                    if (vloSl === "km/h") {
+                        vloIn = vloIn * 0.277778;
+                    }
+                    if (vloSl === "km/s") {
+                        vloIn = vloIn * 1000;
+                    }
+                    if (vloSl === "mi/s") {
+                        vloIn = vloIn * 1609.34;
+                    }
+                    if (vloSl === "mph") {
+                        vloIn = vloIn / 2.237;
+                    }
+                    vlocInpAr.push(vloIn);
+                    vlocSlcAr.push(vloSl);
+
+                    let timIn = parseFloat(timInRaw);
+                    
+                    // Convert time to seconds
+                    if (timSl === "min") {
+                        timIn = timIn * 60;
+                    }
+                    if (timSl === "h") {
+                        timIn = timIn * 60 * 60;
+                    }
+                    timiInpAr.push(timIn);
+                    timiSlcAr.push(timSl);
+
+                    vloReslt.push(vloIn * timIn);
+                }
+
+                const sldsp = request.tech_sldsp;
+                
+                // Sum all displacements (in meters)
+                const sumInMeters = vloReslt.reduce((a, b) => a + b, 0);
+                let dsp = sumInMeters;
+                
+                // Convert to desired unit
+                if (sldsp === "cm") {
+                    dsp = dsp * 100;
+                }
+                if (sldsp === "in") {
+                    dsp = dsp * 39.37;
+                }
+                if (sldsp === "ft") {
+                    dsp = dsp * 3.281;
+                }
+                if (sldsp === "km") {
+                    dsp = dsp / 1000;
+                }
+                if (sldsp === "mi") {
+                    dsp = dsp / 1609.35;
+                }
+
+                param.tech_dsp = `${Math.round(dsp * 10000) / 10000} ${sldsp}`;
+                param.tech_dspft = Math.round(sumInMeters * 3.281 * 10000) / 10000;
+                param.tech_dspkm = Math.round(sumInMeters / 1000 * 10000) / 10000;
+                param.tech_dspmi = Math.round(sumInMeters / 1609.35 * 10000) / 10000;
+            }
+        }
+
+        if (check === true) {
+            return param;
+        } else {
+            param.error = 'Please fill all fields.';
+            return param;
+        }
+    }
+
+
+     /**
+    * getCalculationOhmsLawCalculator: Service Method
+    * POST: /api/calculators-lol/ohms-law-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+        async getCalculationOhmsLawCalculator(body) {
+        const param = {};
+        const request = body;
+
+        // Helper function to check if value is numeric and not empty
+        const isNumeric = (value) => {
+            return value !== null && value !== undefined && value !== '' && !isNaN(value);
+        };
+
+        // Voltage and Current given
+        if (isNumeric(request.tech_voltage) && isNumeric(request.tech_current)) {
+            if (!isNumeric(request.resistance) && !isNumeric(request.tech_power)) {
+                let voltage = parseFloat(request.tech_voltage);
+                let current = parseFloat(request.tech_current);
+                
+                // Convert to base units
+                if (request.tech_unit_v == "KV") voltage = voltage * 1000;
+                if (request.tech_unit_v == "mV") voltage = voltage * 0.001;
+                if (request.tech_unit_i == 'mA') current = current / 1000;
+                
+                // Calculate
+                let resistance = Math.round((voltage / current) * 100000) / 100000;
+                let power = Math.round((voltage * current) * 100000) / 100000;
+                
+                // Convert back to display units
+                if (request.tech_unit_r == 'kΩ') resistance = resistance * 0.001;
+                if (request.tech_unit_p == 'kW') power = power / 1000;
+                if (request.tech_unit_v == "KV") voltage = voltage / 1000;
+                if (request.tech_unit_v == "mV") voltage = voltage / 0.001;
+                if (request.tech_unit_i == 'mA') current = current * 1000;
+                
+                param.tech_voltage = `${voltage} ${request.tech_unit_v}`;
+                param.tech_current = `${current} ${request.tech_unit_i}`;
+                param.tech_resistance = `${resistance} ${request.tech_unit_r}`;
+                param.tech_power = `${power} ${request.tech_unit_p}`;
+                
+                return param;
+            } else {
+                param.error = 'Please enter two values.';
+                return param;
+            }
+        }
+        
+        // Voltage and Resistance given
+        else if (isNumeric(request.tech_voltage) && isNumeric(request.tech_resistance)) {
+            if (!isNumeric(request.tech_current) && !isNumeric(request.tech_power)) {
+                let voltage = parseFloat(request.tech_voltage);
+                let resistance = parseFloat(request.tech_resistance);
+                
+                if (request.tech_unit_r == "kΩ") resistance = resistance * 1000;
+                if (request.tech_unit_v == "KV") voltage = voltage * 1000;
+                if (request.tech_unit_v == "mV") voltage = voltage * 0.001;
+                
+                let current = Math.round((voltage / resistance) * 100000) / 100000;
+                let power = Math.round((Math.pow(voltage, 2) / resistance) * 100000) / 100000;
+                
+                if (request.tech_unit_r == 'kΩ') resistance = resistance * 0.001;
+                if (request.tech_unit_p == 'kW') power = power / 1000;
+                if (request.tech_unit_v == "KV") voltage = voltage / 1000;
+                if (request.tech_unit_v == "mV") voltage = voltage / 0.001;
+                if (request.tech_unit_i == 'mA') current = current * 1000;
+                
+                param.tech_voltage = `${voltage} ${request.tech_unit_v}`;
+                param.tech_current = `${current} ${request.tech_unit_i}`;
+                param.tech_resistance = `${resistance} ${request.tech_unit_r}`;
+                param.tech_power = `${power} ${request.tech_unit_p}`;
+                
+                return param;
+            } else {
+                param.error = 'Please enter two values.';
+                return param;
+            }
+        }
+        
+        // Voltage and Power given
+        else if (isNumeric(request.tech_voltage) && isNumeric(request.tech_power)) {
+            if (!isNumeric(request.tech_current) && !isNumeric(request.tech_resistance)) {
+                let voltage = parseFloat(request.tech_voltage);
+                let power = parseFloat(request.tech_power);
+                
+                if (request.tech_unit_v == "KV") voltage = voltage * 1000;
+                if (request.tech_unit_v == "mV") voltage = voltage * 0.001;
+                if (request.tech_unit_p == 'kW') power = power * 1000;
+                
+                let current = Math.round((power / voltage) * 100000) / 100000;
+                let resistance = Math.round((voltage / current) * 100000) / 100000;
+                
+                if (request.tech_unit_r == 'kΩ') resistance = resistance * 0.001;
+                if (request.tech_unit_p == 'kW') power = power / 1000;
+                if (request.tech_unit_v == "KV") voltage = voltage / 1000;
+                if (request.tech_unit_v == "mV") voltage = voltage / 0.001;
+                if (request.tech_unit_i == 'mA') current = current * 1000;
+                
+                param.tech_voltage = `${voltage} ${request.tech_unit_v}`;
+                param.tech_current = `${current} ${request.tech_unit_i}`;
+                param.tech_resistance = `${resistance} ${request.tech_unit_r}`;
+                param.tech_power = `${power} ${request.tech_unit_p}`;
+                
+                return param;
+            } else {
+                param.error = 'Please enter two values.';
+                return param;
+            }
+        }
+        
+        // Current and Resistance given
+        else if (isNumeric(request.tech_current) && isNumeric(request.tech_resistance)) {
+            if (!isNumeric(request.tech_voltage) && !isNumeric(request.tech_power)) {
+                let resistance = parseFloat(request.tech_resistance);
+                let current = parseFloat(request.tech_current);
+                
+                if (request.tech_unit_r == "kΩ") resistance = resistance * 1000;
+                if (request.tech_unit_i == 'mA') current = current / 1000;
+                
+                let voltage = Math.round((resistance * current) * 100000) / 100000;
+                let power = Math.round((Math.pow(current, 2) * resistance) * 100000) / 100000;
+                
+                if (request.tech_unit_r == 'kΩ') resistance = resistance * 0.001;
+                if (request.tech_unit_p == 'kW') power = power / 1000;
+                if (request.tech_unit_v == "KV") voltage = voltage / 1000;
+                if (request.tech_unit_v == "mV") voltage = voltage / 0.001;
+                if (request.tech_unit_i == 'mA') current = current * 1000;
+                
+                param.tech_voltage = `${voltage} ${request.tech_unit_v}`;
+                param.tech_current = `${current} ${request.tech_unit_i}`;
+                param.tech_resistance = `${resistance} ${request.tech_unit_r}`;
+                param.tech_power = `${power} ${request.tech_unit_p}`;
+                
+                return param;
+            } else {
+                param.error = 'Please enter two values.';
+                return param;
+            }
+        }
+        
+        // Current and Power given
+        else if (isNumeric(request.tech_current) && isNumeric(request.tech_power)) {
+            if (!isNumeric(request.tech_voltage) && !isNumeric(request.tech_resistance)) {
+                let power = parseFloat(request.tech_power);
+                let current = parseFloat(request.tech_current);
+                
+                if (request.tech_unit_i == 'mA') current = current / 1000;
+                if (request.tech_unit_p == 'kW') power = power * 1000;
+                
+                let voltage = Math.round((power / current) * 100000) / 100000;
+                let resistance = Math.round((voltage / current) * 100000) / 100000;
+                
+                if (request.tech_unit_r == 'kΩ') resistance = resistance * 0.001;
+                if (request.tech_unit_p == 'kW') power = power / 1000;
+                if (request.tech_unit_v == "KV") voltage = voltage / 1000;
+                if (request.tech_unit_v == "mV") voltage = voltage / 0.001;
+                if (request.tech_unit_i == 'mA') current = current * 1000;
+                
+                param.tech_voltage = `${voltage} ${request.tech_unit_v}`;
+                param.tech_current = `${current} ${request.tech_unit_i}`;
+                param.tech_resistance = `${resistance} ${request.tech_unit_r}`;
+                param.tech_power = `${power} ${request.tech_unit_p}`;
+                
+                return param;
+            } else {
+                param.error = 'Please enter two values.';
+                return param;
+            }
+        }
+        
+        // Power and Resistance given
+        else if (isNumeric(request.tech_power) && isNumeric(request.tech_resistance)) {
+            if (!isNumeric(request.voltage) && !isNumeric(request.tech_current)) {
+                let resistance = parseFloat(request.tech_resistance);
+                let power = parseFloat(request.tech_power);
+                
+                if (request.tech_unit_r == "kΩ") resistance = resistance * 1000;
+                if (request.tech_unit_p == 'kW') power = power * 1000;
+                
+                let voltage = Math.round(Math.sqrt(resistance * power) * 100000) / 100000;
+                let current = Math.round((voltage / resistance) * 100000) / 100000;
+                
+                if (request.tech_unit_r == 'kΩ') resistance = resistance * 0.001;
+                if (request.tech_unit_p == 'kW') power = power / 1000;
+                if (request.tech_unit_v == "KV") voltage = voltage / 1000;
+                if (request.tech_unit_v == "mV") voltage = voltage / 0.001;
+                if (request.tech_unit_i == 'mA') current = current * 1000;
+                
+                param.tech_voltage = `${voltage} ${request.tech_unit_v}`;
+                param.tech_current = `${current} ${request.tech_unit_i}`;
+                param.tech_resistance = `${resistance} ${request.tech_unit_r}`;
+                param.tech_power = `${power} ${request.tech_unit_p}`;
+                
+                return param;
+            } else {
+                param.error = 'Please enter two values.';
+                return param;
+            }
+        }
+        
+        // Invalid input
+        else {
+            param.error = 'Please enter two values.';
+            return param;
+        }
+    }
+
+
+       /**
+    * getCalculationTorqueCalculator: Service Method
+    * POST: /api/calculators-lol/torque-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async  getCalculationTorqueCalculator(body) {
+        const param = {};
+        
+        // Helper function to convert angle units to radians
+        function convertToRadians(angle, unit) {
+            switch (unit) {
+                case 'deg': return angle * (Math.PI / 180);
+                case 'gon': return angle * 0.01570796;
+                case 'tr': return angle * 6.28319;
+                case 'arcmin': return angle * 0.000290888;
+                case 'arcsec': return angle * 0.00000484814;
+                case 'mrad': return angle * 0.001;
+                case 'μrad': return angle * 0.000001;
+                default: return angle;
+            }
+        }
+
+        // Helper function to convert from radians to other angle units
+        function convertFromRadians(angle, unit) {
+            switch (unit) {
+                case 'deg': return angle * (180 / Math.PI);
+                case 'gon': return angle * 63.662;
+                case 'tr': return angle * 0.159155;
+                case 'arcmin': return angle * 3437.75;
+                case 'arcsec': return angle * 206265;
+                case 'mrad': return angle / 0.001;
+                case 'μrad': return angle * 1000000;
+                default: return angle;
+            }
+        }
+
+        if (body.tech_to == 1) {
+            // Mechanical Torque Calculation
+            if (!isNaN(body.tech_distance) && !isNaN(body.tech_force) && !isNaN(body.tech_angle) && (!body.tech_torque || body.tech_torque == '')) {
+                // Calculate torque from distance, force, angle
+                let dis = parseFloat(body.tech_distance);
+                switch (body.tech_dis_u) {
+                    case 'mm': dis /= 1000; break;
+                    case 'cm': dis /= 100; break;
+                    case 'km': dis *= 1000; break;
+                    case 'ft': dis *= 0.3048; break;
+                    case 'yd': dis *= 0.9144; break;
+                    case 'in': dis /= 39.37; break;
+                }
+
+                let force = parseFloat(body.tech_force);
+                switch (body.tech_for_u) {
+                    case 'kN': force *= 1000; break;
+                    case 'MN': force *= 1000000; break;
+                    case 'GN': force *= 1000000000; break;
+                    case 'TN': force *= 1000000000000; break;
+                }
+
+                let angle = convertToRadians(parseFloat(body.tech_angle), body.tech_ang_u);
+                let tor = dis * force * Math.sin(angle);
+
+                switch (body.tech_tor_u) {
+                    case 'kg-cm': tor = Math.round(tor * 10.19716 * 100000) / 100000; break;
+                    case 'ft-lb': tor = Math.round(tor * 0.737562 * 100000) / 100000; break;
+                    default: tor = Math.round(tor * 100000) / 100000;
+                }
+
+                param.tech_dis = (isNaN(body.tech_distance) ? NaN : body.tech_distance) + ' ' + (body.tech_dis_u ?? '');
+                param.tech_force = (isNaN(body.tech_force) ? NaN : body.tech_force) + ' ' + (body.tech_for_u ?? '');
+                param.tech_angle = (isNaN(body.tech_angle) ? NaN : body.tech_angle) + ' ' + (body.tech_ang_u ?? '');
+                param.tech_tor = (isNaN(tor) ? NaN : tor) + ' ' + (body.tech_tor_u ?? '');
+
+                return param;
+
+            } else if (!isNaN(body.tech_torque) && !isNaN(body.tech_force) && !isNaN(body.tech_angle) && (!body.tech_distance || body.tech_distance == '')) {
+                // Calculate distance from torque, force, angle
+                let tor = parseFloat(body.tech_torque);
+                switch (body.tech_tor_u) {
+                    case 'kg-cm': tor /= 10.19716; break;
+                    case 'ft-lb': tor /= 0.737562; break;
+                }
+
+                let force = parseFloat(body.tech_force);
+                switch (body.tech_for_u) {
+                    case 'kN': force *= 1000; break;
+                    case 'MN': force *= 1000000; break;
+                    case 'GN': force *= 1000000000; break;
+                    case 'TN': force *= 1000000000000; break;
+                }
+
+                let angle = convertToRadians(parseFloat(body.tech_angle), body.tech_ang_u);
+                let dis = tor / (force * Math.sin(angle));
+
+                switch (body.tech_dis_u) {
+                    case 'mm': dis = Math.round(dis * 1000 * 100000) / 100000; break;
+                    case 'cm': dis = Math.round(dis * 100 * 100000) / 100000; break;
+                    case 'km': dis = Math.round(dis / 1000 * 100000) / 100000; break;
+                    case 'ft': dis = Math.round(dis / 0.3048 * 100000) / 100000; break;
+                    case 'yd': dis = Math.round(dis / 0.9144 * 100000) / 100000; break;
+                    case 'in': dis = Math.round(dis * 39.37 * 100000) / 100000; break;
+                    default: dis = Math.round(dis * 100000) / 100000;
+                }
+
+              param.tech_tor = (isNaN(body.tech_torque) ? NaN : body.tech_torque) + ' ' + (body.tech_tor_u ?? '');
+              param.tech_force = (isNaN(body.tech_force) ? NaN : body.tech_force) + ' ' + (body.tech_for_u ?? '');
+              param.tech_angle = (isNaN(body.tech_angle) ? NaN : body.tech_angle) + ' ' + (body.tech_ang_u ?? '');
+              param.tech_dis = (isNaN(dis) ? NaN : dis) + ' ' + (body.tech_dis_u ?? '');
+
+                return param;
+
+            } else if (!isNaN(body.tech_distance) && !isNaN(body.tech_torque) && !isNaN(body.tech_angle) && (!body.tech_force || body.tech_force == '')) {
+                // Calculate force from distance, torque, angle
+                let dis = parseFloat(body.tech_distance);
+                switch (body.dis_u) {
+                    case 'mm': dis /= 1000; break;
+                    case 'cm': dis /= 100; break;
+                    case 'km': dis *= 1000; break;
+                    case 'ft': dis *= 0.3048; break;
+                    case 'yd': dis *= 0.9144; break;
+                    case 'in': dis /= 39.37; break;
+                }
+
+                let tor = parseFloat(body.tech_torque);
+                switch (body.tech_tor_u) {
+                    case 'kg-cm': tor /= 10.19716; break;
+                    case 'ft-lb': tor /= 0.737562; break;
+                }
+
+                let angle = convertToRadians(parseFloat(body.tech_angle), body.tech_ang_u);
+                let force = tor / (dis * Math.sin(angle));
+
+                switch (body.tech_for_u) {
+                    case 'kN': force = Math.round(force / 1000 * 100000) / 100000; break;
+                    case 'MN': force = Math.round(force / 1000000 * 10000000) / 10000000; break;
+                    case 'GN': force = Math.round(force / 1000000000 * 10000000000) / 10000000000; break;
+                    case 'TN': force = Math.round(force / 1000000000000 * 100000000000000) / 100000000000000; break;
+                    default: force = Math.round(force * 100000) / 100000;
+                }
+
+              param.tech_dis = (isNaN(body.tech_distance) ? "NaN" : body.tech_distance) + ' ' + (body.tech_dis_u ?? '');
+              param.tech_force = (isNaN(force) ? "NaN" : force) + ' ' + (body.tech_for_u ?? '');
+              param.tech_angle = (isNaN(body.tech_angle) ? "NaN" : body.tech_angle) + ' ' + (body.tech_ang_u ?? '');
+              param.tech_tor = (isNaN(body.tech_torque) ? "NaN" : body.tech_torque) + ' ' + (body.tech_tor_u ?? '');
+
+                return param;
+
+            } else if (!isNaN(body.tech_distance) && !isNaN(body.tech_torque) && !isNaN(body.tech_force) && (!body.tech_angle || body.tech_angle == '')) {
+                // Calculate angle from distance, torque, force
+                let dis = parseFloat(body.tech_distance);
+                switch (body.tech_dis_u) {
+                    case 'mm': dis /= 1000; break;
+                    case 'cm': dis /= 100; break;
+                    case 'km': dis *= 1000; break;
+                    case 'ft': dis *= 0.3048; break;
+                    case 'yd': dis *= 0.9144; break;
+                    case 'in': dis /= 39.37; break;
+                }
+
+                let tor = parseFloat(body.tech_torque);
+                switch (body.tech_tor_u) {
+                    case 'kg-cm': tor /= 10.19716; break;
+                    case 'ft-lb': tor /= 0.737562; break;
+                }
+
+                let force = parseFloat(body.tech_force);
+                switch (body.tech_for_u) {
+                    case 'kN': force *= 1000; break;
+                    case 'MN': force *= 1000000; break;
+                    case 'GN': force *= 1000000000; break;
+                    case 'TN': force *= 1000000000000; break;
+                }
+
+                let angle = Math.asin(tor / (dis * force));
+                angle = convertFromRadians(angle, body.tech_ang_u);
+                angle = Math.round(angle * 100000) / 100000;
+
+             param.tech_dis = (isNaN(body.tech_distance) ? "NaN" : body.tech_distance) + ' ' + (body.tech_dis_u ?? '');
+              param.tech_force = (isNaN(body.tech_force) ? "NaN" : body.tech_force) + ' ' + (body.tech_for_u ?? '');
+              param.tech_angle = (isNaN(angle) ? "NaN" : angle) + ' ' + (body.tech_ang_u ?? '');
+              param.tech_tor = (isNaN(body.tech_torque) ? "NaN" : body.tech_torque) + ' ' + (body.tech_tor_u ?? '');
+
+                return param;
+
+            } else {
+                param.error = 'Please! enter any three values';
+                return param;
+            }
+        } else if (body.tech_to == 2) {
+            // Magnetic Torque Calculation
+            const getCurrentMultiplier = (unit) => {
+                switch (unit) {
+                    case 'A': return { multiplier: 1, unit: 'A' };
+                    case 'mA': return { multiplier: 0.001, unit: 'mA' };
+                    case 'kA': return { multiplier: 1000, unit: 'kA' };
+                    case 'μA': return { multiplier: 0.000001, unit: 'μA' };
+                    case 'boit': return { multiplier: 10, unit: 'boi' };
+                    default: return { multiplier: 1, unit: 'A' };
+                }
+            };
+
+            const getAreaMultiplier = (unit) => {
+                switch (unit) {
+                    case 'm²': return { multiplier: 1, unit: 'm²' };
+                    case 'km²': return { multiplier: 1000000, unit: 'km²' };
+                    case 'Mile²': return { multiplier: 2589988.1103, unit: 'Mile²' };
+                    case 'ac': return { multiplier: 4046.8564224, unit: 'ac' };
+                    case 'yd²': return { multiplier: 0.83612735998838, unit: 'yd²' };
+                    case 'ft²': return { multiplier: 0.0929030399987, unit: 'ft²' };
+                    case 'in²': return { multiplier: 0.000645156, unit: 'in²' };
+                    case 'cm²': return { multiplier: 0.0001, unit: 'cm²' };
+                    case 'mm²': return { multiplier: 0.000001, unit: 'mm²' };
+                    default: return { multiplier: 1, unit: 'm²' };
+                }
+            };
+
+            const getMagneticMultiplier = (unit) => {
+                switch (unit) {
+                    case 'T': return { multiplier: 1, unit: 'T' };
+                    case 'mT': return { multiplier: 0.001, unit: 'mT' };
+                    case 'μT': return { multiplier: 0.000001, unit: 'μT' };
+                    default: return { multiplier: 1, unit: 'T' };
+                }
+            };
+
+            // Calculate torque from loop, angle, current, area, mag
+            if (!isNaN(body.tech_loop) && !isNaN(body.tech_angle_c) && !isNaN(body.tech_current) && !isNaN(body.tech_area) && !isNaN(body.tech_mag) && (!body.tech_tor || body.tech_tor == '')) {
+                const angle = convertToRadians(parseFloat(body.tech_angle_c), body.tech_angc_u);
+                const currentInfo = getCurrentMultiplier(body.tech_cur_u);
+                const areaInfo = getAreaMultiplier(body.tech_area_u);
+                const magInfo = getMagneticMultiplier(body.tech_mag_u);
+
+                const loop = parseFloat(body.tech_loop);
+                const current = parseFloat(body.tech_current) * currentInfo.multiplier;
+                const area = parseFloat(body.tech_area) * areaInfo.multiplier;
+                const mag = parseFloat(body.tech_mag) * magInfo.multiplier;
+
+                let tor = loop * current * mag * area * Math.sin(angle);
+                // console.log(loop)
+                switch (body.tech_torc_u) {
+                    case 'kg-cm': tor = Math.round(tor * 10.19716 * 100000) / 100000; break;
+                    case 'ft-lb': tor = Math.round(tor * 0.737562 * 100000) / 100000; break;
+                    default: tor = Math.round(tor * 100000) / 100000;
+                }
+
+                param.tech_tor = (isNaN(tor) ? "NaN" : tor) + ' ' + (body.tech_torc_u ?? '');
+                param.tech_loop = (isNaN(loop) ? "NaN" : loop);
+                param.tech_angle = (isNaN(body.tech_angle_c) ? "NaN" : body.tech_angle_c) + ' ' + (body.tech_angc_u ?? '');
+                param.tech_area = (isNaN(body.tech_area) ? "NaN" : body.tech_area) + ' ' + (areaInfo.unit ?? '');
+                param.tech_mag = (isNaN(body.mag) ? "NaN" : body.mag) + ' ' + (magInfo.unit ?? '');
+                param.tech_current = (isNaN(body.tech_current) ? "NaN" : body.tech_current) + ' ' + (currentInfo.unit ?? '');
+
+                return param;
+
+            } else if (!isNaN(body.tech_tor) && !isNaN(body.tech_angle_c) && !isNaN(body.tech_current) && !isNaN(body.tech_area) && !isNaN(body.tech_mag) && (!body.tech_loop || body.tech_loop == '')) {
+                // Calculate loop from torque, angle, current, area, mag
+                const angle = convertToRadians(parseFloat(body.tech_angle_c), body.tech_angc_u);
+                let tor = parseFloat(body.tech_tor);
+                switch (body.tech_torc_u) {
+                    case 'kg-cm': tor /= 10.19716; break;
+                    case 'ft-lb': tor /= 0.737562; break;
+                }
+
+                const currentInfo = getCurrentMultiplier(body.tech_cur_u);
+                const areaInfo = getAreaMultiplier(body.tech_area_u);
+                const magInfo = getMagneticMultiplier(body.tech_mag_u);
+
+                const current = parseFloat(body.tech_current) * currentInfo.multiplier;
+                const area = parseFloat(body.tech_area) * areaInfo.multiplier;
+                const mag = parseFloat(body.tech_mag) * magInfo.multiplier;
+
+                const loop = tor / (current * mag * area * Math.sin(angle));
+                const roundedLoop = Math.round(loop * 1000000) / 1000000;
+
+                param.tech_tor = (isNaN(body.tech_tor) ? "NaN" : body.tech_tor) + ' ' + (body.tech_torc_u ?? '');
+                param.tech_loop = (isNaN(roundedLoop) ? "NaN" : roundedLoop);
+                param.tech_angle = (isNaN(body.tech_angle_c) ? "NaN" : body.tech_angle_c) + ' ' + (body.tech_angc_u ?? '');
+                param.tech_area = (isNaN(body.tech_area) ? "NaN" : body.tech_area) + ' ' + (areaInfo.unit ?? '');
+                param.tech_mag = (isNaN(body.tech_mag) ? "NaN" : body.tech_mag) + ' ' + (magInfo.unit ?? '');
+                param.tech_current = (isNaN(body.tech_current) ? "NaN" : body.tech_current) + ' ' + (currentInfo.unit ?? '');
+
+                return param;
+
+            } else if (!isNaN(body.tech_loop) && !isNaN(body.tech_angle_c) && !isNaN(body.tech_tor) && !isNaN(body.tech_area) && !isNaN(body.tech_mag) && (!body.tech_current || body.tech_current == '')) {
+                // Calculate current from loop, angle, torque, area, mag
+                const angle = convertToRadians(parseFloat(body.tech_angle_c), body.tech_angc_u);
+                const loop = parseFloat(body.tech_loop);
+                let tor = parseFloat(body.tech_tor);
+                switch (body.tech_torc_u) {
+                    case 'kg-cm': tor /= 10.19716; break;
+                    case 'ft-lb': tor /= 0.737562; break;
+                }
+
+                const areaInfo = getAreaMultiplier(body.tech_area_u);
+                const magInfo = getMagneticMultiplier(body.tech_mag_u);
+                const currentInfo = getCurrentMultiplier(body.tech_cur_u);
+
+                const area = parseFloat(body.tech_area) * areaInfo.multiplier;
+                const mag = parseFloat(body.tech_mag) * magInfo.multiplier;
+
+                let current = tor / (loop * mag * area * Math.sin(angle));
+                current = current / currentInfo.multiplier;
+                current = Math.round(current * 10000000) / 10000000;
+
+                param.tech_tor = (isNaN(body.tech_tor) ? "NaN" : body.tech_tor) + ' ' + (body.tech_torc_u ?? '');
+                param.tech_loop = (isNaN(loop) ? "NaN" : loop);
+                param.tech_angle = (isNaN(body.tech_angle_c) ? "NaN" : body.tech_angle_c) + ' ' + (body.tech_angc_u ?? '');
+                param.tech_area = (isNaN(body.tech_area) ? "NaN" : body.tech_area) + ' ' + (areaInfo.unit ?? '');
+                param.tech_mag = (isNaN(body.tech_mag) ? "NaN" : body.tech_mag) + ' ' + (magInfo.unit ?? '');
+                param.tech_current = (isNaN(current) ? "NaN" : current) + ' ' + (currentInfo.unit ?? '');
+
+                return param;
+
+            } else if (!isNaN(body.tech_loop) && !isNaN(body.tech_angle_c) && !isNaN(body.tech_current) && !isNaN(body.tech_tor) && !isNaN(body.tech_mag) && (!body.tech_area || body.tech_area == '')) {
+                // Calculate area from loop, angle, current, torque, mag
+                const angle = convertToRadians(parseFloat(body.tech_angle_c), body.tech_angc_u);
+                const loop = parseFloat(body.tech_loop);
+                const currentInfo = getCurrentMultiplier(body.tech_cur_u);
+                let tor = parseFloat(body.tech_tor);
+                switch (body.tech_torc_u) {
+                    case 'kg-cm': tor /= 10.19716; break;
+                    case 'ft-lb': tor /= 0.737562; break;
+                }
+
+                const magInfo = getMagneticMultiplier(body.tech_mag_u);
+                const areaInfo = getAreaMultiplier(body.tech_area_u);
+
+                const current = parseFloat(body.tech_current) * currentInfo.multiplier;
+                const mag = parseFloat(body.tech_mag) * magInfo.multiplier;
+
+                let area = tor / (loop * current * mag * Math.sin(angle));
+                area = area / areaInfo.multiplier;
+                area = Math.round(area * 10000000) / 10000000;
+
+                param.tech_tor = (isNaN(body.tech_tor) ? "NaN" : body.tech_tor) + ' ' + (body.tech_torc_u ?? '');
+                param.tech_loop = (isNaN(loop) ? "NaN" : loop);
+                param.tech_angle = (isNaN(body.tech_angle_c) ? "NaN" : body.tech_angle_c) + ' ' + (body.tech_angc_u ?? '');
+                param.tech_area = (isNaN(area) ? "NaN" : area) + ' ' + (areaInfo.unit ?? '');
+                param.tech_mag = (isNaN(body.tech_mag) ? "NaN" : body.tech_mag) + ' ' + (magInfo.unit ?? '');
+                param.tech_current = (isNaN(body.tech_current) ? "NaN" : body.tech_current) + ' ' + (currentInfo.unit ?? '');
+
+                return param;
+
+            } else if (!isNaN(body.tech_loop) && !isNaN(body.tech_angle_c) && !isNaN(body.tech_current) && !isNaN(body.tech_area) && !isNaN(body.tech_tor) && (!body.tech_mag || body.tech_mag == '')) {
+                // Calculate mag from loop, angle, current, area, torque
+                const angle = convertToRadians(parseFloat(body.tech_angle_c), body.tech_angc_u);
+                const loop = parseFloat(body.tech_loop);
+                let tor = parseFloat(body.tech_tor);
+                switch (body.tech_torc_u) {
+                    case 'kg-cm': tor /= 10.19716; break;
+                    case 'ft-lb': tor /= 0.737562; break;
+                }
+
+                const currentInfo = getCurrentMultiplier(body.tech_cur_u);
+                const areaInfo = getAreaMultiplier(body.tech_area_u);
+                const magInfo = getMagneticMultiplier(body.tech_mag_u);
+                const current = parseFloat(body.tech_current) * currentInfo.multiplier;
+                const area = parseFloat(body.tech_area) * areaInfo.multiplier;
+
+                let mag = tor / (loop * current * area * Math.sin(angle));
+                mag = mag / magInfo.multiplier;
+              param.tech_tor = (isNaN(body.tech_tor) ? "NaN" : body.tech_tor) + ' ' + (body.tech_torc_u ?? '');
+                param.tech_loop = (isNaN(loop) ? "NaN" : loop);
+                param.tech_angle = (isNaN(body.tech_angle_c) ? "NaN" : body.tech_angle_c) + ' ' + (body.tech_angc_u ?? '');
+                param.tech_area = (isNaN(body.tech_area) ? "NaN" : body.tech_area) + ' ' + (areaInfo.unit ?? '');
+                param.tech_mag = (isNaN(mag) ? "NaN" : mag) + ' ' + (magInfo.unit ?? '');
+                param.tech_current = (isNaN(body.tech_current) ? "NaN" : body.tech_current) + ' ' + (currentInfo.unit ?? '');
+
+                return param;
+
+            } else if (!isNaN(body.tech_loop) && !isNaN(body.tech_tor) && !isNaN(body.tech_current) && !isNaN(body.tech_area) && !isNaN(body.tech_mag) && (!body.tech_angle_c || body.tech_angle_c == '')) {
+                // Calculate angle from loop, torque, current, area, mag
+                let tor = parseFloat(body.tech_tor);
+                switch (body.tech_torc_u) {
+                    case 'kg-cm': tor /= 10.19716; break;
+                    case 'ft-lb': tor /= 0.737562; break;
+                }
+
+                const loop = parseFloat(body.tech_loop);
+                const currentInfo = getCurrentMultiplier(body.tech_cur_u);
+                const areaInfo = getAreaMultiplier(body.tech_area_u);
+                const magInfo = getMagneticMultiplier(body.tech_mag_u);
+
+                const current = parseFloat(body.tech_current) * currentInfo.multiplier;
+                const area = parseFloat(body.tech_area) * areaInfo.multiplier;
+                const mag = parseFloat(body.tech_mag) * magInfo.multiplier;
+
+                let angle = Math.asin(tor / (loop * current * mag * area));
+                angle = convertFromRadians(angle, body.tech_angc_u);
+                angle = Math.round(angle * 100000) / 100000;
+
+                param.tech_tor = (isNaN(body.tech_tor) ? "NaN" : body.tech_tor) + ' ' + (body.tech_torc_u ?? '');
+                param.tech_loop = (isNaN(loop) ? "NaN" : loop);
+                param.tech_angle = (isNaN(angle) ? "NaN" : angle) + ' ' + (body.tech_angc_u ?? '');
+                param.tech_area = (isNaN(body.tech_area) ? "NaN" : body.tech_area) + ' ' + (areaInfo.unit ?? '');
+                param.tech_mag = (isNaN(body.tech_mag) ? "NaN" : body.tech_mag) + ' ' + (magInfo.unit ?? '');
+                param.tech_current = (isNaN(body.tech_current) ? "NaN" : body.tech_current) + ' ' + (currentInfo.unit ?? '');
+
+                return param;
+
+            } else {
+                param.error = 'Please! enter any five values';
+                return param;
+            }
+        } else if (body.tech_to == 3) {
+            // Vector Cross Product Calculation
+            if (!isNaN(body.tech_ax) && !isNaN(body.tech_ay) && !isNaN(body.tech_az) && !isNaN(body.tech_bx) && !isNaN(body.tech_by) && !isNaN(body.tech_bz)) {
+                const ax = parseFloat(body.tech_ax);
+                const ay = parseFloat(body.tech_ay);
+                const az = parseFloat(body.tech_az);
+                const bx = parseFloat(body.tech_bx);
+                const by = parseFloat(body.tech_by);
+                const bz = parseFloat(body.tech_bz);
+
+                const ans_a1 = (ay * bz) - (by * az);
+                const ans_a2 = ((ax * bz) - (bx * az)) * (-1);
+                const ans_a3 = (ax * by) - (bx * ay);
+
+                const ans = ans_a1 + 'i ' + (ans_a2 < 0 ? ans_a2 : '+' + ans_a2) + 'j ' + (ans_a3 < 0 ? ans_a3 : '+' + ans_a3) + 'k';
+                
+                param.tech_ans = ans;
+                return param;
+            } else {
+                param.error = 'Please! enter Distance Vector & Force Vector';
+                return param;
+            }
+        } else {
+            param.error = 'Invalid calculation type';
+            return param;
+        }
+    }
+
+
+        /**
+    * getCalculationHorsepowerCalculator: Service Method
+    * POST: /api/calculators-lol/horsepower-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async getCalculationHorsepowerCalculator(body) {
+    const param = {};
+    
+        if (body.tech_method == 1) {
+            if (!isNaN(body.tech_weight) && !isNaN(body.tech_time)) {
+                let weight = parseFloat(body.tech_weight);
+                if (body.tech_unit_w == 'kg') {
+                    weight = weight * 2.2046;
+                }
+                
+                let time = parseFloat(body.tech_time);
+                if (body.tech_unit_t == 'min') {
+                    time = time * 60;
+                } else if (body.tech_unit_t == 'h') {
+                    time = time * 60 * 60;
+                }
+                
+                const hp = weight / Math.pow((time / 5.825), 3);
+                const value_exp = hp.toString().split(".");
+                const hpm = parseFloat(value_exp[0] + '.' + (value_exp[1] ? value_exp[1].substring(0, 1) : '0'));
+                const hpmet = Math.round(hpm * 1.01387 * 10) / 10;
+                const hpkw = Math.round(hpm * 0.746 * 10) / 10;
+                const hpw = Math.round(hpm * 746 * 10) / 10;
+                
+                 param.tech_hpm = isNaN(hpm) ? "NaN" : hpm;
+                param.tech_hpmet = isNaN(hpmet) ? "NaN" : hpmet;
+                param.tech_hpkw = isNaN(hpkw) ? "NaN" : hpkw;
+                param.tech_hpw = isNaN(hpw) ? "NaN" : hpw;
+
+                return param;
+            } else {
+                param.error = 'Please! fill all fields';
+                return param;
+            }
+        } else if (body.tech_method == 2) {
+            if (!isNaN(body.tech_weight) && !isNaN(body.tech_speed)) {
+                let weight = parseFloat(body.tech_weight);
+                if (body.tech_unit_w == 'kg') {
+                    weight = weight * 2.2046;
+                }
+                
+                let speed = parseFloat(body.tech_speed);
+                if (body.tech_unit_s == 'km/h') {
+                    speed = speed / 0.621371;
+                } else if (body.tech_unit_s == 'km/s') {
+                    speed = speed * 2236.94;
+                } else if (body.tech_unit_s == 'm/s') {
+                    speed = speed * 2.237;
+                }
+                
+                const hp = weight * Math.pow((speed / 234), 3);
+                const value_exp = hp.toString().split(".");
+                const hpm = parseFloat(value_exp[0] + '.' + (value_exp[1] ? value_exp[1].substring(0, 1) : '0'));
+                const hpmet = Math.round(hpm * 1.01387 * 10) / 10;
+                const hpkw = Math.round(hpm * 0.746 * 10) / 10;
+                const hpw = Math.round(hpm * 746 * 10) / 10;
+                
+                param.tech_hpm = isNaN(hpm) ? "NaN" : hpm;
+                param.tech_hpmet = isNaN(hpmet) ? "NaN" : hpmet;
+                param.tech_hpkw = isNaN(hpkw) ? "NaN" : hpkw;
+                param.tech_hpw = isNaN(hpw) ? "NaN" : hpw;
+
+                return param;
+            } else {
+                param.error = 'Please! fill all fields';
+                return param;
+            }
+        } else if (body.tech_method == 4) {
+            if (!isNaN(body.tech_force) && !isNaN(body.tech_distance) && !isNaN(body.tech_btime)) {
+                let force = parseFloat(body.tech_force);
+                let dis = parseFloat(body.tech_distance);
+                const time = parseFloat(body.tech_btime);
+                
+                if (body.tech_dis_u == 'mm') {
+                    dis = dis / 1000;
+                } else if (body.tech_dis_u == 'cm') {
+                    dis = dis / 100;
+                } else if (body.tech_dis_u == 'km') {
+                    dis = dis * 1000;
+                } else if (body.tech_dis_u == 'ft') {
+                    dis = dis * 0.3048;
+                } else if (body.tech_dis_u == 'yd') {
+                    dis = dis * 0.9144;
+                }
+                
+                if (body.tech_for_u == 'kN') {
+                    force = force * 1000;
+                } else if (body.tech_for_u == 'MN') {
+                    force = force * 1000000;
+                } else if (body.tech_for_u == 'GN') {
+                    force = force * 1000000000;
+                } else if (body.tech_for_u == 'TN') {
+                    force = force * 1000000000000;
+                }
+                
+                const hp = force * (dis / time);
+                param.tech_hp = isNaN(hp) ? "NaN" : hp;
+                return param;
+            } else {
+                param.error = 'Please! fill all fields';
+                return param;
+            }
+        } else if (body.tech_method == 3) {
+            if (body.tech_to == 1) {
+                if (!isNaN(body.tech_rpm) && !isNaN(body.tech_tor)) {
+                    const rpm = parseFloat(body.tech_rpm);
+                    const tor = parseFloat(body.tech_tor);
+                    const hp = (rpm * tor) / 5252;
+                    const value_exp = hp.toString().split(".");
+
+                    let hpm;
+                    if (value_exp[1]) {
+                        hpm = parseFloat(value_exp[0] + '.' + value_exp[1].substring(0, 2));
+                    } else {
+                        hpm = parseFloat(value_exp[0]);
+                    }
+
+                    const hpmet = Math.round(hpm * 1.01387 * 10) / 10;
+                    const hpkw = Math.round(hpm * 0.746 * 10) / 10;
+                    const hpw = Math.round(hpm * 746 * 10) / 10;
+                    
+                    param.tech_hpm = isNaN(hpm) ? "NaN" : hpm;
+                    param.tech_hpmet = isNaN(hpmet) ? "NaN" : hpmet;
+                    param.tech_hpkw = isNaN(hpkw) ? "NaN" : hpkw;
+                    param.tech_hpw = isNaN(hpw) ? "NaN" : hpw;
+
+                    return param;
+                } else {
+                    param.error = 'Please! fill all fields';
+                    return param;
+                }
+            } else if (body.tech_to == 2) {
+                if (!isNaN(body.rpm) && !isNaN(body.tech_hors)) {
+                    const rpm = parseFloat(body.tech_rpm);
+                    const hp = parseFloat(body.tech_hors);
+                    const tor = Math.round((hp * 5252) / rpm * 10000) / 10000;
+                   param.tech_tor = isNaN(tor) ? "NaN" : tor.toFixed(4);
+                    return param;
+                } else {
+                    param.error = 'Please! fill all fields';
+                    return param;
+                }
+            }
+        }
+    }
+
+         /**
+    * getCalculationKinematicsCalculator: Service Method
+    * POST: /api/calculators-lol/kinematics-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async getCalculationKinematicsCalculator(body) {
+        const param = {};
+        let check = false;
+        let iv, fv, time, a, dis;
+        let ivDisplay, fvDisplay, timeDisplay, aDisplay, disDisplay;
+
+        // Helper functions
+        const isNumeric = (value) => !isNaN(parseFloat(value)) && isFinite(value);
+        const isEmpty = (value) => value == undefined || value == null || value == '';
+        const round = (value, decimals) => Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+
+        // Convert velocity to m/s
+        const convertVelocityToMs = (value, unit) => {
+            let result = parseFloat(value);
+            switch(unit) {
+                case 'ft/s': return result / 3.281;
+                case 'km/h': return result / 3.6;
+                case 'km/s': return result * 1000;
+                case 'mi/s': return result * 1609.35;
+                case 'mph': return result / 2.237;
+                default: return result;
+            }
+        };
+
+        // Convert acceleration to m/s²
+        const convertAccelerationToMs2 = (value, unit) => {
+            let result = parseFloat(value);
+            if (unit == 'ft/s²') return result / 3.2808399;
+            return result;
+        };
+
+        // Convert time to seconds
+        const convertTimeToSeconds = (value, unit) => {
+            let result = parseFloat(value);
+            switch(unit) {
+                case 'min': return result * 60;
+                case 'h': return result * 60 * 60;
+                default: return result;
+            }
+        };
+
+        // Convert distance to meters
+        const convertDistanceToMeters = (value, unit) => {
+            let result = parseFloat(value);
+            switch(unit) {
+                case 'cm': return result / 100;
+                case 'in': return result / 39.37;
+                case 'ft': return result / 3.281;
+                case 'km': return result / 1000;
+                case 'mi': return result * 1609.35;
+                case 'yd': return result / 1.094;
+                default: return result;
+            }
+        };
+
+        // Format velocity for display
+        const formatVelocity = (value, unit) => {
+            let result = parseFloat(value);
+            switch(unit) {
+                case 'ft/s': return round(result * 3.281, 4);
+                case 'km/h': return round(result * 3.6, 4);
+                case 'km/s': return round(result / 1000, 4);
+                case 'mi/s': return round(result / 1609.35, 4);
+                case 'mph': return round(result * 2.237, 4);
+                default: return round(result, 4);
+            }
+        };
+
+        // Format acceleration for display
+        const formatAcceleration = (value, unit) => {
+            let result = parseFloat(value);
+            if (unit == 'ft/s²') return round(result * 3.2808399, 4);
+            return round(result, 4);
+        };
+
+        // Format distance for display
+        const formatDistance = (value, unit) => {
+            let result = parseFloat(value);
+            switch(unit) {
+                case 'cm': return round(result * 100, 4);
+                case 'in': return round(result * 39.37, 4);
+                case 'ft': return round(result * 3.281, 4);
+                case 'km': return round(result * 1000, 4);
+                case 'mi': return round(result / 1609.35, 4);
+                case 'yd': return round(result * 1.094, 4);
+                default: return round(result, 4);
+            }
+        };
+
+        // Format time for display
+        const formatTime = (value, unit) => {
+            let result = parseFloat(value);
+            switch(unit) {
+                case 'min': return round(result / 60, 4);
+                case 'h': return round(result / 60 / 60, 4);
+                default: return round(result, 4);
+            }
+        };
+
+        // Case 1: iv, fv, ct provided
+        if (isNumeric(body.tech_iv) && isNumeric(body.tech_fv) && isNumeric(body.tech_ct)) {
+            if (!isEmpty(body.tech_cac) || body.tech_cac == '0' || !isEmpty(body.tech_cdis) || body.tech_cdis == '0') {
+                param.error = 'Please enter any three values';
+                return param;
+            } else {
+                check = true;
+                iv = convertVelocityToMs(body.tech_iv, body.tech_ivU);
+                fv = convertVelocityToMs(body.tech_fv, body.tech_fvU);
+                time = convertTimeToSeconds(body.tech_ct, body.tech_ctU);
+                
+                a = (fv - iv) / time;
+                dis = (iv * time) + (0.5 * a * Math.pow(time, 2));
+                
+                ivDisplay = body.tech_iv + ' ' + body.tech_ivU;
+                fvDisplay = body.tech_fv + ' ' + body.tech_fvU;
+                timeDisplay = body.tech_ct + ' ' + body.tech_ctU;
+                aDisplay = formatAcceleration(a, body.tech_cacU) + ' ' + body.tech_cacU;
+                disDisplay = formatDistance(dis, body.tech_cdisU) + ' ' + body.tech_cdisU;
+            }
+        } 
+        // Case 2: iv, fv, cac provided
+        else if (isNumeric(body.tech_iv) && isNumeric(body.tech_fv) && isNumeric(body.tech_cac)) {
+            if (!isEmpty(body.tech_ct) || body.tech_ct == '0' || !isEmpty(body.tech_cdis) || body.tech_cdis == '0') {
+                param.error = 'Please fill all fields.';
+                return param;
+            } else {
+                check = true;
+                iv = convertVelocityToMs(body.tech_iv, body.tech_ivU);
+                fv = convertVelocityToMs(body.tech_fv, body.tech_fvU);
+                a = convertAccelerationToMs2(body.tech_cac, body.tech_cacU);
+                
+                time = (fv - iv) / a;
+                dis = (iv * time) + (0.5 * a * Math.pow(time, 2));
+                
+                ivDisplay = body.tech_iv + ' ' + body.tech_ivU;
+                fvDisplay = body.tech_fv + ' ' + body.tech_fvU;
+                aDisplay = body.tech_cac + ' ' + body.tech_cacU;
+                timeDisplay = formatTime(time, body.tech_ctU) + ' ' + body.tech_ctU;
+                disDisplay = formatDistance(dis, body.tech_cdisU) + ' ' + body.tech_cdisU;
+            }
+        }
+        // Case 3: ct, fv, cac provided
+        else if (isNumeric(body.tech_ct) && isNumeric(body.tech_fv) && isNumeric(body.tech_cac)) {
+            if (!isEmpty(body.tech_iv) || body.tech_iv == '0' || !isEmpty(body.tech_cdis) || body.tech_cdis == '0') {
+                param.error = 'Please fill all fields.';
+                return param;
+            } else {
+                check = true;
+                time = convertTimeToSeconds(body.tech_ct, body.tech_ctU);
+                fv = convertVelocityToMs(body.tech_fv, body.tech_fvU);
+                a = convertAccelerationToMs2(body.tech_cac, body.tech_cacU);
+                
+                iv = fv - (a * time);
+                dis = (iv * time) + (0.5 * a * Math.pow(time, 2));
+                
+                timeDisplay = body.tech_ct + ' ' + body.tech_ctU;
+                fvDisplay = body.tech_fv + ' ' + body.tech_fvU;
+                aDisplay = body.tech_cac + ' ' + body.tech_cacU;
+                ivDisplay = formatVelocity(iv, body.tech_ivU) + ' ' + body.tech_ivU;
+                disDisplay = formatDistance(dis, body.tech_cdisU) + ' ' + body.tech_cdisU;
+            }
+        }
+        // Case 4: ct, iv, cac provided
+        else if (isNumeric(body.tech_ct) && isNumeric(body.tech_iv) && isNumeric(body.tech_cac)) {
+            if (!isEmpty(body.tech_fv) || body.tech_fv == '0' || !isEmpty(body.tech_cdis) || body.tech_cdis == '0') {
+                param.error = 'Please fill all fields.';
+                return param;
+            } else {
+                check = true;
+                time = convertTimeToSeconds(body.tech_ct, body.tech_ctU);
+                iv = convertVelocityToMs(body.tech_iv, body.tech_ivU);
+                a = convertAccelerationToMs2(body.tech_cac, body.tech_cacU);
+                
+                fv = (a * time) + iv;
+                dis = (iv * time) + (0.5 * a * Math.pow(time, 2));
+                
+                ivDisplay = body.tech_iv + ' ' + body.tech_ivU;
+                timeDisplay = body.tech_ct + ' ' + body.tech_ctU;
+                aDisplay = body.tech_cac + ' ' + body.tech_cacU;
+                fvDisplay = formatVelocity(fv, body.tech_fvU) + ' ' + body.tech_fvU;
+                disDisplay = formatDistance(dis, body.tech_cdisU) + ' ' + body.tech_cdisU;
+            }
+        }
+        // Case 5: cdis, iv, ct provided
+        else if (isNumeric(body.tech_cdis) && isNumeric(body.tech_iv) && isNumeric(body.tech_ct)) {
+            if (!isEmpty(body.tech_fv) || body.tech_fv == '0' || !isEmpty(body.tech_cac) || body.tech_cac == '0') {
+                param.error = 'Please fill all fields.';
+                return param;
+            } else {
+                check = true;
+                dis = convertDistanceToMeters(body.tech_cdis, body.tech_cdisU);
+                time = convertTimeToSeconds(body.tech_ct, body.tech_ctU);
+                iv = convertVelocityToMs(body.tech_iv, body.tech_ivU);
+                
+                a = 2 * (dis - (iv * time)) / Math.pow(time, 2);
+                fv = (a * time) + iv;
+                
+                ivDisplay = body.tech_iv + ' ' + body.tech_ivU;
+                timeDisplay = body.tech_ct + ' ' + body.tech_ctU;
+                disDisplay = body.tech_cdis + ' ' + body.tech_cdisU;
+                aDisplay = formatAcceleration(a, body.tech_cacU) + ' ' + body.tech_cacU;
+                fvDisplay = formatVelocity(fv, body.tech_fvU) + ' ' + body.tech_fvU;
+            }
+        }
+        // Case 6: cdis, fv, ct provided
+        else if (isNumeric(body.tech_cdis) && isNumeric(body.tech_fv) && isNumeric(body.tech_ct)) {
+            if (!isEmpty(body.tech_iv) || body.tech_iv == '0' || !isEmpty(body.tech_cac) || body.tech_cac == '0') {
+                param.error = 'Please fill all fields.';
+                return param;
+            } else {
+                check = true;
+                dis = convertDistanceToMeters(body.tech_cdis, body.tech_cdisU);
+                time = convertTimeToSeconds(body.tech_ct, body.tech_ctU);
+                fv = convertVelocityToMs(body.tech_fv, body.tech_fvU);
+                
+                iv = ((2 * dis) / time) - fv;
+                a = 2 * (dis - (iv * time)) / Math.pow(time, 2);
+                
+                fvDisplay = body.tech_fv + ' ' + body.tech_fvU;
+                timeDisplay = body.tech_ct + ' ' + body.tech_ctU;
+                disDisplay = body.tech_cdis + ' ' + body.tech_cdisU;
+                aDisplay = formatAcceleration(a, body.tech_cacU) + ' ' + body.tech_cacU;
+                ivDisplay = formatVelocity(iv, body.tech_ivU) + ' ' + body.tech_ivU;
+            }
+        }
+        // Case 7: cdis, iv, cac provided
+        else if (isNumeric(body.tech_cdis) && isNumeric(body.tech_iv) && isNumeric(body.tech_cac)) {
+            if (!isEmpty(body.tech_fv) || body.tech_fv == '0' || !isEmpty(body.tech_ct) || body.tech_ct == '0') {
+                param.error = 'Please fill all fields.';
+                return param;
+            } else {
+                check = true;
+                dis = convertDistanceToMeters(body.tech_cdis, body.tech_cdisU);
+                iv = convertVelocityToMs(body.tech_iv, body.tech_ivU);
+                a = convertAccelerationToMs2(body.tech_cac, body.tech_cacU);
+                
+                time = Math.sqrt(2 * dis / a);
+                fv = Math.sqrt(Math.pow(iv, 2) + (2 * a * dis));
+                
+                ivDisplay = body.tech_iv + ' ' + body.tech_ivU;
+                disDisplay = body.tech_cdis + ' ' + body.tech_cdisU;
+                aDisplay = body.tech_cac + ' ' + body.tech_cacU;
+                fvDisplay = formatVelocity(fv, body.tech_fvU) + ' ' + body.tech_fvU;
+                timeDisplay = formatTime(time, body.tech_ctU) + ' ' + body.tech_ctU;
+            }
+        }
+        // Case 8: cdis, fv, cac provided
+        else if (isNumeric(body.tech_cdis) && isNumeric(body.tech_fv) && isNumeric(body.tech_cac)) {
+            if (!isEmpty(body.tech_iv) || body.tech_iv == '0' || !isEmpty(body.tech_ct) || body.tech_ct == '0') {
+                param.error = 'Please fill all fields.';
+                return param;
+            } else {
+                check = true;
+                dis = convertDistanceToMeters(body.tech_cdis, body.tech_cdisU);
+                fv = convertVelocityToMs(body.tech_fv, body.tech_fvU);
+                a = convertAccelerationToMs2(body.tech_cac, body.tech_cacU);
+                
+                iv = Math.sqrt(Math.pow(fv, 2) - (2 * a * dis));
+                time = (fv - iv) / a;
+                
+                fvDisplay = body.tech_fv + ' ' + body.tech_fvU;
+                disDisplay = body.tech_cdis + ' ' + body.tech_cdisU;
+                aDisplay = body.tech_cac + ' ' + body.tech_cacU;
+                ivDisplay = formatVelocity(iv, body.tech_ivU) + ' ' + body.tech_ivU;
+                timeDisplay = formatTime(time, body.tech_ctU) + ' ' + body.tech_ctU;
+            }
+        }
+        // Case 9: cdis, iv, fv provided
+        else if (isNumeric(body.tech_cdis) && isNumeric(body.tech_iv) && isNumeric(body.tech_fv)) {
+            if (!isEmpty(body.tech_cac) || body.tech_cac == '0' || !isEmpty(body.tech_ct) || body.tech_ct == '0') {
+                param.error = 'Please fill all fields.';
+                return param;
+            } else {
+                check = true;
+                dis = convertDistanceToMeters(body.tech_cdis, body.tech_cdisU);
+                iv = convertVelocityToMs(body.tech_iv, body.tech_ivU);
+                fv = convertVelocityToMs(body.tech_fv, body.tech_fvU);
+                
+                a = (Math.pow(fv, 2) - Math.pow(iv, 2)) / (2 * dis);
+                time = (fv - iv) / a;
+                
+                timeDisplay = formatTime(time, body.tech_ctU) + ' ' + body.tech_ctU;
+                aDisplay = formatAcceleration(a, body.tech_cacU) + ' ' + body.tech_cacU;
+                ivDisplay = body.tech_iv + ' ' + body.tech_ivU;
+                fvDisplay = body.tech_fv + ' ' + body.tech_fvU;
+                disDisplay = body.tech_cdis + ' ' + body.tech_cdisU;
+            }
+        }
+        // Case 10: cdis, ct, cac provided
+        else if (isNumeric(body.tech_cdis) && isNumeric(body.tech_ct) && isNumeric(body.tech_cac)) {
+            if (!isEmpty(body.tech_iv) || body.tech_iv == '0' || !isEmpty(body.tech_fv) || body.tech_fv == '0') {
+                param.error = 'Please fill all fields.';
+                return param;
+            } else {
+                check = true;
+                dis = convertDistanceToMeters(body.tech_cdis, body.tech_cdisU);
+                time = convertTimeToSeconds(body.tech_ct, body.tech_ctU);
+                a = convertAccelerationToMs2(body.tech_cac, body.tech_cacU);
+                
+                iv = (dis - (0.5 * a * Math.pow(time, 2))) / time;
+                fv = iv + (a * time);
+                
+                fvDisplay = formatVelocity(fv, body.tech_fvU) + ' ' + body.tech_fvU;
+                ivDisplay = formatVelocity(iv, body.tech_ivU) + ' ' + body.tech_ivU;
+                disDisplay = body.tech_cdis + ' ' + body.tech_cdisU;
+                aDisplay = body.tech_cac + ' ' + body.tech_cacU;
+                timeDisplay = body.tech_ct + ' ' + body.tech_ctU;
+            }
+        }
+
+        if (check === true) {
+            param.tech_iv = ivDisplay;
+            param.tech_fv = fvDisplay;
+            param.tech_time = timeDisplay;
+            param.tech_dis = disDisplay;
+            param.tech_a = aDisplay;
+            return param;
+        } else {
+            param.error = 'Please fill all fields.';
+            return param;
+        }
+    }
+
+        /**
+    * getCalculationInstantaneousRateOfChangeCalculator: Service Method
+    * POST: /api/calculators-lol/instantaneous-rate-of-change-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationInstantaneousRateOfChangeCalculator(body) {
+      const param = {};
+      const EnterEq = body.tech_EnterEq;
+      const x = body.tech_x;
+      // Helper functions
+      const isNumeric = (value) => {
+          return !isNaN(parseFloat(value)) && isFinite(value);
+      };
+
+      const isEmpty = (value) => {
+          return value == undefined || value == null || value == '';
+      };
+
+      const parseScientificNotation = (value) => {
+          if (typeof value == 'number') return value;
+          if (typeof value == 'string') {
+              // Handle scientific notation like '1.32e+23'
+              if (value.includes('e')) {
+                  const [coefficient, exponent] = value.split('e');
+                  return parseFloat(coefficient) * Math.pow(10, parseFloat(exponent));
+              }
+              return parseFloat(value);
+          }
+          return value;
+      };
+
+      const formatLargeNumber = (value) => {
+          if (value == null || value == undefined) return value;
+          
+          const numValue = parseScientificNotation(value);
+          
+          // For very large numbers, return as string to avoid precision issues
+          if (Math.abs(numValue) > 1e15) {
+              return numValue.toString();
+          }
+          
+          // For normal numbers, round to 7 decimal places
+          try {
+              return Number(parseFloat(numValue).toFixed(7));
+          } catch (error) {
+              console.log('Rounding failed, returning original value:', numValue);
+              return numValue;
+          }
+      };
+
+      // Security check
+      if (!EnterEq || /(<|>|&|php|print_r|print|echo|script|&|%)/i.test(EnterEq)) {
+          param.error = 'Please fill all fields.';
+          return param;
+      }
+
+      if (isNumeric(x) && !isEmpty(EnterEq)) {
+          let parem = EnterEq;
+          // Apply transformations
+          parem = parem.replace(/M\(x\) =/g, '');
+          parem = parem.replace(/f\(x\) =/g, '');
+          parem = parem.replace(/Square root/g, 'sqrt');
+          parem = parem.replace(/√/g, 'sqrt');
+          parem = parem.replace(/ /g, '');
+          parem = parem.replace(/y=/g, '');
+          parem = parem.replace(/\+/g, 'plus');
+          parem = parem.replace(/%20/g, '');
+          parem = parem.replace(/{/g, '(');
+          parem = parem.replace(/}/g, ')');
+          parem = parem.replace(/e\^/g, 'exp');
+          parem = parem.replace(/exp\^/g, 'exp');
+          parem = parem.replace(/\^/g, '**');
+          parem = parem.replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+
+          try {
+              const axios = require('axios');
+              
+              const response = await axios.post('http://167.172.134.148/new-i_r_o_c', {
+                  equ: parem,
+                  x: parseFloat(x)
+              }, {
+                  timeout: 120000,
+                  headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                  }
+              });
+
+              const buffer = response.data;
+              
+              if (Array.isArray(buffer) && buffer.length >= 3) {
+                  param.tech_equation = buffer[2];
+                  
+                  // Handle the derivative value
+                  let derivValue = buffer[0];
+                  
+                  // Convert and format the number
+                  param.tech_deriv = formatLargeNumber(derivValue);
+                  
+                  param.stech_teps = buffer[1];
+              } else {
+                  param.error = 'Invalid response from calculation service';
+              }
+              return param;
+
+          } catch (error) {
+              console.error('Error calling Python service:', error.message);
+              param.error = 'Calculation service unavailable. Please try again.';
+              return param;
+          }
+      } else {
+          param.error = 'Please provide valid equation and x value.';
+          return param;
+      }
+  }
+
+
+     /**
+    * getCalculationSpecificHeatCalculator: Service Method
+    * POST: /api/calculators-lol/specific-heat-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+   async getCalculationSpecificHeatCalculator(body) {
+    let param = {};
+        
+        // Extract parameters (same as PHP)
+        let find = body.tech_find;
+        let by = body.tech_by;
+        let q = body.tech_q;
+        let q_unit = body.tech_q_unit;
+        let it = body.tech_it;
+        let it_unit = body.tech_it_unit;
+        let ft = body.tech_ft;
+        let ft_unit = body.tech_ft_unit;
+        let dt = body.tech_dt;
+        let dt_unit = body.tech_dt_unit;
+        let m = body.tech_m;
+        let m_unit = body.tech_m_unit;
+        let c = body.tech_c;
+        let c_unit = body.tech_c_unit;
+        let sub = body.tech_sub;
+
+        // Same condition check
+        if ((by == 'change' && dt == '0') || (by == 'i_f_t' && (ft - it) == 0)) {
+            param.error = 'Change of temperature cannot be zero!';
+            return param;
+        }
+
+        // Unit Conversion (exact same logic)
+        if (!isNaN(q)) {
+            q = parseFloat(q);
+            if (q_unit == 'kJ') {
+                q = q / 0.001;
+            } else if (q_unit == 'mJ') {
+                q = q / 0.000001;
+            } else if (q_unit == 'Wh') {
+                q = q / 0.000277778;
+            } else if (q_unit == 'kWh') {
+                q = q / 0.000000277778;
+            } else if (q_unit == 'ft-lbs') {
+                q = q / 0.737562;
+            } else if (q_unit == 'kcal') {
+                q = q / 0.0002390057;
+            } else if (q_unit == 'eV') {
+                q = q / 6241534918267100245;
+            }
+        }
+
+        if (!isNaN(it)) {
+            it = parseFloat(it);
+            if (it_unit == '°F') {
+                it = it / 1.8;
+            }
+        }
+
+        if (!isNaN(ft)) {
+            ft = parseFloat(ft);
+            if (ft_unit == '°F') {
+                ft = ft / 1.8;
+            }
+        }
+
+        if (!isNaN(dt)) {
+            dt = parseFloat(dt);
+            if (dt_unit == '°F') {
+                dt = dt / 1.8;
+            }
+        }
+
+        if (!isNaN(m)) {
+            m = parseFloat(m);
+            if (m_unit == 'µg') {
+                m = m / 1000000000;
+            } else if (m_unit == 'mg') {
+                m = m / 1000000;
+            } else if (m_unit == 'g') {
+                m = m / 1000;
+            } else if (m_unit == 't') {
+                m = m / 0.001;
+            } else if (m_unit == 'oz') {
+                m = m / 35.27396;
+            } else if (m_unit == 'lb') {
+                m = m / 2.204623;
+            } else if (m_unit == 'stone') {
+                m = m / 0.157473;
+            } else if (m_unit == 'US ton') {
+                m = m / 0.001102311;
+            } else if (m_unit == 'Long ton') {
+                m = m / 0.000984207;
+            } else if (m_unit == 'Earths') {
+                m = m * 5972000000000000000000000;
+            } else if (m_unit == 'me') {
+                m = m / 1097769122809886380500592292548;
+            } else if (m_unit == 'u') {
+                m = m / 602214000000000000000000000;
+            } else if (m_unit == 'oz t') {
+                m = m / 32.15075;
+            }
+        }
+
+        if (!isNaN(c)) {
+            c = parseFloat(c);
+            if (c_unit == 'J/(g·K)' || c_unit == 'J/(g·°C)') {
+                c = c / 0.001;
+            } else if (c_unit == 'cal/(kg·K)' || c_unit == 'cal/(kg·°C)') {
+                c = c / 0.2388915;
+            } else if (c_unit == 'cal/(g·K)' || c_unit == 'kcal/(kg·K)' || c_unit == 'cal/(g·°C)' || c_unit == 'kcal/(kg·°C)') {
+                c = c / 0.0002388915;
+            }
+        }
+
+        // Same calculation logic
+        if (find == 'energy' && by == 'change' && !isNaN(dt) && !isNaN(m) && !isNaN(c)) {
+            let s = m * c;
+            q = s * dt;
+             param.tech_s = isNaN(s) ? 'NaN' : s;
+            param.tech_q = Math.round(q * 1000) / 1000;
+        } else if (find == 'energy' && by == 'i_f_t' && !isNaN(it) && !isNaN(ft) && !isNaN(m) && !isNaN(c)) {
+            dt = ft - it;
+            let s = m * c;
+            q = s * dt;
+            param.check = 'q_i_f';
+             param.tech_s = isNaN(s) ? 'NaN' : s;
+            param.tech_q = Math.round(q * 1000) / 1000;
+        } else if (find == 'specific_heat' && by == 'change' && !isNaN(q) && !isNaN(dt) && !isNaN(m)) {
+            let s = m * dt;
+            c = q / s;
+             param.tech_s = isNaN(s) ? 'NaN' : s;
+            param.tech_c = Math.round(c * 1000) / 1000;
+        } else if (find == 'specific_heat' && by == 'i_f_t' && !isNaN(q) && !isNaN(it) && !isNaN(ft) && !isNaN(m)) {
+            dt = ft - it;
+            let s = m * dt;
+            c = q / s;
+            param.check = 'c_i_f';
+             param.tech_s = isNaN(s) ? 'NaN' : s;
+            param.tech_c = Math.round(c * 1000) / 1000;
+        } else if (find == 'mass' && by == 'change' && !isNaN(q) && !isNaN(dt) && !isNaN(c)) {
+            let s = c * dt;
+            m = q / s;
+             param.tech_s = isNaN(s) ? 'NaN' : s;
+            param.tech_m = Math.round(m * 1000) / 1000;
+        } else if (find == 'mass' && by == 'i_f_t' && !isNaN(q) && !isNaN(it) && !isNaN(ft) && !isNaN(c)) {
+            dt = ft - it;
+            let s = c * dt;
+            m = q / s;
+            param.check = 'm_i_f';
+             param.tech_s = isNaN(s) ? 'NaN' : s;
+            param.tech_m = Math.round(m * 1000) / 1000;
+        } else if (find == 'itemp' && !isNaN(q) && !isNaN(ft) && !isNaN(m) && !isNaN(c)) {
+            let s = m * c;
+            let s1 = q / s;
+            it = s1 - ft;
+           param.tech_s = isNaN(s) ? 'NaN' : s;
+            param.tech_s1 = isNaN(s1) ? 'NaN' : s1;
+            param.tech_it = Math.round(it * 1000) / 1000;
+        } else if (find == 'ftemp' && !isNaN(q) && !isNaN(it) && !isNaN(m) && !isNaN(c)) {
+            let s = m * c;
+            let s1 = q / s;
+            ft = s1 + it;
+          param.tech_s = isNaN(s) ? "NaN" : s;
+          param.tech_s1 = isNaN(s1) ? "NaN" : s1;
+            param.tech_ft = Math.round(ft * 1000) / 1000;
+        } else {
+            param.error = 'Please! Fill All The Fields!';
+            return param;
+        }
+
+        // Same substance handling
+        if (sub != 'select') {
+            let subs = sub.split('@');
+            let sub_val = subs[0];
+            let sub_name = subs[1];
+            
+            if (sub_val !== undefined) {
+                param.tech_sub = isNaN(sub_val) ? "NaN" : sub_val;
+                 param.tech_sub1 = sub_name;
+            }
+        }
+
+        // Store converted values
+        param.tech_q1 = isNaN(q) ? "NaN" : q;
+        param.tech_it1 = isNaN(it) ? "NaN" : it;
+        param.tech_ft1 = isNaN(ft) ? "NaN" : ft;
+        param.tech_dt1 = isNaN(dt) ? "NaN" : dt;
+        param.tech_m1 = isNaN(m) ? "NaN" : m;
+        param.tech_c1 = isNaN(c) ? "NaN" : c;
+
+        return param;
+    }
+
+       /**
+    * getCalculationWorkCalculator: Service Method
+    * POST: /api/calculators-lol/work-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+        async getCalculationWorkCalculator(body) {
+        const param = {};
+        
+        // Extract all parameters from request body using let
+        let method = body.tech_method;
+        let method1 = body.tech_method1;
+        let find = body.tech_find;
+        let find1 = body.tech_find1;
+        let find2 = body.tech_find2;
+        let f = parseFloat(body.tech_f);
+        let f_unit = body.tech_f_unit;
+        let d = parseFloat(body.tech_d);
+        let d_unit = body.tech_d_unit;
+        let w = parseFloat(body.tech_w);
+        let w_unit = body.tech_w_unit;
+        let p = parseFloat(body.tech_p);
+        let p_unit = body.tech_p_unit;
+        let t = parseFloat(body.tech_t);
+        let t_unit = body.tech_t_unit;
+        let m = parseFloat(body.tech_m);
+        let m_unit = body.tech_m_unit;
+        let v0 = parseFloat(body.tech_v0);
+        let v0_unit = body.tech_v0_unit;
+        let v1 = parseFloat(body.tech_v1);
+        let v1_unit = body.tech_v1_unit;
+
+        // Temporary variables for calculations
+        let s1, s2, s3, s4;
+
+        if(!isNaN(f) && isFinite(f)){
+            if(f_unit=='kn'){
+                f = f/0.001;
+            }else if(f_unit=='mn'){
+                f = f/0.000001;
+            }else if(f_unit=='gn'){
+                f = f/0.000000001;
+            }else if(f_unit=='tn'){
+                f = f/0.000000000001;
+            }
+        }
+        
+        if(!isNaN(d) && isFinite(d)){
+            if(d_unit=='mm'){
+                d = d/1000;
+            }else if(d_unit=='cm'){
+                d = d/100;
+            }else if(d_unit=='km'){
+                d = d/0.001;
+            }else if(d_unit=='in'){
+                d = d/39.37;
+            }else if(d_unit=='ft'){
+                d = d/3.281;
+            }else if(d_unit=='yd'){
+                d = d/1.0936;
+            }else if(d_unit=='mi'){
+                d = d/0.0006214;
+            }else if(d_unit=='nmi'){
+                d = d/0.00054;
+            }
+        }
+        
+        if(!isNaN(v0) && isFinite(v0)){
+            if(v0_unit=='kmh'){
+                v0 = v0/3.6;
+            }else if(v0_unit=='fts'){
+                v0 = v0/3.281;
+            }else if(v0_unit=='mph'){
+                v0 = v0/2.237;
+            }else if(v0_unit=='knots'){
+                v0 = v0/1.944;
+            }else if(v0_unit=='ftmin'){
+                v0 = v0/196.85;
+            }
+        }
+        
+        if(!isNaN(v1) && isFinite(v1)){
+            if(v1_unit=='kmh'){
+                v1 = v1/3.6;
+            }else if(v1_unit=='fts'){
+                v1 = v1/3.281;
+            }else if(v1_unit=='mph'){
+                v1 = v1/2.237;
+            }else if(v1_unit=='knots'){
+                v1 = v1/1.944;
+            }else if(v1_unit=='ftmin'){
+                v1 = v1/196.85;
+            }
+        }
+        
+        if(!isNaN(w) && isFinite(w)){
+            if(w_unit=='kj'){
+                w = w/0.001;
+            }else if(w_unit=='mj'){
+                w = w/0.000001;
+            }else if(w_unit=='wh'){
+                w = w/0.0002778;
+            }else if(w_unit=='kwh'){
+                w = w/0.0000002778;
+            }else if(w_unit=='ft_lbs'){
+                w = w/0.7376;
+            }else if(w_unit=='kcal'){
+                w = w/0.000239;
+            }else if(w_unit=='ev'){
+                w = w/6241534918267100245;
+            }
+        }
+        
+        if(!isNaN(m) && isFinite(m)){
+            if(m_unit=='mg'){
+                m = m/1000000;
+            }else if(m_unit=='g'){
+                m = m/1000;
+            }else if(m_unit=='t'){
+                m = m/0.001;
+            }else if(m_unit=='oz'){
+                m = m/35.274;
+            }else if(m_unit=='lb'){
+                m = m/2.2046;
+            }else if(m_unit=='stone'){
+                m = m/0.15747;
+            }else if(m_unit=='us_ton'){
+                m = m/0.0011023;
+            }else if(m_unit=='long_ton'){
+                m = m/0.0009842;
+            }
+        }
+        
+        if(!isNaN(p) && isFinite(p)){
+            if(p_unit=='mW'){
+                p = p/1000;
+            }else if(p_unit=='kw'){
+                p = p/0.001;
+            }else if(p_unit=='MW'){
+                p = p/0.000001;
+            }else if(p_unit=='gw'){
+                p = p/0.000000001;
+            }else if(p_unit=='btu_h'){
+                p = p/3.412;
+            }else if(p_unit=='hp_l'){
+                p = p/0.001341;
+            }
+        }
+        
+        if(!isNaN(t) && isFinite(t)){
+            if(t_unit=='min'){
+                t = t/0.016667;
+            }else if(t_unit=='hrs'){
+                t = t/0.0002778;
+            }else if(t_unit=='days'){
+                t = t/0.000011574;
+            }else if(t_unit=='wks'){
+                t = t/0.0000016534;
+            }else if(t_unit=='mos'){
+                t = t/0.00000038026;
+            }else if(t_unit=='yrs'){
+                t = t/0.00000003169;
+            }
+        }
+        
+        if(method=='work' && method1=='fnd' && find=='work' && !isNaN(f) && !isNaN(d)){
+            w = f*d;
+            param['tech_work']='work';
+            param['tech_w'] = isNaN(w) ? 'NaN' : Math.round(w * 10000) / 10000;
+            param['tech_f'] = isNaN(f) ? 'NaN' : f;
+            param['tech_d'] = isNaN(d) ? 'NaN' : d;
+        }else if(method=='work' && method1=='fnd' && find=='force' && !isNaN(w) && !isNaN(d)){
+            f = w/d;
+            param['tech_force']='force';
+            param['tech_f'] = isNaN(f) ? 'NaN' : Math.round(f * 10000) / 10000;
+            param['tech_w'] = isNaN(w) ? 'NaN' : w;
+            param['tech_d'] = isNaN(d) ? 'NaN' : d;
+        }else if(method=='work' && method1=='fnd' && find=='dsplcmnt' && !isNaN(w) && !isNaN(f)){
+            d = w/f;
+          param['tech_dsplcmnt'] = 'dsplcmnt';
+          param['tech_d'] = isNaN(d) ? 'NaN' : Math.round(d * 10000) / 10000;
+          param['tech_w'] = isNaN(w) ? 'NaN' : w;
+          param['tech_f'] = isNaN(f) ? 'NaN' : f;
+
+        }else if(method=='work' && method1=='velocity' && find2=='work2' && !isNaN(m) && !isNaN(v0) && !isNaN(v1)){
+            s1 = m/2;
+            s2 = Math.pow(v1,2);
+            s3 = Math.pow(v0,2);
+            s4 = s2-s3;
+            w = s1*s4;
+          param['tech_work1'] = 'work1';
+          param['tech_w']  = isNaN(w)  ? 'NaN' : Math.round(w * 10000) / 10000;
+          param['tech_m']  = isNaN(m)  ? 'NaN' : m;
+          param['tech_v0'] = isNaN(v0) ? 'NaN' : v0;
+          param['tech_v1'] = isNaN(v1) ? 'NaN' : v1;
+          param['tech_s1'] = isNaN(s1) ? 'NaN' : s1;
+          param['tech_s2'] = isNaN(s2) ? 'NaN' : s2;
+          param['tech_s3'] = isNaN(s3) ? 'NaN' : s3;
+          param['tech_s4'] = isNaN(s4) ? 'NaN' : s4;
+        }else if(method=='work' && method1=='velocity' && find2=='v0' && !isNaN(m) && !isNaN(w) && !isNaN(v1)){
+            s1 = Math.pow(v1,2);
+            s2 = 2/m;
+            s3 = s2*w;
+            s4 = s1-s3;
+            v0 = Math.sqrt(s4);
+          param['tech_i_v'] = 'i_v';
+          param['tech_v0'] = isNaN(v0) ? 'NaN' : Math.round(v0 * 10000) / 10000;
+            param['tech_w']  = isNaN(w)  ? 'NaN' : w;
+            param['tech_m']  = isNaN(m)  ? 'NaN' : m;
+            param['tech_v1'] = isNaN(v1) ? 'NaN' : v1;
+            param['tech_s1'] = isNaN(s1) ? 'NaN' : s1;
+            param['tech_s2'] = isNaN(s2) ? 'NaN' : s2;
+            param['tech_s3'] = isNaN(s3) ? 'NaN' : s3;
+            param['tech_s4'] = isNaN(s4) ? 'NaN' : s4;
+
+        }else if(method=='work' && method1=='velocity' && find2=='v1' && !isNaN(m) && !isNaN(w) && !isNaN(v0)){
+            s1 = Math.pow(v0,2);
+            s2 = 2/m;
+            s3 = s2*w;
+            s4 = s1+s3;
+            v1 = Math.sqrt(s4);
+            param['tech_f_v'] = 'f_v';
+            param['tech_v1'] = isNaN(v1) ? 'NaN' : Math.round(v1 * 10000) / 10000;
+            param['tech_w']  = isNaN(w)  ? 'NaN' : w;
+            param['tech_m']  = isNaN(m)  ? 'NaN' : m;
+            param['tech_v0'] = isNaN(v0) ? 'NaN' : v0;
+            param['tech_s1'] = isNaN(s1) ? 'NaN' : s1;
+            param['tech_s2'] = isNaN(s2) ? 'NaN' : s2;
+            param['tech_s3'] = isNaN(s3) ? 'NaN' : s3;
+            param['tech_s4'] = isNaN(s4) ? 'NaN' : s4;
+
+        }else if(method=='work' && method1=='velocity' && find2=='mass' && !isNaN(w) && !isNaN(v0) && !isNaN(v1)){
+            s1 = 2*w;
+            s2 = Math.pow(v1,2);
+            s3 = Math.pow(v0,2);
+            s4 = s2-s3;
+            if(s4 === 0){
+                m = 0;
+            }else{
+                m = s1/s4;
+            }
+          param['tech_mass'] = 'mass';
+          param['tech_m']  = isNaN(m)  ? 'NaN' : Math.round(m * 10000) / 10000;
+          param['tech_w']  = isNaN(w)  ? 'NaN' : w;
+          param['tech_v0'] = isNaN(v0) ? 'NaN' : v0;
+          param['tech_v1'] = isNaN(v1) ? 'NaN' : v1;
+          param['tech_s1'] = isNaN(s1) ? 'NaN' : s1;
+          param['tech_s2'] = isNaN(s2) ? 'NaN' : s2;
+          param['tech_s3'] = isNaN(s3) ? 'NaN' : s3;
+          param['tech_s4'] = isNaN(s4) ? 'NaN' : s4;
+
+        }else if(method=='power' && find1=='power' && !isNaN(w) && !isNaN(t)){
+            p = w/t;
+            param['tech_power']='power';
+          param['tech_p'] = isNaN(p) ? 'NaN' : Math.round(p * 10000) / 10000;
+            param['tech_w'] = isNaN(w) ? 'NaN' : w;
+            param['tech_t'] = isNaN(t) ? 'NaN' : t;
+
+        }else if(method=='power' && find1=='work1' && !isNaN(p) && !isNaN(t)){
+            w = p*t;
+            param['tech_work2']='work2';
+            param['tech_w'] = isNaN(w) ? 'NaN' : Math.round(w * 10000) / 10000;
+            param['tech_p'] = isNaN(p) ? 'NaN' : p;
+            param['tech_t'] = isNaN(t) ? 'NaN' : t;
+
+        }else if(method=='power' && find1=='time' && !isNaN(w) && !isNaN(p)){
+            t = w/p;
+            param['time']='time';
+            param['tech_t'] = isNaN(t) ? 'NaN' : Math.round(t * 10000) / 10000;
+            param['tech_p'] = isNaN(p) ? 'NaN' : p;
+            param['tech_w'] = isNaN(w) ? 'NaN' : w;
+
+        }else{
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+        
+        param['tech_f'] = f;
+
+        return param;
+    }
+
+      /**
+    * getCalculationWaterViscosityCalculator: Service Method
+    * POST: /api/calculators-lol/water-viscosity-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+      async getCalculationWaterViscosityCalculator(body) {
+        const param = {};
+        
+        let temp = parseFloat(body.tech_temp);
+        const unit = body.tech_unit;
+
+        if (!isNaN(temp)) {
+            if (unit == 'f') {
+                temp = (temp - 32) * 5 / 9;
+            } else if (unit == 'k') {
+                temp = temp - 273.15;
+            }
+            
+            if (temp < 0 || temp > 370) {
+                param['error'] = 'This calculator only works up to 698°F or 370°C.';
+                return param;
+            }
+
+            let ans, ans1, ans3;
+
+            // First calculation block for ans
+            if (temp >= 0 && temp <= 2) {
+                ans = (1.7880 + (temp - 0) * -0.05725);
+            } else if (temp > 2 && temp <= 3) {
+                ans = (1.6735 + (temp - 2) * -0.05450);
+            } else if (temp > 3 && temp <= 4) {
+                ans = (1.6190 + (temp - 3) * -0.05170);
+            } else if (temp > 4 && temp <= 5) {
+                ans = (1.5673 + (temp - 4) * -0.04909);
+            } else if (temp > 5 && temp <= 6) {
+                ans = (1.5182 + (temp - 5) * -0.04670);
+            } else if (temp > 6 && temp <= 7) {
+                ans = (1.4715 + (temp - 6) * -0.04440);
+            } else if (temp > 7 && temp <= 8) {
+                ans = (1.4271 + (temp - 7) * -0.04240);
+            } else if (temp > 8 && temp <= 9) {
+                ans = (1.3847 + (temp - 8) * -0.04030);
+            } else if (temp > 9 && temp <= 10) {
+                ans = (1.3444 + (temp - 9) * -0.03850);
+            } else if (temp > 10 && temp <= 11) {
+                ans = (1.3059 + (temp - 10) * -0.03670);
+            } else if (temp > 11 && temp <= 12) {
+                ans = (1.2692 + (temp - 11) * -0.03520);
+            } else if (temp > 12 && temp <= 13) {
+                ans = (1.2340 + (temp - 12) * -0.03350);
+            } else if (temp > 13 && temp <= 14) {
+                ans = (1.2005 + (temp - 13) * -0.03220);
+            } else if (temp > 14 && temp <= 15) {
+                ans = (1.1683 + (temp - 14) * -0.03080);
+            } else if (temp > 15 && temp <= 16) {
+                ans = (1.1375 + (temp - 15) * -0.02940);
+            } else if (temp > 16 && temp <= 17) {
+                ans = (1.1081 + (temp - 16) * -0.02830);
+            } else if (temp > 17 && temp <= 18) {
+                ans = (1.0798 + (temp - 17) * -0.02720);
+            } else if (temp > 18 && temp <= 19) {
+                ans = (1.0526 + (temp - 18) * -0.02600);
+            } else if (temp > 19 && temp <= 20) {
+                ans = (1.0266 + (temp - 19) * -0.02500);
+            } else if (temp > 20 && temp <= 21) {
+                ans = (1.0016 + (temp - 20) * -0.02410);
+            } else if (temp > 21 && temp <= 22) {
+                ans = (0.9775 + (temp - 21) * -0.02310);
+            } else if (temp > 22 && temp <= 23) {
+                ans = (0.9544 + (temp - 22) * -0.02230);
+            } else if (temp > 23 && temp <= 24) {
+                ans = (0.9321 + (temp - 23) * -0.02140);
+            } else if (temp > 24 && temp <= 25) {
+                ans = (0.9107 + (temp - 24) * -0.02070);
+            } else if (temp > 25 && temp <= 26) {
+                ans = (0.8900 + (temp - 25) * -0.01990);
+            } else if (temp > 26 && temp <= 27) {
+                ans = (0.8701 + (temp - 26) * -0.01920);
+            } else if (temp > 27 && temp <= 28) {
+                ans = (0.8509 + (temp - 27) * -0.01850);
+            } else if (temp > 28 && temp <= 29) {
+                ans = (0.8324 + (temp - 28) * -0.01790);
+            } else if (temp > 29 && temp <= 30) {
+                ans = (0.8145 + (temp - 29) * -0.01730);
+            } else if (temp > 30 && temp <= 31) {
+                ans = (0.7972 + (temp - 30) * -0.01670);
+            } else if (temp > 31 && temp <= 32) {
+                ans = (0.7805 + (temp - 31) * -0.01610);
+            } else if (temp > 32 && temp <= 33) {
+                ans = (0.7644 + (temp - 32) * -0.01560);
+            } else if (temp > 33 && temp <= 34) {
+                ans = (0.7488 + (temp - 33) * -0.01510);
+            } else if (temp > 34 && temp <= 35) {
+                ans = (0.7337 + (temp - 34) * -0.01460);
+            } else if (temp > 35 && temp <= 36) {
+                ans = (0.7191 + (temp - 35) * -0.01410);
+            } else if (temp > 36 && temp <= 37) {
+                ans = (0.7050 + (temp - 36) * -0.01370);
+            } else if (temp > 37 && temp <= 38) {
+                ans = (0.6913 + (temp - 37) * -0.01330);
+            } else if (temp > 38 && temp <= 39) {
+                ans = (0.6780 + (temp - 38) * -0.01280);
+            } else if (temp > 39 && temp <= 40) {
+                ans = (0.6652 + (temp - 39) * -0.01250);
+            } else if (temp > 40 && temp <= 45) {
+                ans = (0.6527 + (temp - 40) * -0.01138);
+            } else if (temp > 45 && temp <= 50) {
+                ans = (0.5958 + (temp - 45) * -0.00986);
+            } else if (temp > 50 && temp <= 55) {
+                ans = (0.5465 + (temp - 50) * -0.00858);
+            } else if (temp > 55 && temp <= 60) {
+                ans = (0.5036 + (temp - 55) * -0.00752);
+            } else if (temp > 60 && temp <= 65) {
+                ans = (0.4660 + (temp - 60) * -0.00662);
+            } else if (temp > 65 && temp <= 70) {
+                ans = (0.4329 + (temp - 65) * -0.00558);
+            } else if (temp > 70 && temp <= 75) {
+                ans = (0.4035 + (temp - 70) * -0.00522);
+            } else if (temp > 75 && temp <= 80) {
+                ans = (0.3774 + (temp - 75) * -0.00468);
+            } else if (temp > 80 && temp <= 90) {
+                ans = (0.3540 + (temp - 80) * -0.00391);
+            } else if (temp > 90 && temp <= 100) {
+                ans = (0.3149 + (temp - 90) * -0.00324);
+            } else if (temp > 100 && temp <= 110) {
+                ans = (0.2825 + (temp - 100) * -0.00235);
+            } else if (temp > 110 && temp <= 120) {
+                ans = (0.2590 + (temp - 110) * -0.00216);
+            } else if (temp > 120 && temp <= 130) {
+                ans = (0.2374 + (temp - 120) * -0.00196);
+            } else if (temp > 130 && temp <= 140) {
+                ans = (0.2178 + (temp - 130) * -0.00167);
+            } else if (temp > 140 && temp <= 150) {
+                ans = (0.2011 + (temp - 140) * -0.00147);
+            } else if (temp > 150 && temp <= 160) {
+                ans = (0.1864 + (temp - 150) * -0.00128);
+            } else if (temp > 160 && temp <= 170) {
+                ans = (0.1736 + (temp - 160) * -0.00108);
+            } else if (temp > 170 && temp <= 180) {
+                ans = (0.1628 + (temp - 170) * -0.00098);
+            } else if (temp > 180 && temp <= 190) {
+                ans = (0.1530 + (temp - 180) * -0.00088);
+            } else if (temp > 190 && temp <= 200) {
+                ans = (0.1442 + (temp - 190) * -0.00078);
+            } else if (temp > 200 && temp <= 210) {
+                ans = (0.1364 + (temp - 200) * -0.00059);
+            } else if (temp > 210 && temp <= 220) {
+                ans = (0.1305 + (temp - 210) * -0.00059);
+            } else if (temp > 220 && temp <= 230) {
+                ans = (0.1246 + (temp - 220) * -0.00049);
+            } else if (temp > 230 && temp <= 240) {
+                ans = (0.1197 + (temp - 230) * -0.00049);
+            } else if (temp > 240 && temp <= 250) {
+                ans = (0.1148 + (temp - 240) * -0.00049);
+            } else if (temp > 250 && temp <= 260) {
+                ans = (0.1099 + (temp - 250) * -0.00040);
+            } else if (temp > 260 && temp <= 270) {
+                ans = (0.1059 + (temp - 260) * -0.00039);
+            } else if (temp > 270 && temp <= 280) {
+                ans = (0.1020 + (temp - 270) * -0.00039);
+            } else if (temp > 280 && temp <= 290) {
+                ans = (0.0981 + (temp - 280) * -0.00039);
+            } else if (temp > 290 && temp <= 300) {
+                ans = (0.0942 + (temp - 290) * -0.00030);
+            } else if (temp > 300 && temp <= 310) {
+                ans = (0.0912 + (temp - 300) * -0.00029);
+            } else if (temp > 310 && temp <= 320) {
+                ans = (0.0883 + (temp - 310) * -0.00030);
+            } else if (temp > 320 && temp <= 330) {
+                ans = (0.0853 + (temp - 320) * -0.00039);
+            } else if (temp > 330 && temp <= 340) {
+                ans = (0.0814 + (temp - 330) * -0.00039);
+            } else if (temp > 340 && temp <= 350) {
+                ans = (0.0775 + (temp - 340) * -0.00049);
+            } else if (temp > 350 && temp <= 360) {
+                ans = (0.0726 + (temp - 350) * -0.00059);
+            } else if (temp > 360 && temp <= 370) {
+                ans = (0.0667 + (temp - 360) * -0.00098);
+            }
+
+            // Second calculation block for ans1
+            if (temp >= 0 && temp <= 2) {
+                ans1 = ((1.7880 + (temp - 0) * -0.05725) / (0.9999 + (temp - 0) * -0.0000));
+            } else if (temp > 2 && temp <= 3) {
+                ans1 = ((1.6735 + (temp - 2) * -0.05450) / (0.9999 + (temp - 2) * -0.0001));
+            } else if (temp > 3 && temp <= 4) {
+                ans1 = ((1.6190 + (temp - 3) * -0.05170) / (1.0000 + (temp - 3) * -0.0000));
+            } else if (temp > 4 && temp <= 5) {
+                ans1 = ((1.5673 + (temp - 4) * -0.04909) / (1.0000 + (temp - 4) * -0.0000));
+            } else if (temp > 5 && temp <= 6) {
+                ans1 = ((1.5182 + (temp - 5) * -0.04670) / (1.0000 + (temp - 5) * -0.0001));
+            } else if (temp > 6 && temp <= 7) {
+                ans1 = ((1.4715 + (temp - 6) * -0.04440) / (0.9999 + (temp - 6) * -0.0000));
+            } else if (temp > 7 && temp <= 8) {
+                ans1 = ((1.4271 + (temp - 7) * -0.04240) / (0.9999 + (temp - 7) * -0.0000));
+            } else if (temp > 8 && temp <= 9) {
+                ans1 = ((1.3847 + (temp - 8) * -0.04030) / (0.9999 + (temp - 8) * -0.0001));
+            } else if (temp > 9 && temp <= 10) {
+                ans1 = ((1.3444 + (temp - 9) * -0.03850) / (0.9998 + (temp - 9) * -0.0001));
+            } else if (temp > 10 && temp <= 11) {
+                ans1 = ((1.3059 + (temp - 10) * -0.03670) / (0.9997 + (temp - 10) * -0.0001));
+            } else if (temp > 11 && temp <= 12) {
+                ans1 = ((1.2692 + (temp - 11) * -0.03520) / (0.9996 + (temp - 11) * -0.0001));
+            } else if (temp > 12 && temp <= 13) {
+                ans1 = ((1.2340 + (temp - 12) * -0.03350) / (0.9995 + (temp - 12) * -0.0001));
+            } else if (temp > 13 && temp <= 14) {
+                ans1 = ((1.2005 + (temp - 13) * -0.03220) / (0.9994 + (temp - 13) * -0.0002));
+            } else if (temp > 14 && temp <= 15) {
+                ans1 = ((1.1683 + (temp - 14) * -0.03080) / (0.9992 + (temp - 14) * -0.0001));
+            } else if (temp > 15 && temp <= 16) {
+                ans1 = ((1.1375 + (temp - 15) * -0.02940) / (0.9991 + (temp - 15) * -0.0002));
+            } else if (temp > 16 && temp <= 17) {
+                ans1 = ((1.1081 + (temp - 16) * -0.02830) / (0.9989 + (temp - 16) * -0.0001));
+            } else if (temp > 17 && temp <= 18) {
+                ans1 = ((1.0798 + (temp - 17) * -0.02720) / (0.9988 + (temp - 17) * -0.0002));
+            } else if (temp > 18 && temp <= 19) {
+                ans1 = ((1.0526 + (temp - 18) * -0.02600) / (0.9986 + (temp - 18) * -0.0002));
+            } else if (temp > 19 && temp <= 20) {
+                ans1 = ((1.0266 + (temp - 19) * -0.02500) / (0.9984 + (temp - 19) * -0.0002));
+            } else if (temp > 20 && temp <= 21) {
+                ans1 = ((1.0016 + (temp - 20) * -0.02410) / (0.9982 + (temp - 20) * -0.0002));
+            } else if (temp > 21 && temp <= 22) {
+                ans1 = ((0.9775 + (temp - 21) * -0.02310) / (0.9980 + (temp - 21) * -0.0002));
+            } else if (temp > 22 && temp <= 23) {
+                ans1 = ((0.9544 + (temp - 22) * -0.02230) / (0.9978 + (temp - 22) * -0.0003));
+            } else if (temp > 23 && temp <= 24) {
+                ans1 = ((0.9321 + (temp - 23) * -0.02140) / (0.9975 + (temp - 23) * -0.0002));
+            } else if (temp > 24 && temp <= 25) {
+                ans1 = ((0.9107 + (temp - 24) * -0.02070) / (0.9973 + (temp - 24) * -0.0003));
+            } else if (temp > 25 && temp <= 26) {
+                ans1 = ((0.8900 + (temp - 25) * -0.01990) / (0.9970 + (temp - 25) * -0.0002));
+            } else if (temp > 26 && temp <= 27) {
+                ans1 = ((0.8701 + (temp - 26) * -0.01920) / (0.9968 + (temp - 26) * -0.0003));
+            } else if (temp > 27 && temp <= 28) {
+                ans1 = ((0.8509 + (temp - 27) * -0.01850) / (0.9965 + (temp - 27) * -0.0003));
+            } else if (temp > 28 && temp <= 29) {
+                ans1 = ((0.8324 + (temp - 28) * -0.01790) / (0.9962 + (temp - 28) * -0.0003));
+            } else if (temp > 29 && temp <= 30) {
+                ans1 = ((0.8145 + (temp - 29) * -0.01730) / (0.9959 + (temp - 29) * -0.0003));
+            } else if (temp > 30 && temp <= 31) {
+                ans1 = ((0.7972 + (temp - 30) * -0.01670) / (0.9956 + (temp - 30) * -0.0003));
+            } else if (temp > 31 && temp <= 32) {
+                ans1 = ((0.7805 + (temp - 31) * -0.01610) / (0.9953 + (temp - 31) * -0.0003));
+            } else if (temp > 32 && temp <= 33) {
+                ans1 = ((0.7644 + (temp - 32) * -0.01560) / (0.9950 + (temp - 32) * -0.0003));
+            } else if (temp > 33 && temp <= 34) {
+                ans1 = ((0.7488 + (temp - 33) * -0.01510) / (0.9947 + (temp - 33) * -0.0003));
+            } else if (temp > 34 && temp <= 35) {
+                ans1 = ((0.7337 + (temp - 34) * -0.01460) / (0.9944 + (temp - 34) * -0.0004));
+            } else if (temp > 35 && temp <= 36) {
+                ans1 = ((0.7191 + (temp - 35) * -0.01410) / (0.9940 + (temp - 35) * -0.0003));
+            } else if (temp > 36 && temp <= 37) {
+                ans1 = ((0.7050 + (temp - 36) * -0.01370) / (0.9937 + (temp - 36) * -0.0004));
+            } else if (temp > 37 && temp <= 38) {
+                ans1 = ((0.6913 + (temp - 37) * -0.01330) / (0.9933 + (temp - 37) * -0.0003));
+            } else if (temp > 38 && temp <= 39) {
+                ans1 = ((0.6780 + (temp - 38) * -0.01280) / (0.9930 + (temp - 38) * -0.0004));
+            } else if (temp > 39 && temp <= 40) {
+                ans1 = ((0.6652 + (temp - 39) * -0.01250) / (0.9926 + (temp - 39) * -0.0004));
+            } else if (temp > 40 && temp <= 45) {
+                ans1 = ((0.6527 + (temp - 40) * -0.01138) / (0.9922 + (temp - 40) * -0.0004));
+            } else if (temp > 45 && temp <= 50) {
+                ans1 = ((0.5958 + (temp - 45) * -0.00986) / (0.9902 + (temp - 45) * -0.00044));
+            } else if (temp > 50 && temp <= 55) {
+                ans1 = ((0.5465 + (temp - 50) * -0.00858) / (0.9880 + (temp - 50) * -0.00046));
+            } else if (temp > 55 && temp <= 60) {
+                ans1 = ((0.5036 + (temp - 55) * -0.00752) / (0.9857 + (temp - 55) * -0.00050));
+            } else if (temp > 60 && temp <= 65) {
+                ans1 = ((0.4660 + (temp - 60) * -0.00662) / (0.9832 + (temp - 60) * -0.00052));
+            } else if (temp > 65 && temp <= 70) {
+                ans1 = ((0.4329 + (temp - 65) * -0.00558) / (0.9806 + (temp - 65) * -0.00056));
+            } else if (temp > 70 && temp <= 75) {
+                ans1 = ((0.4035 + (temp - 70) * -0.00522) / (0.9778 + (temp - 70) * -0.00060));
+            } else if (temp > 75 && temp <= 80) {
+                ans1 = ((0.3774 + (temp - 75) * -0.00468) / (0.9748 + (temp - 75) * -0.00060));
+            } else if (temp > 80 && temp <= 90) {
+                ans1 = ((0.3540 + (temp - 80) * -0.00391) / (0.9718 + (temp - 80) * -0.00065));
+            } else if (temp > 90 && temp <= 100) {
+                ans1 = ((0.3149 + (temp - 90) * -0.00324) / (0.9653 + (temp - 90) * -0.00069));
+            } else if (temp > 100 && temp <= 110) {
+                ans1 = ((0.2825 + (temp - 100) * -0.00235) / (0.9584 + (temp - 100) * -0.00074));
+            } else if (temp > 110 && temp <= 120) {
+                ans1 = ((0.2590 + (temp - 110) * -0.00216) / (0.9510 + (temp - 110) * -0.00079));
+            } else if (temp > 120 && temp <= 130) {
+                ans1 = ((0.2374 + (temp - 120) * -0.00196) / (0.9431 + (temp - 120) * -0.00083));
+            } else if (temp > 130 && temp <= 140) {
+                ans1 = ((0.2178 + (temp - 130) * -0.00167) / (0.9348 + (temp - 130) * -0.00087));
+            } else if (temp > 140 && temp <= 150) {
+                ans1 = ((0.2011 + (temp - 140) * -0.00147) / (0.9261 + (temp - 140) * -0.00091));
+            } else if (temp > 150 && temp <= 160) {
+                ans1 = ((0.1864 + (temp - 150) * -0.00128) / (0.9170 + (temp - 150) * -0.00096));
+            } else if (temp > 160 && temp <= 170) {
+                ans1 = ((0.1736 + (temp - 160) * -0.00108) / (0.9074 + (temp - 160) * -0.00101));
+            } else if (temp > 170 && temp <= 180) {
+                ans1 = ((0.1628 + (temp - 170) * -0.00098) / (0.8973 + (temp - 170) * -0.00104));
+            } else if (temp > 180 && temp <= 190) {
+                ans1 = ((0.1530 + (temp - 180) * -0.00088) / (0.8869 + (temp - 180) * -0.00109));
+            } else if (temp > 190 && temp <= 200) {
+                ans1 = ((0.1442 + (temp - 190) * -0.00078) / (0.8760 + (temp - 190) * -0.00130));
+            } else if (temp > 200 && temp <= 210) {
+                ans1 = ((0.1364 + (temp - 200) * -0.00059) / (0.8630 + (temp - 200) * -0.00102));
+            } else if (temp > 210 && temp <= 220) {
+                ans1 = ((0.1305 + (temp - 210) * -0.00059) / (0.8528 + (temp - 210) * -0.00125));
+            } else if (temp > 220 && temp <= 230) {
+                ans1 = ((0.1246 + (temp - 220) * -0.00049) / (0.8403 + (temp - 220) * -0.00130));
+            } else if (temp > 230 && temp <= 240) {
+                ans1 = ((0.1197 + (temp - 230) * -0.00049) / (0.8273 + (temp - 230) * -0.00137));
+            } else if (temp > 240 && temp <= 250) {
+                ans1 = ((0.1148 + (temp - 240) * -0.00049) / (0.8136 + (temp - 240) * -0.00146));
+            } else if (temp > 250 && temp <= 260) {
+                ans1 = ((0.1099 + (temp - 250) * -0.00040) / (0.7990 + (temp - 250) * -0.00150));
+            } else if (temp > 260 && temp <= 270) {
+                ans1 = ((0.1059 + (temp - 260) * -0.00039) / (0.7840 + (temp - 260) * -0.00161));
+            } else if (temp > 270 && temp <= 280) {
+                ans1 = ((0.1020 + (temp - 270) * -0.00039) / (0.7679 + (temp - 270) * -0.00172));
+            } else if (temp > 280 && temp <= 290) {
+                ans1 = ((0.0981 + (temp - 280) * -0.00039) / (0.7507 + (temp - 280) * -0.00184));
+            } else if (temp > 290 && temp <= 300) {
+                ans1 = ((0.0942 + (temp - 290) * -0.00030) / (0.7323 + (temp - 290) * -0.00198));
+            } else if (temp > 300 && temp <= 310) {
+                ans1 = ((0.0912 + (temp - 300) * -0.00029) / (0.7125 + (temp - 300) * -0.00214));
+            } else if (temp > 310 && temp <= 320) {
+                ans1 = ((0.0883 + (temp - 310) * -0.00030) / (0.6911 + (temp - 310) * -0.00240));
+            } else if (temp > 320 && temp <= 330) {
+                ans1 = ((0.0853 + (temp - 320) * -0.00039) / (0.6671 + (temp - 320) * -0.00269));
+            } else if (temp > 330 && temp <= 340) {
+                ans1 = ((0.0814 + (temp - 330) * -0.00039) / (0.6402 + (temp - 330) * -0.00301));
+            } else if (temp > 340 && temp <= 350) {
+                ans1 = ((0.0775 + (temp - 340) * -0.00049) / (0.6101 + (temp - 340) * -0.00357));
+            } else if (temp > 350 && temp <= 360) {
+                ans1 = ((0.0726 + (temp - 350) * -0.00059) / (0.5744 + (temp - 350) * -0.00464));
+            } else if (temp > 360 && temp <= 370) {
+                ans1 = ((0.0667 + (temp - 360) * -0.00098) / (0.4505 + (temp - 360) * -0.00775));
+            }
+
+            // Third calculation block for ans3
+            if (temp >= 0 && temp <= 2) {
+                ans3 = (0.9999 + (temp - 0) * -0.0000);
+            } else if (temp > 2 && temp <= 3) {
+                ans3 = (0.9999 + (temp - 2) * -0.0001);
+            } else if (temp > 3 && temp <= 4) {
+                ans3 = (1.0000 + (temp - 3) * -0.0000);
+            } else if (temp > 4 && temp <= 5) {
+                ans3 = (1.0000 + (temp - 4) * -0.0000);
+            } else if (temp > 5 && temp <= 6) {
+                ans3 = (1.0000 + (temp - 5) * -0.0001);
+            } else if (temp > 6 && temp <= 7) {
+                ans3 = (0.9999 + (temp - 6) * -0.0000);
+            } else if (temp > 7 && temp <= 8) {
+                ans3 = (0.9999 + (temp - 7) * -0.0000);
+            } else if (temp > 8 && temp <= 9) {
+                ans3 = (0.9999 + (temp - 8) * -0.0001);
+            } else if (temp > 9 && temp <= 10) {
+                ans3 = (0.9998 + (temp - 9) * -0.0001);
+            } else if (temp > 10 && temp <= 11) {
+                ans3 = (0.9997 + (temp - 10) * -0.0001);
+            } else if (temp > 11 && temp <= 12) {
+                ans3 = (0.9996 + (temp - 11) * -0.0001);
+            } else if (temp > 12 && temp <= 13) {
+                ans3 = (0.9995 + (temp - 12) * -0.0001);
+            } else if (temp > 13 && temp <= 14) {
+                ans3 = (0.9994 + (temp - 13) * -0.0002);
+            } else if (temp > 14 && temp <= 15) {
+                ans3 = (0.9992 + (temp - 14) * -0.0001);
+            } else if (temp > 15 && temp <= 16) {
+                ans3 = (0.9991 + (temp - 15) * -0.0002);
+            } else if (temp > 16 && temp <= 17) {
+                ans3 = (0.9989 + (temp - 16) * -0.0001);
+            } else if (temp > 17 && temp <= 18) {
+                ans3 = (0.9988 + (temp - 17) * -0.0002);
+            } else if (temp > 18 && temp <= 19) {
+                ans3 = (0.9986 + (temp - 18) * -0.0002);
+            } else if (temp > 19 && temp <= 20) {
+                ans3 = (0.9984 + (temp - 19) * -0.0002);
+            } else if (temp > 20 && temp <= 21) {
+                ans3 = (0.9982 + (temp - 20) * -0.0002);
+            } else if (temp > 21 && temp <= 22) {
+                ans3 = (0.9980 + (temp - 21) * -0.0002);
+            } else if (temp > 22 && temp <= 23) {
+                ans3 = (0.9978 + (temp - 22) * -0.0003);
+            } else if (temp > 23 && temp <= 24) {
+                ans3 = (0.9975 + (temp - 23) * -0.0002);
+            } else if (temp > 24 && temp <= 25) {
+                ans3 = (0.9973 + (temp - 24) * -0.0003);
+            } else if (temp > 25 && temp <= 26) {
+                ans3 = (0.9970 + (temp - 25) * -0.0002);
+            } else if (temp > 26 && temp <= 27) {
+                ans3 = (0.9968 + (temp - 26) * -0.0003);
+            } else if (temp > 27 && temp <= 28) {
+                ans3 = (0.9965 + (temp - 27) * -0.0003);
+            } else if (temp > 28 && temp <= 29) {
+                ans3 = (0.9962 + (temp - 28) * -0.0003);
+            } else if (temp > 29 && temp <= 30) {
+                ans3 = (0.9959 + (temp - 29) * -0.0003);
+            } else if (temp > 30 && temp <= 31) {
+                ans3 = (0.9956 + (temp - 30) * -0.0003);
+            } else if (temp > 31 && temp <= 32) {
+                ans3 = (0.9953 + (temp - 31) * -0.0003);
+            } else if (temp > 32 && temp <= 33) {
+                ans3 = (0.9950 + (temp - 32) * -0.0003);
+            } else if (temp > 33 && temp <= 34) {
+                ans3 = (0.9947 + (temp - 33) * -0.0003);
+            } else if (temp > 34 && temp <= 35) {
+                ans3 = (0.9944 + (temp - 34) * -0.0004);
+            } else if (temp > 35 && temp <= 36) {
+                ans3 = (0.9940 + (temp - 35) * -0.0003);
+            } else if (temp > 36 && temp <= 37) {
+                ans3 = (0.9937 + (temp - 36) * -0.0004);
+            } else if (temp > 37 && temp <= 38) {
+                ans3 = (0.9933 + (temp - 37) * -0.0003);
+            } else if (temp > 38 && temp <= 39) {
+                ans3 = (0.9930 + (temp - 38) * -0.0004);
+            } else if (temp > 39 && temp <= 40) {
+                ans3 = (0.9926 + (temp - 39) * -0.0004);
+            } else if (temp > 40 && temp <= 45) {
+                ans3 = (0.9922 + (temp - 40) * -0.0004);
+            } else if (temp > 45 && temp <= 50) {
+                ans3 = (0.9902 + (temp - 45) * -0.00044);
+            } else if (temp > 50 && temp <= 55) {
+                ans3 = (0.9880 + (temp - 50) * -0.00046);
+            } else if (temp > 55 && temp <= 60) {
+                ans3 = (0.9857 + (temp - 55) * -0.00050);
+            } else if (temp > 60 && temp <= 65) {
+                ans3 = (0.9832 + (temp - 60) * -0.00052);
+            } else if (temp > 65 && temp <= 70) {
+                ans3 = (0.9806 + (temp - 65) * -0.00056);
+            } else if (temp > 70 && temp <= 75) {
+                ans3 = (0.9778 + (temp - 70) * -0.00060);
+            } else if (temp > 75 && temp <= 80) {
+                ans3 = (0.9748 + (temp - 75) * -0.00060);
+            } else if (temp > 80 && temp <= 90) {
+                ans3 = (0.9718 + (temp - 80) * -0.00065);
+            } else if (temp > 90 && temp <= 100) {
+                ans3 = (0.9653 + (temp - 90) * -0.00069);
+            } else if (temp > 100 && temp <= 110) {
+                ans3 = (0.9584 + (temp - 100) * -0.00074);
+            } else if (temp > 110 && temp <= 120) {
+                ans3 = (0.9510 + (temp - 110) * -0.00079);
+            } else if (temp > 120 && temp <= 130) {
+                ans3 = (0.9431 + (temp - 120) * -0.00083);
+            } else if (temp > 130 && temp <= 140) {
+                ans3 = (0.9348 + (temp - 130) * -0.00087);
+            } else if (temp > 140 && temp <= 150) {
+                ans3 = (0.9261 + (temp - 140) * -0.00091);
+            } else if (temp > 150 && temp <= 160) {
+                ans3 = (0.9170 + (temp - 150) * -0.00096);
+            } else if (temp > 160 && temp <= 170) {
+                ans3 = (0.9074 + (temp - 160) * -0.00101);
+            } else if (temp > 170 && temp <= 180) {
+                ans3 = (0.8973 + (temp - 170) * -0.00104);
+            } else if (temp > 180 && temp <= 190) {
+                ans3 = (0.8869 + (temp - 180) * -0.00109);
+            } else if (temp > 190 && temp <= 200) {
+                ans3 = (0.8760 + (temp - 190) * -0.00130);
+            } else if (temp > 200 && temp <= 210) {
+                ans3 = (0.8630 + (temp - 200) * -0.00102);
+            } else if (temp > 210 && temp <= 220) {
+                ans3 = (0.8528 + (temp - 210) * -0.00125);
+            } else if (temp > 220 && temp <= 230) {
+                ans3 = (0.8403 + (temp - 220) * -0.00130);
+            } else if (temp > 230 && temp <= 240) {
+                ans3 = (0.8273 + (temp - 230) * -0.00137);
+            } else if (temp > 240 && temp <= 250) {
+                ans3 = (0.8136 + (temp - 240) * -0.00146);
+            } else if (temp > 250 && temp <= 260) {
+                ans3 = (0.7990 + (temp - 250) * -0.00150);
+            } else if (temp > 260 && temp <= 270) {
+                ans3 = (0.7840 + (temp - 260) * -0.00161);
+            } else if (temp > 270 && temp <= 280) {
+                ans3 = (0.7679 + (temp - 270) * -0.00172);
+            } else if (temp > 280 && temp <= 290) {
+                ans3 = (0.7507 + (temp - 280) * -0.00184);
+            } else if (temp > 290 && temp <= 300) {
+                ans3 = (0.7323 + (temp - 290) * -0.00198);
+            } else if (temp > 300 && temp <= 310) {
+                ans3 = (0.7125 + (temp - 300) * -0.00214);
+            } else if (temp > 310 && temp <= 320) {
+                ans3 = (0.6911 + (temp - 310) * -0.00240);
+            } else if (temp > 320 && temp <= 330) {
+                ans3 = (0.6671 + (temp - 320) * -0.00269);
+            } else if (temp > 330 && temp <= 340) {
+                ans3 = (0.6402 + (temp - 330) * -0.00301);
+            } else if (temp > 340 && temp <= 350) {
+                ans3 = (0.6101 + (temp - 340) * -0.00357);
+            } else if (temp > 350 && temp <= 360) {
+                ans3 = (0.5744 + (temp - 350) * -0.00464);
+            } else if (temp > 360 && temp <= 370) {
+                ans3 = (0.4505 + (temp - 360) * -0.00775);
+            }
+
+            param['tech_ans']  = isNaN(ans)  ? 'NaN' : ans;
+            param['tech_ans1'] = isNaN(ans1) ? 'NaN' : ans1;
+            param['tech_ans2'] = isNaN(ans3) ? 'NaN' : ans3;
+
+            return param;
+        } else {
+            param['error'] = 'Please! Enter Water temperature';
+            return param;
+        }
+    }
+
+       /**
+    * getCalculationUnitVectorCalculator: Service Method
+    * POST: /api/calculators-lol/unit-vector-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationUnitVectorCalculator(body) {
+        const param = {};
+        
+        const method = body.tech_method ? body.tech_method.trim() : '';
+        const dimen = body.tech_dimen ? body.tech_dimen.trim() : '';
+        const find = body.tech_find ? body.tech_find.trim() : '';
+        const find1 = body.tech_find1 ? body.tech_find1.trim() : '';
+        let x = parseFloat(body.tech_x);
+        let y = parseFloat(body.tech_y);
+        let z = parseFloat(body.tech_z);
+        let fx = parseFloat(body.tech_fx);
+        let fy = parseFloat(body.tech_fy);
+        let fz = parseFloat(body.tech_fz);
+
+        if (!isNaN(x) && !isNaN(y) && !isNaN(z) && method && dimen) {
+
+            if (method == 'normalize') {
+                if (dimen == '2d') {
+                    if (!isNaN(x) && !isNaN(y)) {
+                        const magnitude = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+                        const vx = x / magnitude;
+                        const vy = y / magnitude;
+                       param['tech_vx'] = isNaN(vx) ? 'NaN' : vx;
+                      param['tech_vy'] = isNaN(vy) ? 'NaN' : vy;
+                      param['tech_magnitude'] = isNaN(magnitude) ? 'NaN' : magnitude;
+                    } else {
+                        param['error'] = 'Please fill all fields.';
+                        return param;
+                    }
+                } else if (dimen == '3d') {
+                    if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+                        const magnitude = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+                        const vx = x / magnitude;
+                        const vy = y / magnitude;
+                        const vz = z / magnitude;
+                      param['tech_vx'] = isNaN(vx) ? 'NaN' : vx;
+                      param['tech_vy'] = isNaN(vy) ? 'NaN' : vy;
+                      param['tech_vz'] = isNaN(vz) ? 'NaN' : vz;
+                      param['tech_magnitude'] = isNaN(magnitude) ? 'NaN' : magnitude;
+
+                    } else {
+                        param['error'] = 'Please fill all fields.';
+                        return param;
+                    }
+                }
+            } else if (method == 'find') {
+                if (dimen == '2d') {
+                    if (find == 'x') {
+                        if (!isNaN(fy)) {
+                            fx = Math.sqrt(1 - Math.pow(fy, 2));
+                            const check = Math.round(Math.pow(fx, 2) + (Math.pow(fy, 2)));
+                            if (fy > 1) {
+                                param['error'] = 'Unit vector components must be less than or equal to 1';
+                                return param;
+                            }
+                            if (check != 1) {
+                                param['error'] = 'It is not possible to create unit vector';
+                                return param;
+                            }
+                            param['tech_fx'] = isNaN(fx) ? 'NaN' : fx;
+                        } else {
+                            param['error'] = 'Please! Check Your Input';
+                            return param;
+                        }
+                    } else if (find == 'y') {
+                        if (!isNaN(fx)) {
+                            fy = Math.sqrt(1 - Math.pow(fx, 2));
+                            const check = Math.round(Math.pow(fx, 2) + (Math.pow(fy, 2)));
+                            if (fx > 1) {
+                                param['error'] = 'Unit vector components must be less than or equal to 1';
+                                return param;
+                            }
+                            if (check != 1) {
+                                param['error'] = 'It is not possible to create unit vector';
+                                return param;
+                            }
+                            param['tech_fy'] = isNaN(fy) ? 'NaN' : fy;
+                        } else {
+                            param['error'] = 'Please! Check Your Input';
+                            return param;
+                        }
+                    }
+                } else if (dimen == '3d') {
+                    if (find1 == 'x') {
+                        if (!isNaN(fy) && !isNaN(fz)) {
+                            fx = Math.sqrt(1 - (Math.pow(fy, 2) + Math.pow(fz, 2)));
+                            const check = Math.round(Math.pow(fx, 2) + Math.pow(fy, 2) + (Math.pow(fz, 2)));
+                            if (fy > 1 || fz > 1) {
+                                param['error'] = 'Unit vector components must be less than or equal to 1';
+                                return param;
+                            }
+                            if (check != 1) {
+                                param['error'] = 'It is not possible to create unit vector';
+                                return param;
+                            }
+                               param['tech_fx'] = isNaN(fx) ? 'NaN' : fx;
+                        } else {
+                            param['error'] = 'Please! Check Your Input';
+                            return param;
+                        }
+                    } else if (find1 == 'y') {
+                        if (!isNaN(fx) && !isNaN(fz)) {
+                            fy = Math.sqrt(1 - (Math.pow(fx, 2) + Math.pow(fz, 2)));
+                            const check = Math.round(Math.pow(fx, 2) + Math.pow(fy, 2) + (Math.pow(fz, 2)));
+                            if (fx > 1 || fz > 1) {
+                                param['error'] = 'Unit vector components must be less than or equal to 1';
+                                return param;
+                            }
+                            if (check != 1) {
+                                param['error'] = 'It is not possible to create unit vector';
+                                return param;
+                            }
+                            param['tech_fy'] = isNaN(fy) ? 'NaN' : fy;
+
+                        } else {
+                            param['error'] = 'Please! Check Your Input';
+                            return param;
+                        }
+                    } else if (find1 == 'z') {
+                        if (!isNaN(fx) && !isNaN(fy)) {
+                            fz = Math.sqrt(1 - (Math.pow(fx, 2) + Math.pow(fy, 2)));
+                            const check = Math.round(Math.pow(fx, 2) + Math.pow(fy, 2) + (Math.pow(fz, 2)));
+                            if (fx > 1 || fy > 1) {
+                                param['error'] = 'Unit vector components must be less than or equal to 1';
+                                return param;
+                            }
+                            if (check != 1) {
+                                param['error'] = 'It is not possible to create unit vector';
+                                return param;
+                            }
+                            param['tech_fz'] = fz;
+                        } else {
+                            param['error'] = 'Please fill all fields.';
+                            return param;
+                        }
+                    }
+                }
+            } else {
+                param['error'] = 'Please fill all fields.';
+                return param;
+            }
+            
+            if (dimen == '2d') {
+                let deg;
+                if (method == 'normalize') {
+                    if (x >= 0 && y >= 0) {
+                        deg = Math.atan(y / x);
+                    } else if (x >= 0 && y < 0) {
+                        deg = Math.PI * 2 + Math.atan(y / x);
+                    } else if (x < 0 && y >= 0) {
+                        deg = Math.PI + Math.atan(y / x);
+                    } else if (x < 0 && y < 0) {
+                        deg = Math.PI + Math.atan(y / x);
+                    }
+                } else if (method == 'find') {
+                    if (fx >= 0 && fy >= 0) {
+                        deg = Math.atan(fy / fx);
+                    } else if (fx >= 0 && fy < 0) {
+                        deg = Math.PI * 2 + Math.atan(fy / fx);
+                    } else if (fx < 0 && fy >= 0) {
+                        deg = Math.PI + Math.atan(fy / fx);
+                    } else if (fx < 0 && fy < 0) {
+                        deg = Math.PI + Math.atan(fy / fx);
+                    }
+                }
+                param['tech_deg'] = deg * (180 / Math.PI); // rad2deg conversion
+            }
+            
+            param['tech_x'] = body.tech_x;
+            param['tech_y'] = body.tech_y;
+            param['tech_z'] = body.tech_z;
+            param['tech_fx'] = body.tech_fx;
+            param['tech_fy'] = body.tech_fy;
+            param['tech_fz'] = body.tech_fz;
+            return param;
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+    }
+
+
+     /**
+    * getCalculationCenterOfMassCalculator: Service Method
+    * POST: /api/calculators-lol/center-of-mass-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+  async getCalculationCenterOfMassCalculator(body) {
+        const param = {};
+        
+        let i = 1;
+        const how = parseInt(body.tech_how);
+        const dem = parseInt(body.tech_dem);
+        const mass = [];
+        const xs = [];
+        const ys = [];
+        const zs = [];
+        let check = true;
+
+        for (i = 1; i <= how; i++) {
+            const m = parseFloat(body['tech_m' + i]);
+            const x = parseFloat(body['tech_x' + i]);
+
+            if (!isNaN(m) && !isNaN(x)) {
+                // Convert mass units
+                const mUnit = body['tech_m' + i + '_unit'];
+                let convertedM = m;
+                if (mUnit == 'lbs') {
+                    convertedM *= 0.4536;
+                } else if (mUnit == 'g') {
+                    convertedM *= 0.001;
+                }
+                mass.push(convertedM);
+                
+                // Convert x units
+                const xUnit = body['tech_x' + i + '_unit'];
+                let convertedX = x;
+                if (xUnit == 'm') {
+                    convertedX *= 100;
+                } else if (xUnit == 'in') {
+                    convertedX *= 2.54;
+                } else if (xUnit == 'ft') {
+                    convertedX *= 30.48;
+                } else if (xUnit == 'yd') {
+                    convertedX *= 91.44;
+                }
+                xs.push(convertedX);
+            } else {
+                check = false;
+                break;
+            }
+
+            if (dem == 2 || dem == 3) {
+                const y = parseFloat(body['tech_y' + i]);
+
+                if (!isNaN(y)) {
+                    // Convert y units
+                    const yUnit = body['tech_y' + i + '_unit'];
+                    let convertedY = y;
+                    if (yUnit == 'm') {
+                        convertedY *= 100;
+                    } else if (yUnit == 'in') {
+                        convertedY *= 2.54;
+                    } else if (yUnit == 'ft') {
+                        convertedY *= 30.48;
+                    } else if (yUnit == 'yd') {
+                        convertedY *= 91.44;
+                    }
+                    ys.push(convertedY);
+                } else {
+                    check = false;
+                    break;
+                }
+            }
+
+            if (dem == 3) {
+                const z = parseFloat(body['tech_z' + i]);
+
+                if (!isNaN(z)) {
+                    // Convert z units
+                    const zUnit = body['tech_z' + i + '_unit'];
+                    let convertedZ = z;
+                    if (zUnit == 'm') {
+                        convertedZ *= 100;
+                    } else if (zUnit == 'in') {
+                        convertedZ *= 2.54;
+                    } else if (zUnit == 'ft') {
+                        convertedZ *= 30.48;
+                    } else if (zUnit == 'yd') {
+                        convertedZ *= 91.44;
+                    }
+                    zs.push(convertedZ);
+                } else {
+                    check = false;
+                    break;
+                }
+            }
+        }
+
+        if (check == true) {
+            // Calculate x center of mass
+            let xcm = 0;
+            mass.forEach((value, key) => {
+                xcm = xcm + (value * xs[key]);
+            });
+            
+            const totalMass = mass.reduce((sum, current) => sum + current, 0);
+            let ansx = xcm / totalMass;
+            
+            // Convert result units for x
+            const resUnit = body.tech_res_unit;
+            if (resUnit == 'm') {
+                ansx = ansx * 0.01;
+            } else if (resUnit == 'in') {
+                ansx = ansx * 0.3937;
+            } else if (resUnit == 'ft') {
+                ansx = ansx * 0.03281;
+            } else if (resUnit == 'yd') {
+                ansx = ansx * 0.010936;
+            }
+
+            if (dem == 2 || dem == 3) {
+                // Calculate y center of mass
+                let ycm = 0;
+                mass.forEach((value, key) => {
+                    ycm = ycm + (value * ys[key]);
+                });
+                let ansy = ycm / totalMass;
+                
+                // Convert result units for y
+                if (resUnit == 'm') {
+                    ansy = ansy * 0.01;
+                } else if (resUnit == 'in') {
+                    ansy = ansy * 0.3937;
+                } else if (resUnit == 'ft') {
+                    ansy = ansy * 0.03281;
+                } else if (resUnit == 'yd') {
+                    ansy = ansy * 0.010936;
+                }
+                param['tech_ansy'] = ansy;
+            }
+
+            if (dem == 3) {
+                // Calculate z center of mass
+                let zcm = 0;
+                mass.forEach((value, key) => {
+                    zcm = zcm + (value * zs[key]);
+                });
+                let ansz = zcm / totalMass;
+                
+                // Convert result units for z
+                if (resUnit == 'm') {
+                    ansz = ansz * 0.01;
+                } else if (resUnit == 'in') {
+                    ansz = ansz * 0.3937;
+                } else if (resUnit == 'ft') {
+                    ansz = ansz * 0.03281;
+                } else if (resUnit == 'yd') {
+                    ansz = ansz * 0.010936;
+                }
+                param['tech_ansz'] = ansz;
+            }
+
+            param['tech_ansx'] = ansx;
+            param['tech_unit'] = resUnit;
+            return param;
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+    }
+
+
+       /**
+    * getCalculationelEctricFieldCalculator: Service Method
+    * POST: /api/calculators-lol/electric-field-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+    async getCalculationelEctricFieldCalculator(body) {
+        const param = {};
+        
+        const charge = parseFloat(body.tech_charge);
+        const c_unit = body.tech_c_unit ? body.tech_c_unit.trim() : '';
+        const distance = parseFloat(body.tech_distance);
+        const d_unit = body.tech_d_unit ? body.tech_d_unit.trim() : '';
+        const selection = body.tech_selection;
+        const per = parseFloat(body.tech_per);
+        const distance1 = body.tech_distance1 || [];
+        const charge1 = body.tech_charge1 || [];
+        const selection3 = body.tech_selection3;
+        const field = parseFloat(body.tech_electric_field);
+        const charge_unit = body.tech_charge_unit || [];
+        const distance_unit = body.tech_distance_unit || [];
+        
+        const d_unit_name = ["nm", "μm", "mm", "cm", "m", "km", "in", "ft", "yd", "mi"];
+        const c_unit_name = ["PC", "NC", "μC", "mC", "C", "e"];
+        
+        const d_unit_index = d_unit_name.indexOf(d_unit) + 1;
+        const c_unit_index = c_unit_name.indexOf(c_unit) + 1;
+
+        let convert;  
+        let convert2;
+
+        if (!isNaN(charge) && !isNaN(distance) && !isNaN(per) && charge != 0 && distance > 0 && per != 0) {
+            if (selection == "1") {
+                if (selection3 == "1") {
+                    if (c_unit_index == 1) {
+                        convert = charge * 0.000001;
+                    } else if (c_unit_index == 2) {
+                        convert = charge * 0.000000001;
+                    } else if (c_unit_index == 3) {
+                        convert = charge * 0.000001;
+                    } else if (c_unit_index == 4) {
+                        convert = charge * 0.001;
+                    } else if (c_unit_index == 5) {
+                        convert = charge * 1;
+                    } else if (c_unit_index == 6) {
+                        convert = charge * 1.60218e-19;
+                    } else {
+                        param['error'] = 'Invalid charge unit';
+                        return param;
+                    }
+                    
+                    if (d_unit_index == 1) {
+                        convert2 = distance * 0.000000001;
+                    } else if (d_unit_index == 2) {
+                        convert2 = distance * 0.000001;
+                    } else if (d_unit_index == 3) {
+                        convert2 = distance * 0.001;
+                    } else if (d_unit_index == 4) {
+                        convert2 = distance * 0.01;
+                    } else if (d_unit_index == 5) {
+                        convert2 = distance * 1;
+                    } else if (d_unit_index == 6) {
+                        convert2 = distance * 1000;
+                    } else if (d_unit_index == 7) {
+                        convert2 = distance * 0.0254;
+                    } else if (d_unit_index == 8) {
+                        convert2 = distance * 0.3048;
+                    } else if (d_unit_index == 9) {
+                        convert2 = distance * 0.9144;
+                    } else if (d_unit_index == 10) {
+                        convert2 = distance * 1609.3;
+                    } else {
+                        param['error'] = 'Invalid distance unit';
+                        return param;
+                    }
+                    
+                    const field3 = (8.9875517923e9 * convert) / (convert2 * convert2) / (per);
+                    param['tech_answer'] = field3;
+                    return param;
+                } else if (selection3 == "2") {
+                    if (c_unit_index == 1) {
+                        convert = charge * 0.000001;
+                    } else if (c_unit_index == 2) {
+                        convert = charge * 0.000000001;
+                    } else if (c_unit_index == 3) {
+                        convert = charge * 0.000001;
+                    } else if (c_unit_index == 4) {
+                        convert = charge * 0.001;
+                    } else if (c_unit_index == 5) {
+                        convert = charge * 1;
+                    } else if (c_unit_index == 6) {
+                        convert = charge * 1.60218e-19;
+                    } else {
+                        param['error'] = 'Invalid charge unit';
+                        return param;
+                    }
+                    
+                    const distance_formula = (((8.9875517923e9 * convert) / (field)) / (per));
+                    const sqrt = Math.sqrt(distance_formula);
+                    param['tech_answer1'] = sqrt;
+                    return param;
+                } else if (selection3 == "3") {
+                    if (d_unit_index == 1) {
+                        convert2 = distance * 0.000000001;
+                    } else if (d_unit_index == 2) {
+                        convert2 = distance * 0.000001;
+                    } else if (d_unit_index == 3) {
+                        convert2 = distance * 0.001;
+                    } else if (d_unit_index == 4) {
+                        convert2 = distance * 0.01;
+                    } else if (d_unit_index == 5) {
+                        convert2 = distance * 1;
+                    } else if (d_unit_index == 6) {
+                        convert2 = distance * 1000;
+                    } else if (d_unit_index == 7) {
+                        convert2 = distance * 0.0254;
+                    } else if (d_unit_index == 8) {
+                        convert2 = distance * 0.3048;
+                    } else if (d_unit_index == 9) {
+                        convert2 = distance * 0.9144;
+                    } else if (d_unit_index == 10) {
+                        convert2 = distance * 1609.3;
+                    } else {
+                        param['error'] = 'Invalid distance unit';
+                        return param;
+                    }
+                    
+                    const charge_formula = (((field) * (convert2 * convert2) / (8.9875517923e9)) / (per));
+                    param['tech_answer2'] = charge_formula;
+                    return param;
+                }
+            }
+        } else {
+            param['error'] = 'Please! Check Your Input';
+            return param;
+        }
+
+        if (selection == "2") {
+            let formula2 = 0;
+            let i = 0;
+            const c1 = charge1.length;
+            const d1 = distance1.length;
+            
+
+            // Calculate formula2 from arrays
+            while (i < c1 && i < d1) {
+                const chargeVal = parseFloat(charge1[i]);
+                const distanceVal = parseFloat(distance1[i]);
+                
+                console.log(`Processing index ${i}: charge=${chargeVal}, distance=${distanceVal}`);
+                
+                if (!isNaN(chargeVal) && !isNaN(distanceVal) && chargeVal > 0 && distanceVal > 0) {
+                    const value1 = chargeVal;
+                    const value2 = charge_unit[i];
+                    const value2_index = c_unit_name.indexOf(value2) + 1;
+                    
+                    
+                    let con;
+                    if (value2_index == 1) {
+                        con = value1 * 0.000001;
+                    } else if (value2_index == 2) {
+                        con = value1 * 0.000000001;
+                    } else if (value2_index == 3) {
+                        con = value1 * 0.000001;
+                    } else if (value2_index == 4) {
+                        con = value1 * 0.001;
+                    } else if (value2_index == 5) {
+                        con = value1 * 1;
+                    } else if (value2_index == 6) {
+                        con = value1 * 1.60218e-19;
+                    } else {
+                        console.log(`Invalid charge unit: ${value2}`);
+                        param['error'] = `Invalid charge unit: ${value2}`;
+                        return param;
+                    }
+                    
+                    const value3 = distanceVal;
+                    const value4 = distance_unit[i];
+                    const value4_index = d_unit_name.indexOf(value4) + 1;
+                    
+                    
+                    let con2;
+                    if (value4_index == 1) {
+                        con2 = value3 * 0.000000001;
+                    } else if (value4_index == 2) {
+                        con2 = value3 * 0.000001;
+                    } else if (value4_index == 3) {
+                        con2 = value3 * 0.001;
+                    } else if (value4_index == 4) {
+                        con2 = value3 * 0.01;
+                    } else if (value4_index == 5) {
+                        con2 = value3 * 1;
+                    } else if (value4_index == 6) {
+                        con2 = value3 * 1000;
+                    } else if (value4_index == 7) {
+                        con2 = value3 * 0.0254;
+                    } else if (value4_index == 8) {
+                        con2 = value3 * 0.3048;
+                    } else if (value4_index == 9) {
+                        con2 = value3 * 0.9144;
+                    } else if (value4_index == 10) {
+                        con2 = value3 * 1609.3;
+                    } else {
+                        console.log(`Invalid distance unit: ${value4}`);
+                        param['error'] = `Invalid distance unit: ${value4}`;
+                        return param;
+                    }
+                    
+                    
+                    const partial = (8.9875517923e9 * con) / (con2 * con2);
+                    
+                    formula2 = formula2 + partial;
+                    i++;
+                } else {
+                    param['error'] = 'Please! Check Your Input in array values';
+                    return param;
+                }
+            }
+            
+
+            // Calculate main charge and distance
+            if (!isNaN(charge) && !isNaN(distance) && !isNaN(per) && charge > 0 && distance > 0 && per > 0) {
+                if (c_unit_index == 1) {
+                    convert = charge * 0.000001;
+                } else if (c_unit_index == 2) {
+                    convert = charge * 0.000000001;
+                } else if (c_unit_index == 3) {
+                    convert = charge * 0.000001;
+                } else if (c_unit_index == 4) {
+                    convert = charge * 0.001;
+                } else if (c_unit_index == 5) {
+                    convert = charge * 1;
+                } else if (c_unit_index == 6) {
+                    convert = charge * 1.60218e-19;
+                } else {
+                    param['error'] = 'Invalid main charge unit';
+                    return param;
+                }
+                
+                if (d_unit_index == 1) {
+                    convert2 = distance * 0.000000001;
+                } else if (d_unit_index == 2) {
+                    convert2 = distance * 0.000001;
+                } else if (d_unit_index == 3) {
+                    convert2 = distance * 0.001;
+                } else if (d_unit_index == 4) {
+                    convert2 = distance * 0.01;
+                } else if (d_unit_index == 5) {
+                    convert2 = distance * 1;
+                } else if (d_unit_index == 6) {
+                    convert2 = distance * 1000;
+                } else if (d_unit_index == 7) {
+                    convert2 = distance * 0.0254;
+                } else if (d_unit_index == 8) {
+                    convert2 = distance * 0.3048;
+                } else if (d_unit_index == 9) {
+                    convert2 = distance * 0.9144;
+                } else if (d_unit_index == 10) {
+                    convert2 = distance * 1609.3;
+                } else {
+                    param['error'] = 'Invalid main distance unit';
+                    return param;
+                }
+            } else {
+                param['error'] = 'Please! Check Your main Input';
+                return param;
+            }
+            
+            
+            const mainField = (8.9875517923e9 * convert) / (convert2 * convert2) / (per);
+            const field2 = mainField + formula2;
+            param['tech_answer3'] = field2;
+            return param;
+        }
+        
+        param['error'] = 'Please! Check Your Input';
+        return param;
+    }
+
+        /**
+    * getCalculationelMomentOfInertiaCalculator: Service Method
+    * POST: /api/calculators-lol/moment-of-inertia-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+      async getCalculationelMomentOfInertiaCalculator(body) {
+        const param = {};
+        
+        const selection = body.tech_selection;
+        const b_width = parseFloat(body.tech_b_width);
+        const height = parseFloat(body.tech_height);
+        const dis_to_height = parseFloat(body.tech_dis_to_height);
+        const rad = parseFloat(body.tech_radius);
+        const tfw = parseFloat(body.tech_tfw);
+        const tft = parseFloat(body.tech_tft);
+        const bfw = parseFloat(body.tech_bfw);
+        const bft = parseFloat(body.tech_bft);
+        const wh = parseFloat(body.tech_wh);
+        const wt = parseFloat(body.tech_wt);
+        const r = parseFloat(body.tech_r);
+        const h1 = parseFloat(body.tech_h1);
+        const b1 = parseFloat(body.tech_b1);
+        const lft = parseFloat(body.tech_lft);
+        const lfh = parseFloat(body.tech_lfh);
+        const rad2 = parseFloat(body.tech_radius2);
+        const unit = body.tech_unit;
+
+        param['m2'] = `${unit}<sup>2</sup>`;
+        param['m4'] = `${unit}<sup>4</sup>`;
+        param['m'] = `${unit}`;
+        param['m3'] = `${unit}<sup>3</sup>`;
+
+        if (!isNaN(b_width) && !isNaN(height) && !isNaN(dis_to_height) && (b_width > 0) && (height > 0) && (dis_to_height > 0)) {
+            if (selection == "1") {
+                //Triangle
+                const calculate_ix = ((b_width) * (height * height * height) / (36));
+                const calculate_iy = ((height) * (b_width * b_width * b_width) - (height * dis_to_height * (b_width * b_width)) + (b_width * height * (dis_to_height * dis_to_height)) / (36));
+                const calculate_area = (b_width * height) / 2;
+                const elastic_section_modulus1 = (b_width * height * height) / 24;
+                const elastic_section_modulus2 = (b_width * b_width * b_width) / 24;
+                const calculate_cy = (height) / 3;
+                const calculate_cx = (height) / 2;
+                 
+                param['tech_answer1'] = isNaN(calculate_ix) ? 'NaN' : calculate_ix;
+                param['tech_answer2'] = isNaN(calculate_iy) ? 'NaN' : calculate_iy;
+                param['tech_answer3'] = isNaN(calculate_cy) ? 'NaN' : calculate_cy;
+                param['tech_answer4'] = isNaN(calculate_cx) ? 'NaN' : calculate_cx;
+                param['tech_answer5'] = isNaN(calculate_area) ? 'NaN' : calculate_area;
+                param['tech_answer6'] = isNaN(elastic_section_modulus1) ? 'NaN' : elastic_section_modulus1;
+                param['tech_answer7'] = isNaN(elastic_section_modulus1) ? 'NaN' : elastic_section_modulus1;
+                return param;
+            }
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+
+        if (!isNaN(b_width) && !isNaN(height) && (b_width > 0) && (height > 0)) {
+            if (selection == "2") {
+                //Rectangle
+                const calculate_ix = (b_width * height * height * height) / 12;
+                const calculate_iy = (height * b_width * b_width * b_width) / 12;
+                const calculate_cy = (height) / 2;
+                const calculate_cx = (b_width) / 2;
+                const calculate_area = (b_width * height);
+                const elastic_section_modulus1 = calculate_ix / calculate_cy;
+                const elastic_section_modulus2 = calculate_iy / calculate_cx;
+                const jc = (1 / 12 * (b_width * height)) * (b_width * b_width) + (height * height);
+                
+                param['tech_answer1'] = isNaN(calculate_ix) ? 'NaN' : calculate_ix;
+                param['tech_answer2'] = isNaN(calculate_iy) ? 'NaN' : calculate_iy;
+                param['tech_answer3'] = isNaN(calculate_cy) ? 'NaN' : calculate_cy;
+                param['tech_answer4'] = isNaN(calculate_cx) ? 'NaN' : calculate_cx;
+                param['tech_answer5'] = isNaN(calculate_area) ? 'NaN' : calculate_area;
+                param['tech_answer6'] = isNaN(elastic_section_modulus1) ? 'NaN' : elastic_section_modulus1;
+                param['tech_answer7'] = isNaN(elastic_section_modulus2) ? 'NaN' : elastic_section_modulus2;
+                
+                return param;
+            }
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+
+        if (!isNaN(rad) && !isNaN(rad2) && (rad > 0) && (rad2 > 0)) {
+            if (selection == "3") {
+                if (rad > rad2) {
+                    const calculate_ix = ((Math.PI / 64) * (rad * rad * rad * rad)) - ((Math.PI / 64) * (rad2 * rad2 * rad2 * rad2));
+                    const calculate_iy = ((Math.PI / 64) * (rad * rad * rad * rad)) - ((Math.PI / 64) * (rad2 * rad2 * rad2 * rad2));
+                    const d1 = rad / 2;
+                    const d2 = rad2 / 2;
+                    const calculate_area = ((d1 * d1) - (d2 * d2)) * Math.PI;
+                    const calculate_cy = (rad / 2);
+                    const calculate_cx = (rad / 2);
+                    const elastic_section_modulus1 = (calculate_ix / calculate_cy);
+                    const elastic_section_modulus2 = (calculate_iy / calculate_cx);
+                    param['tech_answer1'] = isNaN(calculate_ix) ? 'NaN' : calculate_ix;
+                    param['tech_answer2'] = isNaN(calculate_iy) ? 'NaN' : calculate_iy;
+                    param['tech_answer3'] = isNaN(calculate_cy) ? 'NaN' : calculate_cy;
+                    param['tech_answer4'] = isNaN(calculate_cx) ? 'NaN' : calculate_cx;
+                    param['tech_answer5'] = isNaN(calculate_area) ? 'NaN' : calculate_area;
+                    param['tech_answer6'] = isNaN(elastic_section_modulus1) ? 'NaN' : elastic_section_modulus1;
+                    param['tech_answer7'] = isNaN(elastic_section_modulus2) ? 'NaN' : elastic_section_modulus2;
+                    return param;
+                } else {
+                    param['error'] = 'D must be larger than d';
+                    return param;
+                }
+            }
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+
+        if (!isNaN(rad)) {
+            if (selection == "4") {
+                //Circle
+                const calculate_ix = (Math.PI / 64) * rad * rad * rad * rad;
+                const calculate_iy = (Math.PI / 64) * rad * rad * rad * rad;
+                const calculate_area = (Math.PI * rad * rad) / 4;
+                const calculate_cy = (rad) / 2;
+                const calculate_cx = (rad) / 2;
+                const elastic_section_modulus1 = (calculate_ix / calculate_cy);
+                const elastic_section_modulus2 = (calculate_iy / calculate_cx);
+                
+                  param['tech_answer1'] = isNaN(calculate_ix) ? 'NaN' : calculate_ix;
+                param['tech_answer2'] = isNaN(calculate_iy) ? 'NaN' : calculate_iy;
+                param['tech_answer3'] = isNaN(calculate_cy) ? 'NaN' : calculate_cy;
+                param['tech_answer4'] = isNaN(calculate_cx) ? 'NaN' : calculate_cx;
+                param['tech_answer5'] = isNaN(calculate_area) ? 'NaN' : calculate_area;
+                param['tech_answer6'] = isNaN(elastic_section_modulus1) ? 'NaN' : elastic_section_modulus1;
+                param['tech_answer7'] = isNaN(elastic_section_modulus2) ? 'NaN' : elastic_section_modulus2;
+                return param;
+            }
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+
+        if (!isNaN(b_width) && !isNaN(height) && !isNaN(h1) && !isNaN(b1) && (b_width) > 0 && (height) > 0 && (h1) > 0 && b1 > 0) {
+            if (selection == "7") {
+                if (b_width > h1 && height > b1) {
+                    //Hollow Rectangular
+                    const calculate_area = (b_width * height) - (h1 * b1);
+                    const calculate_ix = ((b_width * height * height * height) / 12) - ((b1 * h1 * h1 * h1) / 12);
+                    const calculate_iy = ((b_width * b_width * b_width * height) / 12) - ((b1 * b1 * b1 * h1) / 12);
+                    const calculate_cy = (b_width) / 2;
+                    const calculate_cx = (height) / 2;
+                    const section_modulus1 = (calculate_ix / calculate_cx);
+                    const section_modulus2 = (calculate_iy / calculate_cy);
+                    
+                    param['tech_answer1'] = isNaN(calculate_ix) ? 'NaN' : calculate_ix;
+                    param['tech_answer2'] = isNaN(calculate_iy) ? 'NaN' : calculate_iy;
+                    param['tech_answer3'] = isNaN(calculate_cy) ? 'NaN' : calculate_cy;
+                    param['tech_answer4'] = isNaN(calculate_cx) ? 'NaN' : calculate_cx;
+                    param['tech_answer5'] = isNaN(calculate_area) ? 'NaN' : calculate_area;
+                    param['tech_answer6'] = isNaN(section_modulus1) ? 'NaN' : section_modulus1;
+                    param['tech_answer7'] = isNaN(section_modulus2) ? 'NaN' : section_modulus2;
+                    
+                    return param;
+                } else {
+                    param['error'] = 'h1 must be larger than h and b must be larger than b1';
+                    return param;
+                }
+            }
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+
+        if (!isNaN(bfw) && !isNaN(bft) && !isNaN(tft) && !isNaN(tfw) && !isNaN(wt) && !isNaN(wh) && bfw > 0 && bft > 0 && tft > 0 && tfw > 0 && wh > 0 && wt > 0) {
+            if (selection == "8") {  
+                //I-Beam
+                let x3,x2;
+                const a1 = (bfw * bft);
+                const a2 = (wt * wh);
+                const a3 = (tfw * tft);
+                const total_area = a1 + a2 + a3;
+                const x1 = x2 = x3 = tfw;
+                const y1 = (bft / 2);
+                const y2 = bft + (wh / 2);
+                const y3 = bft + wh + (tft / 2);
+                const y_dash = ((a1 * y1) + (a2 * y2) + (a3 * y3)) / (a1 + a2 + a3);
+                const x_dash = tfw;
+                const hy1 = y_dash - y1;
+                const xx1 = (((bfw * bft * bft * bft) / 12)) + ((a1) * (hy1 * hy1));
+                const hy2 = y_dash - y2;
+                const xx2 = (((wt * wh * wh * wh) / 12)) + ((a2) * (hy2 * hy2));
+                const hy3 = y_dash - y3;
+                const xx3 = (((tfw * tft * tft * tft) / 12)) + ((a3) * (hy3 * hy3));
+                const total_x = xx1 + xx2 + xx3;
+                const hx1 = x_dash - x1;
+                const hx2 = x_dash - x2;
+                const hx3 = x_dash - x3;
+                const ans1 = (bfw * bfw * bfw * bft) / 12;
+                const ans2 = (wt * wt * wt * wh) / 12;
+                const ans3 = (tfw * tfw * tfw * tft) / 12;
+                const ans_y = ans1 + ans2 + ans3;
+                const section_modulus1 = (total_x / y_dash);
+                const section_modulus2 = (ans_y / x_dash);
+                
+                 param['tech_answer1'] = isNaN(total_x) ? 'NaN' : total_x;
+                param['tech_answer2'] = isNaN(ans_y) ? 'NaN' : ans_y;
+                param['tech_answer3'] = isNaN(y_dash) ? 'NaN' : y_dash;
+                param['tech_answer4'] = isNaN(x_dash) ? 'NaN' : x_dash;
+                param['tech_answer5'] = isNaN(total_area) ? 'NaN' : total_area;
+                param['tech_answer6'] = isNaN(section_modulus1) ? 'NaN' : section_modulus1;
+                param['tech_answer7'] = isNaN(section_modulus2) ? 'NaN' : section_modulus2;
+                return param;
+            }
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+
+        if (!isNaN(bfw) && !isNaN(bft) && !isNaN(lfh) && !isNaN(lft) && bfw > 0 && bft > 0 && lfh > 0 && lft > 0) {
+            if (selection == "9") {
+                //L-Beam
+                const a1 = (bfw * bft);
+                const a2 = (lfh * lft);
+                const total_area = a1 + a2;
+                const x1 = (bfw / 2);
+                const x2 = (bft / 2);
+                const y1 = (lft / 2);
+                const y2 = (lft + (lfh / 2));
+                const x_dash = ((a1 * x1) + (a2 * x2)) / (a1 + a2);
+                const y_dash = ((a1 * y1) + (a2 * y2)) / (a1 + a2);
+                const hy1 = y_dash - y1;
+                const xx1 = ((bfw * bft * bft * bft) / 12) + (a1) * (hy1 * hy1);
+                const hy2 = y_dash - y2;
+                const xx2 = ((lft * lfh * lfh * lfh) / 12) + (a2) * (hy2 * hy2);
+                const xxx = xx1 + xx2;
+                const hx1 = x_dash - x1;
+                const yy1 = ((bft * bfw * bfw * bfw) / 12) + (a1) * (hx1 * hx1);
+                const hx2 = x_dash - x2;
+                const yy2 = ((lfh * lft * lft * lft) / 12) + ((a2) * (hx2 * hx2));
+                const yyy = yy1 + yy2;
+                const section_modulus1 = xxx / y_dash;
+                const section_modulus2 = yyy / x_dash;
+                
+                 param['tech_answer1'] = isNaN(xxx) ? 'NaN' : xxx;
+                param['tech_answer2'] = isNaN(yyy) ? 'NaN' : yyy;
+                param['tech_answer3'] = isNaN(y_dash) ? 'NaN' : y_dash;
+                param['tech_answer4'] = isNaN(x_dash) ? 'NaN' : x_dash;
+                param['tech_answer5'] = isNaN(total_area) ? 'NaN' : total_area;
+                param['tech_answer6'] = isNaN(section_modulus1) ? 'NaN' : section_modulus1;
+                param['tech_answer7'] = isNaN(section_modulus2) ? 'NaN' : section_modulus2;
+                return param;
+            }
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+
+        if (!isNaN(tfw) && !isNaN(tft) && !isNaN(wh) && !isNaN(wt) && tfw > 0 && tft > 0 && wh > 0 && wh > 0) {
+            if (selection == "10") {
+                //T-Beam
+                const a1 = tft * tfw;
+                const a2 = wh * wt;
+                const area = a1 + a2;
+                const y1 = tfw + (tft / 2);
+                const y2 = (wh / 2);
+                var x_bar = (wh / 2);
+                const x1 = (tfw / 2);
+                const x2 = (tfw / 2);
+                var x_bar = ((a1 * x1) + (a2 * x2)) / (a1 + a2);
+                const y_bar = ((a1 * y1) + (a2 * y2)) / (a1 + a2);
+                const xx1 = ((tfw * tft * tft * tft) / 12) + a1 * ((y_bar - y1) * (y_bar - y1));
+                const h2 = y_bar - y2;
+                const xx2 = ((wh * wh * wh * wt) / 12) + a2 * (h2 * h2);
+                const xxx = xx1 + xx2;
+                const hx1 = x_bar - x1;
+                const yy1 = ((wh * wh * wh * wt) / 12) + a1 * (hx1 - hx1);
+                const hx2 = x_bar - x2;
+                const yy2 = ((wh * wt * wt * wt) / 12) + a2 * (hx2 - hx2);
+                const yyy = yy1 + yy2;
+                
+                param['tech_answer1'] = isNaN(xxx) ? 'NaN' : xxx;
+                param['tech_answer2'] = isNaN(yyy) ? 'NaN' : yyy;
+                param['tech_answer3'] = isNaN(y_bar) ? 'NaN' : y_bar;
+                param['tech_answer4'] = isNaN(x_bar) ? 'NaN' : x_bar;
+                param['tech_answer5'] = isNaN(area) ? 'NaN' : area;
+                param['tech_answer6'] = isNaN(xxx / y_bar) ? 'NaN' : xxx / y_bar;
+                param['tech_answer7'] = isNaN(yyy / x_bar) ? 'NaN' : yyy / x_bar;
+                
+                return param;
+            }
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+
+        if (!isNaN(bfw) && !isNaN(bft) && !isNaN(tfw) && !isNaN(tft) && !isNaN(wt) && !isNaN(h1) && bfw > 0 && bft > 0 && tfw > 0 && tft > 0 && tfw > 0 && wt > 0 && h1 > 0) {
+            if (selection == "11") {
+                //Channel
+                const a1 = (bfw * bft);
+                const a2 = (wt * h1);
+                const a3 = (tfw * tft);
+                const total_area = a1 + a2 + a3;
+                const x1 = (bfw / 2);
+                const x2 = (wt / 2);
+                const x3 = (tfw) / 2;
+                const x_dash = ((a1 * x1) + (a2 * x2) + (a3 * x3)) / ((a1 + a2 + a3));
+                const y1 = (bft / 2);
+                const y2 = (bft + (h1 / 2));
+                const y3 = (bft + h1 + (wt / 2));
+                const y_dash = ((a1 * y1) + (a2 * y2) + (a3 * y3)) / ((a1 + a2 + a3));
+                const hy1 = y_dash - y1;
+                const xx1 = ((bfw * bft * bft * bft) / 12) + (a1 * (hy1 * hy1));
+                const hy2 = y_dash - y2;
+                const xx2 = ((wt * h1 * h1 * h1) / 12) + (a2 * (hy2 * hy2));
+                const hy3 = y_dash - y3;
+                const xx3 = ((tfw * tft * tft * tft) / 12) + (a3 * (hy3 * hy3));
+                const calculate_ix = xx1 + xx2 + xx3;
+                const hx1 = x_dash - x1;
+                const yy1 = ((bft * bfw * bfw * bfw) / 12) + (a1 * (hx1 * hx1));
+                const hx2 = x_dash - x2;
+                const yy2 = ((wt * wt * wt * h1) / 12) + (a2 * (hx2 * hx2));
+                const hx3 = x_dash - x3;
+                const yy3 = ((tfw * tfw * tfw * tft) / 12) + (a3 * (hx3 * hx3));
+                const yyy = yy1 + yy2 + yy3;
+                
+                param['tech_answer1'] = isNaN(calculate_ix) ? 'NaN' : calculate_ix;
+                param['tech_answer2'] = isNaN(yyy) ? 'NaN' : yyy;
+                param['tech_answer3'] = isNaN(y_dash) ? 'NaN' : y_dash;
+                param['tech_answer4'] = isNaN(x_dash) ? 'NaN' : x_dash;
+                param['tech_answer5'] = isNaN(total_area) ? 'NaN' : total_area;
+                param['tech_answer6'] = isNaN(calculate_ix / y_dash) ? 'NaN' : calculate_ix / y_dash;
+                param['tech_answer7'] = isNaN(yyy / x_dash) ? 'NaN' : yyy / x_dash;
+                
+                return param;
+            }
+        } else {
+            param['error'] = 'Please fill all fields.';
+            return param;
+        }
+
+        param['error'] = 'Please fill all fields.';
+        return param;
+    }
+
+       /**
+    * getCalculationelFreeFallCalculator: Service Method
+    * POST: /api/calculators-lol/free-fall-calculator
+    * @param {Object} body Having Properties for Creating New Roles
+    * @returns Object with message property having success method
+    */
+
+      async getCalculationelFreeFallCalculator(body) {
+      }
+
+
 
 
 }
