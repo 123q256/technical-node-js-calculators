@@ -21706,6 +21706,85 @@ router.post(
   })
 );
 
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/flow-rate-calculator
+ */
+
+router.post(
+  "/flow-rate-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationeFlowRateCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/dimensional-analysis-calculator
+ */
+
+router.post(
+  "/dimensional-analysis-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationeDimensionalAnalysisCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/acceleration-calculator
+ */
+
+router.post(
+  "/acceleration-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.getCalculationeAccelerationCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
 
 
 
