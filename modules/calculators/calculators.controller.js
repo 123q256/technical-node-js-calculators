@@ -7,6 +7,124 @@ const router = require("express").Router();
 
 /**
  * POST: Used to get calculation based on your age
+ * /api/calculators-lol/fifo-lifo-calculator
+ */
+
+router.post(
+  "/fifo-lifo-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.FifoLifoCalculator(req.body);
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/tire-size-calculator
+ */
+
+router.post(
+  "/tire-size-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.TireSizeCalculator(req.body);
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/tire-size-calculator
+ */
+
+router.post(
+  "/base-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.BaseNumberCalculator(req.body);
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/height-comparison
+ */
+
+router.post(
+  "/height-comparison",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.HeightComparison(req.body);
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+/**
+ * POST: Used to get calculation based on your age
+ * /api/calculators-lol/tire-size-calculator
+ */
+
+router.post(
+  "/system-of-equations-calculator",
+  asyncHandler(async (req, res) => {
+    const result = await CalculatorsServices.SystemOfEquationsCalculator(
+      req.body
+    );
+
+    // Check if result contains an error
+    if (result && result.error) {
+      return res
+        .status(HttpCodes.BAD_REQUEST) // 400
+        .json(new ApiResponse(result));
+    }
+
+    // Otherwise return success
+    return res
+      .status(HttpCodes.OK) // 200
+      .json(new ApiResponse(result));
+  })
+);
+
+/**
+ * POST: Used to get calculation based on your age
  * /api/calculators-lol/cat-age-calculator
  */
 
@@ -468,7 +586,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -16233,7 +16350,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/days-from-today
@@ -16311,8 +16427,6 @@ router.post(
   })
 );
 
-
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/elapsed-time-calculator
@@ -16339,7 +16453,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -16375,9 +16488,8 @@ router.post(
 router.post(
   "/time-duration-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTimeDurationCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationTimeDurationCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -16392,7 +16504,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -16420,8 +16531,6 @@ router.post(
   })
 );
 
-
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/working-days-calculator
@@ -16446,7 +16555,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -16474,8 +16582,6 @@ router.post(
   })
 );
 
-
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/month-calculator
@@ -16502,7 +16608,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/reading-time-calculator
@@ -16527,7 +16632,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -16556,7 +16660,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/date-duration-calculator
@@ -16581,8 +16684,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -16696,9 +16797,10 @@ router.post(
 router.post(
   "/hypergeometric-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHypergeometricCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationHypergeometricCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -16748,9 +16850,10 @@ router.post(
 router.post(
   "/correlation-coefficient-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCorrelationCoefficientCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationCorrelationCoefficientCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -16800,9 +16903,10 @@ router.post(
 router.post(
   "/probability-density-function-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationProbabilityDensityFunctionCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationProbabilityDensityFunctionCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -16930,9 +17034,8 @@ router.post(
 router.post(
   "/test-statistic-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTestStatisticCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationTestStatisticCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -16956,9 +17059,10 @@ router.post(
 router.post(
   "/pooled-variance-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPooledVarianceCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationPooledVarianceCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -16982,9 +17086,10 @@ router.post(
 router.post(
   "/sample-distribution-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSampleDistributionCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationSampleDistributionCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17000,7 +17105,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/normal-distribution-calculator
@@ -17009,9 +17113,10 @@ router.post(
 router.post(
   "/normal-distribution-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationNormalDistributionCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationNormalDistributionCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17035,9 +17140,10 @@ router.post(
 router.post(
   "/critical-value-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationNormalCriticalValueCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationNormalCriticalValueCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17061,9 +17167,10 @@ router.post(
 router.post(
   "/ideal-gas-law-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationNormalIdealGasLawCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationNormalIdealGasLawCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17087,9 +17194,8 @@ router.post(
 router.post(
   "/mole-fraction-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMoleFractionCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationMoleFractionCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17139,9 +17245,10 @@ router.post(
 router.post(
   "/partial-pressure-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPartialPressureCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationPartialPressureCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17217,9 +17324,10 @@ router.post(
 router.post(
   "/combined-gas-law-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCombinedGasLawCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationCombinedGasLawCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17243,9 +17351,8 @@ router.post(
 router.post(
   "/gay-lussacs-law-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGayLussacsLawCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationGayLussacsLawCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17269,9 +17376,8 @@ router.post(
 router.post(
   "/mass-percent-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMassPercentCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationMassPercentCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17295,9 +17401,8 @@ router.post(
 router.post(
   "/rate-constant-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRateConstantCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationRateConstantCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17399,9 +17504,8 @@ router.post(
 router.post(
   "/gross-income-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGrossIncomeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationGrossIncomeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17425,9 +17529,8 @@ router.post(
 router.post(
   "/monthly-income-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMonthlyIncomeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationMonthlyIncomeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17451,9 +17554,8 @@ router.post(
 router.post(
   "/money-counter-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMoneyCounterCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationMoneyCounterCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17477,9 +17579,10 @@ router.post(
 router.post(
   "/discounted-cash-flow-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationdisCountedCashFlowCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationdisCountedCashFlowCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17503,9 +17606,10 @@ router.post(
 router.post(
   "/va-disability-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVaDisdisabilityCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationVaDisdisabilityCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17555,9 +17659,8 @@ router.post(
 router.post(
   "/depreciation-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDepreciationCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationDepreciationCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17633,9 +17736,8 @@ router.post(
 router.post(
   "/age-difference-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAgeDifferenceCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationAgeDifferenceCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17659,9 +17761,8 @@ router.post(
 router.post(
   "/freight-class-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFreightClassCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationFreightClassCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17729,7 +17830,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/birthday-calculator
@@ -17756,7 +17856,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/half-birthday-calculator
@@ -17765,9 +17864,8 @@ router.post(
 router.post(
   "/half-birthday-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHalfBirthdayCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationHalfBirthdayCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17835,7 +17933,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/pant-size-calculator
@@ -17896,9 +17993,8 @@ router.post(
 router.post(
   "/anniversary-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAnniversaryCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationAnniversaryCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17974,9 +18070,10 @@ router.post(
 router.post(
   "/batting-average-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBattingAverageCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationBattingAverageCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18052,9 +18149,8 @@ router.post(
 router.post(
   "/plant-spacing-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPlantSpacingCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationPlantSpacingCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18104,9 +18200,8 @@ router.post(
 router.post(
   "/how-many-pages-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHowManyPagesCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationHowManyPagesCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18130,9 +18225,8 @@ router.post(
 router.post(
   "/how-many-words-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHowManyWordsCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationHowManyWordsCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18226,7 +18320,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/tdee-calculator
@@ -18253,7 +18346,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/calorie-deficit-calculator
@@ -18262,9 +18354,10 @@ router.post(
 router.post(
   "/calorie-deficit-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCalorieDeficitCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationCalorieDeficitCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18306,7 +18399,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/height-percentile-calculator
@@ -18315,9 +18407,10 @@ router.post(
 router.post(
   "/height-percentile-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHeightPercentileCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationHeightPercentileCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18341,9 +18434,10 @@ router.post(
 router.post(
   "/jump-rope-calorie-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationJumpRopeCalorieCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationJumpRopeCalorieCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18359,7 +18453,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/biological-age-calculator
@@ -18368,9 +18461,8 @@ router.post(
 router.post(
   "/biological-age-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBiologicalAgeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationBiologicalAgeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18394,9 +18486,10 @@ router.post(
 router.post(
   "/pregnancy-weight-gain-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPregnancyWeightGainCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationPregnancyWeightGainCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18412,7 +18505,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/stroke-volume-calculator
@@ -18421,9 +18513,8 @@ router.post(
 router.post(
   "/stroke-volume-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationStrokeVolumeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationStrokeVolumeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18447,9 +18538,8 @@ router.post(
 router.post(
   "/navy-body-fat-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationNavyBodyFatCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationNavyBodyFatCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18525,9 +18615,8 @@ router.post(
 router.post(
   "/carboplatin-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCarboplatinCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationCarboplatinCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18569,7 +18658,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/weight-percentile-calculator
@@ -18578,9 +18666,10 @@ router.post(
 router.post(
   "/weight-percentile-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationWeightPercentileCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationWeightPercentileCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18656,9 +18745,10 @@ router.post(
 router.post(
   "/body-fat-percentage-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBodyFatPercentageCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationBodyFatPercentageCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18752,7 +18842,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/circumference-calculator
@@ -18761,9 +18850,8 @@ router.post(
 router.post(
   "/circumference-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCircumferenceCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationCircumferenceCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18778,7 +18866,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -18805,8 +18892,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -18860,7 +18945,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/ratio-calculator
@@ -18887,7 +18971,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/interval-notation-calculator
@@ -18896,9 +18979,10 @@ router.post(
 router.post(
   "/interval-notation-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationIntervalNotationCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationIntervalNotationCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18913,7 +18997,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -18949,9 +19032,10 @@ router.post(
 router.post(
   "/linear-approximation-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLinearApproximationCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationLinearApproximationCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18975,9 +19059,10 @@ router.post(
 router.post(
   "/average-rate-of-change-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAverageTateOfChangeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationAverageTateOfChangeCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18993,7 +19078,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/eulers-method-calculator
@@ -19002,9 +19086,8 @@ router.post(
 router.post(
   "/eulers-method-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationEulersMethodCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationEulersMethodCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19054,9 +19137,8 @@ router.post(
 router.post(
   "/tangent-plane-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTangentPlaneCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationTangentPlaneCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19106,9 +19188,10 @@ router.post(
 router.post(
   "/axis-of-symmetry-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAxisOfSymmetryCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationAxisOfSymmetryCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19132,9 +19215,10 @@ router.post(
 router.post(
   "/distributive-property-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDistributivePropertyCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationDistributivePropertyCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19158,9 +19242,10 @@ router.post(
 router.post(
   "/rational-expression-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRationalExpressionCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationRationalExpressionCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19175,7 +19260,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -19185,9 +19269,8 @@ router.post(
 router.post(
   "/area-of-a-sector-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAreaOfASectorCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationAreaOfASectorCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19202,7 +19285,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -19212,9 +19294,8 @@ router.post(
 router.post(
   "/parallelogram-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationParallelogramCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationParallelogramCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19229,7 +19310,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -19239,9 +19319,10 @@ router.post(
 router.post(
   "/reference-angle-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationReferenceAngleCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationReferenceAngleCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19256,7 +19337,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -19266,9 +19346,10 @@ router.post(
 router.post(
   "/rational-or-irrational-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRationalOrIrrationalCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationRationalOrIrrationalCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19284,7 +19365,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/simplify-radicals-calculator
@@ -19293,9 +19373,10 @@ router.post(
 router.post(
   "/simplify-radicals-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSimplifyRadicalsCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationSimplifyRadicalsCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19319,9 +19400,10 @@ router.post(
 router.post(
   "/ellipse-equation-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationEllipseEquationCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationEllipseEquationCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19362,7 +19444,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -19416,7 +19497,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/ratio-to-fraction-calculator
@@ -19425,9 +19505,10 @@ router.post(
 router.post(
   "/ratio-to-fraction-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRatioToFractionCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationRatioToFractionCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19443,7 +19524,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/gram-schmidt-calculator
@@ -19452,9 +19532,8 @@ router.post(
 router.post(
   "/gram-schmidt-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGramSchmidtCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationGramSchmidtCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19478,9 +19557,10 @@ router.post(
 router.post(
   "/volume-of-triangular-pyramid",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVolumeOfTriangularPyramidCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationVolumeOfTriangularPyramidCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19495,7 +19575,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -19531,9 +19610,10 @@ router.post(
 router.post(
   "/30-60-90-triangle-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationthirtytriangleCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationthirtytriangleCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19549,7 +19629,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/literal-equations-calculator
@@ -19558,9 +19637,10 @@ router.post(
 router.post(
   "/literal-equations-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLiteralEquationsCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationLiteralEquationsCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19584,9 +19664,8 @@ router.post(
 router.post(
   "/trigonometry-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTrigonometryCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationTrigonometryCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19636,9 +19715,10 @@ router.post(
 router.post(
   "/45-45-90-triangle-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFortyFivetriangleCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationFortyFivetriangleCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19662,9 +19742,8 @@ router.post(
 router.post(
   "/twos-complement-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTwoComplementCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationTwoComplementCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19714,9 +19793,8 @@ router.post(
 router.post(
   "/law-of-cosines-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLawOfCosinesCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationLawOfCosinesCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19740,9 +19818,8 @@ router.post(
 router.post(
   "/tangent-line-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTangentLineCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationTangentLineCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19766,9 +19843,10 @@ router.post(
 router.post(
   "/ones-complement-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationOnesComplementCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationOnesComplementCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19818,9 +19896,10 @@ router.post(
 router.post(
   "/angle-between-two-vectors-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAngleBetweenTwoVectorsCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationAngleBetweenTwoVectorsCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19836,7 +19915,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/directional-derivative-calculator
@@ -19845,9 +19923,10 @@ router.post(
 router.post(
   "/directional-derivative-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDirectionalDerivativeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationDirectionalDerivativeCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19871,9 +19950,8 @@ router.post(
 router.post(
   "/eigenvalues-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationEigenvaluesCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationEigenvaluesCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19889,7 +19967,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/equation-of-a-circle
@@ -19898,9 +19975,10 @@ router.post(
 router.post(
   "/equation-of-a-circle",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationEquationOfCircleCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationEquationOfCircleCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19924,9 +20002,10 @@ router.post(
 router.post(
   "/gaussian-elimination-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGaussianEliminationCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationGaussianEliminationCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19968,7 +20047,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/substitution-method-calculator
@@ -19977,9 +20055,10 @@ router.post(
 router.post(
   "/substitution-method-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSubstitutionMethodCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationSubstitutionMethodCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19994,33 +20073,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
-/**
- * POST: Used to get calculation based on your age
- * /api/calculators-lol/system-of-equations-calculator
- */
-
-router.post(
-  "/system-of-equations-calculator",
-  asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSystemOfEquationsCalculator(
-      req.body
-    );
-
-    // Check if result contains an error
-    if (result && result.error) {
-      return res
-        .status(HttpCodes.BAD_REQUEST) // 400
-        .json(new ApiResponse(result));
-    }
-
-    // Otherwise return success
-    return res
-      .status(HttpCodes.OK) // 200
-      .json(new ApiResponse(result));
-  })
-);
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -20030,9 +20082,8 @@ router.post(
 router.post(
   "/inverse-matrix-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationInverseMatrixCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationInverseMatrixCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20048,7 +20099,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/vector-addition-calculator
@@ -20057,9 +20107,10 @@ router.post(
 router.post(
   "/vector-addition-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVectorAdditionCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationVectorAdditionCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20083,9 +20134,8 @@ router.post(
 router.post(
   "/gauss-seidel-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGaussSeidelCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationGaussSeidelCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20109,9 +20159,10 @@ router.post(
 router.post(
   "/rationalize-the-denominator-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRationalizeTheDenominatorCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationRationalizeTheDenominatorCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20135,9 +20186,8 @@ router.post(
 router.post(
   "/surface-area-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSurfaceAreaCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationSurfaceAreaCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20161,9 +20211,8 @@ router.post(
 router.post(
   "/length-of-curve-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLengthOfCurveCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationLengthOfCurveCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20178,7 +20227,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -20206,7 +20254,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/rational-zeros-calculator
@@ -20215,9 +20262,8 @@ router.post(
 router.post(
   "/rational-zeros-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRationalZerosCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationRationalZerosCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20233,7 +20279,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/augmented-matrix-calculator
@@ -20242,9 +20287,10 @@ router.post(
 router.post(
   "/augmented-matrix-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAugmentedMatrixCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationAugmentedMatrixCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20268,9 +20314,10 @@ router.post(
 router.post(
   "/elementary-matrix-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationElementaryMatrixCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationElementaryMatrixCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20285,7 +20332,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -20295,9 +20341,10 @@ router.post(
 router.post(
   "/distance-formula-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDistanceFormulaCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationDistanceFormulaCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20313,7 +20360,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/volume-of-capsule
@@ -20322,9 +20368,10 @@ router.post(
 router.post(
   "/volume-of-capsule",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVolumeOfCapsuleCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationVolumeOfCapsuleCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20348,9 +20395,10 @@ router.post(
 router.post(
   "/conical-frustum-volume-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationConicalFrustumVolumeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationConicalFrustumVolumeCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20374,9 +20422,10 @@ router.post(
 router.post(
   "/volume-of-a-rectangle",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVolumeOfRectangleCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationVolumeOfRectangleCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20392,7 +20441,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/similar-triangles-calculator
@@ -20401,9 +20449,10 @@ router.post(
 router.post(
   "/similar-triangles-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSimilarTrianglesCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationSimilarTrianglesCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20471,7 +20520,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/velocity-calculator
@@ -20506,9 +20554,8 @@ router.post(
 router.post(
   "/displacement-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDisplacementCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationDisplacementCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20523,7 +20570,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -20637,9 +20683,10 @@ router.post(
 router.post(
   "/instantaneous-rate-of-change-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationInstantaneousRateOfChangeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationInstantaneousRateOfChangeCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20663,9 +20710,8 @@ router.post(
 router.post(
   "/specific-heat-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSpecificHeatCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationSpecificHeatCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20715,9 +20761,10 @@ router.post(
 router.post(
   "/water-viscosity-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationWaterViscosityCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationWaterViscosityCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20767,9 +20814,8 @@ router.post(
 router.post(
   "/center-of-mass-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCenterOfMassCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationCenterOfMassCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20793,9 +20839,8 @@ router.post(
 router.post(
   "/electric-field-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelEctricFieldCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelEctricFieldCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20819,9 +20864,10 @@ router.post(
 router.post(
   "/moment-of-inertia-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelMomentOfInertiaCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelMomentOfInertiaCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20871,9 +20917,8 @@ router.post(
 router.post(
   "/transformer-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelTransformerCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelTransformerCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20889,7 +20934,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/speed-distance-time-calculator
@@ -20898,9 +20942,10 @@ router.post(
 router.post(
   "/speed-distance-time-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelSpeedDistanceTimeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelSpeedDistanceTimeCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20924,9 +20969,10 @@ router.post(
 router.post(
   "/vector-projection-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelVectorProjectionCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelVectorProjectionCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20942,7 +20988,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/voltage-drop-calculator
@@ -20951,9 +20996,8 @@ router.post(
 router.post(
   "/voltage-drop-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelVoltageDropCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelVoltageDropCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20977,9 +21021,8 @@ router.post(
 router.post(
   "/quarter-mile-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelQuarterMileCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelQuarterMileCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20995,7 +21038,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/coulombs-law-calculator
@@ -21004,9 +21046,8 @@ router.post(
 router.post(
   "/coulombs-law-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelCoulombsLawCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelCoulombsLawCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21030,9 +21071,8 @@ router.post(
 router.post(
   "/solar-panel-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelSolarPanelCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelSolarPanelCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21048,7 +21088,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/centripetal-force-calculator
@@ -21057,9 +21096,10 @@ router.post(
 router.post(
   "/centripetal-force-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelCentripetalForceCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelCentripetalForceCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21083,9 +21123,10 @@ router.post(
 router.post(
   "/angular-acceleration-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelAngularAccelerationCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelAngularAccelerationCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21135,9 +21176,8 @@ router.post(
 router.post(
   "/heat-index-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelHeatIndexCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelHeatIndexCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21153,7 +21193,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/reynolds-number-calculator
@@ -21162,9 +21201,10 @@ router.post(
 router.post(
   "/reynolds-number-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelReynoldsNumberCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelReynoldsNumberCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21188,9 +21228,10 @@ router.post(
 router.post(
   "/change-in-momentum-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelChangeInMomentumCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelChangeInMomentumCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21214,9 +21255,8 @@ router.post(
 router.post(
   "/snells-law-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationelSnellsLawCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationelSnellsLawCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21284,7 +21324,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/time-dilation-calculator
@@ -21293,9 +21332,8 @@ router.post(
 router.post(
   "/time-dilation-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeTimeDilationCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeTimeDilationCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21319,9 +21357,10 @@ router.post(
 router.post(
   "/orbital-period-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeOrbitalPeriodCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeOrbitalPeriodCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21336,7 +21375,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -21346,9 +21384,8 @@ router.post(
 router.post(
   "/normal-force-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeNormalForceCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeNormalForceCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21364,7 +21401,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/density-altitude-calculator
@@ -21373,9 +21409,10 @@ router.post(
 router.post(
   "/density-altitude-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeDensityAltitudeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeDensityAltitudeCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21399,9 +21436,10 @@ router.post(
 router.post(
   "/kinetic-energy-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeKineticEnergyCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeKineticEnergyCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21416,7 +21454,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -21452,9 +21489,10 @@ router.post(
 router.post(
   "/angular-velocity-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeAngularVelocityCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeAngularVelocityCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21495,7 +21533,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -21548,7 +21585,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -21610,9 +21646,8 @@ router.post(
 router.post(
   "/resistance-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeResistanceCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeResistanceCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21662,9 +21697,8 @@ router.post(
 router.post(
   "/dc-wire-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeDcWireSizeCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeDcWireSizeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21688,9 +21722,10 @@ router.post(
 router.post(
   "/beam-deflection-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeBeamDeflectionCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeBeamDeflectionCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21732,7 +21767,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/dimensional-analysis-calculator
@@ -21741,9 +21775,10 @@ router.post(
 router.post(
   "/dimensional-analysis-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeDimensionalAnalysisCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeDimensionalAnalysisCalculator(
+        req.body
+      );
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21767,9 +21802,8 @@ router.post(
 router.post(
   "/acceleration-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeAccelerationCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationeAccelerationCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -21836,7 +21870,6 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
 
 /**
  * POST: Used to get calculation based on your age
@@ -21994,7 +22027,6 @@ router.post(
   })
 );
 
-
 /**
  * POST: Used to get calculation based on your age
  * /api/calculators-lol/zakat-calculator
@@ -22055,9 +22087,8 @@ router.post(
 router.post(
   "/bayes-theorem-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBayesTheoremCalculator(
-      req.body
-    );
+    const result =
+      await CalculatorsServices.getCalculationBayesTheoremCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -22072,8 +22103,5 @@ router.post(
       .json(new ApiResponse(result));
   })
 );
-
-
-
 
 module.exports = router;
