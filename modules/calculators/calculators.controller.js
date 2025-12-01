@@ -563,32 +563,6 @@ router.post(
 
 /**
  * POST: Used to get calculation based on your age
- * /api/calculators-lol/date-calculator
- */
-
-router.post(
-  "/date-calculator",
-  asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDateCalculator(
-      req.body
-    );
-
-    // Check if result contains an error
-    if (result && result.error) {
-      return res
-        .status(HttpCodes.BAD_REQUEST) // 400
-        .json(new ApiResponse(result));
-    }
-
-    // Otherwise return success
-    return res
-      .status(HttpCodes.OK) // 200
-      .json(new ApiResponse(result));
-  })
-);
-
-/**
- * POST: Used to get calculation based on your age
  * /api/calculators-lol/round-to-the-nearest-cent
  */
 
@@ -8479,7 +8453,7 @@ router.post(
 
 /**
  * POST: Used to get calculation based on your age
- * /api/calculators-lol/probability-density-function-calculator
+ * /api/calculators-lol/midrange-calculator
  */
 router.post(
   "/midrange-calculator",
