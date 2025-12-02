@@ -23308,14 +23308,14 @@ class CalculatorsServices {
       if (
         !isNaN(request.tech_age) &&
         !isNaN(request.tech_weight) &&
-        (!isNaN(request["tech_height-ft"]) ||
-          !isNaN(request["tech_height-in"]) ||
-          !isNaN(request["tech_height-cm"]))
+        (!isNaN(request["tech_height_ft"]) ||
+          !isNaN(request["tech_height_in"]) ||
+          !isNaN(request["tech_height_cm"]))
       ) {
         let age = parseFloat(request.tech_age);
-        let height_ft = parseFloat(request["tech_height-ft"]) || 0;
-        let height_in = parseFloat(request["tech_height-in"]) || 0;
-        let height_cm = parseFloat(request["tech_height-cm"]) || 0;
+        let height_ft = parseFloat(request["tech_height_ft"]) || 0;
+        let height_in = parseFloat(request["tech_height_in"]) || 0;
+        let height_cm = parseFloat(request["tech_height_cm"]) || 0;
         let weight = parseFloat(request.tech_weight);
 
         // Convert weight if in lbs
@@ -23746,9 +23746,9 @@ class CalculatorsServices {
       if (
         !isNaN(request.tech_age) &&
         !isNaN(request.tech_weight) &&
-        (!isNaN(request["tech_height-ft"]) ||
-          !isNaN(request["tech_height-in"]) ||
-          !isNaN(request["tech_height-cm"]))
+        (!isNaN(request["tech_height_ft"]) ||
+          !isNaN(request["tech_height_in"]) ||
+          !isNaN(request["tech_height_cm"]))
       ) {
         let age = parseFloat(request.tech_age);
 
@@ -23757,9 +23757,9 @@ class CalculatorsServices {
           return param;
         }
 
-        let height_ft = parseFloat(request["tech_height-ft"]) || 0;
-        let height_in = parseFloat(request["tech_height-in"]) || 0;
-        let height_cm = parseFloat(request["tech_height-cm"]) || 0;
+        let height_ft = parseFloat(request["tech_height_ft"]) || 0;
+        let height_in = parseFloat(request["tech_height_in"]) || 0;
+        let height_cm = parseFloat(request["tech_height_cm"]) || 0;
         let weight = parseFloat(request.tech_weight);
 
         if (request.tech_unit == "lbs") {
@@ -23779,7 +23779,7 @@ class CalculatorsServices {
         let bee, tee, s, l, m, v, bmr, rmr, pa;
 
         if (request.tech_gender == "obs_girl") {
-          if (request.tech_activity === "Sedentary") {
+          if (request.tech_activity == "Sedentary") {
             pa = 1.0;
             param.tech_stand = "bg-gradient text-white";
           } else if (request.tech_activity == "Lightly Active") {
@@ -28671,23 +28671,23 @@ class CalculatorsServices {
 
     if (submit == "calculator1") {
       // Khamis-Roche Height Calculator
-      const m_height_ft = body["tech_m-height-ft"];
-      const m_height_in = body["tech_m-height-in"];
-      const m_height_cm = body["tech_m-height-cm"];
+      const m_height_ft = body["tech_m_height_ft"];
+      const m_height_in = body["tech_m_height_in"];
+      const m_height_cm = body["tech_m_height_cm"];
       const m_unit_h = body.tech_mother_1_unit;
 
-      const f_height_ft = body["tech_f-height-ft"];
-      const f_height_in = body["tech_f-height-in"];
-      const f_height_cm = body["tech_f-height-cm"];
+      const f_height_ft = body["tech_f_height_ft"];
+      const f_height_in = body["tech_f_height_in"];
+      const f_height_cm = body["tech_f_height_cm"];
       const f_unit_h = body.tech_father_1_unit;
 
-      const c_height_ft = body["tech_c-height-ft"];
-      const c_height_in = body["tech_c-height-in"];
-      const c_height_cm = body["tech_c-height-cm"];
+      const c_height_ft = body["tech_c_height_ft"];
+      const c_height_in = body["tech_c_height_in"];
+      const c_height_cm = body["tech_c_height_cm"];
       const c_unit_h = body.tech_child_unit || body.tech_c_unit_h;
 
-      const c_weight_lbs = body["tech_c-weight-lbs"];
-      const c_weight_kg = body["tech_c-weight-kg"];
+      const c_weight_lbs = body["tech_c_weight_lbs"];
+      const c_weight_kg = body["tech_c_weight_kg"];
       const c_unit_w = body.tech_c_unit_w;
 
       const gender = body.tech_gender;
@@ -28912,12 +28912,12 @@ class CalculatorsServices {
       return result;
     } else {
       // Mid-Parental Height Calculator
-      const m_height_ft = body["tech_m-height-ft"];
-      const m_height_in = body["tech_m-height-in"];
-      const f_height_ft = body["tech_f-height-ft"];
-      const f_height_in = body["tech_f-height-in"];
-      const m_height_cm = body["tech_height-cm"];
-      const f_height_cm = body["tech_f-height-cm"];
+      const m_height_ft = body["tech_m_height_ft"];
+      const m_height_in = body["tech_m_height_in"];
+      const f_height_ft = body["tech_f_height_ft"];
+      const f_height_in = body["tech_f_height_in"];
+      const m_height_cm = body["tech_height_cm"];
+      const f_height_cm = body["tech_f_height_cm"];
       const mother_entry_unit = body.tech_mother_entry_unit;
       const father_entry_unit = body.tech_father_entry_unit;
 
