@@ -8646,451 +8646,445 @@ class CalculatorsServices {
    * @returns Object with message property having success method
    */
 
-  async getCalculationAnovaCalculator(body) {
+    async getCalculationAnovaCalculator(body) {
     const submit = body.tech_type;
     const param = {};
 
-    if (submit === "one_way") {
-      const k = parseInt(body.tech_k);
-      let check = true;
+    if (submit == 'one_way') {
+        const k = parseInt(body.tech_k);
+        let check = true;
 
-      // Validate input data
-      for (let x = 1; x <= k; x++) {
-        const group = body[`tech_group${x}`];
-        if (!group) continue;
-
-        const groups = group.split(",").map((item) => item.trim());
-        for (const value of groups) {
-          if (isNaN(parseFloat(value))) {
-            check = false;
-            break;
-          }
-        }
-        if (!check) break;
-      }
-
-      if (check === true) {
-        let alph = "";
-        let alph2 = "";
-        let alph_sum = "";
-        let alph_sum2 = "";
-
-        // Generate table headers
-        for (let i = 1; i <= k; i++) {
-          alph += `<th class='p-2 border text-center text-blue'>Group ${i}</th>`;
-          alph2 += `<th class='p-2 border text-center text-blue'>(Group ${i})²</th>`;
+        // Validate input data
+        for (let x = 1; x <= k; x++) {
+            const group = body[`group${x}`];
+            if (!group) continue;
+            
+            const groups = group.split(',').map(item => item.trim());
+            for (const value of groups) {
+                if (isNaN(parseFloat(value))) {
+                    check = false;
+                    break;
+                }
+            }
+            if (!check) break;
         }
 
-        let table = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-sky'>${alph}</tr></thead><tbody>`;
-        let table1 = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-sky'>${alph2}</tr></thead><tbody>`;
-        let table2 = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-sky'><th colspan='7' class='bb_1 p-2 border text-center text-blue'>Data Summary</th></tr></thead><thead><tr class='bg-gray'><th class='p-2 border text-center text-blue'>Groups</th><th class='p-2 border text-center text-blue'>N</th><th class='p-2 border text-center text-blue'>∑x</th><th class='p-2 border text-center text-blue'>Mean</th><th class='p-2 border text-center text-blue'>∑x²</th><th class='p-2 border text-center text-blue'>Std. Dev.</th><th class='p-2 border text-center text-blue'>Std. Error</th></tr></thead><tbody>`;
-
-        let v = 0;
-        let std_dev = 0;
-        let n_sum = 0;
-        let mean_sum = 0;
-        let total_sum = 0;
-        let total_sum2 = 0;
-        const trs = [];
-        const trs1 = [];
-        const groupData = [];
-
-        // Process each group
-        for (let i = 1; i <= k; i++) {
-          const group = body[`tech_group${i}`];
-          const groups = group
-            .split(",")
-            .map((item) => parseFloat(item.trim()));
-          const n = groups.length;
-          const sum = groups.reduce((a, b) => a + b, 0);
-          let sum2 = 0;
-          const mean = sum / n;
-
-          // Calculate variance
-          let groupV = 0;
-          groups.forEach((value) => {
-            groupV += Math.pow(value - mean, 2);
-            sum2 += Math.pow(value, 2);
-          });
-
-          std_dev = Math.sqrt(groupV / (n - 1));
-          const std_error = std_dev / Math.sqrt(n);
-
-          // Store group data
-          groupData.push({
-            n: n,
-            sum: sum,
-            mean: mean,
-            sum2: sum2,
-            std_dev: std_dev,
-            variance: groupV,
-          });
-
-          // Build table rows
-          groups.forEach((value, key) => {
-            if (trs[key]) {
-              trs[key] += `<td class='p-2 border text-center'>${value}</td>`;
-            } else {
-              trs[key] = `<td class='p-2 border text-center'>${value}</td>`;
+        if (check == true) {
+            let alph = '';
+            let alph2 = '';
+            let alph_sum = '';
+            let alph_sum2 = '';
+            
+            // Generate table headers
+            for (let i = 1; i <= k; i++) {
+                alph += `<th class='p-2 border text-center text-blue'>Group ${i}</th>`;
+                alph2 += `<th class='p-2 border text-center text-blue'>(Group ${i})²</th>`;
             }
 
-            if (trs1[key]) {
-              trs1[
-                key
-              ] += `<td class='p-2 border text-center text-blue'>${Math.pow(
-                value,
-                2
-              )}</td>`;
-            } else {
-              trs1[
-                key
-              ] = `<td class='p-2 border text-center text-blue'>${Math.pow(
-                value,
-                2
-              )}</td>`;
+         let table = `<table class='w-full border border-black' style='border-collapse: collapse;'>
+                <thead>
+                  <tr class='bg-[#2845F5] text-[#fff]'>
+                    ${alph}
+                  </tr>
+                </thead>
+                <tbody>
+              `;
+
+              let table1 = `<table class='w-full border border-black' style='border-collapse: collapse;'>
+                <thead>
+                  <tr class='bg-[#2845F5] text-[#fff]'>
+                    ${alph2}
+                  </tr>
+                </thead>
+                <tbody>
+              `;
+
+              let table2 = `<table class='w-full border border-black' style='border-collapse: collapse;'>
+                <thead>
+                  <tr class='bg-[#2845F5] text-[#fff]'>
+                    <th colspan='7' class='p-2 border border-black text-center'>Data Summary</th>
+                  </tr>
+                </thead>
+                <thead>
+                  <tr class='bg-gray-200 '>
+                    <th class='p-2 bordered text-center text-blue-600'>Groups</th>
+                    <th class='p-2 bordered text-center text-blue-600'>N</th>
+                    <th class='p-2 bordered text-center text-blue-600'>∑x</th>
+                    <th class='p-2 bordered text-center text-blue-600'>Mean</th>
+                    <th class='p-2 bordered text-center text-blue-600'>∑x²</th>
+                    <th class='p-2 bordered text-center text-blue-600'>Std. Dev.</th>
+                    <th class='p-2 bordered text-center text-blue-600'>Std. Error</th>
+                  </tr>
+                </thead>
+                <tbody>
+              `;
+
+
+            let v = 0;
+            let std_dev = 0;
+            let n_sum = 0;
+            let mean_sum = 0;
+            let total_sum = 0;
+            let total_sum2 = 0;
+            const trs = [];
+            const trs1 = [];
+            const groupData = [];
+
+            // Process each group
+            for (let i = 1; i <= k; i++) {
+                const group = body[`group${i}`];
+                const groups = group.split(',').map(item => parseFloat(item.trim()));
+                const n = groups.length;
+                const sum = groups.reduce((a, b) => a + b, 0);
+                let sum2 = 0;
+                const mean = sum / n;
+
+                // Calculate variance
+                let groupV = 0;
+                groups.forEach(value => {
+                    groupV += Math.pow(value - mean, 2);
+                    sum2 += Math.pow(value, 2);
+                });
+
+                std_dev = Math.sqrt(groupV / (n - 1));
+                const std_error = std_dev / Math.sqrt(n);
+
+                // Store group data
+                groupData.push({
+                    n: n,
+                    sum: sum,
+                    mean: mean,
+                    sum2: sum2,
+                    std_dev: std_dev,
+                    variance: groupV
+                });
+
+                // Build table rows
+                groups.forEach((value, key) => {
+                    if (trs[key]) {
+                        trs[key] += `<td  class='p-2 bordered text-center'>${value}</td>`;
+                    } else {
+                        trs[key] = `<td class='p-2 bordered text-center'>${value}</td>`;
+                    }
+
+                    if (trs1[key]) {
+                        trs1[key] += `<td class='p-2 bordered text-center text-blue'>${Math.pow(value, 2)}</td>`;
+                    } else {
+                        trs1[key] = `<td class='p-2 bordered text-center text-blue'>${Math.pow(value, 2)}</td>`;
+                    }
+                });
+
+                table2 += `<tr class='bg-white'><td class='p-2 bordered text-center'>Group ${i}</td><td class='p-2 bordered text-center'>${n}</td><td class='p-2 bordered text-center'>${sum}</td><td class='p-2 bordered text-center'>${mean}</td><td class='p-2 bordered text-center'>${sum2}</td><td class='p-2 bordered text-center'>${std_dev.toFixed(4)}</td><td class='p-2 bordered text-center'>${std_error.toFixed(4)}</td></tr>`;
+
+                v = 0;
+                n_sum += n;
+                mean_sum += mean;
+                total_sum += sum;
+                total_sum2 += sum2;
+                alph_sum += `<th class='p-2 bordered text-center text-blue'>∑Group ${i} = ${sum}</th>`;
+                alph_sum2 += `<th class='p-2 bordered text-center text-blue'>∑(Group${i})² = ${sum2}</th>`;
             }
-          });
 
-          table2 += `<tr class='bg-white'><td class='p-2 border text-center'>Group ${i}</td><td class='p-2 border text-center'>${n}</td><td class='p-2 border text-center'>${sum}</td><td class='p-2 border text-center'>${mean}</td><td class='p-2 border text-center'>${sum2}</td><td class='p-2 border text-center'>${std_dev.toFixed(
-            4
-          )}</td><td class='p-2 border text-center'>${std_error.toFixed(
-            4
-          )}</td></tr>`;
-
-          v = 0;
-          n_sum += n;
-          mean_sum += mean;
-          total_sum += sum;
-          total_sum2 += sum2;
-          alph_sum += `<th class='p-2 border text-center text-blue'>∑Group ${i} = ${sum}</th>`;
-          alph_sum2 += `<th class='p-2 border text-center text-blue'>∑(Group${i})² = ${sum2}</th>`;
-        }
-
-        // Build tables
-        for (let i = 0; i < trs.length; i++) {
-          table += `<tr class='bg-white'>${trs[i]}</tr>`;
-          table1 += `<tr class='bg-white'>${trs1[i]}</tr>`;
-        }
-
-        mean_sum = mean_sum / k;
-        table += `<tr class='bg-sky'>${alph_sum}</tr></tbody></table>`;
-        table1 += `<tr class='bg-sky'>${alph_sum2}</tr></tbody></table>`;
-        table2 += `<tr class='bg-sky'><th class='p-2 border text-center text-blue'>Total</th><th class='p-2 border text-center text-blue'>${n_sum}</th><th class='p-2 border text-center text-blue'>${total_sum}</th><th class='p-2 border text-center text-blue'>${mean_sum}</th><th class='p-2 border text-center text-blue'>${total_sum2}</th><th class='p-2 border text-center text-blue'>&nbsp;</th><th class='p-2 border text-center text-blue'>&nbsp;</th></tr></tbody></table>`;
-
-        // Calculate SSB and SSW - EXACT BUG REPRODUCTION
-        let s1 = "";
-        let s2 = "";
-        let ssb = 0;
-        let ssw = 0;
-
-        // The BUG in Laravel: v variable is reused and not reset properly
-        let buggyV = 0;
-        for (let i = 1; i <= k; i++) {
-          const group = body[`tech_group${i}`];
-          const groups = group
-            .split(",")
-            .map((item) => parseFloat(item.trim()));
-          const n = groups.length;
-          const sum = groups.reduce((a, b) => a + b, 0);
-          const mean = sum / n;
-
-          // BUG: v is not reset properly for each group in Laravel
-          groups.forEach((value) => {
-            buggyV += Math.pow(value - mean, 2);
-          });
-
-          const buggyStdDev = Math.sqrt(buggyV / (n - 1));
-
-          // Build formula strings with the BUG
-          if (i < k) {
-            s1 += `${n} * (${mean} - ${mean_sum})^2 + `;
-            s2 += `(${n} - 1) * (${buggyStdDev.toFixed(4)})^2 + `;
-          } else {
-            s1 += `${n} * (${mean} - ${mean_sum})^2`;
-            s2 += `${n} * (${mean} - ${mean_sum})^2`; // Last group uses wrong formula
-          }
-
-          ssb += n * Math.pow(mean - mean_sum, 2);
-
-          // BUG: v should be reset here but it's not in Laravel
-          // In Laravel: v = 0; is outside the loop but should be inside
-        }
-
-        // Correct SSW calculation (despite the bug in formula display)
-        ssw = 0;
-        for (let i = 0; i < groupData.length; i++) {
-          ssw += groupData[i].variance;
-        }
-
-        param.tech_k = k;
-        param.tech_N = n_sum;
-        param.tech_table = table;
-        param.tech_table1 = table1;
-        param.tech_table2 = table2;
-        param.tech_s1 = s1;
-        param.tech_s2 = s2;
-        param.tech_ssb = parseFloat(ssb.toFixed(4));
-        param.tech_ssw = parseFloat(ssw.toFixed(4));
-        return param;
-      } else {
-        param.error = "Please! Check Your Input";
-        return param;
-      }
-    } else if (submit === "two_way") {
-      const rows = parseInt(body.tech_rows);
-      const columns = parseInt(body.tech_columns);
-      let check = true;
-
-      // Validate input data
-      for (let i = 0; i < rows; i++) {
-        for (let j = 0; j < columns; j++) {
-          const input = body[`tech_td_${i}_${j}`];
-          if (!input) continue;
-
-          const inputs = input.split(",").map((item) => item.trim());
-          for (const value of inputs) {
-            if (isNaN(parseFloat(value))) {
-              check = false;
-              break;
+            // Build tables
+            for (let i = 0; i < trs.length; i++) {
+                table += `<tr class='bg-white'>${trs[i]}</tr>`;
+                table1 += `<tr class='bg-white'>${trs1[i]}</tr>`;
             }
-          }
-          if (!check) break;
+
+            mean_sum = mean_sum / k;
+            table += `<tr class='bg-sky'>${alph_sum}</tr></tbody></table>`;
+            table1 += `<tr class='bg-sky'>${alph_sum2}</tr></tbody></table>`;
+            table2 += `<tr class='bg-sky'><th class='p-2 bordered text-center text-blue'>Total</th><th class='p-2 bordered text-center text-blue'>${n_sum}</th><th class='p-2 bordered text-center text-blue'>${total_sum}</th><th class='p-2 bordered text-center text-blue'>${mean_sum}</th><th class='p-2 bordered text-center text-blue'>${total_sum2}</th><th class='p-2 bordered text-center text-blue'>&nbsp;</th><th class='p-2 bordered text-center text-blue'>&nbsp;</th></tr></tbody></table>`;
+
+            // Calculate SSB and SSW - EXACT BUG REPRODUCTION
+            let s1 = '';
+            let s2 = '';
+            let ssb = 0;
+            let ssw = 0;
+
+            // The BUG in Laravel: v variable is reused and not reset properly
+            let buggyV = 0;
+            for (let i = 1; i <= k; i++) {
+                const group = body[`group${i}`];
+                const groups = group.split(',').map(item => parseFloat(item.trim()));
+                const n = groups.length;
+                const sum = groups.reduce((a, b) => a + b, 0);
+                const mean = sum / n;
+
+                // BUG: v is not reset properly for each group in Laravel
+                groups.forEach(value => {
+                    buggyV += Math.pow(value - mean, 2);
+                });
+
+                const buggyStdDev = Math.sqrt(buggyV / (n - 1));
+
+                // Build formula strings with the BUG
+                if (i < k) {
+                    s1 += `${n} * (${mean} - ${mean_sum})^2 + `;
+                    s2 += `(${n} - 1) * (${buggyStdDev.toFixed(4)})^2 + `;
+                } else {
+                    s1 += `${n} * (${mean} - ${mean_sum})^2`;
+                    s2 += `${n} * (${mean} - ${mean_sum})^2`; // Last group uses wrong formula
+                }
+
+                ssb += n * Math.pow((mean - mean_sum), 2);
+                
+                // BUG: v should be reset here but it's not in Laravel
+                // In Laravel: v = 0; is outside the loop but should be inside
+            }
+
+            // Correct SSW calculation (despite the bug in formula display)
+            ssw = 0;
+            for (let i = 0; i < groupData.length; i++) {
+                ssw += groupData[i].variance;
+            }
+
+            param.tech_k = k;
+            param.tech_N = n_sum;
+            param.tech_table = table;
+            param.tech_table1 = table1;
+            param.tech_table2 = table2;
+            param.tech_s1 = s1;
+            param.tech_s2 = s2;
+            param.tech_ssb = parseFloat(ssb.toFixed(4));
+            param.tech_ssw = parseFloat(ssw.toFixed(4));
+            return param;
+        } else {
+            param.error = "Please! Check Your Input";
+            return param;
         }
-        if (!check) break;
-      }
+   } else if (submit === 'two_way') {
+        const rows = parseInt(body.tech_rows);
+        const columns = parseInt(body.tech_columns);
+        let check = true;
 
-      if (check === true) {
-        let head = "";
-        let head2 = "";
-        let p3_s1 = "";
-        let p3_s2 = "";
-        let p3_s3 = "";
-        let C = 0;
-        let p4_s1 = "";
-        let p4_s2 = "";
-        let p4_s3 = "";
-        let D = 0;
-        let n = 0;
-        let summ = 0;
-        const sumxa = [];
-
-        let table = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-gray'><th class='p-2 border text-center text-blue'>Observation</th>`;
-        let table1 = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-gray'><th class='p-2 border text-center text-blue'>Observation</th>`;
-
-        // Generate table headers
-        for (let i = 0; i < columns; i++) {
-          table += `<th class='p-2 border text-center text-blue'>Group ${
-            i + 1
-          }</th>`;
-          table1 += `<th class='p-2 border text-center text-blue'>Group ${
-            i + 1
-          }</th>`;
-        }
-
-        table += `</tr></thead><tbody>`;
-        table1 += `<th class='p-2 border text-center text-blue'>Row Total</th></tr></thead><tbody>`;
-
-        let p5_s1 = "";
-        let p5_s2 = "";
-        let E = 0;
-
-        // Process rows and columns
+        // Validate input data
         for (let i = 0; i < rows; i++) {
-          table += `<tr class='bg-white'><td class='p-2 border text-center'>${
-            i + 1
-          }</td>`;
-          table1 += `<tr class='bg-white'><td class='p-2 border text-center'>${
-            i + 1
-          }</td>`;
-
-          let sum1 = 0;
-          let nr = 0;
-          let nc = 0;
-
-          for (let j = 0; j <= columns; j++) {
-            if (j !== columns) {
-              const input = body[`tech_td_${i}_${j}`];
-              table += `<td class='p-2 border text-center'>${input}</td>`;
-
-              const inputs = input
-                .split(",")
-                .map((item) => parseFloat(item.trim()));
-              const sum = inputs.reduce((a, b) => a + b, 0);
-              table1 += `<td class='p-2 border text-center'>${sum}</td>`;
-
-              sum1 += sum;
-
-              if (sumxa[j] === undefined) {
-                sumxa[j] = 0;
-              }
-              sumxa[j] += sum;
-
-              nr += inputs.length;
-              nc = inputs.length;
-              n += inputs.length;
-              summ += sum;
-
-              if (i === rows - 1 && j === columns - 1) {
-                p4_s1 += `\\dfrac {(${sum})^2}{${nc}}`;
-                p4_s2 += `\\dfrac {${Math.pow(sum, 2)}}{${nc}}`;
-                p4_s3 += parseFloat((Math.pow(sum, 2) / nc).toFixed(4));
-              } else {
-                p4_s1 += `\\dfrac {(${sum})^2}{${nc}} + `;
-                p4_s2 += `\\dfrac {${Math.pow(sum, 2)}}{${nc}} + `;
-                p4_s3 += parseFloat((Math.pow(sum, 2) / nc).toFixed(4)) + " + ";
-              }
-
-              D += Math.pow(sum, 2) / nc;
-            } else {
-              if (sumxa[j] === undefined) {
-                sumxa[j] = 0;
-              }
-              sumxa[j] += sum1;
-              table1 += `<td class='p-2 border text-center'><b>${sum1}</b></td>`;
+            for (let j = 0; j < columns; j++) {
+                const input = body[`td_${i}_${j}`];
+                if (!input) continue;
+                
+                const inputs = input.split(',').map(item => item.trim());
+                for (const value of inputs) {
+                    if (isNaN(parseFloat(value))) {
+                        check = false;
+                        break;
+                    }
+                }
+                if (!check) break;
             }
-          }
-
-          if (i === rows - 1) {
-            p3_s1 += `\\dfrac {(${sum1})^2}{${nr}}`;
-            p3_s2 += `\\dfrac {${Math.pow(sum1, 2)}}{${nr}}`;
-            p3_s3 += parseFloat((Math.pow(sum1, 2) / nr).toFixed(4));
-          } else {
-            p3_s1 += `\\dfrac {(${sum1})^2}{${nr}} + `;
-            p3_s2 += `\\dfrac {${Math.pow(sum1, 2)}}{${nr}} + `;
-            p3_s3 += parseFloat((Math.pow(sum1, 2) / nr).toFixed(4)) + " + ";
-          }
-
-          C += Math.pow(sum1, 2) / nr;
-          table += `</tr>`;
-          table1 += `</tr>`;
+            if (!check) break;
         }
 
-        p5_s1 += `\\dfrac {(${summ})^2}{${n}}`;
-        p5_s2 += `\\dfrac {${Math.pow(summ, 2)}}{${n}}`;
-        E += parseFloat((Math.pow(summ, 2) / n).toFixed(4));
+        if (check === true) {
+            let head = '';
+            let head2 = '';
+            let p3_s1 = '';
+            let p3_s2 = '';
+            let p3_s3 = '';
+            let C = 0;
+            let p4_s1 = '';
+            let p4_s2 = '';
+            let p4_s3 = '';
+            let D = 0;
+            let n = 0;
+            let summ = 0;
+            const sumxa = [];
+            
+            let table = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-gray'><th class='p-2 border text-center text-blue'>Observation</th>`;
+            let table1 = `<table class='w-full' style='border-collapse: collapse'><thead><tr class='bg-gray'><th class='p-2 border text-center text-blue'>Observation</th>`;
 
-        table += `</tbody></table>`;
-        table1 += `<tr class='bg-white'><td class='p-2 border text-center'><b>Col Total</b></td>`;
-
-        sumxa.forEach((value, key) => {
-          table1 += `<td class='p-2 border text-center'><b>${value}</b></td>`;
-        });
-
-        table1 += `</tr></tbody></table>`;
-
-        // Calculate additional parameters - FIXED p1 calculation
-        let p1 = "";
-        let p2_s1 = "";
-        let p2_s2 = "";
-        let p2_s3 = "";
-        let A = 0;
-        let B = 0;
-
-        for (let i = 0; i < columns; i++) {
-          let nc = 0;
-          for (let j = 0; j < rows; j++) {
-            const input = body[`tech_td_${j}_${i}`];
-            const inputs = input
-              .split(",")
-              .map((item) => parseFloat(item.trim()));
-            nc += inputs.length;
-          }
-
-          if (i === columns - 1) {
-            p2_s1 += `\\dfrac {(${sumxa[i]})^2}{${nc}}`;
-            p2_s2 += `\\dfrac {${Math.pow(sumxa[i], 2)}}{${nc}}`;
-            p2_s3 += parseFloat((Math.pow(sumxa[i], 2) / nc).toFixed(4));
-          } else {
-            p2_s1 += `\\dfrac {(${sumxa[i]})^2}{${nc}} + `;
-            p2_s2 += `\\dfrac {${Math.pow(sumxa[i], 2)}}{${nc}} + `;
-            p2_s3 +=
-              parseFloat((Math.pow(sumxa[i], 2) / nc).toFixed(4)) + " + ";
-          }
-
-          B += Math.pow(sumxa[i], 2) / nc;
-        }
-
-        // FIXED: Build p1 like Laravel - show all values properly
-        const allValues = [];
-        for (let i = 0; i < rows; i++) {
-          for (let j = 0; j < columns; j++) {
-            const input = body[`tech_td_${i}_${j}`];
-            const inputs = input
-              .split(",")
-              .map((item) => parseFloat(item.trim()));
-            allValues.push(
-              ...inputs.map((val) => ({
-                value: val,
-                squared: Math.pow(val, 2),
-              }))
-            );
-          }
-        }
-
-        // Calculate A
-        allValues.forEach((item) => {
-          A += item.squared;
-        });
-
-        // Build p1 string like Laravel
-        const showFirst = 3; // Show first 3 values
-        const showLast = 3; // Show last 3 values
-
-        for (let idx = 0; idx < allValues.length; idx++) {
-          const val = allValues[idx].value;
-
-          if (idx < showFirst) {
-            // Show first few values
-            p1 += `${val}^2 + `;
-          } else if (
-            idx === showFirst &&
-            allValues.length > showFirst + showLast
-          ) {
-            // Show "..." if there are many values
-            p1 += `... + `;
-          } else if (idx >= allValues.length - showLast) {
-            // Show last few values
-            if (idx === allValues.length - 1) {
-              p1 += `${val}^2`;
-            } else {
-              p1 += `${val}^2 + `;
+            // Generate table headers
+            for (let i = 0; i < columns; i++) {
+                table += `<th class='p-2 border text-center text-blue'>Group ${i + 1}</th>`;
+                table1 += `<th class='p-2 border text-center text-blue'>Group ${i + 1}</th>`;
             }
-          }
+
+            table += `</tr></thead><tbody>`;
+            table1 += `<th class='p-2 border text-center text-blue'>Row Total</th></tr></thead><tbody>`;
+
+            let p5_s1 = '';
+            let p5_s2 = '';
+            let E = 0;
+
+            // Process rows and columns
+            for (let i = 0; i < rows; i++) {
+                table += `<tr class='bg-white'><td class='p-2 bordered text-center'>${i + 1}</td>`;
+                table1 += `<tr class='bg-white'><td class='p-2 bordered text-center'>${i + 1}</td>`;
+                
+                let sum1 = 0;
+                let nr = 0;
+                let nc = 0;
+
+                for (let j = 0; j <= columns; j++) {
+                    if (j !== columns) {
+                        const input = body[`td_${i}_${j}`];
+                        table += `<td class='p-2 bordered text-center'>${input}</td>`;
+                        
+                        const inputs = input.split(',').map(item => parseFloat(item.trim()));
+                        const sum = inputs.reduce((a, b) => a + b, 0);
+                        table1 += `<td class='p-2 bordered text-center'>${sum}</td>`;
+                        
+                        sum1 += sum;
+                        
+                        if (sumxa[j] === undefined) {
+                            sumxa[j] = 0;
+                        }
+                        sumxa[j] += sum;
+                        
+                        nr += inputs.length;
+                        nc = inputs.length;
+                        n += inputs.length;
+                        summ += sum;
+
+                        if (i === rows - 1 && j === columns - 1) {
+                            p4_s1 += `\\dfrac {(${sum})^2}{${nc}}`;
+                            p4_s2 += `\\dfrac {${Math.pow(sum, 2)}}{${nc}}`;
+                            p4_s3 += parseFloat((Math.pow(sum, 2) / nc).toFixed(4));
+                        } else {
+                            p4_s1 += `\\dfrac {(${sum})^2}{${nc}} + `;
+                            p4_s2 += `\\dfrac {${Math.pow(sum, 2)}}{${nc}} + `;
+                            p4_s3 += parseFloat((Math.pow(sum, 2) / nc).toFixed(4)) + ' + ';
+                        }
+                        
+                        D += Math.pow(sum, 2) / nc;
+                    } else {
+                        if (sumxa[j] === undefined) {
+                            sumxa[j] = 0;
+                        }
+                        sumxa[j] += sum1;
+                        table1 += `<td class='p-2 bordered text-center'><b>${sum1}</b></td>`;
+                    }
+                }
+
+                if (i === rows - 1) {
+                    p3_s1 += `\\dfrac {(${sum1})^2}{${nr}}`;
+                    p3_s2 += `\\dfrac {${Math.pow(sum1, 2)}}{${nr}}`;
+                    p3_s3 += parseFloat((Math.pow(sum1, 2) / nr).toFixed(4));
+                } else {
+                    p3_s1 += `\\dfrac {(${sum1})^2}{${nr}} + `;
+                    p3_s2 += `\\dfrac {${Math.pow(sum1, 2)}}{${nr}} + `;
+                    p3_s3 += parseFloat((Math.pow(sum1, 2) / nr).toFixed(4)) + ' + ';
+                }
+
+                C += Math.pow(sum1, 2) / nr;
+                table += `</tr>`;
+                table1 += `</tr>`;
+            }
+
+            p5_s1 += `\\dfrac {(${summ})^2}{${n}}`;
+            p5_s2 += `\\dfrac {${Math.pow(summ, 2)}}{${n}}`;
+            E += parseFloat((Math.pow(summ, 2) / n).toFixed(4));
+            
+            table += `</tbody></table>`;
+            table1 += `<tr class='bg-white'><td class='p-2 bordered text-center'><b>Col Total</b></td>`;
+            
+            sumxa.forEach((value, key) => {
+                table1 += `<td class='p-2 bordered text-center'><b>${value}</b></td>`;
+            });
+            
+            table1 += `</tr></tbody></table>`;
+
+            // Calculate additional parameters - FIXED p1 calculation
+            let p1 = '';
+            let p2_s1 = '';
+            let p2_s2 = '';
+            let p2_s3 = '';
+            let A = 0;
+            let B = 0;
+
+            for (let i = 0; i < columns; i++) {
+                let nc = 0;
+                for (let j = 0; j < rows; j++) {
+                    const input = body[`td_${j}_${i}`];
+                    const inputs = input.split(',').map(item => parseFloat(item.trim()));
+                    nc += inputs.length;
+                }
+
+                if (i === columns - 1) {
+                    p2_s1 += `\\dfrac {(${sumxa[i]})^2}{${nc}}`;
+                    p2_s2 += `\\dfrac {${Math.pow(sumxa[i], 2)}}{${nc}}`;
+                    p2_s3 += parseFloat((Math.pow(sumxa[i], 2) / nc).toFixed(4));
+                } else {
+                    p2_s1 += `\\dfrac {(${sumxa[i]})^2}{${nc}} + `;
+                    p2_s2 += `\\dfrac {${Math.pow(sumxa[i], 2)}}{${nc}} + `;
+                    p2_s3 += parseFloat((Math.pow(sumxa[i], 2) / nc).toFixed(4)) + ' + ';
+                }
+
+                B += Math.pow(sumxa[i], 2) / nc;
+            }
+
+            // FIXED: Build p1 like Laravel - show all values properly
+            const allValues = [];
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < columns; j++) {
+                    const input = body[`td_${i}_${j}`];
+                    const inputs = input.split(',').map(item => parseFloat(item.trim()));
+                    allValues.push(...inputs.map(val => ({ value: val, squared: Math.pow(val, 2) })));
+                }
+            }
+
+            // Calculate A
+            allValues.forEach(item => {
+                A += item.squared;
+            });
+
+            // Build p1 string like Laravel
+            const showFirst = 3; // Show first 3 values
+            const showLast = 3;  // Show last 3 values
+            
+            for (let idx = 0; idx < allValues.length; idx++) {
+                const val = allValues[idx].value;
+                
+                if (idx < showFirst) {
+                    // Show first few values
+                    p1 += `${val}^2 + `;
+                } else if (idx === showFirst && allValues.length > showFirst + showLast) {
+                    // Show "..." if there are many values
+                    p1 += `... + `;
+                } else if (idx >= allValues.length - showLast) {
+                    // Show last few values
+                    if (idx === allValues.length - 1) {
+                        p1 += `${val}^2`;
+                    } else {
+                        p1 += `${val}^2 + `;
+                    }
+                }
+            }
+
+            param.tech_rows = rows;
+            param.tech_columns = columns;
+            param.tech_table = table;
+            param.tech_table1 = table1;
+            param.tech_p1 = p1;
+            param.tech_A = A;
+            param.tech_p2_s1 = p2_s1;
+            param.tech_p2_s2 = p2_s2;
+            param.tech_p2_s3 = p2_s3;
+            param.tech_B = B;
+            param.tech_p3_s1 = p3_s1;
+            param.tech_p3_s2 = p3_s2;
+            param.tech_p3_s3 = p3_s3;
+            param.tech_C = C;
+            param.tech_p4_s1 = p4_s1;
+            param.tech_p4_s2 = p4_s2;
+            param.tech_p4_s3 = p4_s3;
+            param.tech_D = D;
+            param.tech_p5_s1 = p5_s1;
+            param.tech_p5_s2 = p5_s2;
+            param.tech_E = E;
+            param.tech_n = n;
+
+            return param;
+        } else {
+            param.error = "Please! Check Your Input";
+            return param;
         }
-
-        param.tech_rows = rows;
-        param.tech_columns = columns;
-        param.tech_table = table;
-        param.tech_table1 = table1;
-        param.tech_p1 = p1;
-        param.tech_A = A;
-        param.tech_p2_s1 = p2_s1;
-        param.tech_p2_s2 = p2_s2;
-        param.tech_p2_s3 = p2_s3;
-        param.tech_B = B;
-        param.tech_p3_s1 = p3_s1;
-        param.tech_p3_s2 = p3_s2;
-        param.tech_p3_s3 = p3_s3;
-        param.tech_C = C;
-        param.tech_p4_s1 = p4_s1;
-        param.tech_p4_s2 = p4_s2;
-        param.tech_p4_s3 = p4_s3;
-        param.tech_D = D;
-        param.tech_p5_s1 = p5_s1;
-        param.tech_p5_s2 = p5_s2;
-        param.tech_E = E;
-        param.tech_n = n;
-
-        return param;
-      } else {
-        param.error = "Please! Check Your Input";
-        return param;
-      }
     } else {
-      param.error = "Please! Check Your Input";
-      return param;
+        param.error = "Please! Check Your Input";
+        return param;
     }
-  }
+}
 
   /**
    * getCalculationTestStatisticCalculator: Service Method
