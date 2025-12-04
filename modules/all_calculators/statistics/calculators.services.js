@@ -4812,461 +4812,423 @@ class CalculatorsServices {
    * @param {Object} body Having Properties for Creating New Roles
    * @returns Object with message property having success method
    */
-  async getCalculationPValueCalculator(body) {
-    let tail = body.tech_tail;
-    let testType = body.tech_with;
-    let score = body.tech_score;
-    let deg = body.tech_deg;
-    let deg2 = body.tech_deg2;
-    let level = body.tech_level;
-    let degree_freedom = body.tech_degree_freedom;
+   async getCalculationPValueCalculator(body) {
+       let tail = body.tech_tail;
+        let testType = body.tech_with; 
+        let score = body.tech_score;
+        let deg = body.tech_deg;
+        let deg2 = body.tech_deg2;
+        let level = body.tech_level;
+        let degree_freedom = body.tech_degree_freedom;
 
-    const result = {};
+        const result = {};
 
-    if (testType === undefined) {
-      result.error = "Please! Check Your Input";
-      return result;
-    }
+        if (testType === undefined) {
+          result.error = "Please! Check Your Input";
+          return result;
+      }
 
-    // Z-distribution functions
-    function zcdf(z) {
-      let y, x, w;
 
-      if (z === 0.0) {
-        x = 0.0;
-      } else {
-        y = 0.5 * Math.abs(z);
-        if (y > 6 * 0.5) {
-          x = 1.0;
-        } else if (y < 1.0) {
-          w = y * y;
-          x =
-            ((((((((0.000124818987 * w - 0.001075204047) * w + 0.005198775019) *
-              w -
-              0.019198292004) *
-              w +
-              0.059054035642) *
-              w -
-              0.151968751364) *
-              w +
-              0.319152932694) *
-              w -
-              0.5319230073) *
-              w +
-              0.797884560593) *
-            y *
-            2.0;
-        } else {
-          y -= 2.0;
-          x =
-            (((((((((((((-0.000045255659 * y + 0.00015252929) * y -
-              0.000019538132) *
-              y -
-              0.000676904986) *
-              y +
-              0.001390604284) *
-              y -
-              0.00079462082) *
-              y -
-              0.002034254874) *
-              y +
-              0.006549791214) *
-              y -
-              0.010557625006) *
-              y +
-              0.011630447319) *
-              y -
-              0.009279453341) *
-              y +
-              0.005353579108) *
-              y -
-              0.002141268741) *
-              y +
-              0.000535310849) *
-              y +
-            0.999936657524;
+        // Z-distribution functions
+        function zcdf(z) {
+            let y, x, w;
+
+            if (z === 0.0) {
+                x = 0.0;
+            } else {
+                y = 0.5 * Math.abs(z);
+                if (y > (6 * 0.5)) {
+                    x = 1.0;
+                } else if (y < 1.0) {
+                    w = y * y;
+                    x = ((((((((0.000124818987 * w
+                        - 0.001075204047) * w + 0.005198775019) * w
+                        - 0.019198292004) * w + 0.059054035642) * w
+                        - 0.151968751364) * w + 0.319152932694) * w
+                        - 0.531923007300) * w + 0.797884560593) * y * 2.0;
+                } else {
+                    y -= 2.0;
+                    x = (((((((((((((-0.000045255659 * y
+                        + 0.000152529290) * y - 0.000019538132) * y
+                        - 0.000676904986) * y + 0.001390604284) * y
+                        - 0.000794620820) * y - 0.002034254874) * y
+                        + 0.006549791214) * y - 0.010557625006) * y
+                        + 0.011630447319) * y - 0.009279453341) * y
+                        + 0.005353579108) * y - 0.002141268741) * y
+                        + 0.000535310849) * y + 0.999936657524;
+                }
+            }
+            return z > 0.0 ? ((x + 1.0) * 0.5) : ((1.0 - x) * 0.5);
         }
-      }
-      return z > 0.0 ? (x + 1.0) * 0.5 : (1.0 - x) * 0.5;
-    }
 
-    function zpval(score, tail) {
-      let pval;
-      if (tail === "0") {
-        pval = 2 * zcdf(Math.abs(score) * -1);
-      } else if (tail === "-1") {
-        pval = zcdf(score);
-      } else if (tail === "2") {
-        pval = 1 - zcdf(score);
-      }
-      return pval;
-    }
-
-    // Gamma and Beta functions
-    function gammaln(x) {
-      const cof = [
-        76.18009172947146, -86.50532032941677, 24.01409824083091,
-        -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5,
-      ];
-      let ser = 1.000000000190015;
-      let xx = x;
-      let y = x;
-      let tmp = (y = xx = x) + 5.5;
-      tmp -= (xx + 0.5) * Math.log(tmp);
-      for (let j = 0; j < 6; j++) ser += cof[j] / ++y;
-      return Math.log((2.5066282746310005 * ser) / xx) - tmp;
-    }
-
-    function betacf(x, a, b) {
-      const fpmin = 1e-30;
-      let m = 1;
-      const qab = a + b;
-      const qap = a + 1;
-      const qam = a - 1;
-      let c = 1;
-      let d = 1 - (qab * x) / qap;
-      let m2, aa, del, h;
-
-      if (Math.abs(d) < fpmin) d = fpmin;
-      d = 1 / d;
-      h = d;
-
-      for (m = 1; m <= 100; m++) {
-        m2 = 2 * m;
-        aa = (m * (b - m) * x) / ((qam + m2) * (a + m2));
-        d = 1 + aa * d;
-        if (Math.abs(d) < fpmin) d = fpmin;
-        c = 1 + aa / c;
-        if (Math.abs(c) < fpmin) c = fpmin;
-        d = 1 / d;
-        h *= d * c;
-        aa = (-(a + m) * (qab + m) * x) / ((a + m2) * (qap + m2));
-        d = 1 + aa * d;
-        if (Math.abs(d) < fpmin) d = fpmin;
-        c = 1 + aa / c;
-        if (Math.abs(c) < fpmin) c = fpmin;
-        d = 1 / d;
-        del = d * c;
-        h *= del;
-        if (Math.abs(del - 1.0) < 3e-7) break;
-      }
-
-      return h;
-    }
-
-    function ibeta(x, a, b) {
-      // console.log('Inside ibeta:', x, a, b);
-      const bt =
-        x === 0 || x === 1
-          ? 0
-          : Math.exp(
-              gammaln(a + b) -
-                gammaln(a) -
-                gammaln(b) +
-                a * Math.log(x) +
-                b * Math.log(1 - x)
-            );
-      if (x < 0 || x > 1) return false;
-      if (x < (a + 1) / (a + b + 2)) return (bt * betacf(x, a, b)) / a;
-
-      return 1 - (bt * betacf(1 - x, b, a)) / b;
-    }
-
-    function tpval(t, df, alt) {
-      // console.log(t,df,alt);
-      let pval;
-      if (alt == "0") {
-        pval = 2 * tcdf(Math.abs(t) * -1, df);
-      } else if (alt == "-1") {
-        pval = tcdf(t, df);
-      } else if (alt == "2") {
-        pval = 1 - tcdf(t, df);
-        // console.log(pval,'bilal');
-      }
-      return pval;
-    }
-
-    // T-distribution functions
-    function tcdf(x, dof) {
-      const changenumber = Number(dof);
-      const xnumberx = Number(x);
-      const dof2 = changenumber / 2;
-      // const bilalalal = x + Math.sqrt(x * x + dof);
-      // console.log(xnumberx,dof,dof2,'gggg');
-      // -0.02 3 1.5 gggg
-      return ibeta(
-        (xnumberx + Math.sqrt(xnumberx * xnumberx + changenumber)) /
-          (2 * Math.sqrt(xnumberx * xnumberx + changenumber)),
-        dof2,
-        dof2
-      );
-    }
-    // Chi-square functions
-    function lowRegGamma(a, x) {
-      const aln = gammaln(a);
-      let ap = a;
-      let sum = 1 / a;
-      let del = sum;
-      let b = x + 1 - a;
-      let c = 1 / 1.0e-30;
-      let d = 1 / b;
-      let h = d;
-      let i = 1;
-      const ITMAX = -~(Math.log(a >= 1 ? a : 1 / a) * 8.5 + a * 0.4 + 17);
-      let an;
-
-      if (x < 0 || a <= 0) {
-        return 0;
-      } else if (x < a + 1) {
-        for (i = 1; i <= ITMAX; i++) {
-          sum += del *= x / ++ap;
+        function zpval(score, tail) {
+            let pval;
+            if (tail === '0') {
+                pval = 2 * zcdf(Math.abs(score) * (-1));
+            } else if (tail === '-1') {
+                pval = zcdf(score);
+            } else if (tail === '2') {
+                pval = 1 - zcdf(score);
+            }
+            return pval;
         }
-        return sum * Math.exp(x * -1 + a * Math.log(x) - aln);
-      }
-      for (; i <= ITMAX; i++) {
-        an = i * -1 * (i - a);
-        b += 2;
-        d = an * d + b;
-        c = b + an / c;
-        d = 1 / d;
-        h *= d * c;
-      }
 
-      return 1 - h * Math.exp(x * -1 + a * Math.log(x) - aln);
-    }
-
-    function chicdf(x, dof) {
-      if (x < 0) return 0;
-      return lowRegGamma(dof / 2, x / 2);
-    }
-
-    function chipval(chi, df, alt) {
-      let pval;
-      if (alt == "0") {
-        const x = chicdf(chi, df);
-        if (x <= 0.5) {
-          pval = 2 * x;
-        } else {
-          pval = 2 * (1 - x);
+        // Gamma and Beta functions
+        function gammaln(x) {
+            const cof = [
+                76.18009172947146,
+                -86.50532032941677,
+                24.01409824083091,
+                -1.231739572450155,
+                0.1208650973866179e-2,
+                -0.5395239384953e-5
+            ];
+            let ser = 1.000000000190015;
+            let xx = x;
+            let y = x;
+            let tmp = (y = xx = x) + 5.5;
+            tmp -= (xx + 0.5) * Math.log(tmp);
+            for (let j = 0; j < 6; j++)
+                ser += cof[j] / ++y;
+            return Math.log(2.5066282746310005 * ser / xx) - tmp;
         }
-      } else if (alt <= "-1") {
-        pval = chicdf(chi, df);
-      } else if (alt >= "1") {
-        pval = 1 - chicdf(chi, df);
-      }
-      return pval;
-    }
 
-    // F-distribution functions
-    function Fcdf(x, df1, df2) {
-      // console.log(x,df1,df2);
-      const hellox = Number(x);
-      const hellodf1 = Number(df1);
-      const hellodf2 = Number(df2);
-      if (x < 0) return 0;
-      return ibeta(
-        (hellodf1 * hellox) / (hellodf1 * hellox + hellodf2),
-        hellodf1 / 2,
-        hellodf2 / 2
-      );
-    }
+        function betacf(x, a, b) {
+            const fpmin = 1e-30;
+            let m = 1;
+            const qab = a + b;
+            const qap = a + 1;
+            const qam = a - 1;
+            let c = 1;
+            let d = 1 - qab * x / qap;
+            let m2, aa, del, h;
 
-    function Fpval(F, df1, df2, alt) {
-      // console.log(F,df1,df2,alt);
-      let pval;
-      if (alt == "0") {
-        const x = Fcdf(F, df1, df2);
-        if (x <= 0.5) {
-          pval = 2 * x;
-        } else {
-          pval = 2 * (1 - x);
+            if (Math.abs(d) < fpmin)
+                d = fpmin;
+            d = 1 / d;
+            h = d;
+
+            for (m = 1; m <= 100; m++) {
+                m2 = 2 * m;
+                aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+                d = 1 + aa * d;
+                if (Math.abs(d) < fpmin)
+                    d = fpmin;
+                c = 1 + aa / c;
+                if (Math.abs(c) < fpmin)
+                    c = fpmin;
+                d = 1 / d;
+                h *= d * c;
+                aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+                d = 1 + aa * d;
+                if (Math.abs(d) < fpmin)
+                    d = fpmin;
+                c = 1 + aa / c;
+                if (Math.abs(c) < fpmin)
+                    c = fpmin;
+                d = 1 / d;
+                del = d * c;
+                h *= del;
+                if (Math.abs(del - 1.0) < 3e-7)
+                    break;
+            }
+
+            return h;
         }
-      } else if (alt <= "-1") {
-        pval = Fcdf(F, df1, df2);
-      } else if (alt <= "1") {
-        pval = 1 - Fcdf(F, df1, df2);
-      }
-      return pval;
-    }
 
-    // Pearson correlation functions
-    function calculateTStatistic(r, n) {
-      return (r * Math.sqrt(n - 2)) / Math.sqrt(1 - r * r);
-    }
+        function ibeta(x, a, b) {
+          // console.log('Inside ibeta:', x, a, b);
+            const bt = (x === 0 || x === 1) ? 0 :
+                Math.exp(gammaln(a + b) - gammaln(a) -
+                    gammaln(b) + a * Math.log(x) + b *
+                    Math.log(1 - x));
+            if (x < 0 || x > 1)
+                return false;
+            if (x < (a + 1) / (a + b + 2))
+                return bt * betacf(x, a, b) / a;
 
-    function betaIncomplete(x, a, b) {
-      const gammalns = (x) => {
-        const cof = [
-          76.18009172947146, -86.50532032941677, 24.01409824083091,
-          -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5,
-        ];
-        let y = x;
-        let tmp = x + 5.5;
-        tmp -= (x + 0.5) * Math.log(tmp);
-        let ser = 1.000000000190015;
-        for (let j = 0; j < 6; j++) ser += cof[j] / ++y;
-        return -tmp + Math.log((2.5066282746310005 * ser) / x);
-      };
-
-      const betacfs = (x, a, b) => {
-        const MAXIT = 100;
-        const EPS = 3.0e-7;
-        const FPMIN = 1.0e-30;
-        const qab = a + b;
-        const qap = a + 1.0;
-        const qam = a - 1.0;
-        let c = 1.0;
-        let d = 1.0 - (qab * x) / qap;
-        if (Math.abs(d) < FPMIN) d = FPMIN;
-        d = 1.0 / d;
-        let h = d;
-        for (let m = 1, m2 = 2; m <= MAXIT; m++, m2 += 2) {
-          let aa = (m * (b - m) * x) / ((qam + m2) * (a + m2));
-          d = 1.0 + aa * d;
-          if (Math.abs(d) < FPMIN) d = FPMIN;
-          c = 1.0 + aa / c;
-          if (Math.abs(c) < FPMIN) c = FPMIN;
-          d = 1.0 / d;
-          h *= d * c;
-          aa = (-(a + m) * (qab + m) * x) / ((a + m2) * (qap + m2));
-          d = 1.0 + aa * d;
-          if (Math.abs(d) < FPMIN) d = FPMIN;
-          c = 1.0 + aa / c;
-          if (Math.abs(c) < FPMIN) c = FPMIN;
-          d = 1.0 / d;
-          h *= d * c;
+            return 1 - bt * betacf(1 - x, b, a) / b;
         }
-        return h;
-      };
 
-      const bt =
-        x == 0 || x == 1
-          ? 0
-          : Math.exp(
-              gammalns(a + b) -
-                gammalns(a) -
-                gammalns(b) +
-                a * Math.log(x) +
-                b * Math.log(1 - x)
-            );
-      if (x < 0.0 || x > 1.0) return 0.0;
-      if (x < (a + 1.0) / (a + b + 2.0)) return (bt * betacfs(x, a, b)) / a;
-      else return 1.0 - (bt * betacfs(1.0 - x, b, a)) / b;
+        function tpval(t, df, alt) {
+          // console.log(t,df,alt);
+          let pval;
+          if (alt == '0') {
+            pval = 2 * tcdf(Math.abs(t) * (-1), df);
+           
+          } else if (alt == '-1') {
+            pval = tcdf(t, df);
+          } else if (alt == '2') {
+                pval = 1 - tcdf(t, df);
+                // console.log(pval,'bilal');
+              }
+            return pval;
+        }
+
+             // T-distribution functions
+        function tcdf(x, dof) {
+          const changenumber = Number(dof);
+          const xnumberx = Number(x);
+          const dof2 = changenumber / 2;
+          // const bilalalal = x + Math.sqrt(x * x + dof);
+          // console.log(xnumberx,dof,dof2,'gggg');
+            // -0.02 3 1.5 gggg
+            return ibeta((xnumberx + Math.sqrt(xnumberx * xnumberx + changenumber)) / (2 * Math.sqrt(xnumberx * xnumberx + changenumber)), dof2, dof2);
+        }
+        // Chi-square functions
+        function lowRegGamma(a, x) {
+            const aln = gammaln(a);
+            let ap = a;
+            let sum = 1 / a;
+            let del = sum;
+            let b = x + 1 - a;
+            let c = 1 / 1.0e-30;
+            let d = 1 / b;
+            let h = d;
+            let i = 1;
+            const ITMAX = -~(Math.log((a >= 1) ? a : 1 / a) * 8.5 + a * 0.4 + 17);
+            let an;
+
+            if (x < 0 || a <= 0) {
+                return 0;
+            } else if (x < a + 1) {
+                for (i = 1; i <= ITMAX; i++) {
+                    sum += del *= x / ++ap;
+                }
+                return (sum * Math.exp(x * (-1) + a * Math.log(x) - (aln)));
+            }
+            for (; i <= ITMAX; i++) {
+                an = i * (-1) * (i - a);
+                b += 2;
+                d = an * d + b;
+                c = b + an / c;
+                d = 1 / d;
+                h *= d * c;
+            }
+
+            return (1 - h * Math.exp(x * (-1) + a * Math.log(x) - (aln)));
+        }
+
+        function chicdf(x, dof) {
+            if (x < 0)
+                return 0;
+            return lowRegGamma(dof / 2, x / 2);
+        }
+
+        function chipval(chi, df, alt) {
+            let pval;
+            if (alt == '0') {
+                const x = chicdf(chi, df);
+                if (x <= 0.5) {
+                    pval = 2 * x;
+                } else {
+                    pval = 2 * (1 - x);
+                }
+            } else if (alt <= '-1') {
+                pval = chicdf(chi, df);
+            } else if (alt >= '1') {
+                pval = 1 - chicdf(chi, df);
+            }
+            return pval;
+        }
+
+        // F-distribution functions
+        function Fcdf(x, df1, df2) {
+            // console.log(x,df1,df2);
+            const hellox = Number(x);
+            const hellodf1 = Number(df1);
+            const hellodf2 = Number(df2);
+            if (x < 0)
+                return 0;
+            return ibeta((hellodf1 * hellox) / (hellodf1 * hellox + hellodf2), hellodf1 / 2, hellodf2 / 2);
+        }
+
+        function Fpval(F, df1, df2, alt) {
+          // console.log(F,df1,df2,alt);
+            let pval;
+            if (alt == '0') {
+                const x = Fcdf(F, df1, df2);
+                if (x <= 0.5) {
+                    pval = 2 * x;
+                } else {
+                    pval = 2 * (1 - x);
+                }  
+            } else if (alt <= '-1') {
+                pval = Fcdf(F, df1, df2);
+            } else if (alt <= '1') {
+                pval = 1 - Fcdf(F, df1, df2);
+            }
+            return pval;
+        }
+
+        // Pearson correlation functions
+        function calculateTStatistic(r, n) {
+            return (r * Math.sqrt(n - 2)) / Math.sqrt(1 - r * r);
+        }
+
+        function betaIncomplete(x, a, b) {
+            const gammalns = (x) => {
+                const cof = [
+                    76.18009172947146,
+                    -86.50532032941677,
+                    24.01409824083091,
+                    -1.231739572450155,
+                    0.1208650973866179e-2,
+                    -0.5395239384953e-5
+                ];
+                let y = x;
+                let tmp = x + 5.5;
+                tmp -= (x + 0.5) * Math.log(tmp);
+                let ser = 1.000000000190015;
+                for (let j = 0; j < 6; j++) ser += cof[j] / ++y;
+                return -tmp + Math.log(2.5066282746310005 * ser / x);
+            };
+
+            const betacfs = (x, a, b) => {
+                const MAXIT = 100;
+                const EPS = 3.0e-7;
+                const FPMIN = 1.0e-30;
+                const qab = a + b;
+                const qap = a + 1.0;
+                const qam = a - 1.0;
+                let c = 1.0;
+                let d = 1.0 - qab * x / qap;
+                if (Math.abs(d) < FPMIN) d = FPMIN;
+                d = 1.0 / d;
+                let h = d;
+                for (let m = 1, m2 = 2; m <= MAXIT; m++, m2 += 2) {
+                    let aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+                    d = 1.0 + aa * d;
+                    if (Math.abs(d) < FPMIN) d = FPMIN;
+                    c = 1.0 + aa / c;
+                    if (Math.abs(c) < FPMIN) c = FPMIN;
+                    d = 1.0 / d;
+                    h *= d * c;
+                    aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+                    d = 1.0 + aa * d;
+                    if (Math.abs(d) < FPMIN) d = FPMIN;
+                    c = 1.0 + aa / c;
+                    if (Math.abs(c) < FPMIN) c = FPMIN;
+                    d = 1.0 / d;
+                    h *= d * c;
+                }
+                return h;
+            };
+
+            const bt = (x == 0 || x == 1) ? 0 :
+                Math.exp(gammalns(a + b) - gammalns(a) - gammalns(b) + a * Math.log(x) + b * Math.log(1 - x));
+            if (x < 0.0 || x > 1.0) return 0.0;
+            if (x < (a + 1.0) / (a + b + 2.0))
+                return bt * betacfs(x, a, b) / a;
+            else
+                return 1.0 - bt * betacfs(1.0 - x, b, a) / b;
+        }
+
+        function tDistCDFs(t, df) {
+            const x = df / (df + t * t);
+            const a = df / 2.0;
+            const b = 0.5;
+            const betaIncompleteResult = betaIncomplete(x, a, b);
+            return 1.0 - 0.5 * betaIncompleteResult;
+        }
+
+        function calculatePValue(t, df) {
+            return 2 * (1 - tDistCDFs(t, df));
+        }
+
+        function pValueFromPearson(r, n) {
+            const t = calculateTStatistic(r, n);
+            const df = n - 2;
+            return calculatePValue(t, df);
+        }
+
+        // Validation
+        if (level < 0 || level > 1) {
+            result.error = "Significance level must be a number between 0 and 1";
+            return result;
+        }
+
+        let p;
+
+        // Calculate p-value based on test type
+        if (testType === 'z') {
+            if (!isFinite(score) || !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            p = zpval(score, tail);
+        } else if (testType === 't') {
+            if (!isFinite(score) || !isFinite(deg) || !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            p = tpval(score, deg, tail);
+            // console.log(p,score,deg,tail,'gagagagag');
+        } else if (testType === 'chi') {
+            if (!isFinite(score) || !isFinite(deg) || !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            p = chipval(score, deg, deg);
+        } else if (testType === 'f') {
+            if (!isFinite(score) || !isFinite(deg) || !isFinite(deg2) || !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            if (deg2 < 0) {
+                result.error = "Your values for degrees of freedom cannot be negative.";
+                return result;
+            }
+            p = Fpval(score, deg, deg2, level);
+        } else if (testType === 'r') {
+            if (!isFinite(score) || !isFinite(deg) || !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            if (score < -1 || score > 1 || deg <= 2) {
+                result.error = "score must be between -1 and 1 and deg must be greater than 2";
+                return result;
+            }
+            p = pValueFromPearson(score, deg);
+        } else if (testType === 'q') {
+            if (isFinite(score) && isFinite(deg) && isFinite(degree_freedom) && !isFinite(level)) {
+                result.error = "Please! Check Your Input";
+                return result;
+            }
+            if (deg < 2 || deg > 30) {
+                result.error = "Degree of freedom must be between 2 and 30.";
+                return result;
+            }
+            if (degree_freedom < 3) {
+                result.error = "Degrees of freedom must be greater than or equal to 3.";
+                return result;
+            }
+            result.tech_score = score;
+            result.tech_deg = deg;
+            result.tech_degree_freedom = degree_freedom;
+            result.tech_level = level;
+            return result;
+        }
+
+        // Determine interpretation
+        const inter = p <= level ? '' : 'not';
+
+        // Round p-value if decimal
+      if (p != null && typeof p.toString === 'function') {
+          if (p.toString().includes('.')) {
+              p = Math.round(p * 1e7) / 1e7;
+          }
+      }
+
+
+        result.tech_tail = tail;
+        result.tech_inter = inter;
+        result.tech_level = level;
+        result.tech_p = p;
+        result.RESULT = 1;
+
+        return result;
     }
-
-    function tDistCDFs(t, df) {
-      const x = df / (df + t * t);
-      const a = df / 2.0;
-      const b = 0.5;
-      const betaIncompleteResult = betaIncomplete(x, a, b);
-      return 1.0 - 0.5 * betaIncompleteResult;
-    }
-
-    function calculatePValue(t, df) {
-      return 2 * (1 - tDistCDFs(t, df));
-    }
-
-    function pValueFromPearson(r, n) {
-      const t = calculateTStatistic(r, n);
-      const df = n - 2;
-      return calculatePValue(t, df);
-    }
-
-    // Validation
-    if (level < 0 || level > 1) {
-      result.error = "Significance level must be a number between 0 and 1";
-      return result;
-    }
-
-    let p;
-
-    // Calculate p-value based on test type
-    if (testType === "z") {
-      if (!isFinite(score) || !isFinite(level)) {
-        result.error = "Please! Check Your Input";
-        return result;
-      }
-      p = zpval(score, tail);
-    } else if (testType === "t") {
-      if (!isFinite(score) || !isFinite(deg) || !isFinite(level)) {
-        result.error = "Please! Check Your Input";
-        return result;
-      }
-      p = tpval(score, deg, tail);
-      // console.log(p,score,deg,tail,'gagagagag');
-    } else if (testType === "chi") {
-      if (!isFinite(score) || !isFinite(deg) || !isFinite(level)) {
-        result.error = "Please! Check Your Input";
-        return result;
-      }
-      p = chipval(score, deg, deg);
-    } else if (testType === "f") {
-      if (
-        !isFinite(score) ||
-        !isFinite(deg) ||
-        !isFinite(deg2) ||
-        !isFinite(level)
-      ) {
-        result.error = "Please! Check Your Input";
-        return result;
-      }
-      if (deg2 < 0) {
-        result.error = "Your values for degrees of freedom cannot be negative.";
-        return result;
-      }
-      p = Fpval(score, deg, deg2, level);
-    } else if (testType === "r") {
-      if (!isFinite(score) || !isFinite(deg) || !isFinite(level)) {
-        result.error = "Please! Check Your Input";
-        return result;
-      }
-      if (score < -1 || score > 1 || deg <= 2) {
-        result.error =
-          "score must be between -1 and 1 and deg must be greater than 2";
-        return result;
-      }
-      p = pValueFromPearson(score, deg);
-    } else if (testType === "q") {
-      if (
-        isFinite(score) &&
-        isFinite(deg) &&
-        isFinite(degree_freedom) &&
-        !isFinite(level)
-      ) {
-        result.error = "Please! Check Your Input";
-        return result;
-      }
-      if (deg < 2 || deg > 30) {
-        result.error = "Degree of freedom must be between 2 and 30.";
-        return result;
-      }
-      if (degree_freedom < 3) {
-        result.error = "Degrees of freedom must be greater than or equal to 3.";
-        return result;
-      }
-      result.tech_score = score;
-      result.tech_deg = deg;
-      result.tech_degree_freedom = degree_freedom;
-      result.tech_level = level;
-      return result;
-    }
-
-    // Determine interpretation
-    const inter = p <= level ? "" : "not";
-
-    // Round p-value if decimal
-    if (p.toString().includes(".")) {
-      p = Math.round(p * 10000000) / 10000000;
-    }
-
-    result.tech_tail = tail;
-    result.tech_inter = inter;
-    result.tech_level = level;
-    result.tech_p = p;
-    result.RESULT = 1;
-
-    return result;
-  }
   /** getCalculationLinearRegressionCalculator
    * POST: /api/calculators-lol/linear-regression-calculator
    * @param {Object} body Having Properties for Creating New Roles

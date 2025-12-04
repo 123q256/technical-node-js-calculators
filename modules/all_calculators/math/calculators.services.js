@@ -14026,516 +14026,440 @@ class CalculatorsServices {
    * @returns Object with message property having success method
    */
 
-  async getCalculationAreaOfASectorCalculator(body) {
-    // Helper function to convert degrees to radians
-    function deg2rad(deg) {
-      return deg * (Math.PI / 180);
+   async getCalculationAreaOfASectorCalculator(body) {
+        // Helper function to convert degrees to radians
+          let param = {};
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+
+        // Helper function for unit conversion
+        function convertToCm(value, unit) {
+            switch(unit) {
+                case 'in':
+                    return value * 2.54;
+                case 'm':
+                    return value * 100;
+                case 'ft':
+                    return value * 30.48;
+                case 'yd':
+                    return value * 91.44;
+                default:
+                    return value;
+            }
+        }
+
+        function convertAreaToCm2(value, unit) {
+            switch(unit) {
+                case 'in':
+                    return value * 6.45;
+                case 'm':
+                    return value * 10000;
+                case 'ft':
+                    return value * 929;
+                case 'yd':
+                    return value * 8361;
+                default:
+                    return value;
+            }
+        }
+            let angle = body.tech_angle;
+            let angle_unit = body.tech_angle_unit;
+            let rad = body.tech_rad;
+            let rad_unit = body.tech_rad_unit;
+            let diameter = body.tech_diameter;
+            let diameter_unit = body.tech_diameter_unit;
+            let area = body.tech_area;
+            let area_unit = body.tech_area_unit;
+            let arc = body.tech_arc;
+            let arc_unit = body.tech_arc_unit;
+            let c = body.tech_c;
+            let c_unit = body.tech_c_unit;
+
+        // Convert string values to numbers where applicable
+        const numAngle = angle ? parseFloat(angle) : null;
+        const numRad = rad ? parseFloat(rad) : null;
+        const numDiameter = diameter ? parseFloat(diameter) : null;
+        const numArea = area ? parseFloat(area) : null;
+        const numArc = arc ? parseFloat(arc) : null;
+        const numC = c ? parseFloat(c) : null;
+
+        // Case 1: angle and radius provided
+        if (numAngle != null && numRad != null && 
+            numDiameter == null && numArea == null && 
+            numArc == null && numC == null) {
+            
+            let processedAngle = numAngle;
+            if (angle_unit == 'deg') {
+                processedAngle = deg2rad(processedAngle);
+            }
+
+            const calculatedArea = (processedAngle * Math.pow(numRad, 2)) / 2;
+            const calculatedDia = numRad * 2;
+            const calculatedArc = processedAngle * numRad;
+            const calculatedC = 2 * numRad * Math.sin(processedAngle / 2);
+
+            return {
+                status: "success",
+                 mode: 1,
+                tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                tech_unit: rad_unit,
+                tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+            };
+        }
+        // Case 2: angle and diameter provided
+        else if (numAngle != null && numRad == null && 
+                numDiameter != null && numArea == null && 
+                numArc == null && numC == null) {
+            
+            let processedAngle = numAngle;
+            if (angle_unit == 'deg') {
+                processedAngle = deg2rad(processedAngle);
+            }
+
+            const calculatedRad = numDiameter / 2;
+            const calculatedArea = (processedAngle * Math.pow(calculatedRad, 2)) / 2;
+            const calculatedArc = processedAngle * calculatedRad;
+            const calculatedC = 2 * calculatedRad * Math.sin(processedAngle / 2);
+
+            return {
+                status: "success",
+                  tech_mode: 2,
+                  tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                  tech_unit: diameter_unit,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                  tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+            };
+        }
+        // Case 3: radius and area provided
+        else if (numAngle == null && numRad != null && 
+                numDiameter == null && numArea != null && 
+                numArc == null && numC == null) {
+            
+            const checkUnit = area_unit.replace('²', '');
+            let unit = rad_unit;
+            let processedRad = numRad;
+            let processedArea = numArea;
+
+            if (checkUnit != rad_unit) {
+                unit = 'cm';
+                processedRad = convertToCm(numRad, rad_unit);
+                processedArea = convertAreaToCm2(numArea, checkUnit);
+            }
+
+            const calculatedAngle = (processedArea * 2) / Math.pow(processedRad, 2);
+            const calculatedArc = calculatedAngle * processedRad;
+            const calculatedC = 2 * processedRad * Math.sin(calculatedAngle / 2);
+            const calculatedDia = processedRad * 2;
+
+            return {
+                status: "success",
+                 tech_mode: 3,
+                  tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                  tech_unit: unit,
+                  tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                  tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+            };
+        }
+        // Case 4: angle and area provided
+        else if (numAngle != null && numRad == null && 
+                numDiameter == null && numArea != null && 
+                numArc == null && numC == null) {
+            
+            const unit = area_unit.replace('²', '');
+            let processedAngle = numAngle;
+            if (angle_unit == 'deg') {
+                processedAngle = deg2rad(processedAngle);
+            }
+
+            const calculatedRad = Math.sqrt((2 * numArea) / processedAngle);
+            const calculatedArc = processedAngle * calculatedRad;
+            const calculatedC = 2 * calculatedRad * Math.sin(processedAngle / 2);
+            const calculatedDia = calculatedRad * 2;
+
+            return {
+                status: "success",
+                 tech_mode: 4,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_unit: unit,
+                  tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                  tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+            };
+        }
+        // Case 5: angle and arc provided
+        else if (numAngle != null && numRad == null && 
+                numDiameter == null && numArea == null && 
+                numArc != null && numC == null) {
+            
+            let processedAngle = numAngle;
+            if (angle_unit == 'deg') {
+                processedAngle = deg2rad(processedAngle);
+            }
+
+            const calculatedRad = numArc / processedAngle;
+            const calculatedDia = calculatedRad * 2;
+            const calculatedArea = (processedAngle * Math.pow(calculatedRad, 2)) / 2;
+            const calculatedC = 2 * calculatedRad * Math.sin(processedAngle / 2);
+
+            return {
+                status: "success",
+                 tech_mode: 5,
+                tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                utech_nit: arc_unit,
+                tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+            };
+        }
+        // Case 6: angle and chord length provided
+        else if (numAngle != null && numRad == null && 
+                numDiameter == null && numArea == null && 
+                numArc == null && numC !== null) {
+            
+            let processedAngle = numAngle;
+            if (angle_unit == 'deg') {
+                processedAngle = deg2rad(processedAngle);
+            }
+
+            const calculatedRad = numC / (2 * Math.sin(processedAngle / 2));
+            const calculatedDia = calculatedRad * 2;
+            const calculatedArea = (processedAngle * Math.pow(calculatedRad, 2)) / 2;
+            const calculatedArc = processedAngle * calculatedRad;
+
+            return {
+                status: "success",
+                  tech_mode: 6,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_unit: c_unit,
+                  tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                  tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+
+            };
+        }
+        // Case 7: radius and arc provided
+        else if (numAngle == null && numRad != null && 
+                numDiameter == null && numArea == null && 
+                numArc != null && numC == null) {
+            
+            let unit = rad_unit;
+            let processedRad = numRad;
+            let processedArc = numArc;
+
+            if (arc_unit != rad_unit) {
+                unit = 'cm';
+                processedRad = convertToCm(numRad, rad_unit);
+                processedArc = convertToCm(numArc, arc_unit);
+            }
+
+            const calculatedAngle = processedArc / processedRad;
+            const calculatedArea = (calculatedAngle * Math.pow(processedRad, 2)) / 2;
+            const calculatedC = 2 * processedRad * Math.sin(calculatedAngle / 2);
+            const calculatedDia = processedRad * 2;
+
+            return {
+                status: "success",
+                   tech_mode: 7,
+                tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                tech_unit: unit,
+                tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+            };
+        }
+        // Case 8: radius and chord length provided
+        else if (numAngle == null && numRad != null && 
+                numDiameter == null && numArea == null && 
+                numArc == null && numC != null) {
+            
+            let unit = rad_unit;
+            let processedRad = numRad;
+            let processedC = numC;
+
+            if (c_unit != rad_unit) {
+                unit = 'cm';
+                processedRad = convertToCm(numRad, rad_unit);
+                processedC = convertToCm(numC, c_unit);
+            }
+
+            const calculatedDia = processedRad * 2;
+            const calculatedAngle = 2 * Math.asin(processedC / (2 * processedRad));
+            const calculatedArea = (calculatedAngle * Math.pow(processedRad, 2)) / 2;
+            const calculatedArc = calculatedAngle * processedRad;
+            return {
+                status: "success",
+                    tech_mode: 8,
+                    tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                    tech_unit: unit,
+                    tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                    tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                    tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+            };
+        }
+        // Case 9: diameter and area provided
+        else if (numAngle == null && numRad == null && 
+                numDiameter != null && numArea != null && 
+                numArc == null && numC == null) {
+            
+            const checkUnit = area_unit.replace('²', '');
+            let unit = diameter_unit;
+            let processedDiameter = numDiameter;
+            let processedArea = numArea;
+
+            if (checkUnit != diameter_unit) {
+                unit = 'cm';
+                processedDiameter = convertToCm(numDiameter, diameter_unit);
+                processedArea = convertAreaToCm2(numArea, checkUnit);
+            }
+
+            const calculatedRad = processedDiameter / 2;
+            const calculatedAngle = (processedArea * 2) / Math.pow(calculatedRad, 2);
+            const calculatedArc = calculatedAngle * calculatedRad;
+            const calculatedC = 2 * calculatedRad * Math.sin(calculatedAngle / 2);
+
+            return {
+                status: "success",
+                    tech_mode: 9,
+                tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                  tech_unit: unit,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+                  tech_x: isNaN(calculatedC) ? "NaN" : calculatedC,
+            };
+        }
+        // Case 10: diameter and arc provided
+        else if (numAngle == null && numRad == null && 
+                numDiameter != null && numArea == null && 
+                numArc != null && numC == null) {
+            
+            let unit = diameter_unit;
+            let processedDiameter = numDiameter;
+            let processedArc = numArc;
+
+            if (diameter_unit != arc_unit) {
+                unit = 'cm';
+                processedDiameter = convertToCm(numDiameter, diameter_unit);
+                processedArc = convertToCm(numArc, arc_unit);
+            }
+
+            const calculatedRad = processedDiameter / 2;
+            const calculatedAngle = processedArc / calculatedRad;
+            const calculatedArea = (calculatedAngle * Math.pow(calculatedRad, 2)) / 2;
+            const calculatedC = 2 * calculatedRad * Math.sin(calculatedAngle / 2);
+
+            return {
+                status: "success",
+                    tech_mode: 10,
+                  tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                  tech_unit: unit,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                  tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+            };
+        }
+        // Case 11: diameter and chord length provided
+        else if (numAngle == null && numRad == null && 
+                numDiameter != null && numArea == null && 
+                numArc == null && numC != null) {
+            
+            let unit = diameter_unit;
+            let processedDiameter = numDiameter;
+            let processedC = numC;
+
+            if (c_unit != diameter_unit) {
+                unit = 'cm';
+                processedDiameter = convertToCm(numDiameter, diameter_unit);
+                processedC = convertToCm(numC, c_unit);
+            }
+
+            const calculatedRad = processedDiameter / 2;
+            const calculatedAngle = 2 * Math.asin(processedC / (2 * calculatedRad));
+            const calculatedArea = (calculatedAngle * Math.pow(calculatedRad, 2)) / 2;
+            const calculatedArc = calculatedAngle * calculatedRad;
+
+            return {
+                status: "success",
+                    tech_mode: 11,
+                   tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                  tech_unit: unit,
+                  tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                  tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
+                  tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
+
+            };
+        }
+        // Case 12: area and arc provided
+        else if (numAngle == null && numRad == null && 
+                numDiameter == null && numArea != null && 
+                numArc != null && numC == null) {
+            
+            const checkUnit = area_unit.replace('²', '');
+            let unit = arc_unit;
+            let processedArea = numArea;
+            let processedArc = numArc;
+
+            if (checkUnit != arc_unit) {
+                unit = 'cm';
+                processedArc = convertToCm(numArc, arc_unit);
+                processedArea = convertAreaToCm2(numArea, checkUnit);
+            }
+
+            const calculatedAngle = Math.pow(processedArc, 2) / (processedArea * 2);
+            const calculatedRad = processedArc / calculatedAngle;
+            const calculatedDia = calculatedRad * 2;
+            const calculatedC = 2 * calculatedRad * Math.sin(calculatedAngle / 2);
+
+            return {
+                status: "success",
+                 tech_mode: 12,
+                tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
+                tech_unit: unit,
+                tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
+                tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
+                tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
+
+            };
+        }
+        // Case 13: area and chord length provided (not supported)
+        else if (numAngle == null && numRad == null && 
+                numDiameter == null && numArea != null && 
+                numArc == null && numC != null) {
+            
+           return {
+            status: false,
+            error: 'Please Try with other values.'
+        };
+        }
+        // Case 14: arc and chord length provided (not supported)
+        else if (numAngle == null && numRad == null && 
+                numDiameter == null && numArea == null && 
+                numArc !== null && numC != null) {
+            
+             return {
+            status: false,
+            error: 'Please Try with other values.'
+        };
+        }
+        // Default case: invalid input
+        else {
+           return {
+            status: false,
+            error: 'Please! Check Your Input.'
+        };
+        }
     }
-
-    // Helper function for unit conversion
-    function convertToCm(value, unit) {
-      switch (unit) {
-        case "in":
-          return value * 2.54;
-        case "m":
-          return value * 100;
-        case "ft":
-          return value * 30.48;
-        case "yd":
-          return value * 91.44;
-        default:
-          return value;
-      }
-    }
-
-    function convertAreaToCm2(value, unit) {
-      switch (unit) {
-        case "in":
-          return value * 6.45;
-        case "m":
-          return value * 10000;
-        case "ft":
-          return value * 929;
-        case "yd":
-          return value * 8361;
-        default:
-          return value;
-      }
-    }
-    let angle = body.tech_angle;
-    let angle_unit = body.tech_angle_unit;
-    let rad = body.tech_rad;
-    let rad_unit = body.tech_rad_unit;
-    let diameter = body.tech_diameter;
-    let diameter_unit = body.tech_diameter_unit;
-    let area = body.tech_area;
-    let area_unit = body.tech_area_unit;
-    let arc = body.tech_arc;
-    let arc_unit = body.tech_arc_unit;
-    let c = body.tech_c;
-    let c_unit = body.tech_c_unit;
-
-    // Convert string values to numbers where applicable
-    const numAngle = angle ? parseFloat(angle) : null;
-    const numRad = rad ? parseFloat(rad) : null;
-    const numDiameter = diameter ? parseFloat(diameter) : null;
-    const numArea = area ? parseFloat(area) : null;
-    const numArc = arc ? parseFloat(arc) : null;
-    const numC = c ? parseFloat(c) : null;
-
-    // Case 1: angle and radius provided
-    if (
-      numAngle != null &&
-      numRad != null &&
-      numDiameter == null &&
-      numArea == null &&
-      numArc == null &&
-      numC == null
-    ) {
-      let processedAngle = numAngle;
-      if (angle_unit == "deg") {
-        processedAngle = deg2rad(processedAngle);
-      }
-
-      const calculatedArea = (processedAngle * Math.pow(numRad, 2)) / 2;
-      const calculatedDia = numRad * 2;
-      const calculatedArc = processedAngle * numRad;
-      const calculatedC = 2 * numRad * Math.sin(processedAngle / 2);
-
-      return {
-        status: "success",
-        payload: {
-          mode: 1,
-          tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
-          tech_unit: rad_unit,
-          tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
-          tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
-          tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
-        },
-      };
-    }
-    // Case 2: angle and diameter provided
-    else if (
-      numAngle != null &&
-      numRad == null &&
-      numDiameter != null &&
-      numArea == null &&
-      numArc == null &&
-      numC == null
-    ) {
-      let processedAngle = numAngle;
-      if (angle_unit == "deg") {
-        processedAngle = deg2rad(processedAngle);
-      }
-
-      const calculatedRad = numDiameter / 2;
-      const calculatedArea = (processedAngle * Math.pow(calculatedRad, 2)) / 2;
-      const calculatedArc = processedAngle * calculatedRad;
-      const calculatedC = 2 * calculatedRad * Math.sin(processedAngle / 2);
-
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 2,
-          tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
-          tech_unit: diameter_unit,
-          tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
-          tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
-          tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
-        },
-      };
-    }
-    // Case 3: radius and area provided
-    else if (
-      numAngle == null &&
-      numRad != null &&
-      numDiameter == null &&
-      numArea != null &&
-      numArc == null &&
-      numC == null
-    ) {
-      const checkUnit = area_unit.replace("²", "");
-      let unit = rad_unit;
-      let processedRad = numRad;
-      let processedArea = numArea;
-
-      if (checkUnit != rad_unit) {
-        unit = "cm";
-        processedRad = convertToCm(numRad, rad_unit);
-        processedArea = convertAreaToCm2(numArea, checkUnit);
-      }
-
-      const calculatedAngle = (processedArea * 2) / Math.pow(processedRad, 2);
-      const calculatedArc = calculatedAngle * processedRad;
-      const calculatedC = 2 * processedRad * Math.sin(calculatedAngle / 2);
-      const calculatedDia = processedRad * 2;
-
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 3,
-          tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
-          tech_unit: unit,
-          tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
-          tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
-          tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
-        },
-      };
-    }
-    // Case 4: angle and area provided
-    else if (
-      numAngle != null &&
-      numRad == null &&
-      numDiameter == null &&
-      numArea != null &&
-      numArc == null &&
-      numC == null
-    ) {
-      const unit = area_unit.replace("²", "");
-      let processedAngle = numAngle;
-      if (angle_unit == "deg") {
-        processedAngle = deg2rad(processedAngle);
-      }
-
-      const calculatedRad = Math.sqrt((2 * numArea) / processedAngle);
-      const calculatedArc = processedAngle * calculatedRad;
-      const calculatedC = 2 * calculatedRad * Math.sin(processedAngle / 2);
-      const calculatedDia = calculatedRad * 2;
-
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 4,
-          tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
-          tech_unit: unit,
-          tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
-          tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
-          tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
-        },
-      };
-    }
-    // Case 5: angle and arc provided
-    else if (
-      numAngle != null &&
-      numRad == null &&
-      numDiameter == null &&
-      numArea == null &&
-      numArc != null &&
-      numC == null
-    ) {
-      let processedAngle = numAngle;
-      if (angle_unit == "deg") {
-        processedAngle = deg2rad(processedAngle);
-      }
-
-      const calculatedRad = numArc / processedAngle;
-      const calculatedDia = calculatedRad * 2;
-      const calculatedArea = (processedAngle * Math.pow(calculatedRad, 2)) / 2;
-      const calculatedC = 2 * calculatedRad * Math.sin(processedAngle / 2);
-
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 5,
-          tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
-          utech_nit: arc_unit,
-          tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
-          tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
-          tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
-        },
-      };
-    }
-    // Case 6: angle and chord length provided
-    else if (
-      numAngle != null &&
-      numRad == null &&
-      numDiameter == null &&
-      numArea == null &&
-      numArc == null &&
-      numC !== null
-    ) {
-      let processedAngle = numAngle;
-      if (angle_unit == "deg") {
-        processedAngle = deg2rad(processedAngle);
-      }
-
-      const calculatedRad = numC / (2 * Math.sin(processedAngle / 2));
-      const calculatedDia = calculatedRad * 2;
-      const calculatedArea = (processedAngle * Math.pow(calculatedRad, 2)) / 2;
-      const calculatedArc = processedAngle * calculatedRad;
-
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 6,
-          tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
-          tech_unit: c_unit,
-          tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
-          tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
-          tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
-        },
-      };
-    }
-    // Case 7: radius and arc provided
-    else if (
-      numAngle == null &&
-      numRad != null &&
-      numDiameter == null &&
-      numArea == null &&
-      numArc != null &&
-      numC == null
-    ) {
-      let unit = rad_unit;
-      let processedRad = numRad;
-      let processedArc = numArc;
-
-      if (arc_unit != rad_unit) {
-        unit = "cm";
-        processedRad = convertToCm(numRad, rad_unit);
-        processedArc = convertToCm(numArc, arc_unit);
-      }
-
-      const calculatedAngle = processedArc / processedRad;
-      const calculatedArea = (calculatedAngle * Math.pow(processedRad, 2)) / 2;
-      const calculatedC = 2 * processedRad * Math.sin(calculatedAngle / 2);
-      const calculatedDia = processedRad * 2;
-
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 7,
-          tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
-          tech_unit: unit,
-          tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
-          tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
-          tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
-        },
-      };
-    }
-    // Case 8: radius and chord length provided
-    else if (
-      numAngle == null &&
-      numRad != null &&
-      numDiameter == null &&
-      numArea == null &&
-      numArc == null &&
-      numC != null
-    ) {
-      let unit = rad_unit;
-      let processedRad = numRad;
-      let processedC = numC;
-
-      if (c_unit != rad_unit) {
-        unit = "cm";
-        processedRad = convertToCm(numRad, rad_unit);
-        processedC = convertToCm(numC, c_unit);
-      }
-
-      const calculatedDia = processedRad * 2;
-      const calculatedAngle = 2 * Math.asin(processedC / (2 * processedRad));
-      const calculatedArea = (calculatedAngle * Math.pow(processedRad, 2)) / 2;
-      const calculatedArc = calculatedAngle * processedRad;
-      console.log(calculatedAngle);
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 8,
-          tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
-          tech_unit: unit,
-          tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
-          tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
-          tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
-        },
-      };
-    }
-    // Case 9: diameter and area provided
-    else if (
-      numAngle == null &&
-      numRad == null &&
-      numDiameter != null &&
-      numArea != null &&
-      numArc == null &&
-      numC == null
-    ) {
-      const checkUnit = area_unit.replace("²", "");
-      let unit = diameter_unit;
-      let processedDiameter = numDiameter;
-      let processedArea = numArea;
-
-      if (checkUnit != diameter_unit) {
-        unit = "cm";
-        processedDiameter = convertToCm(numDiameter, diameter_unit);
-        processedArea = convertAreaToCm2(numArea, checkUnit);
-      }
-
-      const calculatedRad = processedDiameter / 2;
-      const calculatedAngle = (processedArea * 2) / Math.pow(calculatedRad, 2);
-      const calculatedArc = calculatedAngle * calculatedRad;
-      const calculatedC = 2 * calculatedRad * Math.sin(calculatedAngle / 2);
-
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 9,
-          tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
-          tech_unit: unit,
-          tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
-          tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
-          tech_x: isNaN(calculatedC) ? "NaN" : calculatedC,
-        },
-      };
-    }
-    // Case 10: diameter and arc provided
-    else if (
-      numAngle == null &&
-      numRad == null &&
-      numDiameter != null &&
-      numArea == null &&
-      numArc != null &&
-      numC == null
-    ) {
-      let unit = diameter_unit;
-      let processedDiameter = numDiameter;
-      let processedArc = numArc;
-
-      if (diameter_unit != arc_unit) {
-        unit = "cm";
-        processedDiameter = convertToCm(numDiameter, diameter_unit);
-        processedArc = convertToCm(numArc, arc_unit);
-      }
-
-      const calculatedRad = processedDiameter / 2;
-      const calculatedAngle = processedArc / calculatedRad;
-      const calculatedArea = (calculatedAngle * Math.pow(calculatedRad, 2)) / 2;
-      const calculatedC = 2 * calculatedRad * Math.sin(calculatedAngle / 2);
-
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 10,
-          tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
-          tech_unit: unit,
-          tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
-          tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
-          tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
-        },
-      };
-    }
-    // Case 11: diameter and chord length provided
-    else if (
-      numAngle == null &&
-      numRad == null &&
-      numDiameter != null &&
-      numArea == null &&
-      numArc == null &&
-      numC != null
-    ) {
-      let unit = diameter_unit;
-      let processedDiameter = numDiameter;
-      let processedC = numC;
-
-      if (c_unit != diameter_unit) {
-        unit = "cm";
-        processedDiameter = convertToCm(numDiameter, diameter_unit);
-        processedC = convertToCm(numC, c_unit);
-      }
-
-      const calculatedRad = processedDiameter / 2;
-      const calculatedAngle = 2 * Math.asin(processedC / (2 * calculatedRad));
-      const calculatedArea = (calculatedAngle * Math.pow(calculatedRad, 2)) / 2;
-      const calculatedArc = calculatedAngle * calculatedRad;
-
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 11,
-          tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
-          tech_unit: unit,
-          tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
-          tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
-          tech_arc: isNaN(calculatedArc) ? "NaN" : calculatedArc,
-        },
-      };
-    }
-    // Case 12: area and arc provided
-    else if (
-      numAngle == null &&
-      numRad == null &&
-      numDiameter == null &&
-      numArea != null &&
-      numArc != null &&
-      numC == null
-    ) {
-      const checkUnit = area_unit.replace("²", "");
-      let unit = arc_unit;
-      let processedArea = numArea;
-      let processedArc = numArc;
-
-      if (checkUnit != arc_unit) {
-        unit = "cm";
-        processedArc = convertToCm(numArc, arc_unit);
-        processedArea = convertAreaToCm2(numArea, checkUnit);
-      }
-
-      const calculatedAngle = Math.pow(processedArc, 2) / (processedArea * 2);
-      const calculatedRad = processedArc / calculatedAngle;
-      const calculatedDia = calculatedRad * 2;
-      const calculatedC = 2 * calculatedRad * Math.sin(calculatedAngle / 2);
-
-      return {
-        status: "success",
-        payload: {
-          tech_mode: 12,
-          tech_angle: isNaN(calculatedAngle) ? "NaN" : calculatedAngle,
-          tech_unit: unit,
-          tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
-          tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
-          tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
-        },
-      };
-    }
-    // Case 13: area and chord length provided (not supported)
-    else if (
-      numAngle == null &&
-      numRad == null &&
-      numDiameter == null &&
-      numArea != null &&
-      numArc == null &&
-      numC != null
-    ) {
-      return {
-        status: "success",
-        payload: {
-          error: "Please Try with other values.",
-        },
-      };
-    }
-    // Case 14: arc and chord length provided (not supported)
-    else if (
-      numAngle == null &&
-      numRad == null &&
-      numDiameter == null &&
-      numArea == null &&
-      numArc !== null &&
-      numC != null
-    ) {
-      return {
-        status: "success",
-        payload: {
-          error: "Please Try with other values.",
-        },
-      };
-    }
-    // Default case: invalid input
-    else {
-      return {
-        status: "success",
-        payload: {
-          error: "Please! Check Your Input.",
-        },
-      };
-    }
-  }
 
   /** getCalculationPercentageIncreaseCalculator
    * POST: /api/calculators-lol/percentage-increase-calculator

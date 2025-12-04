@@ -4655,47 +4655,64 @@ class CalculatorsServices {
     }
   }
 
+ 
   async getCalculationSquareFootageCalculator(body) {
     try {
-      let width = body.tech_width;
-      let axisa = body.tech_axisa;
-      let axisb = body.tech_axisb;
-      let inner_length_unit = body.tech_inner_length_unit;
-      let axisa_unit = body.tech_axisa_unit;
-      let axisb_unit = body.tech_axisb_unit;
-      let shape_unit = body.tech_shape_unit;
-      let sidealength = body.tech_sidealength;
-      let sideblength = body.tech_sideblength;
-      let quantity = body.tech_quantity;
-      let height = body.tech_height;
-      let length = body.tech_length;
-      let inner_length = body.tech_inner_length;
-      let inner_width = body.tech_inner_width;
-      let length_unit = body.tech_length_unit;
-      let width_unit = body.tech_width_unit;
-      let diameter = body.tech_diameter;
-      let diameter_unit = body.tech_diameter_unit;
-      let inner_diameter = body.tech_inner_diameter;
-      let inner_diameter_unit = body.tech_inner_diameter_unit;
-      let inner_width_unit = body.tech_inner_width_unit;
-      let border_width = body.tech_border_width;
-      let border_width_unit = body.tech_border_width_unit;
-      let sidealength_unit = body.tech_sidealength_unit;
-      let sideblength_unit = body.tech_sideblength_unit;
-      let sideclength_unit = body.tech_sideclength_unit;
-      let sideclength = body.tech_sideclength;
-      let radius = body.tech_radius;
-      let radius_unit = body.tech_radius_unit;
-      let angle = body.tech_angle;
-      let sides = body.tech_sides;
-      let outer_diameter = body.tech_outer_diameter;
-      let outer_diameter_unit = body.tech_outer_diameter_unit;
-      let height_unit = body.tech_height_unit;
-      let base_unit = body.tech_base_unit;
-      let base = body.tech_base;
-      let room_unit = body.tech_room_unit;
-      let price = body.tech_price;
-      let price_unit = body.tech_price_unit;
+      let width = body.tech_width ?? [];
+        let axisa = body.tech_axisa ?? [];
+        let axisb = body.tech_axisb ?? [];
+
+        let sidealength = body.tech_sidealength ?? [];
+        let sideblength = body.tech_sideblength ?? [];
+        let sideclength = body.tech_sideclength ?? []; // may be missing
+
+        let sidealength_unit = body.tech_sidealength_unit ?? [];
+        let sideblength_unit = body.tech_sideblength_unit ?? [];
+        let sideclength_unit = body.tech_sideclength_unit ?? []; // may be missing
+
+        let quantity = Number(body.tech_quantity ?? 1);
+
+        let height = body.tech_height ?? [];
+        let length = body.tech_length ?? [];
+
+        let inner_length = body.tech_inner_length ?? [];
+        let inner_width = body.tech_inner_width ?? [];
+
+        let length_unit = body.tech_length_unit ?? [];
+        let width_unit = body.tech_width_unit ?? [];
+
+        let diameter = body.tech_diameter ?? [];
+        let diameter_unit = body.tech_diameter_unit ?? [];
+
+        let inner_diameter = body.tech_inner_diameter ?? [];
+        let inner_diameter_unit = body.tech_inner_diameter_unit ?? [];
+
+        let inner_length_unit = body.tech_inner_length_unit ?? [];
+        let inner_width_unit = body.tech_inner_width_unit ?? [];
+
+        let border_width = body.tech_border_width ?? [];
+        let border_width_unit = body.tech_border_width_unit ?? [];
+
+        let radius = body.tech_radius ?? [];
+        let radius_unit = body.tech_radius_unit ?? [];
+
+        let angle = body.tech_angle ?? [];
+        let sides = body.tech_sides ?? [];
+
+        let outer_diameter = body.tech_outer_diameter ?? [];
+        let outer_diameter_unit = body.tech_outer_diameter_unit ?? [];
+
+        let height_unit = body.tech_height_unit ?? [];
+        let base_unit = body.tech_base_unit ?? [];
+        let base = body.tech_base ?? [];
+
+        let room_unit = body.tech_room_unit ?? 1;
+
+        let shape_unit = body.tech_shape_unit ?? [];
+
+        let price = body.tech_price ?? 0;
+        let price_unit = body.tech_price_unit ?? "ft²";
+
 
       // Unit conversion helper
       function calculate(unit, value) {
@@ -4712,7 +4729,7 @@ class CalculatorsServices {
       let sum = 0;
       let param = {};
 
-      if (room_unit === "1" || room_unit === "2") {
+      if (room_unit == "1" || room_unit == "2") {
         while (i < shape_unit.length) {
           let area = 0;
 
@@ -4771,12 +4788,15 @@ class CalculatorsServices {
               break;
 
             case "tri":
-              if (
-                !isNaN(sidealength[i]) &&
-                !isNaN(sideblength[i]) &&
-                !isNaN(sideclength[i]) &&
-                !isNaN(quantity)
-              ) {
+             if (
+                  sidealength?.[i] !== undefined &&
+                  sideblength?.[i] !== undefined &&
+                  sideclength?.[i] !== undefined &&
+                  !isNaN(sidealength[i]) &&
+                  !isNaN(sideblength[i]) &&
+                  !isNaN(sideclength[i]) &&
+                  !isNaN(quantity)
+                ) {
                 let a = calculate(sidealength_unit[i], sidealength[i]);
                 let b = calculate(sideblength_unit[i], sideblength[i]);
                 let c = calculate(sideclength_unit[i], sideclength[i]);
@@ -4866,11 +4886,11 @@ class CalculatorsServices {
         }
 
         // Price handling
-        if (price !== "" && !isNaN(price)) {
+        if (price != "" && !isNaN(price)) {
           let convert_price = 0;
-          if (price_unit === "ft²") convert_price = price * 1;
-          else if (price_unit === "yd²") convert_price = price * 0.11;
-          else if (price_unit === "m²") convert_price = price * 0.09;
+          if (price_unit == "ft²") convert_price = price * 1;
+          else if (price_unit == "yd²") convert_price = price * 0.11;
+          else if (price_unit == "m²") convert_price = price * 0.09;
 
           param.tech_ans = sum;
           param.tech_sqyards = sum * 0.11111;
