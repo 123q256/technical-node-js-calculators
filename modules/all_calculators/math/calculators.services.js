@@ -14101,7 +14101,7 @@ class CalculatorsServices {
 
             return {
                 status: "success",
-                 mode: 1,
+                 tech_mode: 1,
                 tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
                 tech_unit: rad_unit,
                 tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
@@ -14214,7 +14214,7 @@ class CalculatorsServices {
                 status: "success",
                  tech_mode: 5,
                 tech_rad: isNaN(calculatedRad) ? "NaN" : calculatedRad,
-                utech_nit: arc_unit,
+                tech_unit: arc_unit,
                 tech_dia: isNaN(calculatedDia) ? "NaN" : calculatedDia,
                 tech_area: isNaN(calculatedArea) ? "NaN" : calculatedArea,
                 tech_c: isNaN(calculatedC) ? "NaN" : calculatedC,
@@ -22152,439 +22152,502 @@ class CalculatorsServices {
    * @returns Object with message property having success method
    */
 
-  async getCalculationSohcahtoaCalculator(body) {
-    let len_a = body.tech_len_a;
-    let len_a_unit = body.tech_len_a_unit;
-    let len_b = body.tech_len_b;
-    let len_b_unit = body.tech_len_b_unit;
-    let len_c = body.tech_len_c;
-    let len_c_unit = body.tech_len_c_unit;
-    let area = body.tech_area;
-    let area_unit = body.tech_area_unit;
-    let angle_alpha = body.tech_angle_alpha;
-    let angle_alpha_unit = body.tech_angle_alpha_unit;
-    let angle_beta = body.tech_angle_beta;
-    let angle_beta_unit = body.tech_angle_beta_unit;
+   async  getCalculationSohcahtoaCalculator(body) {
+      const len_a = body.tech_len_a;
+      const len_a_unit = body.tech_len_a_unit;
+      const len_b = body.tech_len_b;
+      const len_b_unit = body.tech_len_b_unit;
+      const len_c = body.tech_len_c;
+      const len_c_unit = body.tech_len_c_unit;
+      const area = body.tech_area;
+      const area_unit = body.tech_area_unit;
+      let angle_alpha = body.tech_angle_alpha;
+      let angle_alpha_unit = body.tech_angle_alpha_unit;
+      let angle_beta = body.tech_angle_beta;
+      let angle_beta_unit = body.tech_angle_beta_unit;
 
-    const result = {};
-
-    // Helper function: Convert length units to centimeters
-    function newUnitConvert(unit, value) {
-      const conversions = {
-        mm: 0.1,
-        cm: 1,
-        m: 100,
-        km: 1000,
-        in: 2.54,
-        ft: 30.48,
-        yd: 91.44,
-        mi: 160934,
-      };
-      return value * (conversions[unit] || 1);
-    }
-
-    // Helper function: Convert area units to square centimeters
-    function newCenti(unit3, value3) {
-      const conversions = {
-        "mm²": 0.01,
-        "cm²": 1,
-        "m²": 10000,
-        "km²": 10000000000,
-        "in²": 6.452,
-        "ft²": 929,
-        "yd²": 8361,
-        "mi²": 25899881103,
-      };
-      return value3 * (conversions[unit3] || 1);
-    }
-
-    // Convert angle units
-    if (angle_alpha_unit == "rad") {
-      angle_alpha_unit = "57.3";
-    } else {
-      angle_alpha_unit = "0.017453";
-    }
-
-    if (angle_beta_unit == "rad") {
-      angle_beta_unit = "57.3";
-    } else {
-      angle_beta_unit = "0.017453";
-    }
-
-    // Helper to check if value is numeric and not empty
-    const isNumeric = (val) =>
-      val !== null && val !== undefined && val !== "" && !isNaN(val);
-
-    let method;
-    let c, anglea, angleb, area_value;
-
-    // Method 1: len_a and len_b provided
-    if (isNumeric(len_a) && isNumeric(len_b)) {
-      if (
-        !isNumeric(len_c) &&
-        !isNumeric(area) &&
-        !isNumeric(angle_alpha) &&
-        !isNumeric(angle_beta)
-      ) {
-        method = 1;
-        len_a = parseFloat(len_a);
-        len_b = parseFloat(len_b);
-        c = Math.sqrt(len_a * len_a + len_b * len_b);
-        anglea = Math.atan(len_a / len_b);
-        angleb = Math.atan(len_b / len_a);
-        area_value = (len_a * len_b) / 2;
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
+      // Helper function for unit conversion
+      function newUnitConvert(unit, value) {
+        const conversions = {
+          mm: 0.1,
+          cm: 1,
+          m: 100,
+          km: 1000,
+          in: 2.54,
+          ft: 30.48,
+          yd: 91.44,
+          mi: 160934,
+        };
+        return value * (conversions[unit] || 1);
       }
-    }
-    // Method 2: len_a and len_c provided
-    else if (isNumeric(len_a) && isNumeric(len_c)) {
-      if (
-        !isNumeric(len_b) &&
-        !isNumeric(area) &&
-        !isNumeric(angle_alpha) &&
-        !isNumeric(angle_beta)
-      ) {
-        method = 2;
-        len_a = parseFloat(len_a);
-        c = parseFloat(len_c);
-        len_b = Math.sqrt(c * c - len_a * len_a);
-        anglea = Math.atan(len_a / len_b);
-        angleb = Math.atan(len_b / len_a);
-        area_value = (len_a * len_b) / 2;
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
-      }
-    }
-    // Method 3: len_b and len_c provided
-    else if (isNumeric(len_b) && isNumeric(len_c)) {
-      if (
-        !isNumeric(len_a) &&
-        !isNumeric(area) &&
-        !isNumeric(angle_alpha) &&
-        !isNumeric(angle_beta)
-      ) {
-        method = 3;
-        len_b = parseFloat(len_b);
-        c = parseFloat(len_c);
-        len_a = Math.sqrt(c * c - len_b * len_b);
-        anglea = Math.atan(len_a / len_b);
-        angleb = Math.atan(len_b / len_a);
-        area_value = (len_a * len_b) / 2;
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
-      }
-    }
-    // Method 4: angle_alpha and len_a provided
-    else if (isNumeric(angle_alpha) && isNumeric(len_a)) {
-      if (
-        !isNumeric(len_b) &&
-        !isNumeric(len_c) &&
-        !isNumeric(angle_beta) &&
-        !isNumeric(area)
-      ) {
-        method = 4;
-        len_a = parseFloat(len_a);
-        anglea = parseFloat(angle_alpha) * parseFloat(angle_alpha_unit);
-        len_b = len_a / Math.tan(anglea);
-        c = Math.sqrt(len_a * len_a + len_b * len_b);
-        angleb = Math.atan(len_b / len_a);
-        area_value = (len_a * len_b) / 2;
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
-      }
-    }
-    // Method 5: angle_alpha and len_b provided
-    else if (isNumeric(angle_alpha) && isNumeric(len_b)) {
-      if (
-        !isNumeric(len_a) &&
-        !isNumeric(len_c) &&
-        !isNumeric(angle_beta) &&
-        !isNumeric(area)
-      ) {
-        method = 5;
-        len_b = parseFloat(len_b);
-        anglea = parseFloat(angle_alpha) * parseFloat(angle_alpha_unit);
-        len_a = len_b * Math.tan(anglea);
-        c = Math.sqrt(len_a * len_a + len_b * len_b);
-        angleb = Math.atan(len_b / len_a);
-        area_value = (len_a * len_b) / 2;
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
-      }
-    }
-    // Method 6: angle_alpha and len_c provided
-    else if (isNumeric(angle_alpha) && isNumeric(len_c)) {
-      if (
-        !isNumeric(len_a) &&
-        !isNumeric(len_b) &&
-        !isNumeric(angle_beta) &&
-        !isNumeric(area)
-      ) {
-        method = 6;
-        c = parseFloat(len_c);
-        anglea = parseFloat(angle_alpha) * parseFloat(angle_alpha_unit);
-        len_a = c * Math.sin(anglea);
-        len_b = c * Math.cos(anglea);
-        angleb = Math.atan(len_b / len_a);
-        area_value = (len_a * len_b) / 2;
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
-      }
-    }
-    // Method 7: angle_beta and len_a provided
-    else if (isNumeric(angle_beta) && isNumeric(len_a)) {
-      if (
-        !isNumeric(len_b) &&
-        !isNumeric(len_c) &&
-        !isNumeric(angle_alpha) &&
-        !isNumeric(area)
-      ) {
-        method = 7;
-        len_a = parseFloat(len_a);
-        const PI = Math.PI;
 
-        if (angle_beta_unit === "0.017453") {
-          angleb = (parseFloat(angle_beta) * PI) / 180;
-          anglea = PI / 2 - angleb;
-        } else if (angle_beta_unit === "57.3") {
-          anglea = PI / 2 - parseFloat(angle_beta);
+      // Helper function for area conversion
+      function newCenti(unit3, value3) {
+        const conversions = {
+          "mm²": 0.01,
+          "cm²": 1,
+          "m²": 10000,
+          "km²": 10000000000,
+          "in²": 6.452,
+          "ft²": 929,
+          "yd²": 8361,
+          "mi²": 25899881103,
+        };
+        return value3 * (conversions[unit3] || 1);
+      }
+
+      // Convert angle units
+      if (angle_alpha_unit === "rad") {
+        angle_alpha_unit = 57.3;
+      } else {
+        angle_alpha_unit = 0.017453;
+      }
+
+      if (angle_beta_unit === "rad") {
+        angle_beta_unit = 57.3;
+      } else {
+        angle_beta_unit = 0.017453;
+      }
+
+      const param = {};
+      let method, a, b, c, anglea, angleb, area_value, peremter, height, R_cap, R_sml;
+
+      const isNumeric = (val) => val !== null && val !== undefined && val !== "" && !isNaN(val);
+
+      // Method 1: len_a and len_b
+      if (isNumeric(len_a) && isNumeric(len_b)) {
+        if (!isNumeric(len_c) && !isNumeric(area) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+          method = 1;
+          a = parseFloat(len_a);
+          b = parseFloat(len_b);
+
+          c = Math.sqrt(a * a + b * b);
+          anglea = b !== 0 ? Math.atan(a / b) : 0;
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          area_value = (a * b) / 2;
+          peremter = a + b + c;
+          height = c !== 0 ? (a * b) / c : 0;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
         }
-
-        len_b = len_a / Math.tan(anglea);
-        c = Math.sqrt(len_a * len_a + len_b * len_b);
-        anglea = Math.atan(len_a / len_b);
-        angleb = Math.atan(len_b / len_a);
-        area_value = (len_a * len_b) / 2;
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
       }
-    }
-    // Method 8: angle_beta and len_b provided
-    else if (isNumeric(angle_beta) && isNumeric(len_b)) {
-      if (
-        !isNumeric(len_a) &&
-        !isNumeric(len_c) &&
-        !isNumeric(angle_alpha) &&
-        !isNumeric(area)
-      ) {
-        method = 8;
-        len_b = parseFloat(len_b);
-        const PI = Math.PI;
-
-        if (angle_beta_unit === "0.017453") {
-          angleb = (parseFloat(angle_beta) * PI) / 180;
-          anglea = PI / 2 - angleb;
-        } else if (angle_beta_unit === "57.3") {
-          anglea = PI / 2 - parseFloat(angle_beta);
+      // Method 2: len_a and len_c
+      else if (isNumeric(len_a) && isNumeric(len_c)) {
+        if (parseFloat(len_a) >= parseFloat(len_c)) {
+          param.error = "Hypotenuse (c) must be larger than leg (a)";
+          return param;
         }
+        if (!isNumeric(len_b) && !isNumeric(area) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+          method = 2;
+          a = parseFloat(len_a);
+          c = parseFloat(len_c);
 
-        len_a = len_b * Math.tan(anglea);
-        c = Math.sqrt(len_a * len_a + len_b * len_b);
-        anglea = Math.atan(len_a / len_b);
-        angleb = Math.atan(len_b / len_a);
-        area_value = (len_a * len_b) / 2;
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
-      }
-    }
-    // Method 9: angle_beta and len_c provided
-    else if (isNumeric(angle_beta) && isNumeric(len_c)) {
-      if (
-        !isNumeric(len_a) &&
-        !isNumeric(len_b) &&
-        !isNumeric(angle_alpha) &&
-        !isNumeric(area)
-      ) {
-        method = 9;
-        c = parseFloat(len_c);
-        const PI = Math.PI;
+          if (c * c >= a * a) {
+            b = Math.sqrt(c * c - a * a);
+          } else {
+            b = 0;
+          }
 
-        if (angle_beta_unit === "0.017453") {
-          angleb = (parseFloat(angle_beta) * PI) / 180;
-          anglea = PI / 2 - angleb;
-        } else if (angle_beta_unit === "57.3") {
-          anglea = PI / 2 - parseFloat(angle_beta);
+          anglea = b !== 0 ? Math.atan(a / b) : 0;
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          area_value = (a * b) / 2;
+          peremter = a + b + c;
+          height = c !== 0 ? (a * b) / c : 0;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
         }
+      }
+      // Method 3: len_b and len_c
+      else if (isNumeric(len_b) && isNumeric(len_c)) {
+        if (!isNumeric(len_a) && !isNumeric(area) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+          method = 3;
+          c = parseFloat(len_c);
+          b = parseFloat(len_b);
 
-        len_a = c * Math.sin(anglea);
-        len_b = c * Math.cos(anglea);
-        anglea = Math.atan(len_a / len_b);
-        angleb = Math.atan(len_b / len_a);
-        area_value = (len_a * len_b) / 2;
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
+          a = Math.sqrt(c * c - b * b);
+          anglea = Math.atan(a / b);
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          area_value = (a * b) / 2;
+          height = c !== 0 ? (a * b) / c : 0;
+          peremter = a + b + c;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
       }
-    }
-    // Method 10: area and len_a provided
-    else if (isNumeric(area) && isNumeric(len_a)) {
-      if (
-        !isNumeric(len_b) &&
-        !isNumeric(len_c) &&
-        !isNumeric(angle_alpha) &&
-        !isNumeric(angle_beta)
-      ) {
-        method = 10;
-        len_a = parseFloat(len_a);
-        area_value = newCenti(area_unit, parseFloat(area));
-        len_b = (2 * area_value) / len_a;
-        c = Math.sqrt(len_a * len_a + len_b * len_b);
-        anglea = Math.atan(len_a / len_b);
-        angleb = Math.atan(len_b / len_a);
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
+      // Method 4: angle_alpha and len_a
+      else if (isNumeric(angle_alpha) && isNumeric(len_a)) {
+        if (!isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(angle_beta) && !isNumeric(area)) {
+          method = 4;
+          a = parseFloat(len_a);
+          anglea = parseFloat(angle_alpha) * angle_alpha_unit;
+
+          if (Math.tan(anglea) !== 0) {
+            b = a / Math.tan(anglea);
+          } else {
+            b = 0;
+          }
+
+          c = Math.sqrt(a * a + b * b);
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          area_value = (a * b) / 2;
+          height = c !== 0 ? (a * b) / c : 0;
+          peremter = a + b + c;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
       }
-    }
-    // Method 11: area and len_b provided
-    else if (isNumeric(area) && isNumeric(len_b)) {
-      if (
-        !isNumeric(len_a) &&
-        !isNumeric(len_c) &&
-        !isNumeric(angle_alpha) &&
-        !isNumeric(angle_beta)
-      ) {
-        method = 11;
-        len_b = parseFloat(len_b);
-        area_value = newCenti(area_unit, parseFloat(area));
-        len_a = (2 * area_value) / len_b;
-        c = Math.sqrt(len_a * len_a + len_b * len_b);
-        anglea = Math.atan(len_a / len_b);
-        angleb = Math.atan(len_b / len_a);
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
+      // Method 5: angle_alpha and len_b
+      else if (isNumeric(angle_alpha) && isNumeric(len_b)) {
+        if (!isNumeric(len_a) && !isNumeric(len_c) && !isNumeric(angle_beta) && !isNumeric(area)) {
+          method = 5;
+          b = parseFloat(len_b);
+          anglea = parseFloat(angle_alpha) * angle_alpha_unit;
+
+          a = b * Math.tan(anglea);
+          c = Math.sqrt(a * a + b * b);
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          area_value = (a * b) / 2;
+          peremter = a + b + c;
+          height = c !== 0 ? (a * b) / c : 0;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
       }
-    }
-    // Method 12: area and len_c provided
-    else if (isNumeric(area) && isNumeric(len_c)) {
-      if (
-        !isNumeric(len_a) &&
-        !isNumeric(len_b) &&
-        !isNumeric(angle_alpha) &&
-        !isNumeric(angle_beta)
-      ) {
-        method = 12;
-        c = parseFloat(len_c);
-        area_value = newCenti(area_unit, parseFloat(area));
-        len_a = Math.sqrt(
-          (c * c + Math.sqrt(Math.pow(c, 4) - 16 * area_value * area_value)) / 2
-        );
-        len_b = Math.sqrt(
-          (c * c - Math.sqrt(Math.pow(c, 4) - 16 * area_value * area_value)) / 2
-        );
-        anglea = Math.asin(len_a / c);
-        angleb = Math.atan(len_b / len_a);
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
+      // Method 6: angle_alpha and len_c
+      else if (isNumeric(angle_alpha) && isNumeric(len_c)) {
+        if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(angle_beta) && !isNumeric(area)) {
+          method = 6;
+          c = parseFloat(len_c);
+          anglea = parseFloat(angle_alpha) * angle_alpha_unit;
+
+          a = c * Math.sin(anglea);
+          b = c * Math.cos(anglea);
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          area_value = (a * b) / 2;
+          peremter = a + b + c;
+          height = c !== 0 ? (a * b) / c : 0;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
       }
-    }
-    // Method 13: area and angle_alpha provided
-    else if (isNumeric(area) && isNumeric(angle_alpha)) {
-      if (
-        !isNumeric(len_a) &&
-        !isNumeric(len_b) &&
-        !isNumeric(len_c) &&
-        !isNumeric(angle_beta)
-      ) {
-        method = 13;
-        area_value = newCenti(area_unit, parseFloat(area));
-        anglea = parseFloat(angle_alpha) * parseFloat(angle_alpha_unit);
-        len_a = Math.sqrt(2 * area_value * Math.tan(anglea));
-        len_b = Math.sqrt((2 * area_value) / Math.tan(anglea));
-        c = Math.sqrt(len_a * len_a + len_b * len_b);
-        anglea = Math.atan(len_a / len_b);
-        angleb = Math.atan(len_b / len_a);
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
+      // Method 7: angle_beta and len_a
+      else if (isNumeric(angle_beta) && isNumeric(len_a)) {
+        if (!isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(angle_alpha) && !isNumeric(area)) {
+          method = 7;
+          a = parseFloat(len_a);
+
+          if (angle_beta_unit == "0.017453") {
+            angleb = (parseFloat(angle_beta) * Math.PI) / 180;
+            anglea = Math.PI / 2 - angleb;
+          } else if (angle_beta_unit == "57.3") {
+            anglea = Math.PI / 2 - parseFloat(angle_beta);
+          } else {
+            anglea = Math.PI / 2 - parseFloat(angle_beta);
+          }
+
+          if (Math.tan(anglea) !== 0) {
+            b = a / Math.tan(anglea);
+          } else {
+            b = 0;
+          }
+
+          c = Math.sqrt(a * a + b * b);
+          anglea = b !== 0 ? Math.atan(a / b) : 0;
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          area_value = (a * b) / 2;
+          peremter = a + b + c;
+          height = c !== 0 ? (a * b) / c : 0;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
       }
-    }
-    // Method 14: area and angle_beta provided
-    else if (isNumeric(area) && isNumeric(angle_beta)) {
-      if (
-        !isNumeric(len_a) &&
-        !isNumeric(len_b) &&
-        !isNumeric(len_c) &&
-        !isNumeric(angle_alpha)
-      ) {
-        method = 14;
-        area_value = newCenti(area_unit, parseFloat(area));
-        angleb = parseFloat(angle_beta) * parseFloat(angle_beta_unit);
-        len_a = Math.sqrt(2 * area_value * Math.tan(angleb));
-        len_b = Math.sqrt((2 * area_value) / Math.tan(angleb));
-        c = Math.sqrt(len_a * len_a + len_b * len_b);
-        anglea = Math.atan(len_a / len_b);
-        angleb = Math.atan(len_b / len_a);
-        result.tech_area = isNaN(area_value) ? "NaN" : area_value;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
+      // Method 8: angle_beta and len_b
+      else if (isNumeric(angle_beta) && isNumeric(len_b)) {
+        if (!isNumeric(len_a) && !isNumeric(len_c) && !isNumeric(angle_alpha) && !isNumeric(area)) {
+          method = 8;
+          b = parseFloat(len_b);
+
+          if (angle_beta_unit == "0.017453") {
+            angleb = (parseFloat(angle_beta) * Math.PI) / 180;
+            anglea = Math.PI / 2 - angleb;
+          } else if (angle_beta_unit == "57.3") {
+            anglea = Math.PI / 2 - parseFloat(angle_beta);
+          } else {
+            anglea = Math.PI / 2 - parseFloat(angle_beta);
+          }
+
+          a = b * Math.tan(anglea);
+          c = Math.sqrt(a * a + b * b);
+          anglea = b !== 0 ? Math.atan(a / b) : 0;
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          area_value = (a * b) / 2;
+          peremter = a + b + c;
+          height = c !== 0 ? (a * b) / c : 0;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
       }
-    }
-    // Error: Both angles provided
-    else if (isNumeric(angle_alpha) && isNumeric(angle_beta)) {
-      if (
-        !isNumeric(len_a) &&
-        !isNumeric(len_b) &&
-        !isNumeric(len_c) &&
-        !isNumeric(area)
-      ) {
-        result.error = "Can not calculate based on 2 angles only.";
-        return result;
-      } else {
-        result.error =
-          "Please! Enter only two values in one of the following fields.";
-        return result;
+      // Method 9: angle_beta and len_c
+      else if (isNumeric(angle_beta) && isNumeric(len_c)) {
+        if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(angle_alpha) && !isNumeric(area)) {
+          method = 9;
+          c = parseFloat(len_c);
+
+          if (angle_beta_unit == "0.017453") {
+            angleb = (parseFloat(angle_beta) * Math.PI) / 180;
+            anglea = Math.PI / 2 - angleb;
+          } else if (angle_beta_unit == "57.3") {
+            anglea = Math.PI / 2 - parseFloat(angle_beta);
+          }
+
+          a = c * Math.sin(anglea);
+          b = c * Math.cos(anglea);
+          anglea = b !== 0 ? Math.atan(a / b) : 0;
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          area_value = (a * b) / 2;
+          height = c !== 0 ? (a * b) / c : 0;
+          peremter = a + b + c;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
       }
+      // Method 10: area and len_a
+      else if (isNumeric(area) && isNumeric(len_a)) {
+        if (!isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+          method = 10;
+          area_value = newCenti(area_unit, parseFloat(area));
+
+          b = parseFloat(len_a) !== 0 ? (2 * area_value) / parseFloat(len_a) : 0;
+          a = parseFloat(len_a);
+          c = Math.sqrt(a * a + b * b);
+          anglea = b !== 0 ? Math.atan(a / b) : 0;
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          height = c !== 0 ? (a * b) / c : 0;
+          peremter = a + b + c;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
+      }
+      // Method 11: area and len_b
+      else if (isNumeric(area) && isNumeric(len_b)) {
+        if (!isNumeric(len_a) && !isNumeric(len_c) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+          method = 11;
+          b = parseFloat(len_b);
+          area_value = newCenti(area_unit, parseFloat(area));
+
+          if (b == 0) {
+            param.error = "Length b cannot be zero.";
+            return param;
+          }
+
+          a = (2 * area_value) / b;
+          c = Math.sqrt(a * a + b * b);
+          anglea = b !== 0 ? Math.atan(a / b) : 0;
+          angleb = a !== 0 ? Math.atan(b / a) : 0;
+          peremter = a + b + c;
+          height = c !== 0 ? (a * b) / c : 0;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
+      }
+      // Method 12: area and len_c
+      else if (isNumeric(area) && isNumeric(len_c)) {
+        if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(angle_alpha) && !isNumeric(angle_beta)) {
+          method = 12;
+          c = parseFloat(len_c);
+          area_value = newCenti(area_unit, parseFloat(area));
+
+          const discriminant = Math.pow(c, 4) - 16 * Math.pow(area_value, 2);
+
+          if (discriminant < 0) {
+            param.error = "Invalid input values: discriminant is negative.";
+            return param;
+          }
+
+          a = Math.sqrt((c * c + Math.sqrt(discriminant)) / 2);
+          b = Math.sqrt((c * c - Math.sqrt(discriminant)) / 2);
+
+          if (c == 0 || a == 0) {
+            param.error = "Side length cannot be zero.";
+            return param;
+          }
+
+          anglea = Math.asin(a / c);
+          angleb = Math.atan(b / a);
+          peremter = a + b + c;
+          height = (a * b) / c;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
+      }
+      // Method 13: area and angle_alpha
+      else if (isNumeric(area) && isNumeric(angle_alpha)) {
+        if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(angle_beta)) {
+          method = 13;
+          area_value = newCenti(area_unit, parseFloat(area));
+          anglea = parseFloat(angle_alpha) * angle_alpha_unit;
+
+          if (anglea == 0) {
+            param.error = "Angle alpha cannot be zero.";
+            return param;
+          }
+
+          a = Math.sqrt(2 * area_value * Math.tan(anglea));
+          b = Math.sqrt((2 * area_value) / Math.tan(anglea));
+          c = Math.sqrt(a * a + b * b);
+
+          if (b == 0 || a == 0) {
+            param.error = "Side length cannot be zero.";
+            return param;
+          }
+
+          anglea = Math.atan(a / b);
+          angleb = Math.atan(b / a);
+          peremter = a + b + c;
+          height = (a * b) / c;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
+      }
+      // Method 14: area and angle_beta
+      else if (isNumeric(area) && isNumeric(angle_beta)) {
+        if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(angle_alpha)) {
+          method = 14;
+          area_value = newCenti(area_unit, parseFloat(area));
+          angleb = parseFloat(angle_beta) * angle_beta_unit;
+
+          if (angleb == 0) {
+            param.error = "Angle beta cannot be zero.";
+            return param;
+          }
+
+          a = Math.sqrt(2 * area_value * Math.tan(angleb));
+          b = Math.sqrt((2 * area_value) / Math.tan(angleb));
+          c = Math.sqrt(a * a + b * b);
+
+          if (b == 0 || a == 0) {
+            param.error = "Side length cannot be zero.";
+            return param;
+          }
+
+          anglea = Math.atan(a / b);
+          angleb = Math.atan(b / a);
+          height = (a * b) / c;
+          peremter = a + b + c;
+          R_cap = c / 2;
+          R_sml = (a + b - c) / 2;
+
+          param.tech_peremter = peremter;
+          param.tech_area = area_value;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
+      }
+      // Both angles provided
+      else if (isNumeric(angle_alpha) && isNumeric(angle_beta)) {
+        if (!isNumeric(len_a) && !isNumeric(len_b) && !isNumeric(len_c) && !isNumeric(area)) {
+          param.error = "Can not calculate based on 2 angles only.";
+          return param;
+        } else {
+          param.error = "Please! Enter only two values in one of the following fields.";
+          return param;
+        }
+      }
+
+      // Set final results
+      param.tech_R_cap = R_cap;
+      param.tech_R_sml = R_sml;
+      param.tech_height = height;
+      param.tech_method = method;
+      param.tech_a = a;
+      param.tech_b = b;
+      param.tech_c = c;
+      param.tech_anglea = anglea;
+      param.tech_angleb = angleb;
+      param.tech_RESULT = 1;
+
+      return param;
     }
 
-    result.tech_method = method;
-    result.tech_a = isNaN(len_a) ? "NaN" : len_a;
-    result.tech_b = isNaN(len_b) ? "NaN" : len_b;
-    result.tech_c = isNaN(c) ? "NaN" : c;
-    result.tech_anglea = isNaN(anglea) ? "NaN" : anglea;
-    result.tech_angleb = isNaN(angleb) ? "NaN" : angleb;
-
-    return result;
-  }
 
   /** getCalculationCharacteristicPolynomialCalculator
    * POST: /api/calculators-lol/characteristic-polynomial-calculator
@@ -36171,6 +36234,270 @@ class CalculatorsServices {
       };
     }
   }
+
+
+ async getCalculationeGpaCalculator(body) {
+
+      if (body.type_gpa === 'planning') {
+          return calculatePlanningGpa(body);
+      } else if (body.type_gpa === 'high_school') {
+          return calculateHighSchoolGpa(body);
+      } else {
+          return {
+              success: false,
+              message: "Invalid GPA type. Please provide a valid type_gpa.",
+              status_code: 400,
+              error_code: "INVALID_GPA_TYPE"
+          };
+      }
+       function calculateHighSchoolGpa(data) {
+
+            try {
+            const {
+              type_gpa,
+              current_gpa,
+              credits_completed,
+              grade_format,
+              semesters
+            } = body;
+
+            // Validate type_gpa
+            // if (type_gpa !== 'high_school') {
+            //   return {
+            //     success: false,
+            //     message: 'Invalid GPA type. Must be "high_school"'
+            //   };
+            // }
+
+            // Validate grade format
+            if (!grade_format || ![1, 2, 3].includes(grade_format)) {
+              return {
+                success: false,
+                message: 'Invalid grade format. Must be 1 (Letter), 2 (Percentage), or 3 (Point Value)'
+              };
+            }
+
+            // Validate semesters
+            if (!semesters || !Array.isArray(semesters) || semesters.length === 0) {
+              return {
+                success: false,
+                message: 'At least one semester with courses is required'
+              };
+            }
+
+            // Initialize totals
+            let totalGradePoints = 0;
+            let totalCredits = 0;
+            const semesterResults = [];
+
+            // Grade conversion mappings
+            const letterGrades = {
+              'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+              'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+              'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+              'D+': 1.3, 'D': 1.0, 'D-': 0.7,
+              'F': 0.0
+            };
+
+            const weightValues = {
+              'Regular': 0.0,
+              'Honors': 0.5,
+              'AP / IB': 1.0,
+              'College': 1.0
+            };
+
+            // Function to convert percentage to grade point
+            const percentageToGrade = (percentage) => {
+              if (percentage < 65) return 0.0;
+              if (percentage >= 65 && percentage <= 66) return 1.0;
+              if (percentage >= 67 && percentage <= 69) return 1.3;
+              if (percentage >= 70 && percentage <= 72) return 1.7;
+              if (percentage >= 73 && percentage <= 76) return 2.0;
+              if (percentage >= 77 && percentage <= 79) return 2.3;
+              if (percentage >= 80 && percentage <= 82) return 2.7;
+              if (percentage >= 83 && percentage <= 86) return 3.0;
+              if (percentage >= 87 && percentage <= 89) return 3.3;
+              if (percentage >= 90 && percentage <= 92) return 3.7;
+              if (percentage >= 93 && percentage <= 100) return 4.0;
+              return 0.0;
+            };
+
+            // Process each semester
+            semesters.forEach((semester, semesterIndex) => {
+              let semesterGradePoints = 0;
+              let semesterCredits = 0;
+              const courses = [];
+
+              if (!semester.courses || !Array.isArray(semester.courses)) {
+                return;
+              }
+
+              semester.courses.forEach((course, courseIndex) => {
+                const {
+                  course_name,
+                  credit,
+                  grade,
+                  weight
+                } = course;
+
+                // Validate course data
+                if (!credit || grade === undefined || grade === null) {
+                  return;
+                }
+
+                let gradePoint = 0;
+                let finalGrade = 0;
+
+                // Calculate grade point based on format
+                if (grade_format == 1) {
+                  // Letter Grade Format
+                  gradePoint = letterGrades[grade] || 0;
+                  // Add weight for letter grades
+                  const weightValue = weightValues[weight] || 0;
+                  gradePoint = gradePoint + weightValue;
+                  finalGrade = grade;
+                } else if (grade_format == 2) {
+                  // Percentage Format
+                  gradePoint = percentageToGrade(parseFloat(grade));
+                  // Add weight for percentage grades
+                  const weightValue = weightValues[weight] || 0;
+                  gradePoint = gradePoint + weightValue;
+                  finalGrade = gradePoint;
+                } else if (grade_format == 3) {
+                  // Point Value Format (weight is NOT added, grade is final point value)
+                  gradePoint = parseFloat(grade);
+                  finalGrade = parseFloat(grade);
+                }
+
+                // Calculate grade points for this course
+                const courseGradePoints = parseFloat((credit * gradePoint).toFixed(2));
+
+                // Add to semester totals
+                semesterGradePoints += courseGradePoints;
+                semesterCredits += parseFloat(credit);
+
+                // Store course result
+                courses.push({
+                  course: course_name || `Course ${courseIndex + 1}`,
+                  grade: finalGrade,
+                  credit: parseFloat(credit),
+                  grade_point: courseGradePoints
+                });
+              });
+
+              // Calculate semester GPA
+              const semesterGPA = semesterCredits > 0 
+                ? parseFloat((semesterGradePoints / semesterCredits).toFixed(2))
+                : 0;
+
+              // Add to total
+              totalGradePoints += semesterGradePoints;
+              totalCredits += semesterCredits;
+
+              // Store semester result
+              semesterResults.push({
+                semester: `Semester ${semesterIndex + 1}`,
+                courses: courses,
+                total_credit: parseFloat(semesterCredits.toFixed(1)),
+                gpa: semesterGPA
+              });
+            });
+
+            // Calculate cumulative GPA
+            let cumulativeGradePoints = totalGradePoints;
+            let cumulativeCredits = totalCredits;
+
+            // Include previous GPA if provided
+            if (current_gpa && credits_completed) {
+              const previousGradePoints = parseFloat(current_gpa) * parseFloat(credits_completed);
+              cumulativeGradePoints += previousGradePoints;
+              cumulativeCredits += parseFloat(credits_completed);
+            }
+
+            const cumulativeGPA = cumulativeCredits > 0
+              ? parseFloat((cumulativeGradePoints / cumulativeCredits).toFixed(2))
+              : 0;
+
+            // Prepare response
+            const result = {
+              success: true,
+              data: {
+                type_gpa: 'high_school',
+                grade_format: grade_format === 1 ? 'Letter' : grade_format === 2 ? 'Percentage' : 'Point Value',
+                cumulative_gpa: cumulativeGPA,
+                total_grade_points: parseFloat(cumulativeGradePoints.toFixed(2)),
+                total_credits: parseFloat(cumulativeCredits.toFixed(1)),
+                semesters: semesterResults
+              }
+            };
+
+            return result;
+
+          } catch (error) {
+            return {
+              success: false,
+              message: 'Error calculating GPA',
+              error: error.message
+            };
+          }
+
+       }
+      function calculatePlanningGpa(data) {
+          const { current_gpa, credits_completed, target_gpa, additional_credits } = data;
+
+          const totalCredits = credits_completed + additional_credits;
+          const totalGradePoints = target_gpa * totalCredits;
+          const currentGradePoints = current_gpa * credits_completed;
+          const requiredGradePoints = totalGradePoints - currentGradePoints;
+          const requiredGpa = requiredGradePoints / additional_credits;
+
+          const roundedRequiredGpa = Math.round(requiredGpa * 1000) / 1000;
+
+          const isAchievable = requiredGpa <= 4.0;
+
+          return {
+              success: true,
+              type: 'Planning',
+              data: {
+                  current_gpa: parseFloat(current_gpa),
+                  credits_completed: parseInt(credits_completed),
+                  target_gpa: parseFloat(target_gpa),
+                  additional_credits: parseInt(additional_credits),
+                  required_gpa: roundedRequiredGpa,
+                  is_achievable: isAchievable,
+                  message: generateMessage(
+                      target_gpa,
+                      additional_credits,
+                      roundedRequiredGpa,
+                      isAchievable
+                  )
+              }
+          };
+      }
+      function generateMessage(targetGpa, addCredits, requiredGpa, achievable) {
+          const creditText = addCredits == 1 ? "1 credit" : `${addCredits} credits`;
+
+          if (!achievable) {
+              return `To attain a target GPA ${targetGpa}, the GPA for the next ${creditText} would need to be ${requiredGpa}, which is not achievable.`;
+          }
+          return `If you want to attain a target GPA ${targetGpa}, then the GPA for the next ${creditText} needs to be ${requiredGpa} or higher.`;
+      }
+
+
+
+}
+
+
+
+  
+    
+
+
+
+
+
+
+
 }
 
 module.exports = new CalculatorsServices();
