@@ -36242,6 +36242,8 @@ class CalculatorsServices {
           return calculatePlanningGpa(body);
       } else if (body.type_gpa === 'high_school') {
           return calculateHighSchoolGpa(body);
+      } else if (body.type_gpa === 'college') {
+          return calculatecollegeGpa(body);
       } else {
           return {
               success: false,
@@ -36482,7 +36484,113 @@ class CalculatorsServices {
           }
           return `If you want to attain a target GPA ${targetGpa}, then the GPA for the next ${creditText} needs to be ${requiredGpa} or higher.`;
       }
+       function calculatecollegeGpa(body) {
+            const letterGrades = {
+              'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+              'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+              'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+              'D+': 1.3, 'D': 1.0, 'D-': 0.7,
+              'F': 0.0
+            };
 
+            const percentageToGrade = (percentage) => {
+              if (percentage < 65) return 0.0;
+              if (percentage <= 66) return 1.0;
+              if (percentage <= 69) return 1.3;
+              if (percentage <= 72) return 1.7;
+              if (percentage <= 76) return 2.0;
+              if (percentage <= 79) return 2.3;
+              if (percentage <= 82) return 2.7;
+              if (percentage <= 86) return 3.0;
+              if (percentage <= 89) return 3.3;
+              if (percentage <= 92) return 3.7;
+              if (percentage <= 100) return 4.0;
+              return 0.0;
+            };
+
+            const { current_gpa, credits_completed, grade_format, semesters } = body;
+
+            if (!grade_format || ![1, 2, 3].includes(grade_format)) {
+              return { success: false, message: 'Invalid grade format.' };
+            }
+
+            if (!semesters || !Array.isArray(semesters) || semesters.length === 0) {
+              return { success: false, message: 'At least one semester required.' };
+            }
+
+            let newTotalGradePoints = 0;
+            let newTotalCredits = 0;
+            const semesterResults = [];
+
+            semesters.forEach((semester, semIndex) => {
+              if (!semester.courses || !Array.isArray(semester.courses)) return;
+
+              let semesterGradePoints = 0;
+              let semesterCredits = 0;
+              const courseResults = [];
+
+              semester.courses.forEach(course => {
+                const { course_name, credit, grade } = course;
+                if (!credit || credit <= 0) return;
+
+                let gp = 0;
+
+                if (grade_format == 1) gp = letterGrades[grade] || 0;
+                else if (grade_format == 2) gp = percentageToGrade(parseFloat(grade));
+                else gp = parseFloat(grade) || 0;
+
+                const totalGP = gp * credit;
+
+                courseResults.push({
+                  course: course_name,
+                  grade: grade,
+                  credit: credit,
+                  grade_point: parseFloat(totalGP.toFixed(2))
+                });
+
+                semesterGradePoints += totalGP;
+                semesterCredits += credit;
+              });
+
+              semesterResults.push({
+                semester_name: `Semester ${semIndex + 1}`,
+                courses: courseResults,
+                total_credit: semesterCredits,
+                gpa: semesterCredits > 0 ? parseFloat((semesterGradePoints / semesterCredits).toFixed(3)) : 0
+              });
+
+              newTotalGradePoints += semesterGradePoints;
+              newTotalCredits += semesterCredits;
+            });
+
+            let cumulativeGPA = 0;
+            let totalGradePointsReturned = newTotalGradePoints;
+
+            if (
+              current_gpa !== null && current_gpa !== undefined &&
+              credits_completed !== null && credits_completed !== undefined &&
+              credits_completed > 0
+            ) {
+              const previousGP = current_gpa * credits_completed;
+              totalGradePointsReturned += previousGP;
+
+              cumulativeGPA = parseFloat(
+                (totalGradePointsReturned / (credits_completed + newTotalCredits)).toFixed(2)
+              );
+            } else {
+              cumulativeGPA = newTotalCredits > 0
+                ? parseFloat((newTotalGradePoints / newTotalCredits).toFixed(2))
+                : 0;
+            }
+
+            return {
+              success: true,
+              cumulative_gpa: cumulativeGPA,
+              total_grade_points: parseFloat(totalGradePointsReturned.toFixed(2)),
+              total_credits: newTotalCredits + (credits_completed || 0),
+              semesters: semesterResults
+            };
+          }
 
 
 }
