@@ -3368,19 +3368,19 @@ class CalculatorsServices {
       const param = {};
 
       // Extract all values from body
-      const m_shape = body["tech_m-shape"];
+      const m_shape = body["tech_m_shape"];
       const length = parseFloat(body.tech_length);
       const length_unit = body.tech_length1;
       const width = parseFloat(body.tech_width);
       const width_unit = body.tech_width1;
-      const area = parseFloat(body["tech_sqr-ft"]);
-      const area_unit = body["tech_sqr-ft1"];
+      const area = parseFloat(body["tech_sqr_ft"]);
+      const area_unit = body["tech_sqr_ft1"];
       const depth = parseFloat(body.tech_depth);
       const depth_unit = body.tech_depth1;
       const bag_size = parseFloat(body.tech_bag_size);
       const bag_size1 = body.tech_bag_size1;
       const price_bag = parseFloat(body.tech_price_bag);
-      const m_type = body["tech_m-type"];
+      const m_type = body["tech_m_type"];
       const check = body.tech_check;
       const g = body.tech_g;
       const diameter = parseFloat(body.tech_diameter);

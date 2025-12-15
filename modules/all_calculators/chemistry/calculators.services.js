@@ -1113,13 +1113,12 @@ class CalculatorsServices {
     ) {
       const n_result =
         (p_converted * v1_converted) / (R_converted * t1_converted);
-      result.n_val = Math.round(n_result * 100000) / 100000;
+      result.tech_n_val = Math.round(n_result * 100000) / 100000;
     } else {
       result.error = "Please! Fill All The Fields.";
       return result;
     }
 
-    result.RESULT = 1;
     return result;
   }
 
@@ -5236,9 +5235,9 @@ class CalculatorsServices {
               (temp_two_value * pressure_one_value * volume_one_value) /
               (temp_one_value * volume_two_value);
             if (Math.abs(pf) < 1e-4) {
-              result.pressure = pf.toExponential();
+              result.tech_pressure = pf.toExponential();
             } else {
-              result.pressure = Math.round(pf * 100) / 100;
+              result.tech_pressure = Math.round(pf * 100) / 100;
             }
           } else {
             result.error = "Please! Check Your Input.";

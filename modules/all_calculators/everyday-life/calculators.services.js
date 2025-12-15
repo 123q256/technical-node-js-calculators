@@ -11920,7 +11920,7 @@ class CalculatorsServices {
           return result;
         }
 
-        result.counter = counter.toLocaleString();
+        result.tech_counter = counter.toLocaleString();
         return result;
       }
     } else if (main == 3) {

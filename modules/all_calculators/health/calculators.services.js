@@ -1606,13 +1606,13 @@ class CalculatorsServices {
   async getCalculationIBMCalculator(body) {
     // const { age, height_cm, ft_in, weight, stage, gender, unit_type } = body;
 
-    let age = body.tech_age;
-    let height_cm = body.tech_height_cm;
-    let ft_in = body.tech_ft_in;
-    let weight = body.tech_weight;
-    let stage = body.tech_stage;
-    let gender = body.tech_gender;
-    let unit_type = body.tech_unit_type;
+    let age = body.age;
+    let height_cm = body.height_cm;
+    let ft_in = body.tecin;
+    let weight = body.weight;
+    let stage = body.stage;
+    let gender = body.gender;
+    let unit_type = body.unit_type;
 
     let param = {};
     let result = {};
