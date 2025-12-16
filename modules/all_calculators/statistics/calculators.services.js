@@ -8155,452 +8155,415 @@ class CalculatorsServices {
    * @param {Object} body Having Properties for Creating New Roles
    * @returns Object with message property having success method
    */
-  async getCalculationNormalCriticalValueCalculator(body) {
-    const submit = body.tech_calculator_name;
-    const first = body.tech_first;
-    const second = body.tech_second;
-    const third = body.tech_third;
-    const Pi = 3.1415926535898;
-    const PiD2 = Pi / 2;
-    const PiD4 = Pi / 4;
-    const Pi2 = 2 * Pi;
-    const pi2 = Pi / 2;
-    const e = 2.718281828459045235;
-    const e10 = 1.105170918075647625;
-    const Deg = 180 / Pi;
+ async getCalculationNormalCriticalValueCalculator(body) {
+  const submit = body.tech_calculator_name;
+  const first = body.tech_first;
+  const second = body.tech_second;
+  const third = body.tech_third;
+  const Pi = 3.1415926535898;
+  const PiD2 = Pi / 2;
+  const PiD4 = Pi / 4;
+  const Pi2 = 2 * Pi;
+  const pi2 = Pi / 2;
+  const e = 2.718281828459045235;
+  const e10 = 1.105170918075647625;
+  const Deg = 180 / Pi;
+  
+  const param = {};
 
-    const param = {};
+  function resConvert(a) {
+    return a >= 0 ? a + 0.0000 : a - 0.0000;
+  }
 
-    function resConvert(a) {
-      return a >= 0 ? a + 0.0 : a - 0.0;
+  function stuT(a, b) {
+    a = Math.abs(a);
+    const c = a / Math.sqrt(b);
+    const d = Math.atan(c);
+    const pi2 = 3.1415926535898 / 2;
+    
+    if (1 === b) {
+      return d / pi2;
     }
+    
+    const e = Math.sin(d);
+    const f = Math.cos(d);
+    const alpha = b % 2 === 1 
+      ? 1 - (d + e * f * stuComp(f * f, 2, b - 3, -1)) / pi2 
+      : 1 - e * stuComp(f * f, 1, b - 3, -1);
+    const alpha2 = 1 - alpha;
+    return alpha2;
+  }
 
-    function stuT(a, b) {
-      a = Math.abs(a);
-      const c = a / Math.sqrt(b);
-      const d = Math.atan(c);
-      const pi2 = 3.1415926535898 / 2;
-
-      if (1 === b) {
-        return d / pi2;
-      }
-
-      const e = Math.sin(d);
-      const f = Math.cos(d);
-      const alpha =
-        b % 2 === 1
-          ? 1 - (d + e * f * stuComp(f * f, 2, b - 3, -1)) / pi2
-          : 1 - e * stuComp(f * f, 1, b - 3, -1);
-      const alpha2 = 1 - alpha;
-      return alpha2;
+  function pStuT(a, b) {
+    let c = 0.5;
+    let d = 0.5;
+    let e = 0;
+    
+    while (d > 0.000001) {
+      e = 1 / c - 1;
+      d /= 2;
+      const qt = 1 - stuT(e, b);
+      qt > a ? (c -= d) : (c += d);
     }
+    
+    return e;
+  }
 
-    function pStuT(a, b) {
-      let c = 0.5;
-      let d = 0.5;
-      let e = 0;
-
-      while (d > 0.000001) {
-        e = 1 / c - 1;
-        d /= 2;
-        const qt = 1 - stuT(e, b);
-        qt > a ? (c -= d) : (c += d);
-      }
-
-      return e;
+  function stuComp(a, b, c, d) {
+    let e = 1;
+    let f = e;
+    let g = b;
+    
+    while (g <= c) {
+      e = (e * a * g) / (g - d);
+      f += e;
+      g += 2;
     }
+    return f;
+  }
 
-    function stuComp(a, b, c, d) {
-      let e = 1;
-      let f = e;
-      let g = b;
+  function parseConv(a) {
+    return parseFloat(a);
+  }
 
-      while (g <= c) {
-        e = (e * a * g) / (g - d);
-        f += e;
-        g += 2;
-      }
-      return f;
+  function easyRoundOf(a, b) {
+    if (isNaN(a)) return 0;
+    b = Math.pow(10, parseConv(b));
+    const c = Math.round(parseConv(a) * b) / b;
+    return isNaN(c) ? 0 : c;
+  }
+
+  function tcritical(first, third) {
+    const a2b = first * 2;
+    const a1result = resConvert(pStuT(a2b, third));
+    const a2result = resConvert(pStuT(first, third));
+    let rloop = 15;
+    
+    if (third < 15) {
+      rloop = third;
     }
-
-    function parseConv(a) {
-      return parseFloat(a);
-    }
-
-    function easyRoundOf(a, b) {
-      if (isNaN(a)) return 0;
-      b = Math.pow(10, parseConv(b));
-      const c = Math.round(parseConv(a) * b) / b;
-      return isNaN(c) ? 0 : c;
-    }
-
-    function tcritical(first, third) {
-      const a2b = first * 2;
-      const a1result = resConvert(pStuT(a2b, third));
-      const a2result = resConvert(pStuT(first, third));
-      let rloop = 15;
-
-      if (third < 15) {
-        rloop = third;
-      }
-
-      const nloop = Math.ceil(third / rloop);
-      let dat1 = " ";
-      let dat2 = "";
-      let dat3 = "";
-      let dat2Cus = "";
-
-      // Calculate the final values first
-      const finalDf = third;
-      const finalA1 = easyRoundOf(resConvert(pStuT(a2b, finalDf)), 4);
-      const finalA2 = easyRoundOf(resConvert(pStuT(first, finalDf)), 4);
-
-      dat1 = " " + finalA1;
-      dat3 = " - " + finalA1;
-      dat2 = " ± " + finalA2;
-      dat2Cus = finalA2;
-
-      // One Tailed Table
-      let a1tbl = `<p class="col-12 mt-2 font-s-18 text-blue"> One Tailed Probability of ${first}</p> <div class="col-12 overflow-auto"><table class="w-100" style="border-collapse: collapse">`;
-
-      for (let i = 1; i <= rloop; i++) {
-        if (i === 1) {
-          a1tbl += "<tr class='bg-gray'>";
-          for (let j = 1; j <= nloop; j++) {
-            a1tbl +=
-              "<td class='p-2 border text-center text-blue'> df </td> <th class='p-2 border text-center text-blue'> &alpha; </th>";
-          }
-          a1tbl += "</tr>";
-        }
-
-        a1tbl += '<tr class="bg-white">';
+    
+    const nloop = Math.ceil(third / rloop);
+    let dat1 = " ";
+    let dat2 = "";
+    let dat3 = "";
+    let dat2Cus = "";
+    
+    // Calculate the final values first
+    const finalDf = third;
+    const finalA1 = easyRoundOf(resConvert(pStuT(a2b, finalDf)), 4);
+    const finalA2 = easyRoundOf(resConvert(pStuT(first, finalDf)), 4);
+    
+    dat1 = " " + finalA1;
+    dat3 = " - " + finalA1;
+    dat2 = " ± " + finalA2;
+    dat2Cus = finalA2;
+    
+    // One Tailed Table
+    let a1tbl = `<p class="col-12 mt-2 font-s-18 text-blue my-3"> One Tailed Probability of ${first}</p> <div class="col-12 overflow-auto"><table class="w-full bordered" style="border-collapse: collapse">`;
+    
+    for (let i = 1; i <= rloop; i++) {
+      if (i === 1) {
+        a1tbl += "<tr class='bg-gray'>";
         for (let j = 1; j <= nloop; j++) {
-          const df1 = (j - 1) * 15 + i;
-          if (df1 > third) {
-            a1tbl += "<td colspan='2' class='p-2 border text-center'> </td>";
-          } else {
-            const a1 = easyRoundOf(resConvert(pStuT(a2b, df1)), 4);
-            if (df1 === third) {
-              a1tbl += `<th class='p-2 border text-center' style='background-color: #0072b7;color: white;'>${df1}</th> <td class='p-2 border text-center' style='background-color: #0072b7;color: white;'>${a1}</td>`;
-            } else {
-              a1tbl += `<th class='p-2 border text-center'>${df1}</th> <td class='p-2 border text-center'>${a1}</td>`;
-            }
-          }
+          a1tbl += "<td class='p-2 bordered text-center bg-[#2845F5] text-[#fff]'> df </td> <th class='p-2 bordered text-center bg-[#2845F5] text-[#fff]'> &alpha; </th>";
         }
         a1tbl += "</tr>";
       }
-      a1tbl += "</table></div>";
-
-      // Two Tailed Table
-      let a2tbl = `<p class="col-12 mt-2 font-s-18 text-blue"> Two Tailed Probability of ${first}</p> <div class="col-12 overflow-auto"><table class="w-100" style="border-collapse: collapse">`;
-
-      for (let i = 1; i <= rloop; i++) {
-        if (i === 1) {
-          a2tbl += "<tr class='bg-gray'>";
-          for (let j = 1; j <= nloop; j++) {
-            a2tbl +=
-              "<td class='p-2 border text-center text-blue'> df </td> <td class='p-2 border text-center text-blue'> &alpha; </td>";
-          }
-          a2tbl += "</tr>";
-        }
-
-        a2tbl += '<tr class="bg-white">';
-        for (let j = 1; j <= nloop; j++) {
-          const df2 = (j - 1) * 15 + i;
-          if (df2 > third) {
-            a2tbl += "<td colspan='2' class='p-2 border text-center'> </td>";
+      
+      a1tbl += '<tr class="bg-white">';
+      for (let j = 1; j <= nloop; j++) {
+        const df1 = (j - 1) * 15 + i;
+        if (df1 > third) {
+          a1tbl += "<td colspan='2' class='p-2 bordered text-center'> </td>";
+        } else {
+          const a1 = easyRoundOf(resConvert(pStuT(a2b, df1)), 4);
+          if (df1 === third) {
+            a1tbl += `<th class='p-2 bordered text-center' style='background-color: #0072b7;color: white;'>${df1}</th> <td class='p-2 bordered text-center' style='background-color: #0072b7;color: white;'>${a1}</td>`;
           } else {
-            const a1 = easyRoundOf(resConvert(pStuT(first, df2)), 4);
-            if (df2 === third) {
-              a2tbl += `<td class='p-2 border text-center' style='background-color: #0072b7;color: white;'>${df2}</td> <td class='p-2 border text-center' style='background-color: #0072b7;color: white;'>${a1}</td>`;
-            } else {
-              a2tbl += `<td class='p-2 border text-center'>${df2}</td> <td class='p-2 border text-center'>${a1}</td>`;
-            }
+            a1tbl += `<th class='p-2 bordered text-center'>${df1}</th> <td class='p-2 bordered text-center'>${a1}</td>`;
           }
+        }
+      }
+      a1tbl += "</tr>";
+    }
+    a1tbl += "</table></div>";
+    
+    // Two Tailed Table
+    let a2tbl = `<p class="col-12 mt-2 font-s-18 my-3"> Two Tailed Probability of ${first}</p> <div class="col-12 overflow-auto"><table class="w-full bordered" style="border-collapse: collapse">`;
+    
+    for (let i = 1; i <= rloop; i++) {
+      if (i === 1) {
+        a2tbl += "<tr class='bg-gray'>";
+        for (let j = 1; j <= nloop; j++) {
+          a2tbl += "<td class='p-2 bordered text-center bg-[#2845F5] text-[#fff]'> df </td> <td class='p-2 bordered text-center bg-[#2845F5] text-[#fff]'> &alpha; </td>";
         }
         a2tbl += "</tr>";
       }
-      a2tbl += "</table></div>";
-
-      return [dat1, dat3, dat2, a1tbl, a2tbl];
-    }
-
-    // Z Critical Value Functions
-    function log_10(n) {
-      return Math.log(n) / Math.log(10);
-    }
-
-    function round_to_precision(x, p) {
-      x = x * Math.pow(10, p);
-      x = Math.round(x);
-      return x / Math.pow(10, p);
-    }
-
-    function integer(i) {
-      if (i > 0) return Math.floor(i);
-      else return Math.ceil(i);
-    }
-
-    function precision(x) {
-      const SIGNIFICANT = 8;
-      return Math.abs(integer(log_10(Math.abs(x)) - SIGNIFICANT));
-    }
-
-    function poz(z) {
-      const Z_MAX = 6;
-      let x;
-
-      if (z === 0.0) {
-        x = 0.0;
-      } else {
-        const y = 0.5 * Math.abs(z);
-        if (y > Z_MAX * 0.5) {
-          x = 1.0;
-        } else if (y < 1.0) {
-          const w = y * y;
-          x =
-            ((((((((0.000124818987 * w - 0.001075204047) * w + 0.005198775019) *
-              w -
-              0.019198292004) *
-              w +
-              0.059054035642) *
-              w -
-              0.151968751364) *
-              w +
-              0.319152932694) *
-              w -
-              0.5319230073) *
-              w +
-              0.797884560593) *
-            y *
-            2.0;
+      
+      a2tbl += '<tr class="bg-white">';
+      for (let j = 1; j <= nloop; j++) {
+        const df2 = (j - 1) * 15 + i;
+        if (df2 > third) {
+          a2tbl += "<td colspan='2' class='p-2 bordered text-center'> </td>";
         } else {
-          const y2 = y - 2.0;
-          x =
-            (((((((((((((-0.000045255659 * y2 + 0.00015252929) * y2 -
-              0.000019538132) *
-              y2 -
-              0.000676904986) *
-              y2 +
-              0.001390604284) *
-              y2 -
-              0.00079462082) *
-              y2 -
-              0.002034254874) *
-              y2 +
-              0.006549791214) *
-              y2 -
-              0.010557625006) *
-              y2 +
-              0.011630447319) *
-              y2 -
-              0.009279453341) *
-              y2 +
-              0.005353579108) *
-              y2 -
-              0.002141268741) *
-              y2 +
-              0.000535310849) *
-              y2 +
-            0.999936657524;
-        }
-      }
-      return z > 0.0 ? (x + 1.0) * 0.5 : (1.0 - x) * 0.5;
-    }
-
-    function criva(p) {
-      const Z_MAX = 6;
-      const Z_EPSILON = 0.000001;
-      let minz = -Z_MAX;
-      let maxz = Z_MAX;
-      let zval = 0.0;
-      let pval = "";
-
-      if (p < 0.0 || p > 1.0) {
-        return -1;
-      }
-
-      while (maxz - minz > Z_EPSILON) {
-        pval = poz(zval);
-        if (pval > p) {
-          maxz = zval;
-        } else {
-          minz = zval;
-        }
-        zval = (maxz + minz) * 0.5;
-      }
-      return zval;
-    }
-
-    function erf(x) {
-      const cof = [
-        -1.3026537197817094, 0.6419697923564902, 0.019476473204185836,
-        -0.00956151478680863, -0.000946595344482036, 0.000366839497852761,
-        42523324806907e-18, -20278578112534e-18, -1624290004647e-18,
-        130365583558e-17, 1.5626441722e-8, -8.5238095915e-8, 6.529054439e-9,
-        5.059343495e-9, -9.91364156e-10, -2.27365122e-10, 96467911e-18,
-        2394038e-18, -6886027e-18, 894487e-18, 313092e-18, -112708e-18, 381e-18,
-        7106e-18, -1523e-18, -94e-18, 121e-18, -28e-18,
-      ];
-
-      let j = cof.length - 1;
-      let isneg = false;
-      let d = 0;
-      let dd = 0;
-
-      if (x < 0) {
-        x = -x;
-        isneg = true;
-      }
-
-      const t = 2 / (2 + x);
-      const ty = 4 * t - 2;
-
-      for (; j > 0; j--) {
-        const tmp = d;
-        d = ty * d - dd + cof[j];
-        dd = tmp;
-      }
-
-      const res = t * Math.exp(-x * x + 0.5 * (cof[0] + ty * d) - dd);
-      return isneg ? res - 1 : 1 - res;
-    }
-
-    function erfc(x) {
-      return 1 - erf(x);
-    }
-
-    function erfcinv(p) {
-      let j = 0;
-
-      if (p >= 2) return -100;
-      if (p <= 0) return 100;
-
-      const pp = p < 1 ? p : 2 - p;
-      const t = Math.sqrt(-2 * Math.log(pp / 2));
-      let x =
-        -0.70711 *
-        ((2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t);
-
-      for (; j < 2; j++) {
-        const err = erfc(x) - pp;
-        x += err / (1.1283791670955126 * Math.exp(-x * x) - x * err);
-      }
-
-      return p < 1 ? x : -x;
-    }
-
-    function normal__inv(p, mean, std) {
-      return -1.4142135623730951 * std * erfcinv(2 * p) + mean;
-    }
-
-    function zcritical(first) {
-      const left__z__val = normal__inv(1 - first, 0, 1);
-      const right__z__val = normal__inv(first, 0, 1);
-      const z_two_tailed_value = normal__inv(first / 2, 0, 1);
-      const z_two_tailed_neg_value = normal__inv(1 - first / 2, 0, 1);
-      let z_val = Math.abs(criva(first));
-      const answer =
-        round_to_precision(z_two_tailed_value, precision(z_two_tailed_value)) +
-        " & " +
-        round_to_precision(
-          z_two_tailed_neg_value,
-          precision(z_two_tailed_neg_value)
-        );
-
-      if (first === 0) {
-        z_val = "-Inf";
-      }
-      if (first === 1) {
-        z_val = "Inf";
-      }
-
-      return [left__z__val, right__z__val, z_val, answer];
-    }
-
-    // Main Logic
-    if (submit === "t_val") {
-      if (!isNaN(first) && !isNaN(third)) {
-        if (first >= 0 && first <= 0.5) {
-          const t_jawab = tcritical(first, third);
-          param.tech_t_jawab = t_jawab;
-        } else {
-          param.error = "Enter Significant Level between 0 to 0.5";
-          return param;
-        }
-      } else {
-        param.error = "Please! Check Your Input";
-        return param;
-      }
-    } else if (submit === "z_val") {
-      if (!isNaN(first)) {
-        if (first >= 0 && first <= 1) {
-          const z_jawab = zcritical(first);
-          param.tech_z_jawab = z_jawab;
-        } else {
-          param.error = "Enter Significant Level between 0 to 1";
-          return param;
-        }
-      } else {
-        param.error = "Please! Check Your Input";
-        return param;
-      }
-    } else if (submit === "chi_val") {
-      if (!isNaN(first) && !isNaN(third)) {
-        if (first >= 0 && first <= 0.5) {
-          param.tech_value = first;
-          param.tech_degree = third;
-        } else {
-          param.error = "Enter Significant Level between 0 to 0.5";
-          return param;
-        }
-      } else {
-        param.error = "Please! Check Your Input";
-        return param;
-      }
-    } else if (submit === "f_val") {
-      if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
-        if (first >= 0 && first <= 0.5) {
-          if (second > 0) {
-            if (third > 0) {
-              param.tech_first = first;
-              param.tech_second = second;
-              param.tech_third = third;
-            } else {
-              param.error = "Degrees of Freedom Denominator greater than zero";
-              return param;
-            }
+          const a1 = easyRoundOf(resConvert(pStuT(first, df2)), 4);
+          if (df2 === third) {
+            a2tbl += `<td class='p-2 bordered text-center' style='background-color: #0072b7;color: white;'>${df2}</td> <td class='p-2 bordered text-center' style='background-color: #0072b7;color: white;'>${a1}</td>`;
           } else {
-            param.error = "Degrees of Freedom Numerator greater than zero";
+            a2tbl += `<td class='p-2 bordered text-center'>${df2}</td> <td class='p-2 bordered text-center'>${a1}</td>`;
+          }
+        }
+      }
+      a2tbl += "</tr>";
+    }
+    a2tbl += "</table></div>";
+    
+    return [dat1, dat3, dat2, a1tbl, a2tbl];
+  }
+
+  // Z Critical Value Functions
+  function log_10(n) {
+    return Math.log(n) / Math.log(10);
+  }
+
+  function round_to_precision(x, p) {
+    x = x * Math.pow(10, p);
+    x = Math.round(x);
+    return x / Math.pow(10, p);
+  }
+
+  function integer(i) {
+    if (i > 0) return Math.floor(i);
+    else return Math.ceil(i);
+  }
+
+  function precision(x) {
+    const SIGNIFICANT = 8;
+    return Math.abs(integer(log_10(Math.abs(x)) - SIGNIFICANT));
+  }
+
+  function poz(z) {
+    const Z_MAX = 6;
+    let x;
+    
+    if (z === 0.0) {
+      x = 0.0;
+    } else {
+      const y = 0.5 * Math.abs(z);
+      if (y > Z_MAX * 0.5) {
+        x = 1.0;
+      } else if (y < 1.0) {
+        const w = y * y;
+        x = ((((((((0.000124818987 * w - 0.001075204047) * w +
+          0.005198775019) * w - 0.019198292004) * w +
+          0.059054035642) * w - 0.151968751364) * w +
+          0.319152932694) * w - 0.5319230073) * w +
+          0.797884560593) * y * 2.0;
+      } else {
+        const y2 = y - 2.0;
+        x = (((((((((((((-0.000045255659 * y2 + 0.00015252929) * y2 -
+          0.000019538132) * y2 - 0.000676904986) * y2 +
+          0.001390604284) * y2 - 0.00079462082) * y2 -
+          0.002034254874) * y2 + 0.006549791214) * y2 -
+          0.010557625006) * y2 + 0.011630447319) * y2 -
+          0.009279453341) * y2 + 0.005353579108) * y2 -
+          0.002141268741) * y2 + 0.000535310849) * y2 +
+          0.999936657524;
+      }
+    }
+    return z > 0.0 ? (x + 1.0) * 0.5 : (1.0 - x) * 0.5;
+  }
+
+  function criva(p) {
+    const Z_MAX = 6;
+    const Z_EPSILON = 0.000001;
+    let minz = -Z_MAX;
+    let maxz = Z_MAX;
+    let zval = 0.0;
+    let pval = '';
+    
+    if (p < 0.0 || p > 1.0) {
+      return -1;
+    }
+    
+    while (maxz - minz > Z_EPSILON) {
+      pval = poz(zval);
+      if (pval > p) {
+        maxz = zval;
+      } else {
+        minz = zval;
+      }
+      zval = (maxz + minz) * 0.5;
+    }
+    return zval;
+  }
+
+  function erf(x) {
+    const cof = [
+      -1.3026537197817094, 0.6419697923564902, 0.019476473204185836,
+      -0.00956151478680863, -0.000946595344482036, 0.000366839497852761,
+      42523324806907e-18, -20278578112534e-18, -1624290004647e-18,
+      130365583558e-17, 1.5626441722e-8, -8.5238095915e-8,
+      6.529054439e-9, 5.059343495e-9, -9.91364156e-10,
+      -2.27365122e-10, 96467911e-18, 2394038e-18,
+      -6886027e-18, 894487e-18, 313092e-18,
+      -112708e-18, 381e-18, 7106e-18,
+      -1523e-18, -94e-18, 121e-18, -28e-18
+    ];
+    
+    let j = cof.length - 1;
+    let isneg = false;
+    let d = 0;
+    let dd = 0;
+    
+    if (x < 0) {
+      x = -x;
+      isneg = true;
+    }
+    
+    const t = 2 / (2 + x);
+    const ty = 4 * t - 2;
+    
+    for (; j > 0; j--) {
+      const tmp = d;
+      d = ty * d - dd + cof[j];
+      dd = tmp;
+    }
+    
+    const res = t * Math.exp(-x * x + 0.5 * (cof[0] + ty * d) - dd);
+    return isneg ? res - 1 : 1 - res;
+  }
+
+  function erfc(x) {
+    return 1 - erf(x);
+  }
+
+  function erfcinv(p) {
+    let j = 0;
+    
+    if (p >= 2) return -100;
+    if (p <= 0) return 100;
+    
+    const pp = p < 1 ? p : 2 - p;
+    const t = Math.sqrt(-2 * Math.log(pp / 2));
+    let x = -0.70711 *
+      ((2.30753 + t * 0.27061) / (1 + t * (0.99229 + t * 0.04481)) - t);
+    
+    for (; j < 2; j++) {
+      const err = erfc(x) - pp;
+      x += err / (1.1283791670955126 * Math.exp(-x * x) - x * err);
+    }
+    
+    return p < 1 ? x : -x;
+  }
+
+  function normal__inv(p, mean, std) {
+    return -1.4142135623730951 * std * erfcinv(2 * p) + mean;
+  }
+
+  function zcritical(first) {
+    const left__z__val = normal__inv(1 - first, 0, 1);
+    const right__z__val = normal__inv(first, 0, 1);
+    const z_two_tailed_value = normal__inv(first / 2, 0, 1);
+    const z_two_tailed_neg_value = normal__inv(1 - first / 2, 0, 1);
+    let z_val = Math.abs(criva(first));
+    const answer = round_to_precision(z_two_tailed_value, precision(z_two_tailed_value)) + 
+      " & " + round_to_precision(z_two_tailed_neg_value, precision(z_two_tailed_neg_value));
+    
+    if (first === 0) {
+      z_val = "-Inf";
+    }
+    if (first === 1) {
+      z_val = "Inf";
+    }
+    
+    return [left__z__val, right__z__val, z_val, answer];
+  }
+
+  // Main Logic
+  if (submit === "t_val") {
+    if (!isNaN(first) && !isNaN(third)) {
+      if (first >= 0 && first <= 0.5) {
+        const t_jawab = tcritical(first, third);
+        param.tech_t_jawab = t_jawab;
+      } else {  
+        param.error = "Enter Significant Level between 0 to 0.5";
+        return param;
+      }
+    } else {
+      param.error = "Please! Check Your Input";
+      return param;
+    }
+  } else if (submit === "z_val") {
+    if (!isNaN(first)) {
+      if (first >= 0 && first <= 1) {
+        const z_jawab = zcritical(first);
+        param.tech_z_jawab = z_jawab;
+      } else {
+        param.error = "Enter Significant Level between 0 to 1";
+        return param;
+      }
+    } else {
+      param.error = "Please! Check Your Input";
+      return param;
+    }
+  } else if (submit === "chi_val") {
+    if (!isNaN(first) && !isNaN(third)) {
+      if (first >= 0 && first <= 0.5) {
+        param.tech_value = first;
+        param.tech_degree = third;
+      } else {
+        param.error = "Enter Significant Level between 0 to 0.5";
+        return param;
+      }
+    } else {
+      param.error = "Please! Check Your Input";
+      return param;
+    }
+  } else if (submit === "f_val") {
+    if (!isNaN(first) && !isNaN(second) && !isNaN(third)) {
+      if (first >= 0 && first <= 0.5) {
+        if (second > 0) {
+          if (third > 0) {
+            param.tech_first = first;
+            param.tech_second = second;
+            param.tech_third = third;
+          } else {
+            param.error = "Degrees of Freedom Denominator greater than zero";
             return param;
           }
         } else {
-          param.error = "Enter Significant Level between 0 to 0.5";
+          param.error = "Degrees of Freedom Numerator greater than zero";
           return param;
         }
       } else {
-        param.error = "Please! Check Your Input";
+        param.error = "Enter Significant Level between 0 to 0.5";
         return param;
       }
-    } else if (submit === "r_val") {
-      if (!isNaN(first) && !isNaN(third)) {
-        if (first >= 0 && first <= 0.5) {
-          param.tech_value = first;
-          param.tech_degree = third;
-        } else {
-          param.error = "Enter Significant Level between 0 to 0.5";
-          return param;
-        }
-      } else {
-        param.error = "Please! Check Your Input";
-        return param;
-      }
+    } else {
+      param.error = "Please! Check Your Input";
+      return param;
     }
-
-    param.tech_submit = submit;
-
-    return param;
+  } else if (submit === "r_val") {
+    if (!isNaN(first) && !isNaN(third)) {
+      if (first >= 0 && first <= 0.5) {
+        param.tech_value = first;
+        param.tech_degree = third;
+      } else {
+        param.error = "Enter Significant Level between 0 to 0.5";
+        return param;
+      }
+    } else {
+      param.error = "Please! Check Your Input";
+      return param;
+    }
   }
+  
+  param.tech_submit = submit;
+  
+  return param;
+}
   /**
    * getCalculationAnovaCalculator: Service Method
    * POST: /api/calculators-lol/anova-calculator
