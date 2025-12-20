@@ -13532,347 +13532,303 @@ class CalculatorsServices {
    */
 
   async getCalculationRationalExpressionCalculator(body) {
-    // Helper function for string replacements
-    function processExpression(expr) {
-      let processed = expr;
-      processed = processed.replace(/ /g, "");
-      processed = processed.replace(/\+/g, "plus");
-      processed = processed.replace(/{/g, "(");
-      processed = processed.replace(/}/g, ")");
-      processed = processed.replace(/xe\^/g, "x*e^");
-      processed = processed.replace(/ye\^/g, "y*e^");
-      processed = processed.replace(/e\^/g, "exp");
-      processed = processed.replace(/exp\^/g, "exp");
-      processed = processed.replace(/\^/g, "**");
-      processed = processed.replace(/e\^sqrt\(x\)/g, "exp(2*x)");
-      return processed;
-    }
-
-    // Input validation function
-    function validateInput(input) {
-      if (!input || !/^[^<>&]*$/i.test(input)) {
-        return false;
-      }
-      if (/<|>|&|php|print_r|print|echo|script|=|%|&/i.test(input)) {
-        return false;
-      }
-      return true;
-    }
-
-    const to = body.tech_to;
-    const to_cal = body.tech_to_cal;
-
-    if (to == "1") {
-      const n1 = body.tech_n1;
-      const d1 = body.tech_d1;
-
-      // Validation
-      if (!validateInput(n1) || !validateInput(d1)) {
-        return {
-          status: "success",
-          payload: {
-            error: "Please! Check Your Input.",
-          },
-        };
-      }
-
-      const xeq = processExpression(n1);
-      const yeq = processExpression(d1);
-      const equ = "(" + xeq + ")/(" + yeq + ")";
-
-      try {
-        const response = await axios.get("http://167.172.134.148/rational", {
-          params: {
-            xeq: xeq,
-            to: "1",
-            yeq: yeq,
-          },
-          timeout: 120000,
-        });
-
-        const buffer = response.data.split("@@@");
-
-        return {
-          status: "success",
-          payload: {
-            tech_enter: buffer[0],
-            tech_up: buffer[1],
-            tech_ress: buffer[2],
-            tech_down: buffer[3],
-          },
-        };
-      } catch (error) {
-        return {
-          status: "success",
-          payload: {
-            error: "Please! Check Your Input.",
-          },
-        };
-      }
-    } else if (to == "2") {
-      if (to_cal == "two") {
-        const n1 = body.tech_n11;
-        const d1 = body.tech_d11;
-        const n2 = body.tech_n22;
-        const d2 = body.tech_d22;
-        const action = body.tech_action;
-
-        // Validation
-        if (
-          !validateInput(n1) ||
-          !validateInput(d1) ||
-          !validateInput(n2) ||
-          !validateInput(d2)
-        ) {
-          return {
-            status: "success",
-            payload: {
-              error: "Please! Check Your Input.",
-            },
-          };
-        }
-
-        const xeq = processExpression(n1);
-        const yeq = processExpression(d1);
-        const xeq1 = processExpression(n2);
-        const yeq1 = processExpression(d2);
-
-        try {
-          const response = await axios.get("http://167.172.134.148/rational", {
-            params: {
-              xeq: xeq,
-              yeq: yeq,
-              xeq1: xeq1,
-              yeq1: yeq1,
-              to: "2",
-              cal: "2",
-              action: action,
-            },
-            timeout: 120000,
-          });
-
-          const buffer = response.data.split("@@@");
-          let lcm = null;
-
-          if (buffer[2]) {
-            const lcmParts = buffer[2].split("}{");
-            if (lcmParts.length === 2) {
-              lcm = lcmParts[1].slice(0, -1);
-            }
-          }
-
-          const processedAction = action
-            .replace(/plus/g, "+")
-            .replace(/div/g, "÷");
-          const result = {
-            tech_up: buffer[0],
-            tech_down: buffer[1],
-            tech_ans: buffer[2],
-            tech_action: processedAction,
-          };
-
-          if (lcm) {
-            result.tech_lcm = lcm;
-          }
-
-          if (processedAction == "+" || processedAction == "-") {
-            result.tech_left = buffer[3];
-            result.tech_right = buffer[4];
-            result.tech_top = buffer[5];
-            result.tech_bottom = buffer[6];
-          } else {
-            result.tech_top = buffer[3];
-            result.tech_bottom = buffer[4];
-          }
-
-          return result;
-        } catch (error) {
-          return {
-            status: "success",
-            payload: {
-              error: "Please! Check Your Input.",
-            },
-          };
-        }
-      } else {
-        const n1 = body.tech_n13;
-        const d1 = body.tech_d13;
-        const n2 = body.tech_n23;
-        const d2 = body.tech_d23;
-        const n3 = body.tech_n33;
-        const d3 = body.tech_d33;
-        const action1 = body.tech_action1;
-        const action2 = body.tech_action2;
-
-        // Validation
-        if (
-          !validateInput(n1) ||
-          !validateInput(d1) ||
-          !validateInput(n2) ||
-          !validateInput(d2) ||
-          !validateInput(n3) ||
-          !validateInput(d3)
-        ) {
-          return {
-            status: "success",
-            payload: {
-              error: "Please! Check Your Input.",
-            },
-          };
-        }
-
-        const xeq = processExpression(n1);
-        const yeq = processExpression(d1);
-        const xeq1 = processExpression(n2);
-        const yeq1 = processExpression(d2);
-        const xeq2 = processExpression(n3);
-        const yeq2 = processExpression(d3);
-
-        try {
-          const response = await axios.get("http://167.172.134.148/rational", {
-            params: {
-              xeq: xeq,
-              yeq: yeq,
-              xeq1: xeq1,
-              yeq1: yeq1,
-              xeq2: xeq2,
-              yeq2: yeq2,
-              to: "2",
-              cal: "3",
-              action: action1,
-              action1: action2,
-            },
-            timeout: 120000,
-          });
-
-          const buffer = response.data.split("@@@");
-          let lcm = null;
-          let lcm1 = null;
-
-          if (buffer[1]) {
-            const lcmParts = buffer[1].split("}{");
-            if (lcmParts.length > 1) {
-              lcm = lcmParts[1].slice(0, -1);
-            }
-          }
-
-          const processedAction = action1
-            .replace(/plus/g, "+")
-            .replace(/div/g, "÷");
-          const processedAction1 = action2
-            .replace(/plus/g, "+")
-            .replace(/div/g, "÷");
-
-          const result = {
-            status: "success",
-            payload: {
-              ans: buffer[1],
-              up: buffer[2],
-              down: buffer[3],
-              thr: buffer[4],
-              action: processedAction,
-              action1: processedAction1,
-              RESULT: 1,
-            },
-          };
-
-          if (lcm) {
-            result.payload.lcm = lcm;
-          }
-
-          if (
-            (processedAction == "+" || processedAction == "-") &&
-            (processedAction1 == "+" || processedAction1 == "-")
-          ) {
-            result.payload.left = buffer[5];
-            result.payload.center = buffer[6];
-            result.payload.right = buffer[7];
-            result.payload.top = buffer[8];
-          } else if (
-            (processedAction == "*" || processedAction == "÷") &&
-            (processedAction1 == "*" || processedAction1 == "÷")
-          ) {
-            result.payload.up1 = buffer[5];
-            result.payload.up2 = buffer[6];
-            result.payload.down1 = buffer[7];
-            result.payload.down2 = buffer[8];
-          } else {
-            result.payload.up1 = buffer[5];
-            result.payload.ansl = buffer[6];
-            result.payload.down1 = buffer[7];
-            result.payload.top = buffer[8];
-            result.payload.left = buffer[9];
-            result.payload.right = buffer[10];
-
-            if (buffer[6]) {
-              const lcm1Parts = buffer[6].split("}{");
-              if (lcm1Parts.length > 1) {
-                lcm1 = lcm1Parts[1].slice(0, -1);
-                result.payload.lcm1 = lcm1;
-              }
-            }
-          }
-
-          return result;
-        } catch (error) {
-          return {
-            status: "success",
-            payload: {
-              error: "Please! Check Your Input.",
-            },
-          };
-        }
-      }
-    } else if (to == "3") {
-      const expr = body.tech_expr;
-
-      if (!validateInput(expr)) {
-        return {
-          status: "success",
-          payload: {
-            error: "Please Enter Valid Input.",
-          },
-        };
-      }
-
-      const xeq = processExpression(expr);
-
-      try {
-        const response = await axios.get("http://167.172.134.148/rational", {
-          params: {
-            xeq: xeq,
-            to: "3",
-          },
-          timeout: 120000,
-        });
-
-        const buffer = response.data.split("@@@");
-
-        return {
-          status: "success",
-          payload: {
-            tech_enter: buffer[0],
-            tech_ans: buffer[1],
-          },
-        };
-      } catch (error) {
-        return {
-          status: "success",
-          payload: {
-            error: "Please! Check Your Input.",
-          },
-        };
-      }
-    }
-
-    // Default return if no valid 'to' value
-    return {
-      status: "success",
-      payload: {
-        error: "Invalid operation type.",
-      },
-    };
-  }
+         
+         // Helper function for string replacements
+         function processExpression(expr) {
+             let processed = expr;
+             processed = processed.replace(/ /g, '');
+             processed = processed.replace(/\+/g, 'plus');
+             processed = processed.replace(/{/g, '(');
+             processed = processed.replace(/}/g, ')');
+             processed = processed.replace(/xe\^/g, 'x*e^');
+             processed = processed.replace(/ye\^/g, 'y*e^');
+             processed = processed.replace(/e\^/g, 'exp');
+             processed = processed.replace(/exp\^/g, 'exp');
+             processed = processed.replace(/\^/g, '**');
+             processed = processed.replace(/e\^sqrt\(x\)/g, 'exp(2*x)');
+             return processed;
+         }
+ 
+         // Input validation function
+         function validateInput(input) {
+             if (!input || !/^[^<>&]*$/i.test(input)) {
+                 return false;
+             }
+             if (/<|>|&|php|print_r|print|echo|script|=|%|&/i.test(input)) {
+                 return false;
+             }
+             return true;
+         }
+ 
+         const to = body.tech_to;
+         const to_cal = body.tech_to_cal;
+ 
+         if (to == '1') {
+             const n1 = body.tech_n1;
+             const d1 = body.tech_d1;
+ 
+             // Validation
+             if (!validateInput(n1) || !validateInput(d1)) {
+                 return {
+                     status: "success",
+                         error: 'Please! Check Your Input.'
+                 };
+             }
+ 
+             const xeq = processExpression(n1);
+             const yeq = processExpression(d1);
+             const equ = "(" + xeq + ")/(" + yeq + ")";
+ 
+             try {
+                 const response = await axios.get('http://167.172.134.148/rational', {
+                     params: {
+                         xeq: xeq,
+                         to: "1",
+                         yeq: yeq
+                     },
+                     timeout: 120000
+                 });
+ 
+                 const buffer = response.data.split("@@@");
+                 
+                 return {
+                     status: "success",
+                         tech_enter: buffer[0],
+                         tech_up: buffer[1],
+                         tech_ress: buffer[2],
+                         tech_down: buffer[3],
+                 };
+             } catch (error) {
+                 return {
+                     status: "success",
+                         error: 'Please! Check Your Input.'
+                 };
+             }
+         } else if (to == '2') {
+             if (to_cal == 'two') {
+                 const n1 = body.tech_n11;
+                 const d1 = body.tech_d11;
+                 const n2 = body.tech_n22;
+                 const d2 = body.tech_d22;
+                 const action = body.tech_action;
+ 
+                 // Validation
+                 if (!validateInput(n1) || !validateInput(d1) || !validateInput(n2) || !validateInput(d2)) {
+                     return {
+                         status: "success",
+                             error: 'Please! Check Your Input.'
+                     };
+                 }
+ 
+                 const xeq = processExpression(n1);
+                 const yeq = processExpression(d1);
+                 const xeq1 = processExpression(n2);
+                 const yeq1 = processExpression(d2);
+ 
+                 try {
+                     const response = await axios.get('http://167.172.134.148/rational', {
+                         params: {
+                             xeq: xeq,
+                             yeq: yeq,
+                             xeq1: xeq1,
+                             yeq1: yeq1,
+                             to: "2",
+                             cal: "2",
+                             action: action
+                         },
+                         timeout: 120000
+                     });
+ 
+                     const buffer = response.data.split("@@@");
+                     let lcm = null;
+                     
+                     if (buffer[2]) {
+                         const lcmParts = buffer[2].split('}{');
+                         if (lcmParts.length === 2) {
+                             lcm = lcmParts[1].slice(0, -1);
+                         }
+                     }
+ 
+                     const processedAction = action.replace(/plus/g, '+').replace(/div/g, '÷');
+                     const result = {
+                             tech_up: buffer[0],
+                             tech_down: buffer[1],
+                             tech_ans: buffer[2],
+                             tech_action: processedAction,
+                     };
+ 
+                     if (lcm) {
+                         result.tech_lcm = lcm;
+                     }
+ 
+                     if (processedAction == '+' || processedAction == '-') {
+                         result.tech_left = buffer[3];
+                         result.tech_right = buffer[4];
+                         result.tech_top = buffer[5];
+                         result.tech_bottom = buffer[6];
+                     } else {
+                         result.tech_top = buffer[3];
+                         result.tech_bottom = buffer[4];
+                     }
+ 
+                     return result;
+                 } catch (error) {
+                     return {
+                         status: "success",
+                             error: 'Please! Check Your Input.'
+                     };
+                 }
+             } else {
+                 const n1 = body.tech_n13;
+                 const d1 = body.tech_d13;
+                 const n2 = body.tech_n23;
+                 const d2 = body.tech_d23;
+                 const n3 = body.tech_n33;
+                 const d3 = body.tech_d33;
+                 const action1 = body.tech_action1;
+                 const action2 = body.tech_action2;
+ 
+                 // Validation
+                 if (!validateInput(n1) || !validateInput(d1) || !validateInput(n2) || 
+                     !validateInput(d2) || !validateInput(n3) || !validateInput(d3)) {
+                     return {
+                         status: "success",
+                             error: 'Please! Check Your Input.'
+                     };
+                 }
+ 
+                 const xeq = processExpression(n1);
+                 const yeq = processExpression(d1);
+                 const xeq1 = processExpression(n2);
+                 const yeq1 = processExpression(d2);
+                 const xeq2 = processExpression(n3);
+                 const yeq2 = processExpression(d3);
+ 
+                 try {
+                     const response = await axios.get('http://167.172.134.148/rational', {
+                         params: {
+                             xeq: xeq,
+                             yeq: yeq,
+                             xeq1: xeq1,
+                             yeq1: yeq1,
+                             xeq2: xeq2,
+                             yeq2: yeq2,
+                             to: "2",
+                             cal: "3",
+                             action: action1,
+                             action1: action2
+                         },
+                         timeout: 120000
+                     });
+ 
+                     const buffer = response.data.split("@@@");
+                     let lcm = null;
+                     let lcm1 = null;
+                     
+                     if (buffer[1]) {
+                         const lcmParts = buffer[1].split('}{');
+                         if (lcmParts.length > 1) {
+                             lcm = lcmParts[1].slice(0, -1);
+                         }
+                     }
+ 
+                     const processedAction = action1.replace(/plus/g, '+').replace(/div/g, '÷');
+                     const processedAction1 = action2.replace(/plus/g, '+').replace(/div/g, '÷');
+ 
+                     const result = {
+                         status: "success",
+                             ans: buffer[1],
+                             up: buffer[2],
+                             down: buffer[3],
+                             thr: buffer[4],
+                             action: processedAction,
+                             action1: processedAction1,
+                             RESULT: 1
+                     };
+ 
+                     if (lcm) {
+                         result.payload.lcm = lcm;
+                     }
+ 
+                     if ((processedAction == '+' || processedAction == '-') && 
+                         (processedAction1 == '+' || processedAction1 == '-')) {
+                         result.payload.left = buffer[5];
+                         result.payload.center = buffer[6];
+                         result.payload.right = buffer[7];
+                         result.payload.top = buffer[8];
+                     } else if ((processedAction == '*' || processedAction == '÷') && 
+                               (processedAction1 == '*' || processedAction1 == '÷')) {
+                         result.payload.up1 = buffer[5];
+                         result.payload.up2 = buffer[6];
+                         result.payload.down1 = buffer[7];
+                         result.payload.down2 = buffer[8];
+                     } else {
+                         result.payload.up1 = buffer[5];
+                         result.payload.ansl = buffer[6];
+                         result.payload.down1 = buffer[7];
+                         result.payload.top = buffer[8];
+                         result.payload.left = buffer[9];
+                         result.payload.right = buffer[10];
+                         
+                         if (buffer[6]) {
+                             const lcm1Parts = buffer[6].split('}{');
+                             if (lcm1Parts.length > 1) {
+                                 lcm1 = lcm1Parts[1].slice(0, -1);
+                                 result.payload.lcm1 = lcm1;
+                             }
+                         }
+                     }
+ 
+                     return result;
+                 } catch (error) {
+                     return {
+                         status: "success",
+                             error: 'Please! Check Your Input.'
+                     };
+                 }
+             }
+         } else if (to == '3') {
+             const expr = body.tech_expr;
+ 
+             if (!validateInput(expr)) {
+                 return {
+                     status: "success",
+                         error: 'Please Enter Valid Input.'
+                 };
+             }
+ 
+             const xeq = processExpression(expr);
+ 
+             try {
+                 const response = await axios.get('http://167.172.134.148/rational', {
+                     params: {
+                         xeq: xeq,
+                         to: "3"
+                     },
+                     timeout: 120000
+                 });
+ 
+                 const buffer = response.data.split("@@@");
+                 
+                 return {
+                     status: "success",
+                         tech_enter: buffer[0],
+                         tech_ans: buffer[1],
+                 };
+             } catch (error) {
+                 return {
+                     status: "success",
+                         error: 'Please! Check Your Input.'
+                 };
+             }
+         }
+ 
+         // Default return if no valid 'to' value
+         return {
+             status: "success",
+                 error: 'Invalid operation type.'
+         };
+     }
 
   /** getCalculationAngleOfElevationCalculator
    * POST: /api/calculators-lol/angle-of-elevation-calculator
@@ -29244,7 +29200,8 @@ class CalculatorsServices {
    * @returns Object with message property having success method
    */
 
-  async getCalculationSubstitutionMethodCalculator(body) {
+ 
+    async getCalculationSubstitutionMethodCalculator(body) {
     const operations = body.tech_operations;
 
     const a1_f = body.tech_a1_f;
@@ -29271,192 +29228,190 @@ class CalculatorsServices {
 
     const result = {};
 
-    // Helper functions for equation formatting (same as before)
+    // Helper functions for equation formatting
     const writeEq = (a, b, c) => {
-      if (a == 0 && b == 0) return `0 = ${c}`;
-      else if (a !== 0 && b == 0) {
-        if (Math.abs(a) != 1) return `${a}x = ${c}`;
-        else if (a == -1) return `-x = ${c}`;
-        else return `x = ${c}`;
-      } else if (a == 0 && b != 0) {
-        if (Math.abs(b) !== 1) return `${b}y = ${c}`;
-        else if (b === -1) return `-y = ${c}`;
-        else return `y = ${c}`;
-      } else {
-        if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a}x + ${b}y = ${c}`;
-        else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a}x + y = ${c}`;
-        else if (b > 0 && b != 1 && a == 1) return `x + ${b}y = ${c}`;
-        else if (b > 0 && b != 1 && a == -1) return `-x + ${b}y = ${c}`;
-        else if (b > 0 && b == 1 && a == 1) return `x + y = ${c}`;
-        else if (b > 0 && b == 1 && a == -1) return `-x + y = ${c}`;
-        else if (b < 0 && b != -1 && Math.abs(a) != 1)
-          return `${a}x - ${-b}y = ${c}`;
-        else if (b < 0 && b != -1 && a == 1) return `x - ${-b}y = ${c}`;
-        else if (b < 0 && b != -1 && a == -1) return `-x - ${-b}y = ${c}`;
-        else if (b < 0 && b == -1 && Math.abs(a) != 1)
-          return `${a}x - y = ${c}`;
-        else if (b < 0 && b == -1 && a == 1) return `x - y = ${c}`;
-        else if (b < 0 && b == -1 && a == -1) return `-x - y = ${c}`;
-      }
-      return "";
+        if (a == 0 && b == 0) return `0 = ${c}`;
+        else if (a !== 0 && b == 0) {
+            if (Math.abs(a) != 1) return `${a}x = ${c}`;
+            else if (a == -1) return `-x = ${c}`;
+            else return `x = ${c}`;
+        }
+        else if (a == 0 && b != 0) {
+            if (Math.abs(b) !== 1) return `${b}y = ${c}`;
+            else if (b === -1) return `-y = ${c}`;
+            else return `y = ${c}`;
+        }
+        else {
+            if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a}x + ${b}y = ${c}`;
+            else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a}x + y = ${c}`;
+            else if (b > 0 && b != 1 && a == 1) return `x + ${b}y = ${c}`;
+            else if (b > 0 && b != 1 && a == -1) return `-x + ${b}y = ${c}`;
+            else if (b > 0 && b == 1 && a == 1) return `x + y = ${c}`;
+            else if (b > 0 && b == 1 && a == -1) return `-x + y = ${c}`;
+            else if (b < 0 && b != -1 && Math.abs(a) != 1) return `${a}x - ${-b}y = ${c}`;
+            else if (b < 0 && b != -1 && a == 1) return `x - ${-b}y = ${c}`;
+            else if (b < 0 && b != -1 && a == -1) return `-x - ${-b}y = ${c}`;
+            else if (b < 0 && b == -1 && Math.abs(a) != 1) return `${a}x - y = ${c}`;
+            else if (b < 0 && b == -1 && a == 1) return `x - y = ${c}`;
+            else if (b < 0 && b == -1 && a == -1) return `-x - y = ${c}`;
+        }
+        return '';
     };
 
     const writeEqMoveB = (a, b, c) => {
-      if (a == 0 && b == 0) return `0 = ${c}`;
-      else if (a != 0 && b == 0) {
-        if (Math.abs(a) != 1) return `${a}x = ${c}`;
-        else if (a == -1) return `-x = ${c}`;
-        else return `x = ${c}`;
-      } else if (a == 0 && b != 0) {
-        if (Math.abs(b) != 1) return `${b}y = ${c}`;
-        else if (b == -1) return `-y = ${c}`;
-        else return `y = ${c}`;
-      } else {
-        if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a}x = ${c} - ${b}y`;
-        else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a}x = ${c} - y`;
-        else if (b > 0 && b != 1 && a == 1) return `x = ${c} - ${b}y`;
-        else if (b > 0 && b != 1 && a == -1) return `-x = ${c} - ${b}y`;
-        else if (b > 0 && b == 1 && a == 1) return `x = ${c} - y`;
-        else if (b > 0 && b == 1 && a == -1) return `-x = ${c} - y`;
-        else if (b < 0 && b != -1 && Math.abs(a) != 1)
-          return `${a}x = ${c} + ${-b}y`;
-        else if (b < 0 && b != -1 && a == 1) return `x = ${c} + ${-b}y`;
-        else if (b < 0 && b != -1 && a == -1) return `-x = ${c} + ${-b}y`;
-        else if (b < 0 && b == -1 && Math.abs(a) != 1)
-          return `${a}x = ${c} + y`;
-        else if (b < 0 && b == -1 && a == 1) return `x = ${c} + y`;
-        else if (b < 0 && b == -1 && a == -1) return `-x = ${c} + y`;
-      }
-      return "";
+        if (a == 0 && b == 0) return `0 = ${c}`;
+        else if (a != 0 && b == 0) {
+            if (Math.abs(a) != 1) return `${a}x = ${c}`;
+            else if (a == -1) return `-x = ${c}`;
+            else return `x = ${c}`;
+        }
+        else if (a == 0 && b != 0) {
+            if (Math.abs(b) != 1) return `${b}y = ${c}`;
+            else if (b == -1) return `-y = ${c}`;
+            else return `y = ${c}`;
+        }
+        else {
+            if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a}x = ${c} - ${b}y`;
+            else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a}x = ${c} - y`;
+            else if (b > 0 && b != 1 && a == 1) return `x = ${c} - ${b}y`;
+            else if (b > 0 && b != 1 && a == -1) return `-x = ${c} - ${b}y`;
+            else if (b > 0 && b == 1 && a == 1) return `x = ${c} - y`;
+            else if (b > 0 && b == 1 && a == -1) return `-x = ${c} - y`;
+            else if (b < 0 && b != -1 && Math.abs(a) != 1) return `${a}x = ${c} + ${-b}y`;
+            else if (b < 0 && b != -1 && a == 1) return `x = ${c} + ${-b}y`;
+            else if (b < 0 && b != -1 && a == -1) return `-x = ${c} + ${-b}y`;
+            else if (b < 0 && b == -1 && Math.abs(a) != 1) return `${a}x = ${c} + y`;
+            else if (b < 0 && b == -1 && a == 1) return `x = ${c} + y`;
+            else if (b < 0 && b == -1 && a == -1) return `-x = ${c} + y`;
+        }
+        return '';
     };
 
     const writeEqSubX = (a, b, c, d, e) => {
-      let x;
-      if (e != 0) {
-        if (Math.abs(d) != 1) {
-          if (d > 0) x = `${e} + ${d}y`;
-          if (d < 0) x = `${e} - ${-d}y`;
-          if (d == 0) x = `${e}`;
-        } else if (d == -1) {
-          x = `${e} - y`;
+        let x;
+        if (e != 0) {
+            if (Math.abs(d) != 1) {
+                if (d > 0) x = `${e} + ${d}y`;
+                if (d < 0) x = `${e} - ${-d}y`;
+                if (d == 0) x = `${e}`;
+            } else if (d == -1) {
+                x = `${e} - y`;
+            } else {
+                x = `${e} + ${d}y`;
+            }
         } else {
-          x = `${e} + ${d}y`;
+            if (d == 1) x = 'y';
+            else if (d == -1) x = '-y';
+            else x = `${d}y`;
         }
-      } else {
-        if (d == 1) x = "y";
-        else if (d == -1) x = "-y";
-        else x = `${d}y`;
-      }
-      x = `(${x})`;
+        x = `(${x})`;
 
-      if (a == 0 && b == 0) return `0 = ${c}`;
-      else if (a != 0 && b == 0) {
-        if (Math.abs(a) != 1) return `${a} ⋅ ${x} = ${c}`;
-        else if (a == -1) return `-${x} = ${c}`;
-        else return `${x} = ${c}`;
-      } else if (a == 0 && b != 0) {
-        if (Math.abs(b) != 1) return `${b}y = ${c}`;
-        else if (b == -1) return `-y = ${c}`;
-        else return `y = ${c}`;
-      } else {
-        if (b > 0 && b != 1 && Math.abs(a) != 1)
-          return `${a} ⋅ ${x} + ${b}y = ${c}`;
-        else if (b > 0 && b == 1 && Math.abs(a) != 1)
-          return `${a} ⋅ ${x} + y = ${c}`;
-        else if (b > 0 && b != 1 && a == 1) return `${x} + ${b}y = ${c}`;
-        else if (b > 0 && b != 1 && a == -1) return `-${x} + ${b}y = ${c}`;
-        else if (b > 0 && b == 1 && a == 1) return `${x} + y = ${c}`;
-        else if (b > 0 && b == 1 && a == -1) return `-${x} + y = ${c}`;
-        else if (b < 0 && b != -1 && Math.abs(a) != 1)
-          return `${a} ⋅ ${x} - ${-b}y = ${c}`;
-        else if (b < 0 && b != -1 && a == 1) return `${x} - ${-b}y = ${c}`;
-        else if (b < 0 && b != -1 && a == -1) return `-${x} - ${-b}y = ${c}`;
-        else if (b < 0 && b == -1 && Math.abs(a) != 1)
-          return `${a} ⋅ ${x} - y = ${c}`;
-        else if (b < 0 && b == -1 && a == 1) return `${x} - y = ${c}`;
-        else if (b < 0 && b == -1 && a == -1) return `-${x} - y = ${c}`;
-      }
-      return "";
+        if (a == 0 && b == 0) return `0 = ${c}`;
+        else if (a != 0 && b == 0) {
+            if (Math.abs(a) != 1) return `${a} ⋅ ${x} = ${c}`;
+            else if (a == -1) return `-${x} = ${c}`;
+            else return `${x} = ${c}`;
+        }
+        else if (a == 0 && b != 0) {
+            if (Math.abs(b) != 1) return `${b}y = ${c}`;
+            else if (b == -1) return `-y = ${c}`;
+            else return `y = ${c}`;
+        }
+        else {
+            if (b > 0 && b != 1 && Math.abs(a) != 1) return `${a} ⋅ ${x} + ${b}y = ${c}`;
+            else if (b > 0 && b == 1 && Math.abs(a) != 1) return `${a} ⋅ ${x} + y = ${c}`;
+            else if (b > 0 && b != 1 && a == 1) return `${x} + ${b}y = ${c}`;
+            else if (b > 0 && b != 1 && a == -1) return `-${x} + ${b}y = ${c}`;
+            else if (b > 0 && b == 1 && a == 1) return `${x} + y = ${c}`;
+            else if (b > 0 && b == 1 && a == -1) return `-${x} + y = ${c}`;
+            else if (b < 0 && b != -1 && Math.abs(a) != 1) return `${a} ⋅ ${x} - ${-b}y = ${c}`;
+            else if (b < 0 && b != -1 && a == 1) return `${x} - ${-b}y = ${c}`;
+            else if (b < 0 && b != -1 && a == -1) return `-${x} - ${-b}y = ${c}`;
+            else if (b < 0 && b == -1 && Math.abs(a) != 1) return `${a} ⋅ ${x} - y = ${c}`;
+            else if (b < 0 && b == -1 && a == 1) return `${x} - y = ${c}`;
+            else if (b < 0 && b == -1 && a == -1) return `-${x} - y = ${c}`;
+        }
+        return '';
     };
 
     const writeEqX = (a, b, y, c) => {
-      if (Math.abs(b) != 1) {
-        if (Math.abs(a) != 1) {
-          if (b > 0 && y >= 0) return `${a}x + ${b} ⋅ ${y} = ${c}`;
-          else if (b < 0 && y >= 0) return `${a}x - ${-b} ⋅ ${y} = ${c}`;
-          else if (b > 0 && y < 0) return `${a}x + ${b} ⋅ (${y}) = ${c}`;
-          else if (b < 0 && y < 0) return `${a}x - ${-b} ⋅ (${y}) = ${c}`;
-        } else if (a == 1) {
-          if (b > 0 && y >= 0) return `x + ${b} ⋅ ${y} = ${c}`;
-          else if (b < 0 && y >= 0) return `x - ${-b} ⋅ ${y} = ${c}`;
-          else if (b > 0 && y < 0) return `x + ${b} ⋅ (${y}) = ${c}`;
-          else if (b < 0 && y < 0) return `x - ${-b} ⋅ (${y}) = ${c}`;
-        } else if (a == -1) {
-          if (b > 0 && y >= 0) return `-x + ${b} ⋅ ${y} = ${c}`;
-          else if (b < 0 && y >= 0) return `-x - ${-b} ⋅ ${y} = ${c}`;
-          else if (b > 0 && y < 0) return `-x + ${b} ⋅ (${y}) = ${c}`;
-          else if (b < 0 && y < 0) return `-x - ${-b} ⋅ (${y}) = ${c}`;
+        if (Math.abs(b) != 1) {
+            if (Math.abs(a) != 1) {
+                if (b > 0 && y >= 0) return `${a}x + ${b} ⋅ ${y} = ${c}`;
+                else if (b < 0 && y >= 0) return `${a}x - ${-b} ⋅ ${y} = ${c}`;
+                else if (b > 0 && y < 0) return `${a}x + ${b} ⋅ (${y}) = ${c}`;
+                else if (b < 0 && y < 0) return `${a}x - ${-b} ⋅ (${y}) = ${c}`;
+            } else if (a == 1) {
+                if (b > 0 && y >= 0) return `x + ${b} ⋅ ${y} = ${c}`;
+                else if (b < 0 && y >= 0) return `x - ${-b} ⋅ ${y} = ${c}`;
+                else if (b > 0 && y < 0) return `x + ${b} ⋅ (${y}) = ${c}`;
+                else if (b < 0 && y < 0) return `x - ${-b} ⋅ (${y}) = ${c}`;
+            } else if (a == -1) {
+                if (b > 0 && y >= 0) return `-x + ${b} ⋅ ${y} = ${c}`;
+                else if (b < 0 && y >= 0) return `-x - ${-b} ⋅ ${y} = ${c}`;
+                else if (b > 0 && y < 0) return `-x + ${b} ⋅ (${y}) = ${c}`;
+                else if (b < 0 && y < 0) return `-x - ${-b} ⋅ (${y}) = ${c}`;
+            }
+        } else if (b == 1) {
+            if (Math.abs(a) != 1) {
+                if (y >= 0) return `${a}x + ${y} = ${c}`;
+                else if (y < 0) return `${a}x - ${-y} = ${c}`;
+            } else if (a == 1) {
+                if (y >= 0) return `x + ${y} = ${c}`;
+                else if (y < 0) return `x - ${-y} = ${c}`;
+            } else if (a == -1) {
+                if (y >= 0) return `-x + ${y} = ${c}`;
+                else if (y < 0) return `-x - ${-y} = ${c}`;
+            }
+        } else if (b == -1) {
+            if (Math.abs(a) != 1) {
+                if (y >= 0) return `${a}x - ${y} = ${c}`;
+                else if (y < 0) return `${a}x + ${-y} = ${c}`;
+            } else if (a == 1) {
+                if (y >= 0) return `x - ${y} = ${c}`;
+                else if (y < 0) return `x + ${-y} = ${c}`;
+            } else if (a == -1) {
+                if (y >= 0) return `-x - ${y} = ${c}`;
+                else if (y < 0) return `-x + ${-y} = ${c}`;
+            }
         }
-      } else if (b == 1) {
-        if (Math.abs(a) != 1) {
-          if (y >= 0) return `${a}x + ${y} = ${c}`;
-          else if (y < 0) return `${a}x - ${-y} = ${c}`;
-        } else if (a == 1) {
-          if (y >= 0) return `x + ${y} = ${c}`;
-          else if (y < 0) return `x - ${-y} = ${c}`;
-        } else if (a == -1) {
-          if (y >= 0) return `-x + ${y} = ${c}`;
-          else if (y < 0) return `-x - ${-y} = ${c}`;
-        }
-      } else if (b == -1) {
-        if (Math.abs(a) != 1) {
-          if (y >= 0) return `${a}x - ${y} = ${c}`;
-          else if (y < 0) return `${a}x + ${-y} = ${c}`;
-        } else if (a == 1) {
-          if (y >= 0) return `x - ${y} = ${c}`;
-          else if (y < 0) return `x + ${-y} = ${c}`;
-        } else if (a == -1) {
-          if (y >= 0) return `-x - ${y} = ${c}`;
-          else if (y < 0) return `-x + ${-y} = ${c}`;
-        }
-      }
-      return "";
+        return '';
     };
 
     const writeEqY = (a, x, b, c) => {
-      if (Math.abs(b) != 1) {
-        if (Math.abs(a) != 1) {
-          if (b > 0 && x >= 0) return `${a} ⋅ ${x} + ${b}y = ${c}`;
-          else if (b < 0 && x >= 0) return `${a} ⋅ ${x} - ${-b}y = ${c}`;
-          else if (b > 0 && x < 0) return `${a} ⋅ (${x}) + ${b}y = ${c}`;
-          else if (b < 0 && x < 0) return `${a} ⋅ (${x}) - ${-b}y = ${c}`;
-        } else if (a == 1) {
-          if (b > 0) return `${x} + ${b}y = ${c}`;
-          else if (b < 0) return `${x} - ${-b}y = ${c}`;
-        } else if (a == -1) {
-          if (b > 0) return `${-x} + ${b}y = ${c}`;
-          else if (b < 0) return `${-x} - ${-b}y = ${c}`;
+        if (Math.abs(b) != 1) {
+            if (Math.abs(a) != 1) {
+                if (b > 0 && x >= 0) return `${a} ⋅ ${x} + ${b}y = ${c}`;
+                else if (b < 0 && x >= 0) return `${a} ⋅ ${x} - ${-b}y = ${c}`;
+                else if (b > 0 && x < 0) return `${a} ⋅ (${x}) + ${b}y = ${c}`;
+                else if (b < 0 && x < 0) return `${a} ⋅ (${x}) - ${-b}y = ${c}`;
+            } else if (a == 1) {
+                if (b > 0) return `${x} + ${b}y = ${c}`;
+                else if (b < 0) return `${x} - ${-b}y = ${c}`;
+            } else if (a == -1) {
+                if (b > 0) return `${-x} + ${b}y = ${c}`;
+                else if (b < 0) return `${-x} - ${-b}y = ${c}`;
+            }
+        } else if (b == 1) {
+            if (Math.abs(a) != 1) {
+                if (x >= 0) return `${a} ⋅ ${x} + y = ${c}`;
+                else if (x < 0) return `${a} ⋅ (${x}) + y = ${c}`;
+            } else if (a == 1) {
+                return `${x} + y = ${c}`;
+            } else if (a == -1) {
+                return `${-x} + y = ${c}`;
+            }
+        } else if (b == -1) {
+            if (Math.abs(a) != 1) {
+                if (x >= 0) return `${a} ⋅ ${x} - y = ${c}`;
+                else if (x < 0) return `${a} ⋅ (${x}) - y = ${c}`;
+            } else if (a == 1) {
+                return `${x} - y = ${c}`;
+            } else if (a == -1) {
+                return `${-x} - y = ${c}`;
+            }
         }
-      } else if (b == 1) {
-        if (Math.abs(a) != 1) {
-          if (x >= 0) return `${a} ⋅ ${x} + y = ${c}`;
-          else if (x < 0) return `${a} ⋅ (${x}) + y = ${c}`;
-        } else if (a == 1) {
-          return `${x} + y = ${c}`;
-        } else if (a == -1) {
-          return `${-x} + y = ${c}`;
-        }
-      } else if (b == -1) {
-        if (Math.abs(a) != 1) {
-          if (x >= 0) return `${a} ⋅ ${x} - y = ${c}`;
-          else if (x < 0) return `${a} ⋅ (${x}) - y = ${c}`;
-        } else if (a == 1) {
-          return `${x} - y = ${c}`;
-        } else if (a == -1) {
-          return `${-x} - y = ${c}`;
-        }
-      }
-      return "";
+        return '';
     };
 
     // Helper functions for number operations
@@ -29467,450 +29422,450 @@ class CalculatorsServices {
 
     // Helper function to check if value is numeric
     const isNumeric = (value) => {
-      return (
-        value !== undefined &&
-        value !== null &&
-        value !== "" &&
-        !isNaN(parseFloat(value))
-      );
+        return value !== undefined && value != null && value != '' && !isNaN(parseFloat(value));
     };
 
-    // Gaussian elimination for 3x3 system (Laravel style)
-    const gauss3Equations = (
-      s1,
-      t1,
-      u1,
-      v1,
-      s2,
-      t2,
-      u2,
-      v2,
-      s3,
-      t3,
-      u3,
-      v3
-    ) => {
-      let matrix = [
-        [s1, t1, u1, v1],
-        [s2, t2, u2, v2],
-        [s3, t3, u3, v3],
-      ];
+    // FIXED: Gaussian elimination for 3x3 system
+    const gauss3Equations = (s1, t1, u1, v1, s2, t2, u2, v2, s3, t3, u3, v3) => {
+        let matrix = [
+            [s1, t1, u1, v1], 
+            [s2, t2, u2, v2], 
+            [s3, t3, u3, v3]
+        ];
+        
+        // Row swapping to avoid zero pivots
+        if (!are3NumbersZero(matrix[0][0], matrix[1][0], matrix[2][0])) {
+            if (matrix[0][0] == 0 && matrix[1][0] != 0) {
+                [matrix[0], matrix[1]] = [matrix[1], matrix[0]];
+            }
+            if (matrix[0][0] == 0 && matrix[2][0] != 0) {
+                [matrix[0], matrix[2]] = [matrix[2], matrix[0]];
+            }
+            if (matrix[1][0] == 0 && matrix[2][0] != 0) {
+                [matrix[1], matrix[2]] = [matrix[2], matrix[1]];
+            }
+        }
 
-      if (!are3NumbersZero(matrix[0][0], matrix[1][0], matrix[2][0])) {
-        if (matrix[0][0] === 0 && matrix[1][0] !== 0) {
-          [matrix[0], matrix[1]] = [matrix[1], matrix[0]];
+        // Forward elimination - eliminate first column
+        if (matrix[0][0] != 0) {
+            if (matrix[1][0] != 0) {
+                const factor = matrix[1][0] / matrix[0][0];
+                for (let j = 0; j < 4; j++) {
+                    matrix[1][j] = roundNumb(matrix[1][j] - factor * matrix[0][j]);
+                }
+            }
+            if (matrix[2][0] != 0) {
+                const factor = matrix[2][0] / matrix[0][0];
+                for (let j = 0; j < 4; j++) {
+                    matrix[2][j] = roundNumb(matrix[2][j] - factor * matrix[0][j]);
+                }
+            }
         }
-        if (matrix[0][0] === 0 && matrix[2][0] !== 0) {
-          [matrix[0], matrix[2]] = [matrix[2], matrix[0]];
-        }
-        if (matrix[1][0] === 0 && matrix[2][0] !== 0) {
-          [matrix[1], matrix[2]] = [matrix[2], matrix[1]];
-        }
-      }
 
-      // Forward elimination
-      if (matrix[1][0] !== 0) {
-        const factor = matrix[1][0] / matrix[0][0];
-        for (let j = 0; j < 4; j++) {
-          matrix[1][j] = roundNumb(matrix[1][j] - factor * matrix[0][j]);
+        // Swap rows if needed for second pivot
+        if (matrix[1][1] == 0 && matrix[2][1] != 0) {
+            [matrix[1], matrix[2]] = [matrix[2], matrix[1]];
         }
-      }
-      if (matrix[2][0] !== 0) {
-        const factor = matrix[2][0] / matrix[0][0];
-        for (let j = 0; j < 4; j++) {
-          matrix[2][j] = roundNumb(matrix[2][j] - factor * matrix[0][j]);
-        }
-      }
 
-      // Second row elimination
-      if (matrix[2][1] !== 0 && matrix[1][1] !== 0) {
-        const factor = matrix[2][1] / matrix[1][1];
-        for (let j = 1; j < 4; j++) {
-          matrix[2][j] = roundNumb(matrix[2][j] - factor * matrix[1][j]);
+        // Eliminate second column in third row
+        if (matrix[1][1] != 0 && matrix[2][1] != 0) {
+            const factor = matrix[2][1] / matrix[1][1];
+            for (let j = 1; j < 4; j++) {
+                matrix[2][j] = roundNumb(matrix[2][j] - factor * matrix[1][j]);
+            }
         }
-      }
 
-      return matrix;
+        return matrix;
     };
 
+    // FIXED: Solver with proper parametric solution handling
     const solveFor3 = (s1, t1, u1, v1, s2, t2, u2, v2, s3, t3, u3, v3) => {
-      const matrix = gauss3Equations(
-        s1,
-        t1,
-        u1,
-        v1,
-        s2,
-        t2,
-        u2,
-        v2,
-        s3,
-        t3,
-        u3,
-        v3
-      );
-
-      // Check for no solution
-      if (
-        are3NumbersZero(matrix[2][0], matrix[2][1], matrix[2][2]) &&
-        matrix[2][3] !== 0
-      ) {
-        return 0; // No solution
-      }
-
-      // Check for infinite solutions
-      if (
-        are3NumbersZero(matrix[2][0], matrix[2][1], matrix[2][2]) &&
-        matrix[2][3] === 0
-      ) {
-        if (
-          are3NumbersZero(matrix[1][0], matrix[1][1], matrix[1][2]) &&
-          matrix[1][3] !== 0
-        ) {
-          return 0; // No solution
+        const matrix = gauss3Equations(s1, t1, u1, v1, s2, t2, u2, v2, s3, t3, u3, v3);
+        
+        // Check third row for inconsistency or dependency
+        const row3Zero = are3NumbersZero(matrix[2][0], matrix[2][1], matrix[2][2]);
+        if (row3Zero && matrix[2][3] !== 0) {
+            return { type: 'no_solution' }; // Inconsistent system
         }
-        if (
-          are3NumbersZero(matrix[1][0], matrix[1][1], matrix[1][2]) &&
-          matrix[1][3] === 0
-        ) {
-          if (
-            are3NumbersZero(matrix[0][0], matrix[0][1], matrix[0][2]) &&
-            matrix[0][3] !== 0
-          ) {
-            return 0; // No solution
-          }
-          if (
-            are3NumbersZero(matrix[0][0], matrix[0][1], matrix[0][2]) &&
-            matrix[0][3] === 0
-          ) {
-            return 1; // Infinite solutions
-          }
+        
+        // Check second row
+        const row2Zero = are3NumbersZero(matrix[1][0], matrix[1][1], matrix[1][2]);
+        if (row2Zero && matrix[1][3] !== 0) {
+            return { type: 'no_solution' }; // Inconsistent system
         }
-      }
-
-      // Back substitution for unique solution
-      const z = roundNumb(matrix[2][3] / matrix[2][2]);
-      const y = roundNumb((matrix[1][3] - matrix[1][2] * z) / matrix[1][1]);
-      const x = roundNumb(
-        (matrix[0][3] - matrix[0][2] * z - matrix[0][1] * y) / matrix[0][0]
-      );
-
-      return [
-        [0, 0, lastRound(x)],
-        [0, 0, lastRound(y)],
-        [0, 0, lastRound(z)],
-      ];
+        
+        // Check first row
+        const row1Zero = are3NumbersZero(matrix[0][0], matrix[0][1], matrix[0][2]);
+        if (row1Zero && matrix[0][3] !== 0) {
+            return { type: 'no_solution' }; // Inconsistent system
+        }
+        
+        // If we have infinite solutions (dependent system)
+        if (row3Zero && matrix[2][3] === 0) {
+            // One or more free variables exist
+            if (row2Zero && matrix[1][3] === 0) {
+                if (row1Zero && matrix[0][3] === 0) {
+                    return { type: 'infinite_all' }; // All variables free
+                }
+            }
+            
+            // Try to express solution in parametric form
+            // This assumes z is free variable (parameter t)
+            if (matrix[1][1] != 0) {
+                // y in terms of z: y = (v2 - u2*z) / t2
+                // x in terms of y and z: x = (v1 - t1*y - u1*z) / s1
+                const yCoeffZ = -matrix[1][2] / matrix[1][1];
+                const yConst = matrix[1][3] / matrix[1][1];
+                
+                if (matrix[0][0] != 0) {
+                    const xCoeffZ = (-matrix[0][2] - matrix[0][1] * yCoeffZ) / matrix[0][0];
+                    const xConst = (matrix[0][3] - matrix[0][1] * yConst) / matrix[0][0];
+                    
+                    return {
+                        type: 'infinite_parametric',
+                        x: { coeff_t: lastRound(xCoeffZ), const: lastRound(xConst) },
+                        y: { coeff_t: lastRound(yCoeffZ), const: lastRound(yConst) },
+                        z: { coeff_t: 1, const: 0 }
+                    };
+                }
+            }
+            
+            return { type: 'infinite_general' }; // Infinite solutions but can't express simply
+        }
+        
+        // Unique solution - back substitution with division by zero checks
+        if (matrix[2][2] == 0) {
+            return { type: 'no_solution' }; // Division by zero would occur
+        }
+        
+        const z = roundNumb(matrix[2][3] / matrix[2][2]);
+        
+        if (matrix[1][1] == 0) {
+            return { type: 'no_solution' }; // Division by zero would occur
+        }
+        
+        const y = roundNumb((matrix[1][3] - matrix[1][2] * z) / matrix[1][1]);
+        
+        if (matrix[0][0] == 0) {
+            return { type: 'no_solution' }; // Division by zero would occur
+        }
+        
+        const x = roundNumb((matrix[0][3] - matrix[0][2] * z - matrix[0][1] * y) / matrix[0][0]);
+        
+        return {
+            type: 'unique',
+            x: lastRound(x),
+            y: lastRound(y),
+            z: lastRound(z)
+        };
     };
 
     try {
-      if (operations == "1") {
-        // Two equations system
-        if (
-          isNumeric(a1_f) &&
-          isNumeric(b1_f) &&
-          isNumeric(k1_f) &&
-          isNumeric(a2_f) &&
-          isNumeric(b2_f) &&
-          isNumeric(k2_f)
-        ) {
-          const a1 = parseFloat(a1_f);
-          const b1 = parseFloat(b1_f);
-          const k1 = parseFloat(k1_f);
-          const a2 = parseFloat(a2_f);
-          const b2 = parseFloat(b2_f);
-          const k2 = parseFloat(k2_f);
+        if (operations == "1") {
+            // Two equations system
+            if (isNumeric(a1_f) && isNumeric(b1_f) && isNumeric(k1_f) && 
+                isNumeric(a2_f) && isNumeric(b2_f) && isNumeric(k2_f)) {
+                
+                const a1 = parseFloat(a1_f);
+                const b1 = parseFloat(b1_f);
+                const k1 = parseFloat(k1_f);
+                const a2 = parseFloat(a2_f);
+                const b2 = parseFloat(b2_f);
+                const k2 = parseFloat(k2_f);
 
-          if (a1 != 0 || b1 != 0) {
-            if (a2 != 0 || b2 != 0) {
-              const f1_equation = writeEq(a1, b1, k1);
-              const f2_equation = writeEq(a2, b2, k2);
+                if (a1 != 0 || b1 != 0) {
+                    if (a2 != 0 || b2 != 0) {
+                        const f1_equation = writeEq(a1, b1, k1);
+                        const f2_equation = writeEq(a2, b2, k2);
+                        
+                        result.tech_f1_equation = f1_equation;
+                        result.tech_f2_equation = f2_equation;
 
-              result.tech_f1_equation = f1_equation;
-              result.tech_f2_equation = f2_equation;
+                        // Check for special cases with zero coefficients
+                        if (a1 * b1 * a2 * b2 === 0) {
+                            let x, y;
+                            if (a1 === 0 && a2 !== 0 && b1 !== 0 && b2 !== 0) {
+                                y = k1 / b1;
+                                x = (k2 - b2 * y) / a2;
+                                result.tech_first = '‣ From the first equation:';
+                                result.tech_second = `y = ${y}`;
+                                result.tech_third = `‣ Substitute y = ${y} into the second equation:`;
+                                result.tech_four = writeEqX(a2, b2, y, k2);
+                                result.tech_five = `x = ${x}`;
+                                result.tech_six = '‣ Solution:';
+                                result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
+                                result.tech_main_ans = result.tech_seven;
+                                result.tech_x = lastRound(x);
+                                result.tech_y = lastRound(y);
+                            } else if (a2 === 0 && a1 !== 0 && b2 !== 0 && b1 !== 0) {
+                                y = k2 / b2;
+                                x = (k1 - b1 * y) / a1;
+                                result.tech_first = '‣ From the second equation:';
+                                result.tech_second = `y = ${y}`;
+                                result.tech_third = `‣ Substitute y = ${y} into the first equation:`;
+                                result.tech_four = writeEqX(a1, b1, y, k1);
+                                result.tech_five = `x = ${x}`;
+                                result.tech_six = '‣ Solution:';
+                                result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
+                                result.tech_main_ans = result.tech_seven;
+                                result.tech_x = lastRound(x);
+                                result.tech_y = lastRound(y);
+                            } else if (b1 === 0 && b2 !== 0 && a1 !== 0 && a2 !== 0) {
+                                x = k1 / a1;
+                                y = (k2 - a2 * x) / b2;
+                                result.tech_first = '‣ From the first equation:';
+                                result.tech_second = `x = ${x}`;
+                                result.tech_third = `‣ Substitute x = ${x} into the second equation:`;
+                                result.tech_four = writeEqY(a2, x, b2, k2);
+                                result.tech_five = `y = ${y}`;
+                                result.tech_six = '‣ Solution:';
+                                result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
+                                result.tech_main_ans = result.tech_seven;
+                                result.tech_x = lastRound(x);
+                                result.tech_y = lastRound(y);
+                            } else if (b2 === 0 && b1 !== 0 && a2 !== 0 && a1 !== 0) {
+                                x = k2 / a2;
+                                y = (k1 - a1 * x) / b1;
+                                result.tech_first = '‣ From the second equation:';
+                                result.tech_second = `x = ${x}`;
+                                result.tech_third = `‣ Substitute x = ${x} into the first equation:`;
+                                result.tech_four = writeEqY(a1, x, b1, k1);
+                                result.tech_five = `y = ${y}`;
+                                result.tech_six = '‣ Solution:';
+                                result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(y)}`;
+                                result.tech_main_ans = result.tech_seven;
+                                result.tech_x = lastRound(x);
+                                result.tech_y = lastRound(y);
+                            }
+                        } else {
+                            // General case - use substitution method
+                            if (Math.abs(a1) == 1 || Math.abs(a2) == 1 || Math.abs(b1) == 1 || Math.abs(b2) == 1) {
+                                // Handle cases with coefficients of 1 or -1
+                                let a = 0, b = 0, c = 0;
+                                if (Math.abs(a1) == 1) {
+                                    result.tech_first = '‣ Calculate x from the first equation:';
+                                    result.tech_second = writeEqMoveB(a1, b1, k1);
+                                    result.tech_third = '‣ Substitute x into the second equation:';
+                                    result.tech_four = writeEqSubX(a2, b2, k2, -b1, k1);
+                                    result.tech_five = '‣ Simplify:';
+                                    a = 0;
+                                    b = -a2 * b1 + b2;
+                                    c = k2 - a2 * k1;
+                                    result.tech_six = writeEq(a, b, c);
+                                } else if (Math.abs(a2) == 1) {
+                                    result.tech_first = '‣ Calculate x from the second equation:';
+                                    result.tech_second = writeEqMoveB(a2, b2, k2);
+                                    result.tech_third = '‣ Substitute x into the first equation:';
+                                    result.tech_four = writeEqSubX(a1, b1, k1, -b2, k2);
+                                    result.tech_five = '‣ Simplify:';
+                                    a = 0;
+                                    b = -a1 * b2 + b1;
+                                    c = k1 - a1 * k2;
+                                    result.tech_six = writeEq(a, b, c);
+                                } else if (Math.abs(b2) == 1) {
+                                    result.tech_first = '‣ Calculate y from the second equation:';
+                                    result.tech_second = writeEqMoveB(a2, b2, k2);
+                                    result.tech_third = '‣ Substitute y into the first equation:';
+                                    result.tech_four = writeEqSubX(a1, b1, k1, -a2, k2);
+                                    result.tech_five = '‣ Simplify:';
+                                    a = 0;
+                                    b = a1 - a2 * b1;
+                                    c = k1 - b1 * k2;
+                                    result.tech_six = writeEq(a, b, c);
+                                } else if (Math.abs(b1) == 1) {
+                                    result.tech_first = '‣ Calculate y from the first equation:';
+                                    result.tech_second = writeEqMoveB(a1, b1, k1);
+                                    result.tech_third = '‣ Substitute y into the second equation:';
+                                    result.tech_four = writeEqSubX(a2, b2, k2, -a1, k1);
+                                    result.tech_five = '‣ Simplify:';
+                                    a = 0;
+                                    b = a2 - a1 * b2;
+                                    c = k2 - b2 * k1;
+                                    result.tech_six = writeEq(a, b, c);
+                                }
 
-              // Check for special cases with zero coefficients
-              if (a1 * b1 * a2 * b2 === 0) {
-                let x, y;
-                if (a1 === 0 && a2 !== 0 && b1 !== 0 && b2 !== 0) {
-                  y = k1 / b1;
-                  x = (k2 - b2 * y) / a2;
-                  result.tech_first = "‣ From the first equation:";
-                  result.tech_second = `y = ${y}`;
-                  result.tech_third = `‣ Substitute y = ${y} into the second equation:`;
-                  result.tech_four = writeEqX(a2, b2, y, k2);
-                  result.tech_five = `x = ${x}`;
-                  result.tech_six = "‣ Solution:";
-                  result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(
-                    y
-                  )}`;
-                  result.tech_main_ans = result.tech_seven;
-                  result.tech_x = lastRound(x);
-                  result.tech_y = lastRound(y);
-                } else if (a2 === 0 && a1 !== 0 && b2 !== 0 && b1 !== 0) {
-                  y = k2 / b2;
-                  x = (k1 - b1 * y) / a1;
-                  result.tech_first = "‣ From the second equation:";
-                  result.tech_second = `y = ${y}`;
-                  result.tech_third = `‣ Substitute y = ${y} into the first equation:`;
-                  result.tech_four = writeEqX(a1, b1, y, k1);
-                  result.tech_five = `x = ${x}`;
-                  result.tech_six = "‣ Solution:";
-                  result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(
-                    y
-                  )}`;
-                  result.tech_main_ans = result.tech_seven;
-                  result.tech_x = lastRound(x);
-                  result.tech_y = lastRound(y);
-                } else if (b1 === 0 && b2 !== 0 && a1 !== 0 && a2 !== 0) {
-                  x = k1 / a1;
-                  y = (k2 - a2 * x) / b2;
-                  result.tech_first = "‣ From the first equation:";
-                  result.tech_second = `x = ${x}`;
-                  result.tech_third = `‣ Substitute x = ${x} into the second equation:`;
-                  result.tech_four = writeEqY(a2, x, b2, k2);
-                  result.tech_five = `y = ${y}`;
-                  result.tech_six = "‣ Solution:";
-                  result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(
-                    y
-                  )}`;
-                  result.tech_main_ans = result.tech_seven;
-                  result.tech_x = lastRound(x);
-                  result.tech_y = lastRound(y);
-                } else if (b2 === 0 && b1 !== 0 && a2 !== 0 && a1 !== 0) {
-                  x = k2 / a2;
-                  y = (k1 - a1 * x) / b1;
-                  result.tech_first = "‣ From the second equation:";
-                  result.tech_second = `x = ${x}`;
-                  result.tech_third = `‣ Substitute x = ${x} into the first equation:`;
-                  result.tech_four = writeEqY(a1, x, b1, k1);
-                  result.tech_five = `y = ${y}`;
-                  result.tech_six = "‣ Solution:";
-                  result.tech_seven = `x = ${lastRound(x)}, y = ${lastRound(
-                    y
-                  )}`;
-                  result.tech_main_ans = result.tech_seven;
-                  result.tech_x = lastRound(x);
-                  result.tech_y = lastRound(y);
-                }
-              } else {
-                // General case - use substitution method
-                if (
-                  Math.abs(a1) == 1 ||
-                  Math.abs(a2) == 1 ||
-                  Math.abs(b1) == 1 ||
-                  Math.abs(b2) == 1
-                ) {
-                  // Handle cases with coefficients of 1 or -1
-                  let a = 0,
-                    b = 0,
-                    c = 0;
-                  if (Math.abs(a1) == 1) {
-                    result.tech_first =
-                      "‣ Calculate x from the first equation:";
-                    result.tech_second = writeEqMoveB(a1, b1, k1);
-                    result.tech_third =
-                      "‣ Substitute x into the second equation:";
-                    result.tech_four = writeEqSubX(a2, b2, k2, -b1, k1);
-                    result.tech_five = "‣ Simplify:";
-                    a = 0;
-                    b = -a2 * b1 + b2;
-                    c = k2 - a2 * k1;
-                    result.tech_six = writeEq(a, b, c);
-                  } else if (Math.abs(a2) == 1) {
-                    result.tech_first =
-                      "‣ Calculate x from the second equation:";
-                    result.tech_second = writeEqMoveB(a2, b2, k2);
-                    result.tech_third =
-                      "‣ Substitute x into the first equation:";
-                    result.tech_four = writeEqSubX(a1, b1, k1, -b2, k2);
-                    result.tech_five = "‣ Simplify:";
-                    a = 0;
-                    b = -a1 * b2 + b1;
-                    c = k1 - a1 * k2;
-                    result.tech_six = writeEq(a, b, c);
-                  } else if (Math.abs(b2) == 1) {
-                    result.tech_first =
-                      "‣ Calculate y from the second equation:";
-                    result.tech_second = writeEqMoveB(a2, b2, k2);
-                    result.tech_third =
-                      "‣ Substitute y into the first equation:";
-                    result.tech_four = writeEqSubX(a1, b1, k1, -a2, k2);
-                    result.tech_five = "‣ Simplify:";
-                    a = 0;
-                    b = a1 - a2 * b1;
-                    c = k1 - b1 * k2;
-                    result.tech_six = writeEq(a, b, c);
-                  } else if (Math.abs(b1) == 1) {
-                    result.tech_first =
-                      "‣ Calculate y from the first equation:";
-                    result.tech_second = writeEqMoveB(a1, b1, k1);
-                    result.tech_third =
-                      "‣ Substitute y into the second equation:";
-                    result.tech_four = writeEqSubX(a2, b2, k2, -a1, k1);
-                    result.tech_five = "‣ Simplify:";
-                    a = 0;
-                    b = a2 - a1 * b2;
-                    c = k2 - b2 * k1;
-                    result.tech_six = writeEq(a, b, c);
-                  }
-
-                  // Solve the simplified equation
-                  if (b == 0 && c != 0) {
-                    result.tech_main_ans =
-                      "<b>Contradiction! There is no solution.</b>";
-                  } else if (b == 0 && c == 0) {
-                    result.tech_main_ans =
-                      "<b>There are infinitely many solutions.</b>";
-                  } else {
-                    const y_val = c / b;
-                    const x_val = (k1 - b1 * y_val) / a1;
-
-                    result.tech_answer1 = "‣ Solve for y:";
-                    result.tech_answer2 = `<b>y = ${y_val}</b>`;
-                    result.tech_answer3 = `‣ Substituting y = ${y_val} into the first equation, we get:`;
-                    result.tech_answer4 = writeEqX(a1, b1, y_val, k1);
-                    result.tech_answer5 = "‣ Solve for x:";
-                    result.tech_answer6 = `<b>x = ${x_val}</b>`;
-                    result.tech_answer7 = "‣ Solution:";
-                    result.tech_answer8 = `x = ${lastRound(
-                      x_val
-                    )}, y = ${lastRound(y_val)}`;
-                    result.tech_main_ans = result.tech_answer8;
-                    result.tech_x = lastRound(x_val);
-                    result.tech_y = lastRound(y_val);
-                  }
+                                // Solve the simplified equation
+                                if (b == 0 && c != 0) {
+                                    result.tech_main_ans = '<b>Contradiction! There is no solution.</b>';
+                                } else if (b == 0 && c == 0) {
+                                    result.tech_main_ans = '<b>There are infinitely many solutions.</b>';
+                                } else {
+                                    const y_val = c / b;
+                                    const x_val = (k1 - b1 * y_val) / a1;
+                                    
+                                    result.tech_answer1 = '‣ Solve for y:';
+                                    result.tech_answer2 = `<b>y = ${y_val}</b>`;
+                                    result.tech_answer3 = `‣ Substituting y = ${y_val} into the first equation, we get:`;
+                                    result.tech_answer4 = writeEqX(a1, b1, y_val, k1);
+                                    result.tech_answer5 = '‣ Solve for x:';
+                                    result.tech_answer6 = `<b>x = ${x_val}</b>`;
+                                    result.tech_answer7 = '‣ Solution:';
+                                    result.tech_answer8 = `x = ${lastRound(x_val)}, y = ${lastRound(y_val)}`;
+                                    result.tech_main_ans = result.tech_answer8;
+                                    result.tech_x = lastRound(x_val);
+                                    result.tech_y = lastRound(y_val);
+                                }
+                            } else {
+                                // General substitution method
+                                result.tech_first = `‣ Calculate x from the first equation. First, add ${-b1}y to both sides of the equation:`;
+                                result.tech_second = writeEqMoveB(a1, b1, k1);
+                                result.tech_third = `Next, divide both sides by ${a1}:`;
+                                result.tech_four = writeEqMoveB(1, b1 / a1, k1 / a1);
+                                result.tech_five = '‣ Substitute x into the second equation:';
+                                result.tech_six = writeEqSubX(a2, b2, k2, -(b1 / a1), (k1 / a1));
+                                result.tech_seven = '‣ Simplify:';
+                                const b_val = -a2 * b1 / a1 + b2;
+                                const c_val = k2 - a2 * k1 / a1;
+                                result.tech_eight = writeEq(0, b_val, c_val);
+                                
+                                // Solve for y and x
+                                if (b_val === 0 && c_val !== 0) {
+                                    result.tech_main_ans = '<b>Contradiction! There is no solution.</b>';
+                                } else if (b_val === 0 && c_val === 0) {
+                                    result.tech_main_ans = '<b>There are infinitely many solutions.</b>';
+                                } else {
+                                    const y_val = c_val / b_val;
+                                    const x_val = (k1 - b1 * y_val) / a1;
+                                    
+                                    result.tech_answer1 = '‣ Solve for y:';
+                                    result.tech_answer2 = `<b>y = ${y_val}</b>`;
+                                    result.tech_answer3 = `‣ Substituting y = ${y_val} into the first equation, we get:`;
+                                    result.tech_answer4 = writeEqX(a1, b1, y_val, k1);
+                                    result.tech_answer5 = '‣ Solve for x:';
+                                    result.tech_answer6 = `<b>x = ${x_val}</b>`;
+                                    result.tech_answer7 = '‣ Solution:';
+                                    result.tech_answer8 = `x = ${lastRound(x_val)}, y = ${lastRound(y_val)}`;
+                                    result.tech_main_ans = result.tech_answer8;
+                                    result.tech_x = lastRound(x_val);
+                                    result.tech_y = lastRound(y_val);
+                                }
+                            }
+                        }
+                    } else {
+                        result.error = 'a2 and b2 cannot both be zeros!';
+                        return result;
+                    }
                 } else {
-                  // General substitution method
-                  result.tech_first = `‣ Calculate x from the first equation. First, add ${-b1}y to both sides of the equation:`;
-                  result.tech_second = writeEqMoveB(a1, b1, k1);
-                  result.tech_third = `Next, divide both sides by ${a1}:`;
-                  result.tech_four = writeEqMoveB(1, b1 / a1, k1 / a1);
-                  result.tech_five = "‣ Substitute x into the second equation:";
-                  result.tech_six = writeEqSubX(
-                    a2,
-                    b2,
-                    k2,
-                    -(b1 / a1),
-                    k1 / a1
-                  );
-                  result.tech_seven = "‣ Simplify:";
-                  const b_val = (-a2 * b1) / a1 + b2;
-                  const c_val = k2 - (a2 * k1) / a1;
-                  result.tech_eight = writeEq(0, b_val, c_val);
-
-                  // Solve for y and x
-                  if (b_val === 0 && c_val !== 0) {
-                    result.main_ans =
-                      "<b>Contradiction! There is no solution.</b>";
-                  } else if (b_val === 0 && c_val === 0) {
-                    result.main_ans =
-                      "<b>There are infinitely many solutions.</b>";
-                  } else {
-                    const y_val = c_val / b_val;
-                    const x_val = (k1 - b1 * y_val) / a1;
-
-                    result.tech_answer1 = "‣ Solve for y:";
-                    result.tech_answer2 = `<b>y = ${y_val}</b>`;
-                    result.tech_answer3 = `‣ Substituting y = ${y_val} into the first equation, we get:`;
-                    result.tech_answer4 = writeEqX(a1, b1, y_val, k1);
-                    result.tech_answer5 = "‣ Solve for x:";
-                    result.tech_answer6 = `<b>x = ${x_val}</b>`;
-                    result.tech_answer7 = "‣ Solution:";
-                    result.tech_answer8 = `x = ${lastRound(
-                      x_val
-                    )}, y = ${lastRound(y_val)}`;
-                    result.tech_main_ans = result.tech_answer8;
-                    result.tech_x = lastRound(x_val);
-                    result.tech_y = lastRound(y_val);
-                  }
+                    result.error = 'a1 and b1 cannot both be zeros!';
+                    return result;
                 }
-              }
             } else {
-              result.error = "a2 and b2 cannot both be zeros!";
-              return result;
+                result.error = 'Please! Check Your Input.';
+                return result;
             }
-          } else {
-            result.error = "a1 and b1 cannot both be zeros!";
+
+        } else if (operations == "2") {
+            // Three equations system - FIXED VERSION
+            if (isNumeric(a1_s) && isNumeric(b1_s) && isNumeric(c1_s) && isNumeric(k1_s) &&
+                isNumeric(a2_s) && isNumeric(b2_s) && isNumeric(c2_s) && isNumeric(k2_s) &&
+                isNumeric(a3_s) && isNumeric(b3_s) && isNumeric(c3_s) && isNumeric(k3_s)) {
+                
+                const a1 = parseFloat(a1_s);
+                const b1 = parseFloat(b1_s);
+                const c1 = parseFloat(c1_s);
+                const k1 = parseFloat(k1_s);
+                const a2 = parseFloat(a2_s);
+                const b2 = parseFloat(b2_s);
+                const c2 = parseFloat(c2_s);
+                const k2 = parseFloat(k2_s);
+                const a3 = parseFloat(a3_s);
+                const b3 = parseFloat(b3_s);
+                const c3 = parseFloat(c3_s);
+                const k3 = parseFloat(k3_s);
+
+                const solution = solveFor3(a1, b1, c1, k1, a2, b2, c2, k2, a3, b3, c3, k3);
+
+                // Format based on solution type
+                switch (solution.type) {
+                    case 'no_solution':
+                        result.tech_s_fans = 'Your system of equations has no solutions.';
+                        break;
+                        
+                    case 'infinite_parametric':
+                        const xCoeff = solution.x.coeff_t;
+                        const xConst = solution.x.const;
+                        const yCoeff = solution.y.coeff_t;
+                        const yConst = solution.y.const;
+                        
+                        // Format x = at + b
+                        let xStr = '';
+                        if (xCoeff !== 0) {
+                            if (xCoeff === 1) xStr = 't';
+                            else if (xCoeff === -1) xStr = '-t';
+                            else xStr = `${xCoeff}t`;
+                        }
+                        if (xConst !== 0) {
+                            if (xStr !== '') {
+                                xStr += xConst >= 0 ? `+${xConst}` : `${xConst}`;
+                            } else {
+                                xStr = `${xConst}`;
+                            }
+                        }
+                        if (xStr === '') xStr = '0';
+                        
+                        // Format y = ct + d
+                        let yStr = '';
+                        if (yCoeff !== 0) {
+                            if (yCoeff === 1) yStr = 't';
+                            else if (yCoeff === -1) yStr = '-t';
+                            else yStr = `${yCoeff}t`;
+                        }
+                        if (yConst !== 0) {
+                            if (yStr !== '') {
+                                yStr += yConst >= 0 ? `+${yConst}` : `${yConst}`;
+                            } else {
+                                yStr = `${yConst}`;
+                            }
+                        }
+                        if (yStr === '') yStr = '0';
+                        
+                        const zStr = 't';
+                        
+                        result.tech_s_fans = `Your system of equations has an infinite number of solutions. It is satisfied by any triple of the form x = ${xStr}, y = ${yStr}, z = ${zStr}, where t is any real number.`;
+                        result.tech_x = solution.x;
+                        result.tech_y = solution.y;
+                        result.tech_z = solution.z;
+                        break;
+                        
+                    case 'infinite_all':
+                        result.tech_s_fans = 'Your system of equations has an infinite number of solutions. It is satisfied by any triple of real numbers.';
+                        break;
+                        
+                    case 'infinite_general':
+                        result.tech_s_fans = 'Your system of equations has an infinite number of solutions.';
+                        break;
+                        
+                    case 'unique':
+                        result.tech_s_fans = `The unique solution to your system is x = ${solution.x}, y = ${solution.y}, z = ${solution.z}.`;
+                        result.tech_x = solution.x;
+                        result.tech_y = solution.y;
+                        result.tech_z = solution.z;
+                        break;
+                        
+                    default:
+                        result.tech_s_fans = 'Unable to solve the system.';
+                        break;
+                }
+
+            } else {
+                result.error = 'Please! Check Your Input for three equation system.';
+                return result;
+            }
+        } else {
+            result.error = 'Invalid operation selected';
             return result;
-          }
-        } else {
-          result.error = "Please! Check Your Input.";
-          return result;
         }
-      } else if (operations == "2") {
-        // Three equations system
-        if (
-          isNumeric(a1_s) &&
-          isNumeric(b1_s) &&
-          isNumeric(c1_s) &&
-          isNumeric(k1_s) &&
-          isNumeric(a2_s) &&
-          isNumeric(b2_s) &&
-          isNumeric(c2_s) &&
-          isNumeric(k2_s) &&
-          isNumeric(a3_s) &&
-          isNumeric(b3_s) &&
-          isNumeric(c3_s) &&
-          isNumeric(k3_s)
-        ) {
-          const a1 = parseFloat(a1_s);
-          const b1 = parseFloat(b1_s);
-          const c1 = parseFloat(c1_s);
-          const k1 = parseFloat(k1_s);
-          const a2 = parseFloat(a2_s);
-          const b2 = parseFloat(b2_s);
-          const c2 = parseFloat(c2_s);
-          const k2 = parseFloat(k2_s);
-          const a3 = parseFloat(a3_s);
-          const b3 = parseFloat(b3_s);
-          const c3 = parseFloat(c3_s);
-          const k3 = parseFloat(k3_s);
 
-          const solution = solveFor3(
-            a1,
-            b1,
-            c1,
-            k1,
-            a2,
-            b2,
-            c2,
-            k2,
-            a3,
-            b3,
-            c3,
-            k3
-          );
-
-          if (solution === 0) {
-            result.tech_s_fans = "Your system of equations has no solutions.";
-          } else if (solution === 1) {
-            result.tech_s_fans =
-              "Your system of equations has an infinite number of solutions. It is satisfied by any three real numbers.";
-          } else {
-            const x = solution[0];
-            const y = solution[1];
-            const z = solution[2];
-
-            result.tech_s_fans = `The unique solution to your system is x = ${x[2]}, y = ${y[2]}, z = ${z[2]}.`;
-            result.tech_x = x;
-            result.tech_y = y;
-          }
-        } else {
-          result.error = "Please! Check Your Input for three equation system.";
-          return result;
-        }
-      } else {
-        result.error = "Invalid operation selected";
+        result.tech_operations = operations;
         return result;
-      }
 
-      result.tech_operations = operations;
-      return result;
     } catch (error) {
-      console.error("Error in substitution method calculation:", error);
-      result.error = "Please! Check Your Input.";
-      return result;
+        console.error('Error in substitution method calculation:', error);
+        result.error = 'Please! Check Your Input.';
+        return result;
     }
-  }
+}
+  
 
   /**
    * SystemOfEquationsCalculator: Service Method
@@ -30289,493 +30244,456 @@ class CalculatorsServices {
    * @param {Object} body Having Properties for Creating New Roles
    * @returns Object with message property having success method
    */
-  async getCalculationInverseMatrixCalculator(body) {
+ async getCalculationInverseMatrixCalculator(body) {
+      
     let dtrmn_slct_method = body.tech_dtrmn_slct_method;
     let dtrmn_opts_method = body.tech_dtrmn_opts_method;
 
-    // Convert to numbers
     const matrixSize = parseInt(dtrmn_slct_method);
-
+    
     // Helper functions (keep all the previous helper functions as they are)
     function invert(A, debug = false) {
-      const n = A.length;
-      const matrixCopy = A.map((row) => [...row]);
-      const pz = A.map((row) => [...row]);
+        const n = A.length;
+        const matrixCopy = A.map(row => [...row]);
+        const pz = A.map(row => [...row]);
 
-      const I = identity_matrix(n);
-      for (let i = 0; i < n; ++i) {
-        matrixCopy[i] = [...matrixCopy[i], ...I[i]];
-        pz[i] = [...pz[i], ...I[i]];
-      }
+        const I = identity_matrix(n); 
+        for (let i = 0; i < n; ++i) {
+            matrixCopy[i] = [...matrixCopy[i], ...I[i]];
+            pz[i] = [...pz[i], ...I[i]];
+        }
 
-      // Forward run
-      for (let j = 0; j < n - 1; ++j) {
-        for (let i = j + 1; i < n; ++i) {
-          if (matrixCopy[i][j] !== 0) {
-            const scalar = matrixCopy[j][j] / matrixCopy[i][j];
-            for (let jj = j; jj < n * 2; ++jj) {
-              matrixCopy[i][jj] *= scalar;
-              matrixCopy[i][jj] -= matrixCopy[j][jj];
+        // Forward run
+        for (let j = 0; j < n - 1; ++j) {
+            for (let i = j + 1; i < n; ++i) {
+                if (matrixCopy[i][j] !== 0) {
+                    const scalar = matrixCopy[j][j] / matrixCopy[i][j];
+                    for (let jj = j; jj < n * 2; ++jj) {
+                        matrixCopy[i][jj] *= scalar;
+                        matrixCopy[i][jj] -= matrixCopy[j][jj];
+                    }
+                }
             }
-          }
         }
-      }
 
-      // Reverse run
-      for (let j = n - 1; j > 0; --j) {
-        for (let i = j - 1; i >= 0; --i) {
-          if (matrixCopy[i][j] !== 0) {
-            const scalar = matrixCopy[j][j] / matrixCopy[i][j];
-            for (let jj = i; jj < n * 2; ++jj) {
-              matrixCopy[i][jj] *= scalar;
-              matrixCopy[i][jj] -= matrixCopy[j][jj];
+        // Reverse run
+        for (let j = n - 1; j > 0; --j) {
+            for (let i = j - 1; i >= 0; --i) {
+                if (matrixCopy[i][j] !== 0) {
+                    const scalar = matrixCopy[j][j] / matrixCopy[i][j];
+                    for (let jj = i; jj < n * 2; ++jj) {
+                        matrixCopy[i][jj] *= scalar;
+                        matrixCopy[i][jj] -= matrixCopy[j][jj];
+                    }
+                }
             }
-          }
         }
-      }
 
-      // Make all diagonal elements 1
-      for (let j = 0; j < n; ++j) {
-        if (matrixCopy[j][j] !== 1) {
-          const scalar = 1 / matrixCopy[j][j];
-          for (let jj = j; jj < n * 2; ++jj) {
-            matrixCopy[j][jj] *= scalar;
-          }
+        // Make all diagonal elements 1
+        for (let j = 0; j < n; ++j) {
+            if (matrixCopy[j][j] !== 1) {
+                const scalar = 1 / matrixCopy[j][j];
+                for (let jj = j; jj < n * 2; ++jj) {
+                    matrixCopy[j][jj] *= scalar;
+                }
+            }
         }
-      }
 
-      // Extract the inverse matrix
-      const Inv = [];
-      for (let i = 0; i < n; ++i) {
-        Inv[i] = matrixCopy[i].slice(n);
-      }
+        // Extract the inverse matrix
+        const Inv = [];
+        for (let i = 0; i < n; ++i) {
+            Inv[i] = matrixCopy[i].slice(n);
+        }
 
-      return Inv;
+        return Inv;
     }
 
     function rref2(matrix) {
-      let lead = 0;
-      const matrixCopy = matrix.map((row) => [...row]);
-      const pz = matrix.map((row) => [...row]);
-      const swap = [];
-      const swap_line = [];
-      const rowCount = matrixCopy.length;
-
-      if (rowCount === 0) return [matrixCopy, swap, swap_line, pz];
-
-      const columnCount = matrixCopy[0] ? matrixCopy[0].length : 0;
-
-      for (let r = 0; r < rowCount; r++) {
-        if (lead >= columnCount) break;
-
-        let i = r;
-        while (i < rowCount && matrixCopy[i][lead] === 0) {
-          i++;
-          if (i === rowCount) {
-            i = r;
+        let lead = 0;
+        const matrixCopy = matrix.map(row => [...row]);
+        const pz = matrix.map(row => [...row]);
+        const swap = [];
+        const swap_line = [];
+        const rowCount = matrixCopy.length;
+        
+        if (rowCount === 0) return [matrixCopy, swap, swap_line, pz];
+        
+        const columnCount = matrixCopy[0] ? matrixCopy[0].length : 0;
+        
+        for (let r = 0; r < rowCount; r++) {
+            if (lead >= columnCount) break;
+            
+            let i = r;
+            while (i < rowCount && matrixCopy[i][lead] === 0) {
+                i++;
+                if (i === rowCount) {
+                    i = r;
+                    lead++;
+                    if (lead === columnCount) return [matrixCopy, swap, swap_line, pz];
+                }
+            }
+            
+            if (i >= rowCount) continue;
+            
+            // Swap rows
+            [matrixCopy[r], matrixCopy[i]] = [matrixCopy[i], matrixCopy[r]];
+            
+            if (i !== r) {
+                swap_line.push(`Swap the row ${r + 1} with row ${i + 1}`);
+                [pz[r], pz[i]] = [pz[i], pz[r]];
+                swap.push(pz.map(row => [...row]));
+            }
+            
+            // Normalize the pivot row
+            const lv = matrixCopy[r][lead];
+            if (lv !== 0) {
+                for (let j = 0; j < columnCount; j++) {
+                    matrixCopy[r][j] = matrixCopy[r][j] / lv;
+                    pz[r][j] = pz[r][j] / lv;
+                }
+                
+                const test1 = convert2(lv);
+                if (test1[1] == 1) {
+                    swap_line.push(`Divide row ${r + 1} by ${lv}: R<sub>${r + 1}</sub> = R<sub>${r + 1}</sub>/${lv}`);
+                } else {
+                    const lv3 = `${test1[1]}/${test1[0]}`;
+                    swap_line.push(`Multiply row ${r + 1} by ${lv3}: R<sub>${r + 1}</sub> = ${lv3} R<sub>${r + 1}</sub>`);
+                }
+                swap.push(pz.map(row => [...row]));
+            }
+            
+            // Eliminate other rows
+            for (let i = 0; i < rowCount; i++) {
+                if (i !== r && matrixCopy[i][lead] !== 0) {
+                    const lv = matrixCopy[i][lead];
+                    const lv2 = pz[i][lead];
+                    for (let j = 0; j < columnCount; j++) {
+                        matrixCopy[i][j] -= lv * matrixCopy[r][j];
+                        pz[i][j] -= lv2 * pz[r][j];
+                    }
+                    
+                    swap.push(pz.map(row => [...row]));
+                    const test = convert2(lv);
+                    let lvDisplay = lv;
+                    if (test[1] != 1) {
+                        lvDisplay = `${test[0]}/${test[1]}`;
+                    }
+                    swap_line.push(`Subtract row ${r + 1} multiplied by ${lvDisplay} from row ${i + 1}: R<sub>${i + 1}</sub> = R<sub>${i + 1}</sub> - ${lvDisplay}R<sub>${r + 1}</sub>`);
+                }
+            }
             lead++;
-            if (lead === columnCount) return [matrixCopy, swap, swap_line, pz];
-          }
         }
-
-        if (i >= rowCount) continue;
-
-        // Swap rows
-        [matrixCopy[r], matrixCopy[i]] = [matrixCopy[i], matrixCopy[r]];
-
-        if (i !== r) {
-          swap_line.push(`Swap the row ${r + 1} with row ${i + 1}`);
-          [pz[r], pz[i]] = [pz[i], pz[r]];
-          swap.push(pz.map((row) => [...row]));
-        }
-
-        // Normalize the pivot row
-        const lv = matrixCopy[r][lead];
-        if (lv !== 0) {
-          for (let j = 0; j < columnCount; j++) {
-            matrixCopy[r][j] = matrixCopy[r][j] / lv;
-            pz[r][j] = pz[r][j] / lv;
-          }
-
-          const test1 = convert2(lv);
-          if (test1[1] == 1) {
-            swap_line.push(
-              `Divide row ${r + 1} by ${lv}: R<sub>${r + 1}</sub> = R<sub>${
-                r + 1
-              }</sub>/${lv}`
-            );
-          } else {
-            const lv3 = `${test1[1]}/${test1[0]}`;
-            swap_line.push(
-              `Multiply row ${r + 1} by ${lv3}: R<sub>${
-                r + 1
-              }</sub> = ${lv3} R<sub>${r + 1}</sub>`
-            );
-          }
-          swap.push(pz.map((row) => [...row]));
-        }
-
-        // Eliminate other rows
-        for (let i = 0; i < rowCount; i++) {
-          if (i !== r && matrixCopy[i][lead] !== 0) {
-            const lv = matrixCopy[i][lead];
-            const lv2 = pz[i][lead];
-            for (let j = 0; j < columnCount; j++) {
-              matrixCopy[i][j] -= lv * matrixCopy[r][j];
-              pz[i][j] -= lv2 * pz[r][j];
-            }
-
-            swap.push(pz.map((row) => [...row]));
-            const test = convert2(lv);
-            let lvDisplay = lv;
-            if (test[1] != 1) {
-              lvDisplay = `${test[0]}/${test[1]}`;
-            }
-            swap_line.push(
-              `Subtract row ${r + 1} multiplied by ${lvDisplay} from row ${
-                i + 1
-              }: R<sub>${i + 1}</sub> = R<sub>${
-                i + 1
-              }</sub> - ${lvDisplay}R<sub>${r + 1}</sub>`
-            );
-          }
-        }
-        lead++;
-      }
-      return [matrixCopy, swap, swap_line, pz];
+        return [matrixCopy, swap, swap_line, pz];
     }
 
     function identity_matrix(n) {
-      const I = [];
-      for (let i = 0; i < n; ++i) {
-        I[i] = [];
-        for (let j = 0; j < n; ++j) {
-          I[i][j] = i === j ? 1 : 0;
+        const I = [];
+        for (let i = 0; i < n; ++i) {
+            I[i] = [];
+            for (let j = 0; j < n; ++j) {
+                I[i][j] = (i === j) ? 1 : 0;
+            }
         }
-      }
-      return I;
+        return I;
     }
 
     function deter(arr, N) {
-      // Validate array dimensions
-      if (!arr || arr.length !== N) {
-        throw new Error(`Invalid matrix dimensions: expected ${N}x${N}`);
-      }
-
-      for (let i = 0; i < N; i++) {
-        if (!arr[i] || arr[i].length !== N) {
-          throw new Error(`Invalid matrix row ${i}: expected length ${N}`);
+        // Validate array dimensions
+        if (!arr || arr.length !== N) {
+            throw new Error(`Invalid matrix dimensions: expected ${N}x${N}`);
         }
-      }
+        
+        for (let i = 0; i < N; i++) {
+            if (!arr[i] || arr[i].length !== N) {
+                throw new Error(`Invalid matrix row ${i}: expected length ${N}`);
+            }
+        }
 
-      if (N === 1) {
-        return arr[0][0];
-      } else if (N === 2) {
-        return arr[0][0] * arr[1][1] - arr[0][1] * arr[1][0];
-      } else if (N === 3) {
-        return (
-          arr[0][0] * (arr[1][1] * arr[2][2] - arr[1][2] * arr[2][1]) -
-          arr[0][1] * (arr[1][0] * arr[2][2] - arr[1][2] * arr[2][0]) +
-          arr[0][2] * (arr[1][0] * arr[2][1] - arr[1][1] * arr[2][0])
-        );
-      } else {
-        // For larger matrices, use recursive determinant
-        return determinant(arr, N, N);
-      }
+        if (N === 1) {
+            return arr[0][0];
+        } else if (N === 2) {
+            return arr[0][0] * arr[1][1] - arr[0][1] * arr[1][0];
+        } else if (N === 3) {
+            return arr[0][0] * (arr[1][1] * arr[2][2] - arr[1][2] * arr[2][1]) -
+                   arr[0][1] * (arr[1][0] * arr[2][2] - arr[1][2] * arr[2][0]) +
+                   arr[0][2] * (arr[1][0] * arr[2][1] - arr[1][1] * arr[2][0]);
+        } else {
+            // For larger matrices, use recursive determinant
+            return determinant(arr, N, N);
+        }
     }
 
     function getCofactor(A, p, q, n) {
-      const temp = Array(n - 1)
-        .fill(null)
-        .map(() => Array(n - 1).fill(0));
-      let i = 0;
-      let j = 0;
-
-      for (let row = 0; row < n; row++) {
-        for (let col = 0; col < n; col++) {
-          if (row !== p && col !== q) {
-            temp[i][j++] = A[row][col];
-            if (j === n - 1) {
-              j = 0;
-              i++;
+        const temp = Array(n - 1).fill(null).map(() => Array(n - 1).fill(0));
+        let i = 0;
+        let j = 0;
+        
+        for (let row = 0; row < n; row++) {
+            for (let col = 0; col < n; col++) {
+                if (row !== p && col !== q) {
+                    temp[i][j++] = A[row][col];
+                    if (j === n - 1) {
+                        j = 0;
+                        i++;
+                    }
+                }
             }
-          }
         }
-      }
-      return temp;
+        return temp;
     }
 
     function determinant(A, n, N) {
-      if (n === 1) return A[0][0];
-
-      let D = 0;
-      let sign = 1;
-
-      for (let f = 0; f < n; f++) {
-        const cofactorTemp = getCofactor(A, 0, f, n);
-        D += sign * A[0][f] * determinant(cofactorTemp, n - 1, N);
-        sign = -sign;
-      }
-      return D;
+        if (n === 1) return A[0][0];
+        
+        let D = 0;
+        let sign = 1;
+        
+        for (let f = 0; f < n; f++) {
+            const cofactorTemp = getCofactor(A, 0, f, n);
+            D += sign * A[0][f] * determinant(cofactorTemp, n - 1, N);
+            sign = -sign;
+        }
+        return D;
     }
 
     function adjoint(A, N) {
-      if (N === 1) {
-        return [[[1]], [], [], [], []];
-      }
-
-      const adj = Array(N)
-        .fill(null)
-        .map(() => Array(N).fill(0));
-      const sign22 = [];
-      const sign_pow = [];
-      const c_sign = [];
-
-      for (let i = 0; i < N; i++) {
-        for (let j = 0; j < N; j++) {
-          const cofactorTemp = getCofactor(A, i, j, N);
-          const sign = (i + j) % 2 === 0 ? 1 : -1;
-          sign22.push(sign);
-          sign_pow.push(`${i + 1} + ${j + 1}`);
-          c_sign.push(`${i + 1}${j + 1}`);
-          adj[j][i] = sign * determinant(cofactorTemp, N - 1, N);
+        if (N === 1) {
+            return [[[1]], [], [], [], []];
         }
-      }
-      return [adj, sign22, sign_pow, [], c_sign];
+        
+        const adj = Array(N).fill(null).map(() => Array(N).fill(0));
+        const sign22 = [];
+        const sign_pow = [];
+        const c_sign = [];
+        
+        for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) {
+                const cofactorTemp = getCofactor(A, i, j, N);
+                const sign = ((i + j) % 2 === 0) ? 1 : -1;
+                sign22.push(sign);
+                sign_pow.push(`${i + 1} + ${j + 1}`);
+                c_sign.push(`${i + 1}${j + 1}`);
+                adj[j][i] = sign * determinant(cofactorTemp, N - 1, N);
+            }
+        }
+        return [adj, sign22, sign_pow, [], c_sign];
     }
 
     function transpose(A, N) {
-      const B = Array(N)
-        .fill(null)
-        .map(() => Array(N).fill(0));
-      for (let i = 0; i < N; i++) {
-        for (let j = 0; j < N; j++) {
-          B[i][j] = A[j][i];
+        const B = Array(N).fill(null).map(() => Array(N).fill(0));
+        for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) {
+                B[i][j] = A[j][i];
+            }
         }
-      }
-      return B;
+        return B;
     }
 
     function convert2(xelem) {
-      const x = parseFloat(xelem);
-      if (isNaN(x)) return ["0", "1"];
-
-      // Simple fraction conversion for display purposes
-      const tolerance = 1.0e-6;
-      let numerator = 1;
-      let denominator = 1;
-
-      for (let d = 1; d <= 1000; d++) {
-        const n = Math.round(x * d);
-        if (Math.abs(x - n / d) < tolerance) {
-          numerator = n;
-          denominator = d;
-          break;
+        const x = parseFloat(xelem);
+        if (isNaN(x)) return ['0', '1'];
+        
+        // Simple fraction conversion for display purposes
+        const tolerance = 1.0e-6;
+        let numerator = 1;
+        let denominator = 1;
+        
+        for (let d = 1; d <= 1000; d++) {
+            const n = Math.round(x * d);
+            if (Math.abs(x - n/d) < tolerance) {
+                numerator = n;
+                denominator = d;
+                break;
+            }
         }
-      }
-
-      const gcdVal = gcd(numerator, denominator);
-      numerator /= gcdVal;
-      denominator /= gcdVal;
-
-      return [numerator.toString(), denominator.toString()];
+        
+        const gcdVal = gcd(numerator, denominator);
+        numerator /= gcdVal;
+        denominator /= gcdVal;
+        
+        return [numerator.toString(), denominator.toString()];
     }
 
     function gcd(a, b) {
-      return b === 0 ? a : gcd(b, a % b);
+        return b === 0 ? a : gcd(b, a % b);
+    }
+
+    function isNumeric(value) {
+        if (typeof value == 'number') return true;
+        if (typeof value != 'string') return false;
+        return !isNaN(value) && !isNaN(parseFloat(value));
+    }
+    
+    function chunkArray(array, size) {
+        if (!array || !size || size <= 0) return [];
+        const result = [];
+        for (let i = 0; i < array.length; i += size) {
+            result.push(array.slice(i, i + size));
+        }
+        return result;
     }
 
     // Main logic
     const result = {};
 
     try {
-      // console.log('Input matrix size:', matrixSize);
-      // console.log('Method:', dtrmn_opts_method);
-
-      // Validate input matrix
-      const all = [];
-      let totalElements = 0;
-
-      for (let i = 0; i < matrixSize; i++) {
-        for (let j = 0; j < matrixSize; j++) {
-          const key = `tech_dtrmn_${i}_${j}`;
-          const value = body[key];
-          // console.log(`Reading ${key}: ${value}`);
-
-          if (value == undefined || value == null || value == "") {
-            result.error = `Please provide value for position [${i}][${j}].`;
-            return result;
-          }
-          if (isNumeric(value)) {
-            all.push(parseFloat(value));
-            totalElements++;
-          } else {
-            result.error = `Invalid number at position [${i}][${j}]: ${value}`;
-            return result;
-          }
-        }
-      }
-
-      // console.log('Total elements collected:', totalElements);
-      // console.log('Expected elements:', matrixSize * matrixSize);
-
-      const zain = chunkArray(all, matrixSize);
-
-      // console.log('Matrix created with dimensions:', zain.length, 'x', zain[0] ? zain[0].length : 0);
-      // console.log('Matrix content:', JSON.stringify(zain));
-
-      // Validate matrix creation
-      if (zain.length != matrixSize) {
-        result.error = `Failed to create matrix. Expected ${matrixSize} rows, got ${zain.length}`;
-        return result;
-      }
-
-      for (let i = 0; i < zain.length; i++) {
-        if (zain[i].length != matrixSize) {
-          result.error = `Row ${i} has incorrect length. Expected ${matrixSize}, got ${zain[i].length}`;
-          return result;
-        }
-      }
-
-      let det, inverse;
-
-      if (dtrmn_opts_method == "exp_col") {
-        // console.log('Using column expansion method');
-        det = deter(zain, matrixSize);
-        // console.log('Determinant calculated:', det);
-
-        if (Math.abs(det) < 1e-10) {
-          inverse = "The matrix is not invertible (determinant is zero).";
-        } else {
-          // console.log('Calculating inverse using RREF...');
-          const f_ans = invert(zain);
-          // console.log('Inverse calculated via inversion');
-
-          const n = zain.length;
-          const I = identity_matrix(n);
-          const invt = [];
-
-          for (let i = 0; i < n; ++i) {
-            invt[i] = [...zain[i], ...I[i]];
-          }
-
-          const ans = rref2(invt);
-          const inverseFlat = [];
-
-          f_ans.forEach((value) => {
-            value.forEach((value2) => {
-              const numValue = parseFloat(value2);
-              if (!isNaN(numValue)) {
-                if (Number.isInteger(numValue)) {
-                  inverseFlat.push(numValue);
-                } else {
-                  inverseFlat.push(parseFloat(numValue.toFixed(6)));
-                }
-              } else {
-                inverseFlat.push(value2);
-              }
-            });
-          });
-
-          inverse = chunkArray(inverseFlat, matrixSize);
-          result.tech_matrix = ans[0];
-          result.tech_swap = ans[1];
-          result.tech_swap_line = ans[2];
-        }
-      } else if (dtrmn_opts_method == "exp_row") {
-        // console.log('Using row expansion method');
-        det = deter(zain, matrixSize);
-        // console.log('Determinant calculated:', det);
-
-        if (Math.abs(det) < 1e-10) {
-          // inverse = "The matrix is not invertible (determinant is zero).";
-        } else {
-          // console.log('Calculating inverse using adjoint method...');
-          const cofa = [];
-
-          for (let i = 0; i < matrixSize; i++) {
+        // Validate input matrix
+        const all = [];
+        let totalElements = 0;
+        
+        for (let i = 0; i < matrixSize; i++) {
             for (let j = 0; j < matrixSize; j++) {
-              cofa.push(getCofactor(zain, i, j, matrixSize));
-            }
-          }
-
-          const all_cofadet = cofa.map((value) =>
-            determinant(value, matrixSize - 1, matrixSize)
-          );
-
-          const res = adjoint(zain, matrixSize);
-          const allans_det = [];
-
-          for (let i = 0; i < all_cofadet.length; i++) {
-            allans_det.push(all_cofadet[i] * res[1][i]);
-          }
-
-          const adj_ans = res[0];
-          const c_down = res[4];
-          const minus_pow = res[2];
-          const all_cofy = cofa;
-          const final_cofa = chunkArray(allans_det, matrixSize);
-          const ans_tran = transpose(final_cofa, matrixSize);
-
-          inverse = Array(matrixSize)
-            .fill(null)
-            .map(() => Array(matrixSize).fill(0));
-          for (let i = 0; i < matrixSize; i++) {
-            for (let j = 0; j < matrixSize; j++) {
-              const invValue = adj_ans[i][j] / det;
-              const numValue = parseFloat(invValue);
-              if (!isNaN(numValue)) {
-                if (Number.isInteger(numValue)) {
-                  inverse[i][j] = numValue;
-                } else {
-                  inverse[i][j] = parseFloat(numValue.toFixed(6));
+                const key = `tech_dtrmn_${i}_${j}`;
+                const value = body[key];
+                
+                // DEBUG: Check what value is coming
+                console.log(`Checking ${key}: ${value}, type: ${typeof value}`);
+                
+                // FIX: Check if value is undefined, null, or empty string
+                // But also allow 0 as a valid value
+                if (value === undefined || value === null || value === '') {
+                    result.error = `Please provide value for position [${i}][${j}].`;
+                    return result;
                 }
-              } else {
-                inverse[i][j] = invValue;
-              }
+                
+                // Convert to number and check if valid
+                const numValue = parseFloat(value);
+                if (isNaN(numValue)) {
+                    result.error = `Invalid number at position [${i}][${j}]: ${value}`;
+                    return result;
+                }
+                
+                all.push(numValue);
+                totalElements++;
             }
-          }
-
-          result.tech_c_down = c_down;
-          result.tech_minus_pow = minus_pow;
-          result.tech_all_cofy = all_cofy;
-          result.tech_allcofy_det = allans_det;
-          result.tech_ans_tran = ans_tran;
-          result.tech_final_cofa = final_cofa;
         }
-      } else {
-        result.error = "Invalid method specified.";
-        return result;
-      }
 
-      result.tech_zain = zain;
-      result.tech_det = det;
-      result.tech_inverse = inverse;
+        const zain = chunkArray(all, matrixSize);
+        
+        // Validate matrix creation
+        if (zain.length != matrixSize) {
+            result.error = `Failed to create matrix. Expected ${matrixSize} rows, got ${zain.length}`;
+            return result;
+        }
 
-      // console.log('Calculation completed successfully');
+        for (let i = 0; i < zain.length; i++) {
+            if (zain[i].length != matrixSize) {
+                result.error = `Row ${i} has incorrect length. Expected ${matrixSize}, got ${zain[i].length}`;
+                return result;
+            }
+        }
+
+        let det, inverse;
+
+        if (dtrmn_opts_method == "exp_col") {
+            det = deter(zain, matrixSize);
+            
+            if (Math.abs(det) < 1e-10) {
+                inverse = "The matrix is not invertible (determinant is zero).";
+            } else {
+                const f_ans = invert(zain);
+                
+                const n = zain.length;
+                const I = identity_matrix(n);
+                const invt = [];
+                
+                for (let i = 0; i < n; ++i) {
+                    invt[i] = [...zain[i], ...I[i]];
+                }
+                
+                const ans = rref2(invt);
+                const inverseFlat = [];
+                
+                f_ans.forEach(value => {
+                    value.forEach(value2 => {
+                        const numValue = parseFloat(value2);
+                        if (!isNaN(numValue)) {
+                            if (Number.isInteger(numValue)) {
+                                inverseFlat.push(numValue);
+                            } else {
+                                inverseFlat.push(parseFloat(numValue.toFixed(6)));
+                            }
+                        } else {
+                            inverseFlat.push(value2);
+                        }
+                    });
+                });
+                
+                inverse = chunkArray(inverseFlat, matrixSize);
+                result.tech_matrix = ans[0];
+                result.tech_swap = ans[1];
+                result.tech_swap_line = ans[2];
+            }
+        } else if (dtrmn_opts_method == "exp_row") {
+            det = deter(zain, matrixSize);
+            
+            if (Math.abs(det) < 1e-10) {
+                inverse = "The matrix is not invertible (determinant is zero).";
+            } else {
+                const cofa = [];
+                
+                for (let i = 0; i < matrixSize; i++) {
+                    for (let j = 0; j < matrixSize; j++) {
+                        cofa.push(getCofactor(zain, i, j, matrixSize));
+                    }
+                }
+                
+                const all_cofadet = cofa.map(value => determinant(value, matrixSize - 1, matrixSize));
+                
+                const res = adjoint(zain, matrixSize);
+                const allans_det = [];
+                
+                for (let i = 0; i < all_cofadet.length; i++) {
+                    allans_det.push(all_cofadet[i] * res[1][i]);
+                }
+                
+                const adj_ans = res[0];
+                const c_down = res[4];
+                const minus_pow = res[2];
+                const all_cofy = cofa;
+                const final_cofa = chunkArray(allans_det, matrixSize);
+                const ans_tran = transpose(final_cofa, matrixSize);
+                
+                inverse = Array(matrixSize).fill(null).map(() => Array(matrixSize).fill(0));
+                for (let i = 0; i < matrixSize; i++) {
+                    for (let j = 0; j < matrixSize; j++) {
+                        const invValue = adj_ans[i][j] / det;
+                        const numValue = parseFloat(invValue);
+                        if (!isNaN(numValue)) {
+                            if (Number.isInteger(numValue)) {
+                                inverse[i][j] = numValue;
+                            } else {
+                                inverse[i][j] = parseFloat(numValue.toFixed(6));
+                            }
+                        } else {
+                            inverse[i][j] = invValue;
+                        }
+                    }
+                }
+                
+                result.tech_c_down = c_down;
+                result.tech_minus_pow = minus_pow;
+                result.tech_all_cofy = all_cofy;
+                result.tech_allcofy_det = allans_det;
+                result.tech_ans_tran = ans_tran;
+                result.tech_final_cofa = final_cofa;
+            }
+        } else {
+            result.error = 'Invalid method specified.';
+            return result;
+        }
+
+        result.tech_zain = zain;
+        result.tech_det = det;
+        result.tech_inverse = inverse;
+        
     } catch (error) {
-      console.error("Calculation error details:", error);
-      result.error = `An error occurred during calculation: ${error.message}`;
+        console.error('Calculation error details:', error);
+        result.error = `An error occurred during calculation: ${error.message}`;
     }
 
     return result;
-
-    // Helper functions
-    function isNumeric(value) {
-      if (typeof value == "number") return true;
-      if (typeof value != "string") return false;
-      return !isNaN(value) && !isNaN(parseFloat(value));
-    }
-
-    function chunkArray(array, size) {
-      if (!array || !size || size <= 0) return [];
-      const result = [];
-      for (let i = 0; i < array.length; i += size) {
-        result.push(array.slice(i, i + size));
-      }
-      return result;
-    }
-  }
+}
 
   /** getCalculationMatrixTransposeCalculator
    * POST: /api/calculators-lol/matrix-transpose-calculator
@@ -36594,17 +36512,6 @@ class CalculatorsServices {
 
 
 }
-
-
-
-  
-    
-
-
-
-
-
-
 
 }
 
