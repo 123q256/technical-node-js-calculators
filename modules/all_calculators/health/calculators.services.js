@@ -1,7 +1,7 @@
 const { Op, col } = require("sequelize");
-const db = require("../../models");
+const db = require("../../../models");
 const HttpCodes = require("http-codes");
-const { ApiError } = require("../../middlewares/ApiError");
+const { ApiError } = require("../../../middlewares/ApiError");
 const dayjs = require("dayjs");
 const isoWeek = require("dayjs/plugin/isoWeek");
 const dayOfYear = require("dayjs/plugin/dayOfYear");
