@@ -151,7 +151,7 @@ class CalculatorsServices {
       try {
         const parsed = JSON.parse(updateData.tech_lang_keys);
 
-        if (typeof parsed === 'object' && !Array.isArray(parsed)) {
+        if (typeof parsed == 'object' && !Array.isArray(parsed)) {
           updateData.tech_lang_keys = JSON.stringify(parsed);
         } else if (Array.isArray(parsed)) {
           updateData.tech_lang_keys = JSON.stringify(
@@ -313,7 +313,7 @@ class CalculatorsServices {
         }
 
         // Toggle the value
-        const newValue = calculator.tech_no_index === 0 ? 1 : 0;
+        const newValue = calculator.tech_no_index == 0 ? 1 : 0;
 
         await Calculators.update(
           { tech_no_index: newValue },
@@ -351,7 +351,7 @@ class CalculatorsServices {
           throw new Error("Sub-Converter not found or not of type 'Sub-Converter'");
         }
 
-        const newValue = calc.tech_content_show === 0 ? 1 : 0;
+        const newValue = calc.tech_content_show == 0 ? 1 : 0;
 
         await Calculators.update(
           { tech_content_show: newValue },

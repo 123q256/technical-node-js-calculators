@@ -143,7 +143,7 @@ class AuthServices {
    */
   async loginUser(body) {
     const { email, password } = body;
-
+    console.log(body);
     const user = await db.User.findOne({ where: { email } });
     if (!user) {
       throw new Error("Invalid credentials.");

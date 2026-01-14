@@ -22,7 +22,6 @@ class CalculatorsServices {
    */
 
     async createNewCalculator(data) {
-      console.log("🔍 Incoming data:", data);
       try {
         const {
           category_name,
@@ -300,7 +299,7 @@ class CalculatorsServices {
         }
 
         // Toggle the value
-        const newValue = calculator.tech_no_index === 0 ? 1 : 0;
+        const newValue = calculator.tech_no_index == 0 ? 1 : 0;
 
         await Calculators.update(
           { tech_no_index: newValue },
@@ -338,7 +337,7 @@ class CalculatorsServices {
           throw new Error("Calculator not found or not of type 'Calculator'");
         }
 
-        const newValue = calc.tech_content_show === 0 ? 1 : 0;
+        const newValue = calc.tech_content_show == 0 ? 1 : 0;
 
         await Calculators.update(
           { tech_content_show: newValue },

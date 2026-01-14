@@ -53,6 +53,11 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: false,
           defaultValue: 'user',
         },
+        status: {
+          type: DataTypes.STRING(100),
+          allowNull: false,
+          defaultValue: '1',
+        },
         email_verified_at: {
           type: DataTypes.DATE,
           allowNull: true,

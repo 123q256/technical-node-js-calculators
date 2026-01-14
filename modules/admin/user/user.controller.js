@@ -51,7 +51,7 @@ router.get(
 router.put(
   "/update-users/:id",
   asyncHandler(async (req, res) => {
-    const result = await AdminUserServices.updateUer(req.params.id, req.body);
+    const result = await AdminUserServices.updateUers(req.params.id, req.body);
     return res.status(HttpCodes.OK).json(new ApiResponse(result));
   })
 );
