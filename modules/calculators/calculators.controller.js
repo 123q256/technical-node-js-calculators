@@ -23,7 +23,7 @@ const router = require("express").Router();
 router.post(
   "/fifo-lifo-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.FifoLifoCalculator(req.body);
+    const result = await FinanceCalculatorsServices.FifoLifoCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -46,7 +46,7 @@ router.post(
 router.post(
   "/tire-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.TireSizeCalculator(req.body);
+    const result = await EverydayLifeCalculatorsServices.TireSizeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -69,7 +69,7 @@ router.post(
 router.post(
   "/base-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.BaseNumberCalculator(req.body);
+    const result = await MathCalculatorsServices.BaseNumberCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -92,7 +92,7 @@ router.post(
 router.post(
   "/height-comparison",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.HeightComparison(req.body);
+    const result = await HealthCalculatorsServices.HeightComparison(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -115,7 +115,7 @@ router.post(
 router.post(
   "/system-of-equations-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.SystemOfEquationsCalculator(
+    const result = await MathCalculatorsServices.SystemOfEquationsCalculator(
       req.body
     );
 
@@ -270,7 +270,7 @@ router.post(
 router.post(
   "/water-bill-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationwaterBillCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationwaterBillCalculator(
       req.body
     );
 
@@ -296,7 +296,7 @@ router.post(
 router.post(
   "/love-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLoveCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationLoveCalculator(
       req.body
     );
 
@@ -323,7 +323,7 @@ router.post(
   "/percent-error-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPercentErrorCalculator(req.body);
+      await MathCalculatorsServices.getCalculationPercentErrorCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -347,7 +347,7 @@ router.post(
 router.post(
   "/bench-press-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBenchPressCalculator(
+    const result = await HealthCalculatorsServices.getCalculationBenchPressCalculator(
       req.body
     );
 
@@ -580,7 +580,7 @@ router.post(
   "/round-to-the-nearest-cent",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRoundtoTheNearestCentCalculator(
+      await MathCalculatorsServices.getCalculationRoundtoTheNearestCentCalculator(
         req.body
       );
 
@@ -607,7 +607,7 @@ router.post(
   "/square-root-curve-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSquereRootCurveCalculator(
+      await MathCalculatorsServices.getCalculationSquereRootCurveCalculator(
         req.body
       );
 
@@ -633,7 +633,7 @@ router.post(
 router.post(
   "/log-base-2-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLogBase2Calculator(
+    const result = await MathCalculatorsServices.getCalculationLogBase2Calculator(
       req.body
     );
 
@@ -660,7 +660,7 @@ router.post(
   "/comparing-decimals-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationComparingDecimalCalculator(
+      await MathCalculatorsServices.getCalculationComparingDecimalCalculator(
         req.body
       );
 
@@ -687,7 +687,7 @@ router.post(
   "/doubling-time-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDoublingtimeCalculator(req.body);
+      await MathCalculatorsServices.getCalculationDoublingtimeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -710,7 +710,7 @@ router.post(
 router.post(
   "/variation-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVariationCalculator(
+    const result = await MathCalculatorsServices.getCalculationVariationCalculator(
       req.body
     );
 
@@ -736,7 +736,7 @@ router.post(
 router.post(
   "/fibonacci-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFibonacciCalculator(
+    const result = await MathCalculatorsServices.getCalculationFibonacciCalculator(
       req.body
     );
 
@@ -763,7 +763,7 @@ router.post(
   "/circumference-to-diameter-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCircumferenceToDiameterCalculator(
+      await MathCalculatorsServices.getCalculationCircumferenceToDiameterCalculator(
         req.body
       );
 
@@ -790,7 +790,7 @@ router.post(
   "/absolute-change-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAbsoluteChangeCalculator(
+      await MathCalculatorsServices.getCalculationAbsoluteChangeCalculator(
         req.body
       );
 
@@ -817,7 +817,7 @@ router.post(
   "/volume-of-square",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationVolumeOfSquareCalculator(
+      await MathCalculatorsServices.getCalculationVolumeOfSquareCalculator(
         req.body
       );
 
@@ -844,7 +844,7 @@ router.post(
   "/bun-creatinine-ratio-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationBinCreatinineRatioCalculator(
+      await HealthCalculatorsServices.getCalculationBinCreatinineRatioCalculator(
         req.body
       );
 
@@ -871,7 +871,7 @@ router.post(
   "/grams-to-calories-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationGramsTocaloriesCalculator(
+      await HealthCalculatorsServices.getCalculationGramsTocaloriesCalculator(
         req.body
       );
 
@@ -897,7 +897,7 @@ router.post(
 router.post(
   "/map-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMapCalculator(
+    const result = await HealthCalculatorsServices.getCalculationMapCalculator(
       req.body
     );
 
@@ -923,7 +923,7 @@ router.post(
 router.post(
   "/one-rep-max-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationOneRepMaxCalculator(
+    const result = await HealthCalculatorsServices.getCalculationOneRepMaxCalculator(
       req.body
     );
 
@@ -949,7 +949,7 @@ router.post(
 router.post(
   "/svr-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSVRCalculator(
+    const result = await HealthCalculatorsServices.getCalculationSVRCalculator(
       req.body
     );
 
@@ -975,7 +975,7 @@ router.post(
 router.post(
   "/taco-bar-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTacoBarCalculator(
+    const result = await HealthCalculatorsServices.getCalculationTacoBarCalculator(
       req.body
     );
 
@@ -1002,7 +1002,7 @@ router.post(
   "/water-intake-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWaterIntakeCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationWaterIntakeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1025,7 +1025,7 @@ router.post(
 router.post(
   "/ldl-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationIdiCalculator(
+    const result = await HealthCalculatorsServices.getCalculationIdiCalculator(
       req.body
     );
 
@@ -1051,7 +1051,7 @@ router.post(
 router.post(
   "/a1c-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationA1cCalculator(
+    const result = await HealthCalculatorsServices.getCalculationA1cCalculator(
       req.body
     );
 
@@ -1078,7 +1078,7 @@ router.post(
   "/incidence-rate-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationIncidenceRateCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationIncidenceRateCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1102,7 +1102,7 @@ router.post(
 router.post(
   "/it-ratio",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationItRatioCalculator(
+    const result = await HealthCalculatorsServices.getCalculationItRatioCalculator(
       req.body
     );
 
@@ -1129,7 +1129,7 @@ router.post(
   "/max-heart-rate-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMaxHeartRateCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationMaxHeartRateCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1153,7 +1153,7 @@ router.post(
 router.post(
   "/pack-year-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPackYearCalculator(
+    const result = await HealthCalculatorsServices.getCalculationPackYearCalculator(
       req.body
     );
 
@@ -1180,7 +1180,7 @@ router.post(
   "/rucking-calorie-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRuckingCaloriesCalculator(
+      await HealthCalculatorsServices.getCalculationRuckingCaloriesCalculator(
         req.body
       );
 
@@ -1206,7 +1206,7 @@ router.post(
 router.post(
   "/ebit-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationEbitCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationEbitCalculator(
       req.body
     );
 
@@ -1232,7 +1232,7 @@ router.post(
 router.post(
   "/stamp-duty-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationStampDutyCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationStampDutyCalculator(
       req.body
     );
 
@@ -1258,7 +1258,7 @@ router.post(
 router.post(
   "/ctr-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCTRCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationCTRCalculator(
       req.body
     );
 
@@ -1285,7 +1285,7 @@ router.post(
   "/contribution-margin-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationContributionMarginCalculator(
+      await FinanceCalculatorsServices.getCalculationContributionMarginCalculator(
         req.body
       );
 
@@ -1312,7 +1312,7 @@ router.post(
   "/youtube-revenue-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationYoutubeRevenueCalculator(
+      await FinanceCalculatorsServices.getCalculationYoutubeRevenueCalculator(
         req.body
       );
 
@@ -1338,7 +1338,7 @@ router.post(
 router.post(
   "/book-value-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBookValueCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationBookValueCalculator(
       req.body
     );
 
@@ -1365,7 +1365,7 @@ router.post(
   "/cost-of-goods-sold-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCostOfGoodsSoldCalculator(
+      await FinanceCalculatorsServices.getCalculationCostOfGoodsSoldCalculator(
         req.body
       );
 
@@ -1392,7 +1392,7 @@ router.post(
   "/rent-increase-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRentIncreaseCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationRentIncreaseCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1417,7 +1417,7 @@ router.post(
   "/salvage-value-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSalvageValueCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationSalvageValueCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1442,7 +1442,7 @@ router.post(
   "/real-estate-commission-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRealEstateCommissionCalculator(
+      await FinanceCalculatorsServices.getCalculationRealEstateCommissionCalculator(
         req.body
       );
 
@@ -1469,7 +1469,7 @@ router.post(
   "/gdp-per-capita-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationGdpPerCapitaCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationGdpPerCapitaCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1493,7 +1493,7 @@ router.post(
 router.post(
   "/price-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPriceCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationPriceCalculator(
       req.body
     );
 
@@ -1520,7 +1520,7 @@ router.post(
   "/buying-power-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationBuyingPowereCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationBuyingPowerCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1545,7 +1545,7 @@ router.post(
   "/cross-price-elasticity-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCrossPriceElasticityCalculator(
+      await FinanceCalculatorsServices.getCalculationCrossPriceElasticityCalculator(
         req.body
       );
 
@@ -1572,7 +1572,7 @@ router.post(
   "/actual-cash-value-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationActualCashValueCalculator(
+      await FinanceCalculatorsServices.getCalculationActualCashValueCalculator(
         req.body
       );
 
@@ -1598,7 +1598,7 @@ router.post(
 router.post(
   "/net-worth-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationNetWorthCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationNetWorthCalculator(
       req.body
     );
 
@@ -1624,7 +1624,7 @@ router.post(
 router.post(
   "/cost-basis-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCostBasisCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationCostBasisCalculator(
       req.body
     );
 
@@ -1651,7 +1651,7 @@ router.post(
   "/comparative-advantage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationComparativeAdvantageCalculator(
+      await FinanceCalculatorsServices.getCalculationComparativeAdvantageCalculator(
         req.body
       );
 
@@ -1678,7 +1678,7 @@ router.post(
   "/current-ratio-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCurrentRationCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationCurrentRationCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1703,7 +1703,7 @@ router.post(
   "/deadweight-loss-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDeadWeightLossCalculator(
+      await FinanceCalculatorsServices.getCalculationDeadWeightLossCalculator(
         req.body
       );
 
@@ -1730,7 +1730,7 @@ router.post(
   "/reverse-sales-tax-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationReverSaleTaxCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationReverSaleTaxCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1755,7 +1755,7 @@ router.post(
   "/marginal-revenue-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMarginalRevenueCalculator(
+      await FinanceCalculatorsServices.getCalculationMarginalRevenueCalculator(
         req.body
       );
 
@@ -1781,7 +1781,7 @@ router.post(
 router.post(
   "/cash-back-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCashBackCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationCashBackCalculator(
       req.body
     );
 
@@ -1808,7 +1808,7 @@ router.post(
   "/earnings-per-share-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEarningPerShareCalculator(
+      await FinanceCalculatorsServices.getCalculationEarningPerShareCalculator(
         req.body
       );
 
@@ -1835,7 +1835,7 @@ router.post(
   "/options-profit-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationOptionProfitCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationOptionProfitCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1860,7 +1860,7 @@ router.post(
   "/dividend-yield-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDividendYieldCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationDividendYieldCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1884,7 +1884,7 @@ router.post(
 router.post(
   "/markdown-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMarkdownCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationMarkdownCalculator(
       req.body
     );
 
@@ -1910,7 +1910,7 @@ router.post(
 router.post(
   "/agi-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAGICalculator(
+    const result = await FinanceCalculatorsServices.getCalculationAGICalculator(
       req.body
     );
 
@@ -1936,7 +1936,7 @@ router.post(
 router.post(
   "/mpc-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMPCCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationMPCCalculator(
       req.body
     );
 
@@ -1963,7 +1963,7 @@ router.post(
   "/maximum-profit-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMaximumProfitCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationMaximumProfitCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -1988,7 +1988,7 @@ router.post(
   "/income-elasticity-of-demand-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationIncomeElasticityOfDemandCalculator(
+      await FinanceCalculatorsServices.getCalculationIncomeElasticityOfDemandCalculator(
         req.body
       );
 
@@ -2015,7 +2015,7 @@ router.post(
   "/profit-margin-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationProfitMarginCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationProfitMarginCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -2040,7 +2040,7 @@ router.post(
   "/enterprise-value-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEnterpriseValueCalculator(
+      await FinanceCalculatorsServices.getCalculationEnterpriseValueCalculator(
         req.body
       );
 
@@ -2066,7 +2066,7 @@ router.post(
 router.post(
   "/cpc-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCPCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationCPCalculator(
       req.body
     );
 
@@ -2093,7 +2093,7 @@ router.post(
   "/out-the-door-price-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationOutTheDoorPriceCalculator(
+      await FinanceCalculatorsServices.getCalculationOutTheDoorPriceCalculator(
         req.body
       );
 
@@ -2119,7 +2119,7 @@ router.post(
 router.post(
   "/salary-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSalaryCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationSalaryCalculator(
       req.body
     );
 
@@ -2145,7 +2145,7 @@ router.post(
 router.post(
   "/bmi-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationIBMCalculator(
+    const result = await HealthCalculatorsServices.getCalculationBmiCalculator(
       req.body
     );
 
@@ -2171,7 +2171,7 @@ router.post(
 router.post(
   "/vat-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVatCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationVatCalculator(
       req.body
     );
 
@@ -2197,7 +2197,7 @@ router.post(
 router.post(
   "/salestax-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSalestaxCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationSalestaxCalculator(
       req.body
     );
 
@@ -2224,7 +2224,7 @@ router.post(
   "/price-elasticity-demand-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPriceElasticaityDemandCalculator(
+      await FinanceCalculatorsServices.getCalculationPriceElasticaityDemandCalculator(
         req.body
       );
 
@@ -2250,7 +2250,7 @@ router.post(
 router.post(
   "/wacc-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationWaccCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationWaccCalculator(
       req.body
     );
 
@@ -2276,7 +2276,7 @@ router.post(
 router.post(
   "/ebitda-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationEbitdaCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationEbitdaCalculator(
       req.body
     );
 
@@ -2302,7 +2302,7 @@ router.post(
 router.post(
   "/paypal-fee-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPaypalFeeCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationPaypalFeeCalculator(
       req.body
     );
 
@@ -2329,7 +2329,7 @@ router.post(
   "/margin-of-error-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMarginOfErrorCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationMarginOfErrorCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -2353,7 +2353,7 @@ router.post(
 router.post(
   "/cpm-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCpmCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationCpmCalculator(
       req.body
     );
 
@@ -2378,7 +2378,7 @@ router.post(
 router.post(
   "/markup-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMarkupCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationMarkupCalculator(
       req.body
     );
 
@@ -2403,7 +2403,7 @@ router.post(
 router.post(
   "/cap-rate-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCapRateCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationCapRateCalculator(
       req.body
     );
 
@@ -2428,7 +2428,7 @@ router.post(
 router.post(
   "/capm-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCapmRateCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationCapmRateCalculator(
       req.body
     );
 
@@ -2454,7 +2454,7 @@ router.post(
   "/marginal-cost-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMarginalCostCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationMarginalCostCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -2478,7 +2478,7 @@ router.post(
   "/percent-of-sales-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPercentOfSaleCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationPercentOfSaleCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -2501,7 +2501,7 @@ router.post(
 router.post(
   "/overtime-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationOvertimeCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationOvertimeCalculator(
       req.body
     );
 
@@ -2526,7 +2526,7 @@ router.post(
 router.post(
   "/roi-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRoiCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationRoiCalculator(
       req.body
     );
 
@@ -2552,7 +2552,7 @@ router.post(
   "/future-value-of-annuity",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFutureValueOfAnnuityCalculator(
+      await FinanceCalculatorsServices.getCalculationFutureValueOfAnnuityCalculator(
         req.body
       );
 
@@ -2578,7 +2578,7 @@ router.post(
   "/unemployment-rate-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationUnemploymentRateCalculator(
+      await FinanceCalculatorsServices.getCalculationUnemploymentRateCalculator(
         req.body
       );
 
@@ -2604,7 +2604,7 @@ router.post(
   "/cost-of-equity-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCostOfEquityCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationCostOfEquityCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -2628,7 +2628,7 @@ router.post(
   "/consumer-surplus-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationConsumerSurplusCalculator(
+      await FinanceCalculatorsServices.getCalculationConsumerSurplusCalculator(
         req.body
       );
 
@@ -2653,7 +2653,7 @@ router.post(
 router.post(
   "/stock-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationStockCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationStockCalculator(
       req.body
     );
 
@@ -2678,7 +2678,7 @@ router.post(
 router.post(
   "/pay-raise-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPayRaiseCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationPayRaiseCalculator(
       req.body
     );
 
@@ -2703,7 +2703,7 @@ router.post(
 router.post(
   "/roas-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRoasCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationRoasCalculator(
       req.body
     );
 
@@ -2728,7 +2728,7 @@ router.post(
 router.post(
   "/turo-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTurboCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationTurboCalculator(
       req.body
     );
 
@@ -2753,7 +2753,7 @@ router.post(
 router.post(
   "/commission-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCommissionCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationCommissionCalculator(
       req.body
     );
 
@@ -2779,7 +2779,7 @@ router.post(
   "/time-and-a-half",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTimeAndaHalfCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationTimeAndaHalfCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -2803,7 +2803,7 @@ router.post(
   "/variable-cost-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationVariableCostCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationVariableCostCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -2826,7 +2826,7 @@ router.post(
 router.post(
   "/growth-rate-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGrowthRateCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationGrowthRateCalculator(
       req.body
     );
 
@@ -2851,7 +2851,7 @@ router.post(
 router.post(
   "/labor-cost-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLaborCostCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationLaborCostCalculator(
       req.body
     );
 
@@ -2876,7 +2876,7 @@ router.post(
 router.post(
   "/beta-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBetaCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationBetaCalculator(
       req.body
     );
 
@@ -2901,7 +2901,7 @@ router.post(
 router.post(
   "/gdp-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGPDCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationGPDCalculator(
       req.body
     );
 
@@ -2926,7 +2926,7 @@ router.post(
 router.post(
   "/nps-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationNPSCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationNPSCalculator(
       req.body
     );
 
@@ -2951,7 +2951,7 @@ router.post(
 router.post(
   "/bond-price-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBondPriceCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationBondPriceCalculator(
       req.body
     );
 
@@ -2977,7 +2977,7 @@ router.post(
   "/opportunity-cost-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationOpportunityCostCalculator(
+      await FinanceCalculatorsServices.getCalculationOpportunityCostCalculator(
         req.body
       );
 
@@ -3003,7 +3003,7 @@ router.post(
   "/car-depreciation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCarDepreciationCalculator(
+      await FinanceCalculatorsServices.getCalculationCarDepreciationCalculator(
         req.body
       );
 
@@ -3029,7 +3029,7 @@ router.post(
   "/property-depreciation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPropertyDepreciationCalculator(
+      await FinanceCalculatorsServices.getCalculationPropertyDepreciationCalculator(
         req.body
       );
 
@@ -3055,7 +3055,7 @@ router.post(
   "/payback-period-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPaybackPeriodCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationPaybackPeriodCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -3078,7 +3078,7 @@ router.post(
 router.post(
   "/basis-point-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBasisPontCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationBasisPontCalculator(
       req.body
     );
 
@@ -3104,7 +3104,7 @@ router.post(
   "/wedding-budget-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWeddingBudgetCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationWeddingBudgetCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -3128,7 +3128,7 @@ router.post(
   "/employee-cost-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEmloyeeCostCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationEmloyeeCostCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -3151,7 +3151,7 @@ router.post(
 router.post(
   "/npv-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationNPVCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationNPVCalculator(
       req.body
     );
 
@@ -3176,7 +3176,7 @@ router.post(
 router.post(
   "/tip-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTipCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationTipCalculator(
       req.body
     );
 
@@ -3202,7 +3202,7 @@ router.post(
   "/hourly-to-salary-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationHourlyToSalaryCalculator(
+      await FinanceCalculatorsServices.getCalculationHourlyToSalaryCalculator(
         req.body
       );
 
@@ -3228,7 +3228,7 @@ router.post(
   "/salary-to-hourly-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSalaryToHourlyCalculator(
+      await FinanceCalculatorsServices.getCalculationSalaryToHourlyCalculator(
         req.body
       );
 
@@ -3253,7 +3253,7 @@ router.post(
 router.post(
   "/rent-split-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRentSpitCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationRentSpitCalculator(
       req.body
     );
 
@@ -3278,7 +3278,7 @@ router.post(
 router.post(
   "/arv-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationARVCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationARVCalculator(
       req.body
     );
 
@@ -3304,7 +3304,7 @@ router.post(
   "/6-minute-walk-test",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculation6MinuteWalkTestCalculator(
+      await HealthCalculatorsServices.getCalculation6MinuteWalkTestCalculator(
         req.body
       );
 
@@ -3329,7 +3329,7 @@ router.post(
 router.post(
   "/rmr-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRMRCalculator(
+    const result = await HealthCalculatorsServices.getCalculationRMRCalculator(
       req.body
     );
 
@@ -3354,7 +3354,7 @@ router.post(
 router.post(
   "/bmr-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBMRCalculator(
+    const result = await HealthCalculatorsServices.getCalculationBMRCalculator(
       req.body
     );
 
@@ -3380,7 +3380,7 @@ router.post(
   "/ideal-weight-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationIdealWeightCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationIdealWeightCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -3404,7 +3404,7 @@ router.post(
   "/lean-body-mass-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLeanBodyMassCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationLeanBodyMassCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -3427,7 +3427,7 @@ router.post(
 router.post(
   "/bsa-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBSACalculator(
+    const result = await HealthCalculatorsServices.getCalculationBSACalculator(
       req.body
     );
 
@@ -3452,7 +3452,7 @@ router.post(
   "/corrected-calcium-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCorrectedCalciumCalculator(
+      await HealthCalculatorsServices.getCalculationCorrectedCalciumCalculator(
         req.body
       );
 
@@ -3477,7 +3477,7 @@ router.post(
 router.post(
   "/anc-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationANCCalculator(
+    const result = await HealthCalculatorsServices.getCalculationANCCalculator(
       req.body
     );
 
@@ -3502,7 +3502,7 @@ router.post(
 router.post(
   "/alc-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationALCCalculator(
+    const result = await HealthCalculatorsServices.getCalculationALCCalculator(
       req.body
     );
 
@@ -3528,7 +3528,7 @@ router.post(
   "/reticulocyte-count-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationReticulocyteCountCalculator(
+      await HealthCalculatorsServices.getCalculationReticulocyteCountCalculator(
         req.body
       );
 
@@ -3554,7 +3554,7 @@ router.post(
   "/centor-score-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCentorScoreCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationCentorScoreCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -3577,7 +3577,7 @@ router.post(
 router.post(
   "/child-pugh-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationChildPughCalculator(
+    const result = await HealthCalculatorsServices.getCalculationChildPughCalculator(
       req.body
     );
 
@@ -3603,7 +3603,7 @@ router.post(
   "/waist-to-hip-ratio-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWaistToHipRatioCalculator(
+      await HealthCalculatorsServices.getCalculationWaistToHipRatioCalculator(
         req.body
       );
 
@@ -3629,7 +3629,7 @@ router.post(
   "/waist-to-height-ratio-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWaistToHeightRatioCalculator(
+      await HealthCalculatorsServices.getCalculationWaistToHeightRatioCalculator(
         req.body
       );
 
@@ -3654,7 +3654,7 @@ router.post(
 router.post(
   "/ffmi-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFFMICalculator(
+    const result = await HealthCalculatorsServices.getCalculationFFMICalculator(
       req.body
     );
 
@@ -3679,7 +3679,7 @@ router.post(
 router.post(
   "/body-shape-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBodyShapeCalculator(
+    const result = await HealthCalculatorsServices.getCalculationBodyShapeCalculator(
       req.body
     );
 
@@ -3705,7 +3705,7 @@ router.post(
   "/weight-loss-percentage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWeightLossPercentageCalculator(
+      await HealthCalculatorsServices.getCalculationWeightLossPercentageCalculator(
         req.body
       );
 
@@ -3730,7 +3730,7 @@ router.post(
 router.post(
   "/dosage-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDosageCalculator(
+    const result = await HealthCalculatorsServices.getCalculationDosageCalculator(
       req.body
     );
 
@@ -3755,7 +3755,7 @@ router.post(
 router.post(
   "/bra-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBraSizeCalculator(
+    const result = await HealthCalculatorsServices.getCalculationBraSizeCalculator(
       req.body
     );
 
@@ -3781,7 +3781,7 @@ router.post(
   "/implantation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationImplantationCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationImplantationCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -3804,7 +3804,7 @@ router.post(
 router.post(
   "/blood-type-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBloodTypeCalculator(
+    const result = await HealthCalculatorsServices.getCalculationBloodTypeCalculator(
       req.body
     );
 
@@ -3830,7 +3830,7 @@ router.post(
   "/melatonin-dosage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMelatoninDosageCalculator(
+      await HealthCalculatorsServices.getCalculationMelatoninDosageCalculator(
         req.body
       );
 
@@ -3856,7 +3856,7 @@ router.post(
   "/prostate-volume-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationProstateVolumeCalculator(
+      await HealthCalculatorsServices.getCalculationProstateVolumeCalculator(
         req.body
       );
 
@@ -3882,7 +3882,7 @@ router.post(
   "/dihybrid-cross-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDihybridcrossCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationDihybridcrossCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -3905,7 +3905,7 @@ router.post(
 router.post(
   "/hcg-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHCGCalculator(
+    const result = await HealthCalculatorsServices.getCalculationHCGCalculator(
       req.body
     );
 
@@ -3930,7 +3930,7 @@ router.post(
 router.post(
   "/dress-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDressSizeCalculator(
+    const result = await HealthCalculatorsServices.getCalculationDressSizeCalculator(
       req.body
     );
 
@@ -3955,7 +3955,7 @@ router.post(
 router.post(
   "/tinetti-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTinettiCalculator(
+    const result = await HealthCalculatorsServices.getCalculationTinettiCalculator(
       req.body
     );
 
@@ -3980,7 +3980,7 @@ router.post(
 router.post(
   "/drip-rate-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDripRateCalculator(
+    const result = await HealthCalculatorsServices.getCalculationDripRateCalculator(
       req.body
     );
 
@@ -4006,7 +4006,7 @@ router.post(
   "/steps-to-calories-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationStepstoCaloriesCalculator(
+      await HealthCalculatorsServices.getCalculationStepstoCaloriesCalculator(
         req.body
       );
 
@@ -4032,7 +4032,7 @@ router.post(
   "/cholesterol-ratio-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCholesterolRatioCalculator(
+      await HealthCalculatorsServices.getCalculationCholesterolRatioCalculator(
         req.body
       );
 
@@ -4058,7 +4058,7 @@ router.post(
   "/paracetamol-dosage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationParacetamolDosageCalculator(
+      await HealthCalculatorsServices.getCalculationParacetamolDosageCalculator(
         req.body
       );
 
@@ -4084,7 +4084,7 @@ router.post(
   "/amoxicillin-pediatric-dosage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAmoxicillinPediatricDosageCalculator(
+      await HealthCalculatorsServices.getCalculationAmoxicillinPediatricDosageCalculator(
         req.body
       );
 
@@ -4110,7 +4110,7 @@ router.post(
   "/harris-benedict-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationHarrisBenedictCalculator(
+      await HealthCalculatorsServices.getCalculationHarrisBenedictCalculator(
         req.body
       );
 
@@ -4136,7 +4136,7 @@ router.post(
   "/calories-burned-biking-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCaloriesBurnedBikingCalculator(
+      await HealthCalculatorsServices.getCalculationCaloriesBurnedBikingCalculator(
         req.body
       );
 
@@ -4162,7 +4162,7 @@ router.post(
   "/treadmill-calorie-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTreadmillCalorieCalculator(
+      await HealthCalculatorsServices.getCalculationTreadmillCalorieCalculator(
         req.body
       );
 
@@ -4188,7 +4188,7 @@ router.post(
   "/walking-calorie-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWalkingCalorieCalculator(
+      await HealthCalculatorsServices.getCalculationWalkingCalorieCalculator(
         req.body
       );
 
@@ -4214,7 +4214,7 @@ router.post(
   "/elliptical-calorie-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEllipticalCalorieCalculator(
+      await HealthCalculatorsServices.getCalculationEllipticalCalorieCalculator(
         req.body
       );
 
@@ -4239,7 +4239,7 @@ router.post(
 router.post(
   "/bulking-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBulkingCalculator(
+    const result = await HealthCalculatorsServices.getCalculationBulkingCalculator(
       req.body
     );
 
@@ -4264,7 +4264,7 @@ router.post(
 router.post(
   "/food-cost-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFoodCostCalculator(
+    const result = await HealthCalculatorsServices.getCalculationFoodCostCalculator(
       req.body
     );
 
@@ -4290,7 +4290,7 @@ router.post(
   "/steps-to-miles-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationStepsToMilesCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationStepsToMilesCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -4314,7 +4314,7 @@ router.post(
   "/fat-burning-heart-rate",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFatBurningHeartCalculator(
+      await HealthCalculatorsServices.getCalculationFatBurningHeartCalculator(
         req.body
       );
 
@@ -4339,7 +4339,7 @@ router.post(
 router.post(
   "/nnt-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationNNTCalculator(
+    const result = await HealthCalculatorsServices.getCalculationNNTCalculator(
       req.body
     );
 
@@ -4365,7 +4365,7 @@ router.post(
   "/ast-alt-ratio-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAstAltRatioCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationAstAltRatioCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -4388,7 +4388,7 @@ router.post(
 router.post(
   "/net-carbs-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationNetCarbsCalculator(
+    const result = await HealthCalculatorsServices.getCalculationNetCarbsCalculator(
       req.body
     );
 
@@ -4414,7 +4414,7 @@ router.post(
   "/urine-output-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationUrineOutputCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationUrineOutputCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -4438,7 +4438,7 @@ router.post(
   "/bishop-score-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationBishopScoreCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationBishopScoreCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -4462,7 +4462,7 @@ router.post(
   "/army-body-fat-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationArmyBodyFatCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationArmyBodyFatCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -4486,7 +4486,7 @@ router.post(
   "/adjusted-body-weight-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAdjustedBodyWeightCalculator(
+      await HealthCalculatorsServices.getCalculationAdjustedBodyWeightCalculator(
         req.body
       );
 
@@ -4512,7 +4512,7 @@ router.post(
   "/drug-half-life-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDrugHalfLifeCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationDrugHalfLifeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -4535,7 +4535,7 @@ router.post(
 router.post(
   "/macro-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMacroCalculator(
+    const result = await HealthCalculatorsServices.getCalculationMacroCalculator(
       req.body
     );
 
@@ -4561,7 +4561,7 @@ router.post(
   "/meal-calorie-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMealCalorieCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationMealCalorieCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -4585,7 +4585,7 @@ router.post(
   "/target-heart-rate-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTargetHeartRateCalculator(
+      await HealthCalculatorsServices.getCalculationTargetHeartRateCalculator(
         req.body
       );
 
@@ -4610,7 +4610,7 @@ router.post(
 router.post(
   "/wilks-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationWilksCalculator(
+    const result = await HealthCalculatorsServices.getCalculationWilksCalculator(
       req.body
     );
 
@@ -4636,7 +4636,7 @@ router.post(
   "/allele-frequency-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAlleleFrequencyCalculator(
+      await HealthCalculatorsServices.getCalculationAlleleFrequencyCalculator(
         req.body
       );
 
@@ -4662,7 +4662,7 @@ router.post(
   "/weight-watchers-points-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWeightWatchersPointsCalculator(
+      await HealthCalculatorsServices.getCalculationWeightWatchersPointsCalculator(
         req.body
       );
 
@@ -4687,7 +4687,7 @@ router.post(
 router.post(
   "/weight-gain-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationWeightGainCalculator(
+    const result = await HealthCalculatorsServices.getCalculationWeightGainCalculator(
       req.body
     );
 
@@ -4713,7 +4713,7 @@ router.post(
   "/pediatric-dose-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPediatricDoseCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationPediatricDoseCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -4737,7 +4737,7 @@ router.post(
   "/maintenance-calorie-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMaintenanceCalorieCalculator(
+      await HealthCalculatorsServices.getCalculationMaintenanceCalorieCalculator(
         req.body
       );
 
@@ -4763,7 +4763,7 @@ router.post(
   "/breastfeeding-calorie-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationBreastfeedingCalorieCalculator(
+      await HealthCalculatorsServices.getCalculationBreastfeedingCalorieCalculator(
         req.body
       );
 
@@ -4789,7 +4789,7 @@ router.post(
   "/swimming-calorie-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSwimmingCalorieCalculator(
+      await HealthCalculatorsServices.getCalculationSwimmingCalorieCalculator(
         req.body
       );
 
@@ -4838,7 +4838,7 @@ router.post(
 router.post(
   "/protein-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationProteinCalculator(
+    const result = await HealthCalculatorsServices.getCalculationProteinCalculator(
       req.body
     );
 
@@ -4863,7 +4863,7 @@ router.post(
 router.post(
   "/distance-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDistanceCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationDistanceCalculator(
       req.body
     );
 
@@ -4888,7 +4888,7 @@ router.post(
 router.post(
   "/era-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationErACalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationErACalculator(
       req.body
     );
 
@@ -4914,7 +4914,7 @@ router.post(
   "/vorici-chromatic-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationVoriciChromaticCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationVoriciChromaticCalculator(
         req.body
       );
 
@@ -4940,7 +4940,7 @@ router.post(
   "/aspect-ratio-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAspectRatioCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationAspectRatioCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -4963,7 +4963,7 @@ router.post(
 router.post(
   "/board-foot-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBoardFootCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationBoardFootCalculator(
       req.body
     );
 
@@ -4988,7 +4988,7 @@ router.post(
 router.post(
   "/edpi-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationEdpiCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationEdpiCalculator(
       req.body
     );
 
@@ -5013,7 +5013,7 @@ router.post(
 router.post(
   "/visa-chance-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVisaChanceCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationVisaChanceCalculator(
       req.body
     );
 
@@ -5039,7 +5039,7 @@ router.post(
   "/population-density-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPopulationDensityCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationPopulationDensityCalculator(
         req.body
       );
 
@@ -5065,7 +5065,7 @@ router.post(
   "/prorated-rent-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationProratedrentCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationProratedrentCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -5088,7 +5088,7 @@ router.post(
 router.post(
   "/korean-age-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationKoreanAgeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationKoreanAgeCalculator(
       req.body
     );
 
@@ -5114,7 +5114,7 @@ router.post(
   "/winning-percentage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWinningPercentageCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationWinningPercentageCalculator(
         req.body
       );
 
@@ -5139,7 +5139,7 @@ router.post(
 router.post(
   "/mcg-to-mg-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMcgToMgCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationMcgToMgCalculator(
       req.body
     );
 
@@ -5164,7 +5164,7 @@ router.post(
 router.post(
   "/download-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDownloadCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationDownloadCalculator(
       req.body
     );
 
@@ -5189,7 +5189,7 @@ router.post(
 router.post(
   "/kd-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationKdCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationKdCalculator(
       req.body
     );
 
@@ -5215,7 +5215,7 @@ router.post(
   "/data-transfer-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDataTransferCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationDataTransferCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -5239,7 +5239,7 @@ router.post(
   "/words-per-minute-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWordsPerMinuteCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationWordsPerMinuteCalculator(
         req.body
       );
 
@@ -5264,7 +5264,7 @@ router.post(
 router.post(
   "/desk-height-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDeskHeightCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationDeskHeightCalculator(
       req.body
     );
 
@@ -5289,7 +5289,7 @@ router.post(
 router.post(
   "/ring-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRingSizeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationRingSizeCalculator(
       req.body
     );
 
@@ -5314,7 +5314,7 @@ router.post(
 router.post(
   "/shoe-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationShoeSizeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationShoeSizeCalculator(
       req.body
     );
 
@@ -5340,7 +5340,7 @@ router.post(
   "/curtain-size-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCurtainSizeCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationCurtainSizeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -5364,7 +5364,7 @@ router.post(
   "/tesla-charging-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTeslaChargingCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationTeslaChargingCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -5388,7 +5388,7 @@ router.post(
   "/compression-height-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCompressionHightCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationCompressionHightCalculator(
         req.body
       );
 
@@ -5413,7 +5413,7 @@ router.post(
 router.post(
   "/fuel-cost-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFuelCostCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationFuelCostCalculator(
       req.body
     );
 
@@ -5439,7 +5439,7 @@ router.post(
   "/lawn-mowing-cost-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLawnMowingCostCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationLawnMowingCostCalculator(
         req.body
       );
 
@@ -5464,7 +5464,7 @@ router.post(
 router.post(
   "/tv-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTvSizeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationTvSizeCalculator(
       req.body
     );
 
@@ -5489,7 +5489,7 @@ router.post(
 router.post(
   "/river-rock-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRiverRockCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationRiverRockCalculator(
       req.body
     );
 
@@ -5515,7 +5515,7 @@ router.post(
   "/circle-skirt-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCircleSkirtCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationCircleSkirtCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -5538,7 +5538,7 @@ router.post(
 router.post(
   "/botox-cost-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBotoxCostCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationBotoxCostCalculator(
       req.body
     );
 
@@ -5564,7 +5564,7 @@ router.post(
   "/yards-to-tons-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationYardsToTonsCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationYardsToTonsCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -5588,7 +5588,7 @@ router.post(
   "/dilution-ratio-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDilutionRatioCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationDilutionRatioCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -5611,7 +5611,7 @@ router.post(
 router.post(
   "/gpm-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationgpMCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationgpMCalculator(
       req.body
     );
 
@@ -5637,7 +5637,7 @@ router.post(
   "/ceiling-fan-size-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCeilingfanSizeCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationCeilingfanSizeCalculator(
         req.body
       );
 
@@ -5663,7 +5663,7 @@ router.post(
   "/cost-per-mile-driving-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCostPerMileDrivingCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationCostPerMileDrivingCalculator(
         req.body
       );
 
@@ -5689,7 +5689,7 @@ router.post(
   "/gold-cost-per-pound-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationGoldCostPerPoundCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationGoldCostPerPoundCalculator(
         req.body
       );
 
@@ -5715,7 +5715,7 @@ router.post(
   "/moisture-content-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMoistureContentCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationMoistureContentCalculator(
         req.body
       );
 
@@ -5740,7 +5740,7 @@ router.post(
 router.post(
   "/shaded-area-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationShadedAreaCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationShadedAreaCalculator(
       req.body
     );
 
@@ -5766,7 +5766,7 @@ router.post(
   "/engine-hours-to-miles-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEngneHourstoMilesCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationEngneHourstoMilesCalculator(
         req.body
       );
 
@@ -5792,7 +5792,7 @@ router.post(
   "/magnification-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMagnificationCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationMagnificationCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -5815,7 +5815,7 @@ router.post(
 router.post(
   "/split-bill-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSplitBillCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationSplitBillCalculator(
       req.body
     );
 
@@ -5840,7 +5840,7 @@ router.post(
 router.post(
   "/draw-length-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDrawLengthCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationDrawLengthCalculator(
       req.body
     );
 
@@ -5866,7 +5866,7 @@ router.post(
   "/on-base-percentage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationOnBasePercentageCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationOnBasePercentageCalculator(
         req.body
       );
 
@@ -5891,7 +5891,7 @@ router.post(
 router.post(
   "/taper-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTaperCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationTaperCalculator(
       req.body
     );
 
@@ -5917,7 +5917,7 @@ router.post(
   "/battery-life-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationBatteryLifeCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationBatteryLifeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -5941,7 +5941,7 @@ router.post(
   "/slugging-percentage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSluggingPercentageCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationSluggingPercentageCalculator(
         req.body
       );
 
@@ -5967,7 +5967,7 @@ router.post(
   "/magic-number-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMagicNumberCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationMagicNumberCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -5990,7 +5990,7 @@ router.post(
 router.post(
   "/fabric-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFabricCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationFabricCalculator(
       req.body
     );
 
@@ -6016,7 +6016,7 @@ router.post(
   "/semester-grade-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSemestergradeCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationSemestergradeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -6038,7 +6038,7 @@ router.post(
 router.post(
   "/screen-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationScreenSizeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationScreenSizeCalculator(
       req.body
     );
 
@@ -6064,7 +6064,7 @@ router.post(
   "/recessed-lighting-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRecessedLightingCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationRecessedLightingCalculator(
         req.body
       );
 
@@ -6089,7 +6089,7 @@ router.post(
 router.post(
   "/cfm-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCMFCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationCMFCalculator(
       req.body
     );
 
@@ -6114,7 +6114,7 @@ router.post(
 router.post(
   "/box-fill-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBoxFillCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationBoxFillCalculator(
       req.body
     );
 
@@ -6139,7 +6139,7 @@ router.post(
 router.post(
   "/tonnage-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTonnageCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationTonnageCalculator(
       req.body
     );
 
@@ -6164,7 +6164,7 @@ router.post(
 router.post(
   "/dunk-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDunkCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationDunkCalculator(
       req.body
     );
 
@@ -6190,7 +6190,7 @@ router.post(
   "/nether-portal-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationNetherPortalCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationNetherPortalCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -6213,7 +6213,7 @@ router.post(
 router.post(
   "/cbm-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCBMCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationCBMCalculator(
       req.body
     );
 
@@ -6238,7 +6238,7 @@ router.post(
 router.post(
   "/bike-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBikeSizeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationBikeSizeCalculator(
       req.body
     );
 
@@ -6263,7 +6263,7 @@ router.post(
 router.post(
   "/ac-btu-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAcBtuCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationAcBtuCalculator(
       req.body
     );
 
@@ -6288,7 +6288,7 @@ router.post(
 router.post(
   "/blind-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBlindSizeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationBlindSizeCalculator(
       req.body
     );
 
@@ -6314,7 +6314,7 @@ router.post(
   "/average-time-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAverageTimeCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationAverageTimeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -6337,7 +6337,7 @@ router.post(
 router.post(
   "/hourly-pay-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHourlyPayCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationHourlyPayCalculator(
       req.body
     );
 
@@ -6362,7 +6362,7 @@ router.post(
 router.post(
   "/log-weight-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLogWeightCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationLogWeightCalculator(
       req.body
     );
 
@@ -6388,7 +6388,7 @@ router.post(
   "/water-weight-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWaterWeightCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationWaterWeightCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -6411,7 +6411,7 @@ router.post(
 router.post(
   "/turkey-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTurkeySizeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationTurkeySizeCalculator(
       req.body
     );
 
@@ -10109,7 +10109,7 @@ router.post(
   "/scientific-notation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationScientificNotationCalculator(
+      await MathCalculatorsServices.getCalculationScientificNotationCalculator(
         req.body
       );
 
@@ -10135,7 +10135,7 @@ router.post(
   "/prime-factorization-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPrimeFactorizationCalculator(
+      await MathCalculatorsServices.getCalculationPrimeFactorizationCalculator(
         req.body
       );
 
@@ -10160,7 +10160,7 @@ router.post(
 router.post(
   "/modulo-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationModuloCalculator(
+    const result = await MathCalculatorsServices.getCalculationModuloCalculator(
       req.body
     );
 
@@ -10185,7 +10185,7 @@ router.post(
 router.post(
   "/midpoint-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMidpointCalculator(
+    const result = await MathCalculatorsServices.getCalculationMidpointCalculator(
       req.body
     );
 
@@ -10210,7 +10210,7 @@ router.post(
 router.post(
   "/slope-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSlopeCalculator(
+    const result = await MathCalculatorsServices.getCalculationSlopeCalculator(
       req.body
     );
 
@@ -10236,7 +10236,7 @@ router.post(
   "/long-addition-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLongAdditionCalculator(req.body);
+      await MathCalculatorsServices.getCalculationLongAdditionCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -10260,7 +10260,7 @@ router.post(
   "/standard-form-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationStandardFormCalculator(req.body);
+      await MathCalculatorsServices.getCalculationStandardFormCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -10283,7 +10283,7 @@ router.post(
 router.post(
   "/average-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAverageCalculator(
+    const result = await MathCalculatorsServices.getCalculationAverageCalculator(
       req.body
     );
 
@@ -10309,7 +10309,7 @@ router.post(
   "/log-antilog-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLogAndAntilogCalculator(req.body);
+      await MathCalculatorsServices.getCalculationLogAndAntilogCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -10332,7 +10332,7 @@ router.post(
 router.post(
   "/centroid-triangle-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCentroidCalculator(
+    const result = await MathCalculatorsServices.getCalculationCentroidCalculator(
       req.body
     );
 
@@ -10358,7 +10358,7 @@ router.post(
   "/quadratic-formula-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationQuadraticFormulaCalculator(
+      await MathCalculatorsServices.getCalculationQuadraticFormulaCalculator(
         req.body
       );
 
@@ -10384,7 +10384,7 @@ router.post(
   "/remainder-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationQuotientAndRemainderCalculator(
+      await MathCalculatorsServices.getCalculationQuotientAndRemainderCalculator(
         req.body
       );
 
@@ -10409,7 +10409,7 @@ router.post(
 router.post(
   "/rounding-numbers-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRoundingCalculator(
+    const result = await MathCalculatorsServices.getCalculationRoundingCalculator(
       req.body
     );
 
@@ -10435,7 +10435,7 @@ router.post(
   "/fraction-to-decimal-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFractionToDecimalCalculator(
+      await MathCalculatorsServices.getCalculationFractionToDecimalCalculator(
         req.body
       );
 
@@ -10461,7 +10461,7 @@ router.post(
   "/decimal-to-fraction-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDecimalToFractionCalculator(
+      await MathCalculatorsServices.getCalculationDecimalToFractionCalculator(
         req.body
       );
 
@@ -10487,7 +10487,7 @@ router.post(
   "/fraction-to-percent-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFractionToPercentCalculator(
+      await MathCalculatorsServices.getCalculationFractionToPercentCalculator(
         req.body
       );
 
@@ -10513,7 +10513,7 @@ router.post(
   "/percent-to-fraction-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPercentToFractionCalculator(
+      await MathCalculatorsServices.getCalculationPercentToFractionCalculator(
         req.body
       );
 
@@ -10539,7 +10539,7 @@ router.post(
   "/million-billion-lakh-crore",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMillionBillionLakhCalculator(
+      await MathCalculatorsServices.getCalculationMillionBillionLakhCalculator(
         req.body
       );
 
@@ -10565,7 +10565,7 @@ router.post(
   "/point-slope-form-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPointSlopeFormCalculator(
+      await MathCalculatorsServices.getCalculationPointSlopeFormCalculator(
         req.body
       );
 
@@ -10590,7 +10590,7 @@ router.post(
 router.post(
   "/hemisphere-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHemisphereCalculator(
+    const result = await MathCalculatorsServices.getCalculationHemisphereCalculator(
       req.body
     );
 
@@ -10616,7 +10616,7 @@ router.post(
   "/discriminant-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDiscriminantCalculator(req.body);
+      await MathCalculatorsServices.getCalculationDiscriminantCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -10639,7 +10639,7 @@ router.post(
 router.post(
   "/endpoint-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationEndpointCalculator(
+    const result = await MathCalculatorsServices.getCalculationEndpointCalculator(
       req.body
     );
 
@@ -10665,7 +10665,7 @@ router.post(
   "/slope-intercept-form-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSlopeInterceptFormCalculator(
+      await MathCalculatorsServices.getCalculationSlopeInterceptFormCalculator(
         req.body
       );
 
@@ -10690,7 +10690,7 @@ router.post(
 router.post(
   "/exponent-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationExponentCalculator(
+    const result = await MathCalculatorsServices.getCalculationExponentCalculator(
       req.body
     );
 
@@ -10715,7 +10715,7 @@ router.post(
 router.post(
   "/square-root-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSquareRootCalculator(
+    const result = await MathCalculatorsServices.getCalculationSquareRootCalculator(
       req.body
     );
 
@@ -10740,7 +10740,7 @@ router.post(
 router.post(
   "/binary-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBinaryCalculator(
+    const result = await MathCalculatorsServices.getCalculationBinaryCalculator(
       req.body
     );
 
@@ -10765,7 +10765,7 @@ router.post(
 router.post(
   "/proportion-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationProportionCalculator(
+    const result = await MathCalculatorsServices.getCalculationProportionCalculator(
       req.body
     );
 
@@ -10791,7 +10791,7 @@ router.post(
   "/linear-interpolation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLinearInterpolationCalculator(
+      await MathCalculatorsServices.getCalculationLinearInterpolationCalculator(
         req.body
       );
 
@@ -10817,7 +10817,7 @@ router.post(
   "/pythagorean-theorem-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPythagoreanTheoremCalculator(
+      await MathCalculatorsServices.getCalculationPythagoreanTheoremCalculator(
         req.body
       );
 
@@ -10842,7 +10842,7 @@ router.post(
 router.post(
   "/unit-circle-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationUnitCircleCalculator(
+    const result = await MathCalculatorsServices.getCalculationUnitCircleCalculator(
       req.body
     );
 
@@ -10867,7 +10867,7 @@ router.post(
 router.post(
   "/arc-length-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationArcLengthCalculator(
+    const result = await MathCalculatorsServices.getCalculationArcLengthCalculator(
       req.body
     );
 
@@ -10892,7 +10892,7 @@ router.post(
 router.post(
   "/arcsin-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationArcsinCalculator(
+    const result = await MathCalculatorsServices.getCalculationArcsinCalculator(
       req.body
     );
 
@@ -10917,7 +10917,7 @@ router.post(
 router.post(
   "/cosine-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCosineCalculator(
+    const result = await MathCalculatorsServices.getCalculationCosineCalculator(
       req.body
     );
 
@@ -10942,7 +10942,7 @@ router.post(
 router.post(
   "/sine-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSineCalculator(
+    const result = await MathCalculatorsServices.getCalculationSineCalculator(
       req.body
     );
 
@@ -10967,7 +10967,7 @@ router.post(
 router.post(
   "/arccos-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationArccosCalculator(
+    const result = await MathCalculatorsServices.getCalculationArccosCalculator(
       req.body
     );
 
@@ -10992,7 +10992,7 @@ router.post(
 router.post(
   "/arctan-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationArctanCalculator(
+    const result = await MathCalculatorsServices.getCalculationArctanCalculator(
       req.body
     );
 
@@ -11017,7 +11017,7 @@ router.post(
 router.post(
   "/tangent-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTangentCalculator(
+    const result = await MathCalculatorsServices.getCalculationTangentCalculator(
       req.body
     );
 
@@ -11042,7 +11042,7 @@ router.post(
 router.post(
   "/secant-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSecantCalculator(
+    const result = await MathCalculatorsServices.getCalculationSecantCalculator(
       req.body
     );
 
@@ -11067,7 +11067,7 @@ router.post(
 router.post(
   "/csc-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCscCalculator(
+    const result = await MathCalculatorsServices.getCalculationCscCalculator(
       req.body
     );
 
@@ -11092,7 +11092,7 @@ router.post(
 router.post(
   "/cotangent-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCotangentCalculator(
+    const result = await MathCalculatorsServices.getCalculationCotangentCalculator(
       req.body
     );
 
@@ -11117,7 +11117,7 @@ router.post(
 router.post(
   "/e-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationECalculator(
+    const result = await MathCalculatorsServices.getCalculationECalculator(
       req.body
     );
 
@@ -11143,7 +11143,7 @@ router.post(
   "/parallel-and-perpendicular-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationParallelAndPerpendicularlineCalculator(
+      await MathCalculatorsServices.getCalculationParallelAndPerpendicularlineCalculator(
         req.body
       );
 
@@ -11169,7 +11169,7 @@ router.post(
   "/coterminal-angle-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCoterminalAngleCalculator(
+      await MathCalculatorsServices.getCalculationCoterminalAngleCalculator(
         req.body
       );
 
@@ -11195,7 +11195,7 @@ router.post(
   "/arithmetic-sequences-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationArithmeticSequenceCalculator(
+      await MathCalculatorsServices.getCalculationArithmeticSequenceCalculator(
         req.body
       );
 
@@ -11221,7 +11221,7 @@ router.post(
   "/double-angle-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDoubleAngleCalculator(req.body);
+      await MathCalculatorsServices.getCalculationDoubleAngleCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -11244,7 +11244,7 @@ router.post(
 router.post(
   "/half-angle-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHalfAngleCalculator(
+    const result = await MathCalculatorsServices.getCalculationHalfAngleCalculator(
       req.body
     );
 
@@ -11269,7 +11269,7 @@ router.post(
 router.post(
   "/power-set-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPowerSetCalculator(
+    const result = await MathCalculatorsServices.getCalculationPowerSetCalculator(
       req.body
     );
 
@@ -11294,7 +11294,7 @@ router.post(
 router.post(
   "/vertex-form-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVertexFormCalculator(
+    const result = await MathCalculatorsServices.getCalculationVertexFormCalculator(
       req.body
     );
 
@@ -11319,7 +11319,7 @@ router.post(
 router.post(
   "/subset-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSubsetCalculator(
+    const result = await MathCalculatorsServices.getCalculationSubsetCalculator(
       req.body
     );
 
@@ -11344,7 +11344,7 @@ router.post(
 router.post(
   "/hyperbola-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHyperbolaCalculator(
+    const result = await MathCalculatorsServices.getCalculationHyperbolaCalculator(
       req.body
     );
 
@@ -11369,7 +11369,7 @@ router.post(
 router.post(
   "/gradient-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGradientCalculator(
+    const result = await MathCalculatorsServices.getCalculationGradientCalculator(
       req.body
     );
 
@@ -11395,7 +11395,7 @@ router.post(
   "/midpoint-rule-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMidpointRuleCalculator(req.body);
+      await MathCalculatorsServices.getCalculationMidpointRuleCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -11419,7 +11419,7 @@ router.post(
   "/maclaurin-series-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMaclaurinSeriesCalculator(
+      await MathCalculatorsServices.getCalculationMaclaurinSeriesCalculator(
         req.body
       );
 
@@ -11445,7 +11445,7 @@ router.post(
   "/difference-quotient-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDifferenceQuotientCalculator(
+      await MathCalculatorsServices.getCalculationDifferenceQuotientCalculator(
         req.body
       );
 
@@ -11471,7 +11471,7 @@ router.post(
   "/complex-number-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationComplexNumberCalculator(req.body);
+      await MathCalculatorsServices.getCalculationComplexNumberCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -11494,7 +11494,7 @@ router.post(
 router.post(
   "/wronskian-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationWronskianCalculator(
+    const result = await MathCalculatorsServices.getCalculationWronskianCalculator(
       req.body
     );
 
@@ -11520,7 +11520,7 @@ router.post(
   "/inverse-laplace-transform-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationInverseLaplaceTransformCalculator(
+      await MathCalculatorsServices.getCalculationInverseLaplaceTransformCalculator(
         req.body
       );
 
@@ -11545,7 +11545,7 @@ router.post(
 router.post(
   "/summation-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSummationCalculator(
+    const result = await MathCalculatorsServices.getCalculationSummationCalculator(
       req.body
     );
 
@@ -11571,7 +11571,7 @@ router.post(
   "/polar-coordinates-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPolarCoordinatesCalculator(
+      await MathCalculatorsServices.getCalculationPolarCoordinatesCalculator(
         req.body
       );
 
@@ -11597,7 +11597,7 @@ router.post(
   "/convolution-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationConvolutionCalculator(req.body);
+      await MathCalculatorsServices.getCalculationConvolutionCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -11620,7 +11620,7 @@ router.post(
 router.post(
   "/jacobian-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationJacobianCalculator(
+    const result = await MathCalculatorsServices.getCalculationJacobianCalculator(
       req.body
     );
 
@@ -11646,7 +11646,7 @@ router.post(
   "/washer-method-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWasherMethodCalculator(req.body);
+      await MathCalculatorsServices.getCalculationWasherMethodCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -11670,7 +11670,7 @@ router.post(
   "/shell-method-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationShellMethodCalculator(req.body);
+      await MathCalculatorsServices.getCalculationShellMethodCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -11694,7 +11694,7 @@ router.post(
   "/implicit-differentiation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationImplicitDifferentiationCalculator(
+      await MathCalculatorsServices.getCalculationImplicitDifferentiationCalculator(
         req.body
       );
 
@@ -11720,7 +11720,7 @@ router.post(
   "/critical-points-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCriticalPointCalculator(req.body);
+      await MathCalculatorsServices.getCalculationCriticalPointCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -11744,7 +11744,7 @@ router.post(
   "/partial-derivative-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPartialDerivativeCalculator(
+      await MathCalculatorsServices.getCalculationPartialDerivativeCalculator(
         req.body
       );
 
@@ -11770,7 +11770,7 @@ router.post(
   "/absolute-value-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAbsoluteValueCalculator(req.body);
+      await MathCalculatorsServices.getCalculationAbsoluteValueCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -11794,7 +11794,7 @@ router.post(
   "/area-under-the-curve-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAreaUnderTheCurveCalculator(
+      await MathCalculatorsServices.getCalculationAreaUnderTheCurveCalculator(
         req.body
       );
 
@@ -11820,7 +11820,7 @@ router.post(
   "/second-derivative-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSecondDerivativeCalculator(
+      await MathCalculatorsServices.getCalculationSecondDerivativeCalculator(
         req.body
       );
 
@@ -11846,7 +11846,7 @@ router.post(
   "/double-integral-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDoubleIntegralCalculator(
+      await MathCalculatorsServices.getCalculationDoubleIntegralCalculator(
         req.body
       );
 
@@ -11872,7 +11872,7 @@ router.post(
   "/triple-integral-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTripleIntegralCalculator(
+      await MathCalculatorsServices.getCalculationTripleIntegralCalculator(
         req.body
       );
 
@@ -11897,7 +11897,7 @@ router.post(
 router.post(
   "/limit-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLimitCalculator(
+    const result = await MathCalculatorsServices.getCalculationLimitCalculator(
       req.body
     );
 
@@ -11923,7 +11923,7 @@ router.post(
   "/laplace-transform-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLaplaceTransformCalculator(
+      await MathCalculatorsServices.getCalculationLaplaceTransformCalculator(
         req.body
       );
 
@@ -11949,7 +11949,7 @@ router.post(
   "/inflection-point-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationInflectionPointCalculator(
+      await MathCalculatorsServices.getCalculationInflectionPointCalculator(
         req.body
       );
 
@@ -11975,7 +11975,7 @@ router.post(
   "/binomial-theorem-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationBinomialTheoremCalculator(
+      await MathCalculatorsServices.getCalculationBinomialTheoremCalculator(
         req.body
       );
 
@@ -12001,7 +12001,7 @@ router.post(
   "/unit-tangent-vector-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationUnitTangentVectorCalculator(
+      await MathCalculatorsServices.getCalculationUnitTangentVectorCalculator(
         req.body
       );
 
@@ -12027,7 +12027,7 @@ router.post(
   "/remainder-theorem-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRemainderTheoremCalculator(
+      await MathCalculatorsServices.getCalculationRemainderTheoremCalculator(
         req.body
       );
 
@@ -12052,7 +12052,7 @@ router.post(
 router.post(
   "/foil-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFOILCalculator(
+    const result = await MathCalculatorsServices.getCalculationFOILCalculator(
       req.body
     );
 
@@ -12078,7 +12078,7 @@ router.post(
   "/trapezoidal-rule-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTrapezoidalRuleCalculator(
+      await MathCalculatorsServices.getCalculationTrapezoidalRuleCalculator(
         req.body
       );
 
@@ -12104,7 +12104,7 @@ router.post(
   "/newtons-method-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationNewtonsMethodCalculator(req.body);
+      await MathCalculatorsServices.getCalculationNewtonsMethodCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -12128,7 +12128,7 @@ router.post(
   "/mean-value-theorem-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMeanValueTheoremCalculator(
+      await MathCalculatorsServices.getCalculationMeanValueTheoremCalculator(
         req.body
       );
 
@@ -12153,7 +12153,7 @@ router.post(
 router.post(
   "/riemann-sum-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRiemannSumCalculator(
+    const result = await MathCalculatorsServices.getCalculationRiemannSumCalculator(
       req.body
     );
 
@@ -12179,7 +12179,7 @@ router.post(
   "/inverse-function-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationInverseFunctionCalculator(
+      await MathCalculatorsServices.getCalculationInverseFunctionCalculator(
         req.body
       );
 
@@ -12205,7 +12205,7 @@ router.post(
   "/composite-function-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCompositeFunctionCalculator(
+      await MathCalculatorsServices.getCalculationCompositeFunctionCalculator(
         req.body
       );
 
@@ -12231,7 +12231,7 @@ router.post(
   "/area-between-two-curves-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAreaBetweenTwoCurvesCalculator(
+      await MathCalculatorsServices.getCalculationAreaBetweenTwoCurvesCalculator(
         req.body
       );
 
@@ -12256,7 +12256,7 @@ router.post(
 router.post(
   "/zeros-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationZerosCalculator(
+    const result = await MathCalculatorsServices.getCalculationZerosCalculator(
       req.body
     );
 
@@ -12282,7 +12282,7 @@ router.post(
   "/geometric-sequence-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationGeometricSequenceCalculator(
+      await MathCalculatorsServices.getCalculationGeometricSequenceCalculator(
         req.body
       );
 
@@ -12307,7 +12307,7 @@ router.post(
 router.post(
   "/truth-table-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTruthTableCalculator(
+    const result = await MathCalculatorsServices.getCalculationTruthTableCalculator(
       req.body
     );
 
@@ -12333,7 +12333,7 @@ router.post(
   "/even-odd-function-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEvenOddFunctionCalculator(
+      await MathCalculatorsServices.getCalculationEvenOddFunctionCalculator(
         req.body
       );
 
@@ -12359,7 +12359,7 @@ router.post(
   "/synthetic-division-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSyntheticDivisionCalculator(
+      await MathCalculatorsServices.getCalculationSyntheticDivisionCalculator(
         req.body
       );
 
@@ -12385,7 +12385,7 @@ router.post(
   "/product-rule-derivative-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationProductRuleDerivativeCalculator(
+      await MathCalculatorsServices.getCalculationProductRuleDerivativeCalculator(
         req.body
       );
 
@@ -12411,7 +12411,7 @@ router.post(
   "/orthocenter-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationOrthocenterCalculator(req.body);
+      await MathCalculatorsServices.getCalculationOrthocenterCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -12435,7 +12435,7 @@ router.post(
   "/polynomial-long-division-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPolynomialLongDivisionCalculator(
+      await MathCalculatorsServices.getCalculationPolynomialLongDivisionCalculator(
         req.body
       );
 
@@ -12461,7 +12461,7 @@ router.post(
   "/radius-of-convergence-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRadiusOfConvergenceCalculator(
+      await MathCalculatorsServices.getCalculationRadiusOfConvergenceCalculator(
         req.body
       );
 
@@ -12487,7 +12487,7 @@ router.post(
   "/power-series-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPowerSeriesCalculator(req.body);
+      await MathCalculatorsServices.getCalculationPowerSeriesCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -12511,7 +12511,7 @@ router.post(
   "/simpsons-rule-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSimpsonRuleCalculator(req.body);
+      await MathCalculatorsServices.getCalculationSimpsonRuleCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -12534,7 +12534,7 @@ router.post(
 router.post(
   "/curl-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCurlCalculator(
+    const result = await MathCalculatorsServices.getCalculationCurlCalculator(
       req.body
     );
 
@@ -12560,7 +12560,7 @@ router.post(
   "/saddle-point-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSaddlePointCalculator(req.body);
+      await MathCalculatorsServices.getCalculationSaddlePointCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -12584,7 +12584,7 @@ router.post(
   "/improper-integral-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationImproperIntegralCalculator(
+      await MathCalculatorsServices.getCalculationImproperIntegralCalculator(
         req.body
       );
 
@@ -12610,7 +12610,7 @@ router.post(
   "/fourier-series-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFourierSeriesCalculator(req.body);
+      await MathCalculatorsServices.getCalculationFourierSeriesCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -12633,7 +12633,7 @@ router.post(
 router.post(
   "/divergence-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDivergenceCalculator(
+    const result = await MathCalculatorsServices.getCalculationDivergenceCalculator(
       req.body
     );
 
@@ -12659,7 +12659,7 @@ router.post(
   "/least-to-greatest-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLeastToGreatestCalculator(
+      await MathCalculatorsServices.getCalculationLeastToGreatestCalculator(
         req.body
       );
 
@@ -12685,7 +12685,7 @@ router.post(
   "/angle-of-elevation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAngleOfElevationCalculator(
+      await MathCalculatorsServices.getCalculationAngleOfElevationCalculator(
         req.body
       );
 
@@ -12710,7 +12710,7 @@ router.post(
 router.post(
   "/dilation-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDilationCalculator(
+    const result = await MathCalculatorsServices.getCalculationDilationCalculator(
       req.body
     );
 
@@ -12736,7 +12736,7 @@ router.post(
   "/percentage-increase-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPercentageIncreaseCalculator(
+      await MathCalculatorsServices.getCalculationPercentageIncreaseCalculator(
         req.body
       );
 
@@ -12762,7 +12762,7 @@ router.post(
   "/percentage-decrease-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPercentageDecreaseCalculator(
+      await MathCalculatorsServices.getCalculationPercentageDecreaseCalculator(
         req.body
       );
 
@@ -12787,7 +12787,7 @@ router.post(
 router.post(
   "/sphere-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSphereCalculator(
+    const result = await MathCalculatorsServices.getCalculationSphereCalculator(
       req.body
     );
 
@@ -12813,7 +12813,7 @@ router.post(
   "/percentage-difference-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPercentageDifferenceCalculator(
+      await MathCalculatorsServices.getCalculationPercentageDifferenceCalculator(
         req.body
       );
 
@@ -12839,7 +12839,7 @@ router.post(
   "/standard-form-to-slope-intercept-form",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationStandardFormtoSlopeInterceptFormCalculator(
+      await MathCalculatorsServices.getCalculationStandardFormtoSlopeInterceptFormCalculator(
         req.body
       );
 
@@ -12864,7 +12864,7 @@ router.post(
 router.post(
   "/polygon-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPolygonCalculator(
+    const result = await MathCalculatorsServices.getCalculationPolygonCalculator(
       req.body
     );
 
@@ -12890,7 +12890,7 @@ router.post(
   "/golden-ratio-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationGoldenRatioCalculator(req.body);
+      await MathCalculatorsServices.getCalculationGoldenRatioCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -12914,7 +12914,7 @@ router.post(
   "/improper-fractions-to-mixed-numbers",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationImproperFractionstoMixedNumbersCalculator(
+      await MathCalculatorsServices.getCalculationImproperFractionstoMixedNumbersCalculator(
         req.body
       );
 
@@ -12940,7 +12940,7 @@ router.post(
   "/mixed-numbers-to-improper-fractions",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMixedNumberstoImproperFractionsCalculator(
+      await MathCalculatorsServices.getCalculationMixedNumberstoImproperFractionsCalculator(
         req.body
       );
 
@@ -12966,7 +12966,7 @@ router.post(
   "/local-maxima-and-minima-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLocalMaximaandMinimaCalculator(
+      await MathCalculatorsServices.getCalculationLocalMaximaandMinimaCalculator(
         req.body
       );
 
@@ -12991,7 +12991,7 @@ router.post(
 router.post(
   "/lcd-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLCDCalculator(
+    const result = await MathCalculatorsServices.getCalculationLCDCalculator(
       req.body
     );
 
@@ -13016,7 +13016,7 @@ router.post(
 router.post(
   "/unit-rate-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationUnitRateCalculator(
+    const result = await MathCalculatorsServices.getCalculationUnitRateCalculator(
       req.body
     );
 
@@ -13042,7 +13042,7 @@ router.post(
   "/equivalent-fractions-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEquivalentFractionsCalculator(
+      await MathCalculatorsServices.getCalculationEquivalentFractionsCalculator(
         req.body
       );
 
@@ -13068,7 +13068,7 @@ router.post(
   "/comparing-fractions-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationComparingFractionsCalculator(
+      await MathCalculatorsServices.getCalculationComparingFractionsCalculator(
         req.body
       );
 
@@ -13094,7 +13094,7 @@ router.post(
   "/time-to-decimal-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTimetoDecimalCalculator(req.body);
+      await MathCalculatorsServices.getCalculationTimetoDecimalCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -13118,7 +13118,7 @@ router.post(
   "/percent-to-decimal-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPercenttoDecimalCalculator(
+      await MathCalculatorsServices.getCalculationPercenttoDecimalCalculator(
         req.body
       );
 
@@ -13144,7 +13144,7 @@ router.post(
   "/decimal-to-percent-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDecimaltoPercentCalculator(
+      await MathCalculatorsServices.getCalculationDecimaltoPercentCalculator(
         req.body
       );
 
@@ -13169,7 +13169,7 @@ router.post(
 router.post(
   "/integer-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationIntegerCalculator(
+    const result = await MathCalculatorsServices.getCalculationIntegerCalculator(
       req.body
     );
 
@@ -13195,7 +13195,7 @@ router.post(
   "/multiplicative-inverse-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMultiplicativeInverseCalculator(
+      await MathCalculatorsServices.getCalculationMultiplicativeInverseCalculator(
         req.body
       );
 
@@ -13221,7 +13221,7 @@ router.post(
   "/inverse-modulo-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationInverseModuloCalculator(req.body);
+      await MathCalculatorsServices.getCalculationInverseModuloCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -13245,7 +13245,7 @@ router.post(
   "/equation-of-a-line-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEquationLineCalculatorCalculator(
+      await MathCalculatorsServices.getCalculationEquationLineCalculatorCalculator(
         req.body
       );
 
@@ -13271,7 +13271,7 @@ router.post(
   "/fraction-exponent-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFractionExponentCalculator(
+      await MathCalculatorsServices.getCalculationFractionExponentCalculator(
         req.body
       );
 
@@ -13297,7 +13297,7 @@ router.post(
   "/amplitude-and-period-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAmplitudeAndPeriodCalculator(
+      await MathCalculatorsServices.getCalculationAmplitudeAndPeriodCalculator(
         req.body
       );
 
@@ -13323,7 +13323,7 @@ router.post(
   "/exponential-growth-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationExponentialGrowthCalculator(
+      await MathCalculatorsServices.getCalculationExponentialGrowthCalculator(
         req.body
       );
 
@@ -13349,7 +13349,7 @@ router.post(
   "/perfect-square-trinomial-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPerfectSquareTrinomialCalculator(
+      await MathCalculatorsServices.getCalculationPerfectSquareTrinomialCalculator(
         req.body
       );
 
@@ -13375,7 +13375,7 @@ router.post(
   "/power-reducing-formula-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPowerReducingFormulaCalculator(
+      await MathCalculatorsServices.getCalculationPowerReducingFormulaCalculator(
         req.body
       );
 
@@ -13400,7 +13400,7 @@ router.post(
 router.post(
   "/diamond-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDiamondCalculator(
+    const result = await MathCalculatorsServices.getCalculationDiamondCalculator(
       req.body
     );
 
@@ -13426,7 +13426,7 @@ router.post(
   "/cross-multiply-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCrossMultiplyCalculator(req.body);
+      await MathCalculatorsServices.getCalculationCrossMultiplyCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -13450,7 +13450,7 @@ router.post(
   "/area-of-a-semicircle",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAreaSemicircleCalculator(
+      await MathCalculatorsServices.getCalculationAreaSemicircleCalculator(
         req.body
       );
 
@@ -13476,7 +13476,7 @@ router.post(
   "/degree-and-leading-coefficient",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAreaDegreeandLeadingCoefficientCalculator(
+      await MathCalculatorsServices.getCalculationAreaDegreeandLeadingCoefficientCalculator(
         req.body
       );
 
@@ -13502,7 +13502,7 @@ router.post(
   "/equivalent-expressions-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEquivalentExpressionsCalculator(
+      await MathCalculatorsServices.getCalculationEquivalentExpressionsCalculator(
         req.body
       );
 
@@ -13528,7 +13528,7 @@ router.post(
   "/descartes-rule-of-signs-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDescartesRuleSignsCalculator(
+      await MathCalculatorsServices.getCalculationDescartesRuleSignsCalculator(
         req.body
       );
 
@@ -13554,7 +13554,7 @@ router.post(
   "/function-operations-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFunctionOperationsCalculator(
+      await MathCalculatorsServices.getCalculationFunctionOperationsCalculator(
         req.body
       );
 
@@ -13580,7 +13580,7 @@ router.post(
   "/multiplying-polynomials-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMultiplyingPolynomialsCalculator(
+      await MathCalculatorsServices.getCalculationMultiplyingPolynomialsCalculator(
         req.body
       );
 
@@ -13605,7 +13605,7 @@ router.post(
 router.post(
   "/inequality-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationInequalityCalculator(
+    const result = await MathCalculatorsServices.getCalculationInequalityCalculator(
       req.body
     );
 
@@ -13630,7 +13630,7 @@ router.post(
 router.post(
   "/solve-for-x-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSolveforxCalculator(
+    const result = await MathCalculatorsServices.getCalculationSolveforxCalculator(
       req.body
     );
 
@@ -13656,7 +13656,7 @@ router.post(
   "/combine-like-terms-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCombiningLikeTermsCalculator(
+      await MathCalculatorsServices.getCalculationCombiningLikeTermsCalculator(
         req.body
       );
 
@@ -13681,7 +13681,7 @@ router.post(
 router.post(
   "/rotation-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRotationCalculator(
+    const result = await MathCalculatorsServices.getCalculationRotationCalculator(
       req.body
     );
 
@@ -13706,7 +13706,7 @@ router.post(
 router.post(
   "/reciprocal-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationReciprocalCalculator(
+    const result = await MathCalculatorsServices.getCalculationReciprocalCalculator(
       req.body
     );
 
@@ -13731,7 +13731,7 @@ router.post(
 router.post(
   "/cofunction-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCofunctionCalculator(
+    const result = await MathCalculatorsServices.getCalculationCofunctionCalculator(
       req.body
     );
 
@@ -13757,7 +13757,7 @@ router.post(
   "/additive-inverse-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAdditiveInverseCalculator(
+      await MathCalculatorsServices.getCalculationAdditiveInverseCalculator(
         req.body
       );
 
@@ -13782,7 +13782,7 @@ router.post(
 router.post(
   "/monomial-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMonomialCalculator(
+    const result = await MathCalculatorsServices.getCalculationMonomialCalculator(
       req.body
     );
 
@@ -13808,7 +13808,7 @@ router.post(
   "/long-multiplication-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLongMultiplicationCalculator(
+      await MathCalculatorsServices.getCalculationLongMultiplicationCalculator(
         req.body
       );
 
@@ -13833,7 +13833,7 @@ router.post(
 router.post(
   "/divisible-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDivisibleCalculator(
+    const result = await MathCalculatorsServices.getCalculationDivisibleCalculator(
       req.body
     );
 
@@ -13859,7 +13859,7 @@ router.post(
   "/average-value-of-function",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAverageValueFunctionCalculator(
+      await MathCalculatorsServices.getCalculationAverageValueFunctionCalculator(
         req.body
       );
 
@@ -13884,7 +13884,7 @@ router.post(
 router.post(
   "/product-sum-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationProductSumCalculator(
+    const result = await MathCalculatorsServices.getCalculationProductSumCalculator(
       req.body
     );
 
@@ -13910,7 +13910,7 @@ router.post(
   "/pascals-triangle-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPascalTriangleCalculator(
+      await MathCalculatorsServices.getCalculationPascalTriangleCalculator(
         req.body
       );
 
@@ -13936,7 +13936,7 @@ router.post(
   "/order-of-operations-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationOrderOfOperationsCalculator(
+      await MathCalculatorsServices.getCalculationOrderOfOperationsCalculator(
         req.body
       );
 
@@ -13962,7 +13962,7 @@ router.post(
   "/characteristic-polynomial-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCharacteristicPolynomialCalculator(
+      await MathCalculatorsServices.getCalculationCharacteristicPolynomialCalculator(
         req.body
       );
 
@@ -13988,7 +13988,7 @@ router.post(
   "/intercepts-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationXAndYInterceptsCalculator(
+      await MathCalculatorsServices.getCalculationXAndYInterceptsCalculator(
         req.body
       );
 
@@ -14014,7 +14014,7 @@ router.post(
   "/domain-and-range-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDomainAndRangeCalculator(
+      await MathCalculatorsServices.getCalculationDomainAndRangeCalculator(
         req.body
       );
 
@@ -14040,7 +14040,7 @@ router.post(
   "/distance-between-two-points-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDistanceBetweenTwoPointsCalculator(
+      await MathCalculatorsServices.getCalculationDistanceBetweenTwoPointsCalculator(
         req.body
       );
 
@@ -14066,7 +14066,7 @@ router.post(
   "/sas-triangle-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSASTriangleCalculator(req.body);
+      await MathCalculatorsServices.getCalculationSASTriangleCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -14090,7 +14090,7 @@ router.post(
   "/radius-of-a-circle-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRadiusCircleCalculator(req.body);
+      await MathCalculatorsServices.getCalculationRadiusCircleCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -14114,7 +14114,7 @@ router.post(
   "/equilateral-triangle-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEquilateralTriangleCalculator(
+      await MathCalculatorsServices.getCalculationEquilateralTriangleCalculator(
         req.body
       );
 
@@ -14140,7 +14140,7 @@ router.post(
   "/point-of-intersection",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPointOfIntersectionCalculator(
+      await MathCalculatorsServices.getCalculationPointOfIntersectionCalculator(
         req.body
       );
 
@@ -14166,7 +14166,7 @@ router.post(
   "/exponential-function-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationExponentialFunctionCalculator(
+      await MathCalculatorsServices.getCalculationExponentialFunctionCalculator(
         req.body
       );
 
@@ -14191,7 +14191,7 @@ router.post(
 router.post(
   "/power-of-10-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPowerof10Calculator(
+    const result = await MathCalculatorsServices.getCalculationPowerof10Calculator(
       req.body
     );
 
@@ -14217,7 +14217,7 @@ router.post(
   "/slope-percentage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSlopePercentageCalculator(
+      await MathCalculatorsServices.getCalculationSlopePercentageCalculator(
         req.body
       );
 
@@ -14243,7 +14243,7 @@ router.post(
   "/change-of-base-formula-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationChangeOfBaseFormulaCalculator(
+      await MathCalculatorsServices.getCalculationChangeOfBaseFormulaCalculator(
         req.body
       );
 
@@ -14269,7 +14269,7 @@ router.post(
   "/completing-the-square-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCompletingTheSquareCalculator(
+      await MathCalculatorsServices.getCalculationCompletingTheSquareCalculator(
         req.body
       );
 
@@ -14294,7 +14294,7 @@ router.post(
 router.post(
   "/cube-root-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCubeRootCalculator(
+    const result = await MathCalculatorsServices.getCalculationCubeRootCalculator(
       req.body
     );
 
@@ -14320,7 +14320,7 @@ router.post(
   "/truncated-pyramid-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTruncatedPyramidCalculator(
+      await MathCalculatorsServices.getCalculationTruncatedPyramidCalculator(
         req.body
       );
 
@@ -14346,7 +14346,7 @@ router.post(
   "/mixed-number-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMixedNumberCalculator(req.body);
+      await MathCalculatorsServices.getCalculationMixedNumberCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -14370,7 +14370,7 @@ router.post(
   "/fraction-simplifier-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFractionSimplifierCalculator(
+      await MathCalculatorsServices.getCalculationFractionSimplifierCalculator(
         req.body
       );
 
@@ -14396,7 +14396,7 @@ router.post(
   "/determinant-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDeterminantCalculator(req.body);
+      await MathCalculatorsServices.getCalculationDeterminantCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -14420,7 +14420,7 @@ router.post(
   "/eigenvectors-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEigenvectorCalculator(req.body);
+      await MathCalculatorsServices.getCalculationEigenvectorCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -14443,7 +14443,7 @@ router.post(
 router.post(
   "/null-space-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationNullSpaceCalculator(
+    const result = await MathCalculatorsServices.getCalculationNullSpaceCalculator(
       req.body
     );
 
@@ -14469,7 +14469,7 @@ router.post(
   "/matrix-multiplication-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMatrixMultiplicationCalculator(
+      await MathCalculatorsServices.getCalculationMatrixMultiplicationCalculator(
         req.body
       );
 
@@ -14495,7 +14495,7 @@ router.post(
   "/sgpa-to-percentage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSGPAToPercentageCalculator(
+      await MathCalculatorsServices.getCalculationSGPAToPercentageCalculator(
         req.body
       );
 
@@ -14520,7 +14520,7 @@ router.post(
 router.post(
   "/hex-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHexCalculator(
+    const result = await MathCalculatorsServices.getCalculationHexCalculator(
       req.body
     );
 
@@ -14546,7 +14546,7 @@ router.post(
   "/matrix-transpose-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMatrixTransposeCalculator(
+      await MathCalculatorsServices.getCalculationMatrixTransposeCalculator(
         req.body
       );
 
@@ -14572,7 +14572,7 @@ router.post(
   "/weighted-average-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWeightedAverageCalculator(
+      await MathCalculatorsServices.getCalculationWeightedAverageCalculator(
         req.body
       );
 
@@ -14597,7 +14597,7 @@ router.post(
 router.post(
   "/test-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTestGradeCalculator(
+    const result = await MathCalculatorsServices.getCalculationTestGradeCalculator(
       req.body
     );
 
@@ -14623,7 +14623,7 @@ router.post(
   "/marks-percentage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMarksPercentageCalculator(
+      await MathCalculatorsServices.getCalculationMarksPercentageCalculator(
         req.body
       );
 
@@ -14648,7 +14648,7 @@ router.post(
 router.post(
   "/decimal-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDecimalCalculator(
+    const result = await MathCalculatorsServices.getCalculationDecimalCalculator(
       req.body
     );
 
@@ -14674,7 +14674,7 @@ router.post(
   "/venn-diagram-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationVennDiagramCalculator(req.body);
+      await MathCalculatorsServices.getCalculationVennDiagramCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -14698,7 +14698,7 @@ router.post(
   "/fundamental-counting-principle-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFundamentalCountingPrincipleCalculator(
+      await MathCalculatorsServices.getCalculationFundamentalCountingPrincipleCalculator(
         req.body
       );
 
@@ -14724,7 +14724,7 @@ router.post(
   "/average-percentage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAveragePercentageCalculator(
+      await MathCalculatorsServices.getCalculationAveragePercentageCalculator(
         req.body
       );
 
@@ -14750,7 +14750,7 @@ router.post(
   "/linear-independence-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLinearIndependenceCalculator(
+      await MathCalculatorsServices.getCalculationLinearIndependenceCalculator(
         req.body
       );
 
@@ -14776,7 +14776,7 @@ router.post(
   "/percentage-change-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPercentChangeCalculator(req.body);
+      await MathCalculatorsServices.getCalculationPercentChangeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -14800,7 +14800,7 @@ router.post(
   "/taylor-series-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTaylorSeriesCalculator(req.body);
+      await MathCalculatorsServices.getCalculationTaylorSeriesCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -14823,7 +14823,7 @@ router.post(
 router.post(
   "/derivative-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDerivativeCalculator(
+    const result = await MathCalculatorsServices.getCalculationDerivativeCalculator(
       req.body
     );
 
@@ -14849,7 +14849,7 @@ router.post(
   "/circumcenter-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCircumcenterCalculator(req.body);
+      await MathCalculatorsServices.getCalculationCircumcenterCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17411,7 +17411,7 @@ router.post(
 router.post(
   "/tax-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTaxCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationTaxCalculator(
       req.body
     );
 
@@ -17437,7 +17437,7 @@ router.post(
 router.post(
   "/discount-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDiscountCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationDiscountCalculator(
       req.body
     );
 
@@ -17464,7 +17464,7 @@ router.post(
   "/gross-income-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationGrossIncomeCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationGrossIncomeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17489,7 +17489,7 @@ router.post(
   "/monthly-income-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMonthlyIncomeCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationMonthlyIncomeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17514,7 +17514,7 @@ router.post(
   "/money-counter-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationMoneyCounterCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationMoneyCounterCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17539,7 +17539,7 @@ router.post(
   "/discounted-cash-flow-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationdisCountedCashFlowCalculator(
+      await FinanceCalculatorsServices.getCalculationdisCountedCashFlowCalculator(
         req.body
       );
 
@@ -17566,7 +17566,7 @@ router.post(
   "/va-disability-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationVaDisdisabilityCalculator(
+      await FinanceCalculatorsServices.getCalculationVaDisabilityCalculator(
         req.body
       );
 
@@ -17592,7 +17592,7 @@ router.post(
 router.post(
   "/cagr-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationCagrCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationCagrCalculator(
       req.body
     );
 
@@ -17619,7 +17619,7 @@ router.post(
   "/depreciation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDepreciationCalculator(req.body);
+      await FinanceCalculatorsServices.getCalculationDepreciationCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17643,7 +17643,7 @@ router.post(
 router.post(
   "/age-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAgeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationAgeCalculator(
       req.body
     );
 
@@ -17669,7 +17669,7 @@ router.post(
 router.post(
   "/ppi-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPPICalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationPPICalculator(
       req.body
     );
 
@@ -17696,7 +17696,7 @@ router.post(
   "/age-difference-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAgeDifferenceCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationAgeDifferenceCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17721,7 +17721,7 @@ router.post(
   "/freight-class-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFreightClassCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationFreightClassCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17745,7 +17745,7 @@ router.post(
 router.post(
   "/sobriety-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSobrietyCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationSobrietyCalculator(
       req.body
     );
 
@@ -17771,7 +17771,7 @@ router.post(
 router.post(
   "/house-age-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHouseAgeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationHouseAgeCalculator(
       req.body
     );
 
@@ -17797,7 +17797,7 @@ router.post(
 router.post(
   "/birthday-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationBirthdayCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationBirthdayCalculator(
       req.body
     );
 
@@ -17824,7 +17824,7 @@ router.post(
   "/half-birthday-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationHalfBirthdayCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationHalfBirthdayCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17848,7 +17848,7 @@ router.post(
 router.post(
   "/travel-time-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTravelTimeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationTravelTimeCalculator(
       req.body
     );
 
@@ -17874,7 +17874,7 @@ router.post(
 router.post(
   "/sleep-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSleepCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationSleepCalculator(
       req.body
     );
 
@@ -17900,7 +17900,7 @@ router.post(
 router.post(
   "/pant-size-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPantSizeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationPantSizeCalculator(
       req.body
     );
 
@@ -17926,7 +17926,7 @@ router.post(
 router.post(
   "/drive-time-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDriveTimeCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationDriveTimeCalculator(
       req.body
     );
 
@@ -17953,7 +17953,7 @@ router.post(
   "/anniversary-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAnniversaryCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationAnniversaryCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -17977,7 +17977,7 @@ router.post(
 router.post(
   "/point-buy-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPointBuyCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationPointBuyCalculator(
       req.body
     );
 
@@ -18003,7 +18003,7 @@ router.post(
 router.post(
   "/stair-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationStairCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationStairCalculator(
       req.body
     );
 
@@ -18030,7 +18030,7 @@ router.post(
   "/batting-average-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationBattingAverageCalculator(
+      await EverydayLifeCalculatorsServices.getCalculationBattingAverageCalculator(
         req.body
       );
 
@@ -18056,7 +18056,7 @@ router.post(
 router.post(
   "/mpg-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationMpgCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationMpgCalculator(
       req.body
     );
 
@@ -18082,7 +18082,7 @@ router.post(
 router.post(
   "/aquarium-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAquariumCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationAquariumCalculator(
       req.body
     );
 
@@ -18109,7 +18109,7 @@ router.post(
   "/plant-spacing-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPlantSpacingCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationPlantSpacingCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18133,7 +18133,7 @@ router.post(
 router.post(
   "/gas-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGasCalculator(
+    const result = await EverydayLifeCalculatorsServices.getCalculationGasCalculator(
       req.body
     );
 
@@ -18160,7 +18160,7 @@ router.post(
   "/how-many-pages-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationHowManyPagesCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationHowManyPagesCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18185,7 +18185,7 @@ router.post(
   "/how-many-words-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationHowManyWordsCalculator(req.body);
+      await EverydayLifeCalculatorsServices.getCalculationHowManyWordsCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18209,7 +18209,7 @@ router.post(
 router.post(
   "/weightloss-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationWeightlossCalculator(
+    const result = await HealthCalculatorsServices.getCalculationWeightlossCalculator(
       req.body
     );
 
@@ -18235,7 +18235,7 @@ router.post(
 router.post(
   "/ovulation-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationOvulationCalculator(
+    const result = await HealthCalculatorsServices.getCalculationOvulationCalculator(
       req.body
     );
 
@@ -18261,7 +18261,7 @@ router.post(
 router.post(
   "/pregnancy-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPregnancyCalculator(
+    const result = await HealthCalculatorsServices.getCalculationPregnancyCalculator(
       req.body
     );
 
@@ -18287,7 +18287,7 @@ router.post(
 router.post(
   "/tdee-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTdeeCalculator(
+    const result = await HealthCalculatorsServices.getCalculationTdeeCalculator(
       req.body
     );
 
@@ -18314,7 +18314,7 @@ router.post(
   "/calorie-deficit-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCalorieDeficitCalculator(
+      await HealthCalculatorsServices.getCalculationCalorieDeficitCalculator(
         req.body
       );
 
@@ -18340,7 +18340,7 @@ router.post(
 router.post(
   "/ippt-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationIpptCalculator(
+    const result = await HealthCalculatorsServices.getCalculationIpptCalculator(
       req.body
     );
 
@@ -18367,7 +18367,7 @@ router.post(
   "/height-percentile-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationHeightPercentileCalculator(
+      await HealthCalculatorsServices.getCalculationHeightPercentileCalculator(
         req.body
       );
 
@@ -18394,7 +18394,7 @@ router.post(
   "/jump-rope-calorie-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationJumpRopeCalorieCalculator(
+      await HealthCalculatorsServices.getCalculationJumpRopeCalorieCalculator(
         req.body
       );
 
@@ -18421,7 +18421,7 @@ router.post(
   "/biological-age-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationBiologicalAgeCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationBiologicalAgeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18446,7 +18446,7 @@ router.post(
   "/pregnancy-weight-gain-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationPregnancyWeightGainCalculator(
+      await HealthCalculatorsServices.getCalculationPregnancyWeightGainCalculator(
         req.body
       );
 
@@ -18473,7 +18473,7 @@ router.post(
   "/stroke-volume-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationStrokeVolumeCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationStrokeVolumeCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18498,7 +18498,7 @@ router.post(
   "/navy-body-fat-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationNavyBodyFatCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationNavyBodyFatCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18522,7 +18522,7 @@ router.post(
 router.post(
   "/eer-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationEerCalculator(
+    const result = await HealthCalculatorsServices.getCalculationEerCalculator(
       req.body
     );
 
@@ -18548,7 +18548,7 @@ router.post(
 router.post(
   "/acft-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAcftCalculator(
+    const result = await HealthCalculatorsServices.getCalculationAcftCalculator(
       req.body
     );
 
@@ -18575,7 +18575,7 @@ router.post(
   "/carboplatin-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCarboplatinCalculator(req.body);
+      await HealthCalculatorsServices.getCalculationCarboplatinCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18599,7 +18599,7 @@ router.post(
 router.post(
   "/vo2-max-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVo2MaxCalculator(
+    const result = await HealthCalculatorsServices.getCalculationVo2MaxCalculator(
       req.body
     );
 
@@ -18626,7 +18626,7 @@ router.post(
   "/weight-percentile-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationWeightPercentileCalculator(
+      await HealthCalculatorsServices.getCalculationWeightPercentileCalculator(
         req.body
       );
 
@@ -18652,7 +18652,7 @@ router.post(
 router.post(
   "/height-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHeightCalculator(
+    const result = await HealthCalculatorsServices.getCalculationHeightCalculator(
       req.body
     );
 
@@ -18678,7 +18678,7 @@ router.post(
 router.post(
   "/pace-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPaceCalculator(
+    const result = await HealthCalculatorsServices.getCalculationPaceCalculator(
       req.body
     );
 
@@ -18705,7 +18705,7 @@ router.post(
   "/body-fat-percentage-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationBodyFatPercentageCalculator(
+      await HealthCalculatorsServices.getCalculationBodyFatPercentageCalculator(
         req.body
       );
 
@@ -18731,7 +18731,7 @@ router.post(
 router.post(
   "/percentage-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPercentageCalculator(
+    const result = await MathCalculatorsServices.getCalculationPercentageCalculator(
       req.body
     );
 
@@ -18757,7 +18757,7 @@ router.post(
 router.post(
   "/fraction-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFractionCalculator(
+    const result = await MathCalculatorsServices.getCalculationFractionCalculator(
       req.body
     );
 
@@ -18783,7 +18783,7 @@ router.post(
 router.post(
   "/integral-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationIntegralCalculator(
+    const result = await MathCalculatorsServices.getCalculationIntegralCalculator(
       req.body
     );
 
@@ -18810,7 +18810,7 @@ router.post(
   "/circumference-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationCircumferenceCalculator(req.body);
+      await MathCalculatorsServices.getCalculationCircumferenceCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -18834,7 +18834,7 @@ router.post(
 router.post(
   "/lcm-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLCMCalculator(
+    const result = await MathCalculatorsServices.getCalculationLCMCalculator(
       req.body
     );
 
@@ -18860,7 +18860,7 @@ router.post(
 router.post(
   "/gcf-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGCFCalculator(
+    const result = await MathCalculatorsServices.getCalculationGCFCalculator(
       req.body
     );
 
@@ -18886,7 +18886,7 @@ router.post(
 router.post(
   "/factorial-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFactorialCalculator(
+    const result = await MathCalculatorsServices.getCalculationFactorialCalculator(
       req.body
     );
 
@@ -18912,7 +18912,7 @@ router.post(
 router.post(
   "/ratio-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRatioCalculator(
+    const result = await MathCalculatorsServices.getCalculationRatioCalculator(
       req.body
     );
 
@@ -18939,7 +18939,7 @@ router.post(
   "/interval-notation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationIntervalNotationCalculator(
+      await MathCalculatorsServices.getCalculationIntervalNotationCalculator(
         req.body
       );
 
@@ -18965,7 +18965,7 @@ router.post(
 router.post(
   "/factoring-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFactoringCalculator(
+    const result = await MathCalculatorsServices.getCalculationFactoringCalculator(
       req.body
     );
 
@@ -18992,7 +18992,7 @@ router.post(
   "/linear-approximation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLinearApproximationCalculator(
+      await MathCalculatorsServices.getCalculationLinearApproximationCalculator(
         req.body
       );
 
@@ -19019,7 +19019,7 @@ router.post(
   "/average-rate-of-change-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAverageTateOfChangeCalculator(
+      await MathCalculatorsServices.getCalculationAverageRateOfChangeCalculator(
         req.body
       );
 
@@ -19046,7 +19046,7 @@ router.post(
   "/eulers-method-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEulersMethodCalculator(req.body);
+      await MathCalculatorsServices.getCalculationEulersMethodCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19070,7 +19070,7 @@ router.post(
 router.post(
   "/triangle-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationTriangleCalculator(
+    const result = await MathCalculatorsServices.getCalculationTriangleCalculator(
       req.body
     );
 
@@ -19097,7 +19097,7 @@ router.post(
   "/tangent-plane-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTangentPlaneCalculator(req.body);
+      await MathCalculatorsServices.getCalculationTangentPlaneCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19121,7 +19121,7 @@ router.post(
 router.post(
   "/perimeter-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationPerimeterCalculator(
+    const result = await MathCalculatorsServices.getCalculationPerimeterCalculator(
       req.body
     );
 
@@ -19148,7 +19148,7 @@ router.post(
   "/axis-of-symmetry-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAxisOfSymmetryCalculator(
+      await MathCalculatorsServices.getCalculationAxisOfSymmetryCalculator(
         req.body
       );
 
@@ -19175,7 +19175,7 @@ router.post(
   "/distributive-property-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDistributivePropertyCalculator(
+      await MathCalculatorsServices.getCalculationDistributivePropertyCalculator(
         req.body
       );
 
@@ -19202,7 +19202,7 @@ router.post(
   "/rational-expression-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRationalExpressionCalculator(
+      await MathCalculatorsServices.getCalculationRationalExpressionCalculator(
         req.body
       );
 
@@ -19229,7 +19229,7 @@ router.post(
   "/area-of-a-sector-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAreaOfASectorCalculator(req.body);
+      await MathCalculatorsServices.getCalculationAreaOfASectorCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19254,7 +19254,7 @@ router.post(
   "/parallelogram-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationParallelogramCalculator(req.body);
+      await MathCalculatorsServices.getCalculationParallelogramCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19279,7 +19279,7 @@ router.post(
   "/reference-angle-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationReferenceAngleCalculator(
+      await MathCalculatorsServices.getCalculationReferenceAngleCalculator(
         req.body
       );
 
@@ -19306,7 +19306,7 @@ router.post(
   "/rational-or-irrational-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRationalOrIrrationalCalculator(
+      await MathCalculatorsServices.getCalculationRationalOrIrrationalCalculator(
         req.body
       );
 
@@ -19333,7 +19333,7 @@ router.post(
   "/simplify-radicals-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSimplifyRadicalsCalculator(
+      await MathCalculatorsServices.getCalculationSimplifyRadicalsCalculator(
         req.body
       );
 
@@ -19360,7 +19360,7 @@ router.post(
   "/ellipse-equation-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEllipseEquationCalculator(
+      await MathCalculatorsServices.getCalculationEllipseEquationCalculator(
         req.body
       );
 
@@ -19386,7 +19386,7 @@ router.post(
 router.post(
   "/rref-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationRrefCalculator(
+    const result = await MathCalculatorsServices.getCalculationRrefCalculator(
       req.body
     );
 
@@ -19412,7 +19412,7 @@ router.post(
 router.post(
   "/gematria-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationGematriaCalculator(
+    const result = await MathCalculatorsServices.getCalculationGematriaCalculator(
       req.body
     );
 
@@ -19465,7 +19465,7 @@ router.post(
   "/ratio-to-fraction-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRatioToFractionCalculator(
+      await MathCalculatorsServices.getCalculationRatioToFractionCalculator(
         req.body
       );
 
@@ -19492,7 +19492,7 @@ router.post(
   "/gram-schmidt-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationGramSchmidtCalculator(req.body);
+      await MathCalculatorsServices.getCalculationGramSchmidtCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19517,7 +19517,7 @@ router.post(
   "/volume-of-triangular-pyramid",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationVolumeOfTriangularPyramidCalculator(
+      await MathCalculatorsServices.getCalculationVolumeOfTriangularPyramidCalculator(
         req.body
       );
 
@@ -19543,7 +19543,7 @@ router.post(
 router.post(
   "/area-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationAreaCalculator(
+    const result = await MathCalculatorsServices.getCalculationAreaCalculator(
       req.body
     );
 
@@ -19570,7 +19570,7 @@ router.post(
   "/30-60-90-triangle-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationthirtytriangleCalculator(
+      await MathCalculatorsServices.getCalculationthirtytriangleCalculator(
         req.body
       );
 
@@ -19624,7 +19624,7 @@ router.post(
   "/trigonometry-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTrigonometryCalculator(req.body);
+      await MathCalculatorsServices.getCalculationTrigonometryCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19648,7 +19648,7 @@ router.post(
 router.post(
   "/sohcahtoa-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationSohcahtoaCalculator(
+    const result = await MathCalculatorsServices.getCalculationSohcahtoaCalculator(
       req.body
     );
 
@@ -19675,7 +19675,7 @@ router.post(
   "/45-45-90-triangle-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationFortyFivetriangleCalculator(
+      await MathCalculatorsServices.getCalculationFortyFivetriangleCalculator(
         req.body
       );
 
@@ -19702,7 +19702,7 @@ router.post(
   "/twos-complement-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTwoComplementCalculator(req.body);
+      await MathCalculatorsServices.getCalculationTwoComplementCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19726,7 +19726,7 @@ router.post(
 router.post(
   "/law-of-sines-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationLawOfSinesCalculator(
+    const result = await MathCalculatorsServices.getCalculationLawOfSinesCalculator(
       req.body
     );
 
@@ -19753,7 +19753,7 @@ router.post(
   "/law-of-cosines-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLawOfCosinesCalculator(req.body);
+      await MathCalculatorsServices.getCalculationLawOfCosinesCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19778,7 +19778,7 @@ router.post(
   "/tangent-line-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationTangentLineCalculator(req.body);
+      await MathCalculatorsServices.getCalculationTangentLineCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19803,7 +19803,7 @@ router.post(
   "/ones-complement-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationOnesComplementCalculator(
+      await MathCalculatorsServices.getCalculationOnesComplementCalculator(
         req.body
       );
 
@@ -19829,7 +19829,7 @@ router.post(
 router.post(
   "/hypotenuse-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationHypotenuseCalculator(
+    const result = await MathCalculatorsServices.getCalculationHypotenuseCalculator(
       req.body
     );
 
@@ -19856,7 +19856,7 @@ router.post(
   "/angle-between-two-vectors-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAngleBetweenTwoVectorsCalculator(
+      await MathCalculatorsServices.getCalculationAngleBetweenTwoVectorsCalculator(
         req.body
       );
 
@@ -19883,7 +19883,7 @@ router.post(
   "/directional-derivative-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDirectionalDerivativeCalculator(
+      await MathCalculatorsServices.getCalculationDirectionalDerivativeCalculator(
         req.body
       );
 
@@ -19910,7 +19910,7 @@ router.post(
   "/eigenvalues-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEigenvaluesCalculator(req.body);
+      await MathCalculatorsServices.getCalculationEigenvaluesCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -19935,7 +19935,7 @@ router.post(
   "/equation-of-a-circle",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationEquationOfCircleCalculator(
+      await MathCalculatorsServices.getCalculationEquationOfCircleCalculator(
         req.body
       );
 
@@ -19962,7 +19962,7 @@ router.post(
   "/gaussian-elimination-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationGaussianEliminationCalculator(
+      await MathCalculatorsServices.getCalculationGaussianEliminationCalculator(
         req.body
       );
 
@@ -19988,7 +19988,7 @@ router.post(
 router.post(
   "/final-grade-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationFinalGradeCalculator(
+    const result = await MathCalculatorsServices.getCalculationFinalGradeCalculator(
       req.body
     );
 
@@ -20015,7 +20015,7 @@ router.post(
   "/substitution-method-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSubstitutionMethodCalculator(
+      await MathCalculatorsServices.getCalculationSubstitutionMethodCalculator(
         req.body
       );
 
@@ -20042,7 +20042,7 @@ router.post(
   "/inverse-matrix-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationInverseMatrixCalculator(req.body);
+      await MathCalculatorsServices.getCalculationInverseMatrixCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20067,7 +20067,7 @@ router.post(
   "/vector-addition-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationVectorAdditionCalculator(
+      await MathCalculatorsServices.getCalculationVectorAdditionCalculator(
         req.body
       );
 
@@ -20094,7 +20094,7 @@ router.post(
   "/gauss-seidel-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationGaussSeidelCalculator(req.body);
+      await MathCalculatorsServices.getCalculationGaussSeidelCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20119,7 +20119,7 @@ router.post(
   "/rationalize-the-denominator-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRationalizeTheDenominatorCalculator(
+      await MathCalculatorsServices.getCalculationRationalizeTheDenominatorCalculator(
         req.body
       );
 
@@ -20146,7 +20146,7 @@ router.post(
   "/surface-area-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSurfaceAreaCalculator(req.body);
+      await MathCalculatorsServices.getCalculationSurfaceAreaCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20171,7 +20171,7 @@ router.post(
   "/length-of-curve-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationLengthOfCurveCalculator(req.body);
+      await MathCalculatorsServices.getCalculationLengthOfCurveCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20195,7 +20195,7 @@ router.post(
 router.post(
   "/diagonal-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationDiagonalCalculator(
+    const result = await MathCalculatorsServices.getCalculationDiagonalCalculator(
       req.body
     );
 
@@ -20222,7 +20222,7 @@ router.post(
   "/rational-zeros-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationRationalZerosCalculator(req.body);
+      await MathCalculatorsServices.getCalculationRationalZerosCalculator(req.body);
 
     // Check if result contains an error
     if (result && result.error) {
@@ -20247,7 +20247,7 @@ router.post(
   "/augmented-matrix-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationAugmentedMatrixCalculator(
+      await MathCalculatorsServices.getCalculationAugmentedMatrixCalculator(
         req.body
       );
 
@@ -20274,7 +20274,7 @@ router.post(
   "/elementary-matrix-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationElementaryMatrixCalculator(
+      await MathCalculatorsServices.getCalculationElementaryMatrixCalculator(
         req.body
       );
 
@@ -20301,7 +20301,7 @@ router.post(
   "/distance-formula-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationDistanceFormulaCalculator(
+      await MathCalculatorsServices.getCalculationDistanceFormulaCalculator(
         req.body
       );
 
@@ -20328,7 +20328,7 @@ router.post(
   "/volume-of-capsule",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationVolumeOfCapsuleCalculator(
+      await MathCalculatorsServices.getCalculationVolumeOfCapsuleCalculator(
         req.body
       );
 
@@ -20355,7 +20355,7 @@ router.post(
   "/conical-frustum-volume-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationConicalFrustumVolumeCalculator(
+      await MathCalculatorsServices.getCalculationConicalFrustumVolumeCalculator(
         req.body
       );
 
@@ -20382,7 +20382,7 @@ router.post(
   "/volume-of-a-rectangle",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationVolumeOfRectangleCalculator(
+      await MathCalculatorsServices.getCalculationVolumeOfRectangleCalculator(
         req.body
       );
 
@@ -20409,7 +20409,7 @@ router.post(
   "/similar-triangles-calculator",
   asyncHandler(async (req, res) => {
     const result =
-      await CalculatorsServices.getCalculationSimilarTrianglesCalculator(
+      await MathCalculatorsServices.getCalculationSimilarTrianglesCalculator(
         req.body
       );
 
@@ -20435,7 +20435,7 @@ router.post(
 router.post(
   "/volume-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationVolumeCalculator(
+    const result = await MathCalculatorsServices.getCalculationVolumeCalculator(
       req.body
     );
 
@@ -20461,7 +20461,7 @@ router.post(
 router.post(
   "/parabola-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationParabolaCalculator(
+    const result = await MathCalculatorsServices.getCalculationParabolaCalculator(
       req.body
     );
 
@@ -21812,7 +21812,7 @@ router.post(
 router.post(
   "/uog-gpa-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeUogGpaCalculator(
+    const result = await HealthCalculatorsServices.getCalculationeUogGpaCalculator(
       req.body
     );
 
@@ -21838,7 +21838,7 @@ router.post(
 router.post(
   "/iu-gpa-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeiuGpaCalculator(
+    const result = await HealthCalculatorsServices.getCalculationeiuGpaCalculator(
       req.body
     );
 
@@ -21864,7 +21864,7 @@ router.post(
 router.post(
   "/asu-gpa-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeAsuGpaCalculator(
+    const result = await HealthCalculatorsServices.getCalculationeAsuGpaCalculator(
       req.body
     );
 
@@ -21890,7 +21890,7 @@ router.post(
 router.post(
   "/uf-gpa-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeUfGpaCalculator(
+    const result = await MathCalculatorsServices.getCalculationeUfGpaCalculator(
       req.body
     );
 
@@ -21916,7 +21916,7 @@ router.post(
 router.post(
   "/ut-gpa-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeUtGpaCalculator(
+    const result = await MathCalculatorsServices.getCalculationeUtGpaCalculator(
       req.body
     );
 
@@ -21942,7 +21942,7 @@ router.post(
 router.post(
   "/uc-gpa-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeUcGpaCalculator(
+    const result = await MathCalculatorsServices.getCalculationeUcGpaCalculator(
       req.body
     );
 
@@ -21968,7 +21968,7 @@ router.post(
 router.post(
   "/gpa-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationeGpaCalculator(
+    const result = await MathCalculatorsServices.getCalculationeGpaCalculator(
       req.body
     );
 
@@ -21994,7 +21994,7 @@ router.post(
 router.post(
   "/zakat-calculator",
   asyncHandler(async (req, res) => {
-    const result = await CalculatorsServices.getCalculationZakatCalculator(
+    const result = await FinanceCalculatorsServices.getCalculationZakatCalculator(
       req.body
     );
 
