@@ -8632,7 +8632,7 @@ class CalculatorsServices {
 
     let age = body.age;
     let height_cm = body.height_cm;
-    let ft_in = body.tecin;
+    let ft_in = body.ft_in;
     let weight = body.weight;
     let stage = body.stage;
     let gender = body.gender;

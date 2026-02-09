@@ -1608,7 +1608,7 @@ class CalculatorsServices {
 
     let age = body.age;
     let height_cm = body.height_cm;
-    let ft_in = body.tecin;
+    let ft_in = body.ft_in;
     let weight = body.weight;
     let stage = body.stage;
     let gender = body.gender;
@@ -1630,9 +1630,9 @@ class CalculatorsServices {
 
     let heightInCm = height_cm;
 
-    if (unit_type === "lbs") {
+    if (unit_type == "lbs") {
       if (!ft_in) {
-        param.error = "Please Select Height";
+        param.error = "Please Select Height111";
         return param;
       }
       heightInCm = ft_in * 2.54;

@@ -2145,7 +2145,7 @@ router.post(
 router.post(
   "/bmi-calculator",
   asyncHandler(async (req, res) => {
-    const result = await HealthCalculatorsServices.getCalculationBmiCalculator(
+    const result = await HealthCalculatorsServices.getCalculationIBMCalculator(
       req.body
     );
 
